@@ -6,4 +6,5 @@
 - [MySQL `limit`优化(late-row-lookups详解)](https://explainextended.com/2009/10/23/mysql-order-by-limit-performance-late-row-lookups/)
 - [MySQL (`order by`) 优化](http://www.cnblogs.com/cchust/p/5304594.html)
 - [MySQL (`join`)左、右、内、链接](https://www.techonthenet.com/mysql/joins.php)
+- [MySQL (`group by` 优化,Loose Index Scan)](https://dev.mysql.com/doc/refman/5.7/en/group-by-optimization.html)
 
