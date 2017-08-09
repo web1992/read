@@ -9,4 +9,5 @@
 - [MySQL (`group by` 优化,Loose Index Scan)](https://dev.mysql.com/doc/refman/5.7/en/group-by-optimization.html)
 - [MySQL (`union`)](http://www.w3school.com.cn/sql/sql_union.asp)
 - [MySQL (`explain`中`extra`列的含义)](https://dev.mysql.com/doc/refman/5.7/en/explain-output.html#explain-extra-information)
+- [MySQL (`explain`中`extra`列的含义`中文`)](http://www.jianshu.com/p/ea3fc71fdc45)
 
