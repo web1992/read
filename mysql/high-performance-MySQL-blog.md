@@ -10,4 +10,5 @@
 - [MySQL (`union`)](http://www.w3school.com.cn/sql/sql_union.asp)
 - [MySQL (`explain`中`extra`列的含义)](https://dev.mysql.com/doc/refman/5.7/en/explain-output.html#explain-extra-information)
 - [MySQL (`explain`中`extra`列的含义`中文`)](http://www.jianshu.com/p/ea3fc71fdc45)
+- [MySQL (`explain`中`extra`列的含义`中文`)](http://ustb80.blog.51cto.com/6139482/1064261)
 
