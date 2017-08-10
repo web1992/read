@@ -3,10 +3,10 @@
 目录
 ---
 
-- [MySQL 优化](#MySQL优化)
-- [MySQL 原理](#MySQL原理)
+- [MySQL 优化](#1)
+- [MySQL 原理](#2)
 
-MySQL优化
+MySQL优化 <a id="#1"/>
 ---
 - [MySQL 索引原理及慢查询优化](http://tech.meituan.com/mysql-index.html)
 - [MySQL 随机IO&顺序IO](http://blog.csdn.net/dba_waterbin/article/details/8937441)
@@ -20,7 +20,7 @@ MySQL优化
 - [MySQL (`explain`中`extra`列的含义`中文`)](http://www.jianshu.com/p/ea3fc71fdc45)
 - [MySQL (`explain`中`extra`列的含义`中文`)](http://ustb80.blog.51cto.com/6139482/1064261)
 
-MySQL原理
+MySQL原理 <a id="#2"/>
 ---
 
 - [MySQL `线程池`](http://blog.jobbole.com/109695/)
