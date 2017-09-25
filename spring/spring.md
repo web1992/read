@@ -2,3 +2,4 @@
 
 - [spring 4.x online](https://docs.spring.io/spring-framework/docs/current/spring-framework-reference/pdf/spring-framework-reference.pdf)
 - [spring 4.x offline](spring-framework-reference.pdf)
+- [spring with activemq](http://activemq.apache.org/spring-support.html)
