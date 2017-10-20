@@ -1,6 +1,6 @@
 >I. Overview of Spring Framework
 
-- 1 Getting Started with Spring [Link](spring-reference-1.md)
+- 1 Getting Started with Spring [Link→](spring-reference-1.md)
 - 2 Introduction to the Spring Framework
 
 > II. What’s New in Spring Framework 4.x
