@@ -5,10 +5,10 @@
 
 > II. What’s New in Spring Framework 4.x
 
-- 3 New Features and Enhancements in Spring 
-- 4 New Features and Enhancements in Spring 
-- 5 New Features and Enhancements in Spring 
-- 6 New Features and Enhancements in Spring 
+- 3 New Features and Enhancements in Spring  Framework 4.0
+- 4 New Features and Enhancements in Spring  Framework 4.1
+- 5 New Features and Enhancements in Spring  Framework 4.2
+- 6 New Features and Enhancements in Spring  Framework 4.3
 
 
 
