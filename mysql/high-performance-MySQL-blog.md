@@ -3,12 +3,12 @@
 # 目录
 
 
-- [MySQL 优化](#MySQL\u4f18\u5316)
-- [MySQL 原理](#MySQL\u539f\u7406)
+* [MySQL 优化](#优化)
+* [MySQL 原理](#原理)
 
 
 
-## MySQL优化
+## 优化
 
 - [MySQL 索引原理及慢查询优化](http://tech.meituan.com/mysql-index.html)
 - [MySQL 随机IO&顺序IO](http://blog.csdn.net/dba_waterbin/article/details/8937441)
@@ -26,7 +26,6 @@
 - [MySQL Optimization Using filesort 优化](https://dev.mysql.com/doc/refman/5.7/en/order-by-optimization.html#order-by-filesort)
 - [MySQL Tracing the Optimizer 优化跟踪](https://dev.mysql.com/doc/internals/en/optimizer-tracing.html)
 
-## MySQL原理
----
+## MySQL 原理
 
 - [MySQL `线程池`](http://blog.jobbole.com/109695/)
