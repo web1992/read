@@ -22,11 +22,12 @@ MySQL优化
 - [MySQL (`explain`中`extra`列的含义`中文`)](http://www.jianshu.com/p/ea3fc71fdc45)
 - [MySQL (`explain`中`extra`列的含义`中文`)](http://ustb80.blog.51cto.com/6139482/1064261)
 - [MySQL (order by 优化)](https://dev.mysql.com/doc/refman/5.7/en/order-by-optimization.html)
-
+- [MySQL join  temporary table 优化](https://dev.mysql.com/doc/refman/5.7/en/where-optimization.html)
+- [MySQL Optimization Using filesort 优化](https://dev.mysql.com/doc/refman/5.7/en/order-by-optimization.html#order-by-filesort)
+- [MySQL Tracing the Optimizer 优化跟踪](https://dev.mysql.com/doc/internals/en/optimizer-tracing.html)
 <a id="#2"/>
 
 MySQL原理
 ---
 
 - [MySQL `线程池`](http://blog.jobbole.com/109695/)
-
