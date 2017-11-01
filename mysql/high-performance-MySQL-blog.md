@@ -3,8 +3,8 @@
 # 目录
 
 
-- [MySQL 优化](#MySQL优化)
-- [MySQL 原理](#MySQL原理)
+- [MySQL 优化](#MySQL%e4%bc%98%e5%8c%96)
+- [MySQL 原理](#MySQL%e5%8e%9f%e7%90%86)
 
 
 
