@@ -35,7 +35,7 @@
 - 21 Marshalling XML using O/X Mappers
 
 > VI. The Web
-- 22 Web MVC framework
+- 22 Web MVC framework [Link→](spring-reference-22.md)
 - 23 View technologies
 - 24 Integrating with other web frameworks
 - 25 Portlet MVC Framework
