@@ -1,15 +1,15 @@
 > MySQL 相关博文
 
-目录
----
+# 目录
 
-- [MySQL 优化](#1)
-- [MySQL 原理](#2)
 
-<a id="#2"/>
+- [MySQL 优化](#MySQL优化)
+- [MySQL 原理](#MySQL原理)
 
-MySQL优化
----
+
+
+## MySQL优化
+
 - [MySQL 索引原理及慢查询优化](http://tech.meituan.com/mysql-index.html)
 - [MySQL 随机IO&顺序IO](http://blog.csdn.net/dba_waterbin/article/details/8937441)
 - [MySQL `limit`优化](https://stackoverflow.com/questions/4481388/why-does-mysql-higher-limit-offset-slow-the-query-down)
@@ -25,9 +25,8 @@ MySQL优化
 - [MySQL join  temporary table 优化](https://dev.mysql.com/doc/refman/5.7/en/where-optimization.html)
 - [MySQL Optimization Using filesort 优化](https://dev.mysql.com/doc/refman/5.7/en/order-by-optimization.html#order-by-filesort)
 - [MySQL Tracing the Optimizer 优化跟踪](https://dev.mysql.com/doc/internals/en/optimizer-tracing.html)
-<a id="#2"/>
 
-MySQL原理
+## MySQL原理
 ---
 
 - [MySQL `线程池`](http://blog.jobbole.com/109695/)
