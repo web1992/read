@@ -13,7 +13,7 @@
 - 6 New Features and Enhancements in Spring  Framework 4.3
 
 > III. Core Technologies
-- 7 The IoC container
+- 7 The IoC container [Link→](spring-reference-7.md)
 - 8 Resources
 - 9 Validation, Data Binding, and Type Conversion
 - 10 Spring Expression Language (SpEL)
