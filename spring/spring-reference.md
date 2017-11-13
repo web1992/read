@@ -28,7 +28,7 @@
 - 16 Further Resources
 
 > V. Data Access
-- 17 Transaction Management
+- 17 Transaction Management [Link→](spring-reference-017.md)
 - 18 DAO support
 - 19 Data access with JDBC
 - 20 Object Relational Mapping (ORM) Data Access
