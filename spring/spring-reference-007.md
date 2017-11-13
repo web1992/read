@@ -53,3 +53,8 @@ prototype scope(原型bean) 每次你从容器中 通过 `getBean()` 获取bean 
 
 <bean id="replacementComputeValue" class="a.b.c.ReplacementComputeValue"/>
 ```
+
+## 5 Dependency Injection
+
+- Constructor-based dependency injection [Link](https://docs.spring.io/spring/docs/4.3.x/spring-framework-reference/htmlsingle/#beans-constructor-injection)
+- Setter-based dependency injection [Link](https://docs.spring.io/spring/docs/4.3.x/spring-framework-reference/htmlsingle/#beans-setter-injection)
