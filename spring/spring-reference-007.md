@@ -66,7 +66,9 @@ public class SimpleMovieLister {
 
     private MovieFinder movieFinder;
 
-    //@Resource(name="myMovieFinder") // 如果使用了name,那么就去查找name 是 myMovieFinder的bean,如果没有name,那么就去找属性(movieFinder)后者set方法(setMovieFinder)对应的bean 名字
+    //@Resource(name="myMovieFinder")
+    // 如果使用了name,那么就去查找name 是 myMovieFinder的bean,
+    // 如果没有name,那么就去找属性(movieFinder)后者set方法(setMovieFinder)对应的bean 名字
     @Resource
     public void setMovieFinder(MovieFinder movieFinder) {
         this.movieFinder = movieFinder;
