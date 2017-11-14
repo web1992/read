@@ -58,3 +58,18 @@ prototype scope(原型bean) 每次你从容器中 通过 `getBean()` 获取bean 
 
 - Constructor-based dependency injection [Link](https://docs.spring.io/spring/docs/4.3.x/spring-framework-reference/htmlsingle/#beans-constructor-injection)
 - Setter-based dependency injection [Link](https://docs.spring.io/spring/docs/4.3.x/spring-framework-reference/htmlsingle/#beans-setter-injection)
+
+## 6 @Resource [Link](https://docs.spring.io/spring/docs/4.3.x/spring-framework-reference/htmlsingle/#beans-resource-annotation)
+
+```java
+public class SimpleMovieLister {
+
+    private MovieFinder movieFinder;
+
+    //@Resource(name="myMovieFinder") // 如果使用了name,那么就去查找name 是 myMovieFinder的bean,如果没有name,那么就去找属性(movieFinder)后者set方法(setMovieFinder)对应的bean 名字
+    @Resource
+    public void setMovieFinder(MovieFinder movieFinder) {
+        this.movieFinder = movieFinder;
+    }
+}
+```
