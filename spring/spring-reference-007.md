@@ -75,3 +75,37 @@ public class SimpleMovieLister {
     }
 }
 ```
+
+## 7 Autowired VS Resource
+
+> @Autowired applies to fields, constructors, and multi-argument methods, allowing for narrowing through qualifier annotations at the parameter level. By contrast, @Resource is supported only for fields and bean property setter methods with a single argument. As a consequence, stick with qualifiers if your injection target is a constructor or a multi-argument method.
+
+Autowired
+
+```java
+@Target({ElementType.CONSTRUCTOR, ElementType.FIELD, ElementType.METHOD, ElementType.ANNOTATION_TYPE})
+@Retention(RetentionPolicy.RUNTIME)
+@Documented
+public @interface Autowired {
+    boolean required() default true;
+```
+
+Resource
+
+```java
+@Target({TYPE, FIELD, METHOD})
+@Retention(RUNTIME)
+public @interface Resource {
+    String name() default "";
+    String lookup() default "";
+    Class<?> type() default java.lang.Object.class;
+    enum AuthenticationType {
+            CONTAINER,
+            APPLICATION
+    }
+    AuthenticationType authenticationType() default AuthenticationType.CONTAINER;
+    boolean shareable() default true;
+    String mappedName() default "";
+    String description() default "";
+}
+```
