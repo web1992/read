@@ -2,8 +2,8 @@
 
 >I. Overview of Spring Framework
 
-- 1 Getting Started with Spring [Link→](spring-reference-1.md)
-- 2 Introduction to the Spring Framework [Link→](spring-reference-1.md)
+- 1 Getting Started with Spring [Link→](spring-reference-001.md)
+- 2 Introduction to the Spring Framework [Link→](spring-reference-001.md)
 
 > II. What’s New in Spring Framework 4.x
 
@@ -13,7 +13,7 @@
 - 6 New Features and Enhancements in Spring  Framework 4.3
 
 > III. Core Technologies
-- 7 The IoC container [Link→](spring-reference-7.md)
+- 7 The IoC container [Link→](spring-reference-007.md)
 - 8 Resources
 - 9 Validation, Data Binding, and Type Conversion
 - 10 Spring Expression Language (SpEL)
@@ -35,7 +35,7 @@
 - 21 Marshalling XML using O/X Mappers
 
 > VI. The Web
-- 22 Web MVC framework [Link→](spring-reference-22.md)
+- 22 Web MVC framework [Link→](spring-reference-022.md)
 - 23 View technologies
 - 24 Integrating with other web frameworks
 - 25 Portlet MVC Framework
