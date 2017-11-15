@@ -134,3 +134,5 @@ public @interface Resource {
     <property name="userPreferences" ref="userPreferences"/>
 </bean>
 ```
+
+如果没有   `<aop:scoped-proxy/>` spring 在启动的时候会报错
