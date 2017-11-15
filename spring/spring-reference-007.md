@@ -135,4 +135,4 @@ public @interface Resource {
 </bean>
 ```
 
-如果没有   `<aop:scoped-proxy/>` spring 在启动的时候会报错
+如果没有`<aop:scoped-proxy/>` spring 在启动的时候会报错
