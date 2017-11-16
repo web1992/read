@@ -44,6 +44,8 @@ prototype scope(原型bean) 每次你从容器中 通过 `getBean()` 获取bean 
 
 [Link](https://docs.spring.io/spring/docs/4.3.x/spring-framework-reference/htmlsingle/#beans-factory-method-injection)
 
+方法注入可以解决`Singleton`bean依赖`prototype`bean 的情况 [Singleton beans with prototype-bean dependencies](#2-singleton-beans-with-prototype-bean-dependencies)
+
 > lookup-method [Link](https://docs.spring.io/spring/docs/4.3.x/spring-framework-reference/htmlsingle/#beans-factory-lookup-method-injection)
 
 ```xml
