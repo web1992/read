@@ -5,11 +5,11 @@
 - 3 [Autowiring modes](#3-autowiring-modes)
 - 4 [Method injection](#4-method-injection)
 - 5 [Dependency Injection](#5-dependency-injection)
-- 6 [@Resource](#6-@resource)
+- 6 [@Resource](#6-resource)
 - 7 [Autowired VS Resource](#7-autowired-vs-resource)
-- 8 [aop:scoped-proxy](#8-aop:scoped-proxy)
-- 9 [@PostConstruct and @PreDestroy](#9-@postConstruct-and-@preDestroy)
-- 10 [@Component](#10-@component)
+- 8 [aop:scoped-proxy](#8-aopscoped-proxy)
+- 9 [@PostConstruct and @PreDestroy](#9-postconstruct-and-predestroy)
+- 10 [@Component](#10-component)
 
 ## 1 Lazy-initialized beans
 
