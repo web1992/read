@@ -1,5 +1,16 @@
 # Core Technologies
 
+- 1 [Lazy-initialized beans](#1-lazy-initialized-beans)
+- 2 [Singleton beans with prototype-bean dependencies](#2-singleton-beans-with-prototype-bean-dependencies)
+- 3 [Autowiring modes](#3-autowiring-modes)
+- 4 [Method injection](#4-method-injection)
+- 5 [Dependency Injection](#5-dependency-injection)
+- 6 [@Resource](#6-@resource)
+- 7 [Autowired VS Resource](#7-autowired-vs-resource)
+- 8 [aop:scoped-proxy](#8-aop:scoped-proxy)
+- 9 [@PostConstruct and @PreDestroy](#9-@postConstruct-and-@preDestroy)
+- 10 [@Component](#10-@component)
+
 ## 1 Lazy-initialized beans
 
 spring  延时加载
@@ -118,7 +129,7 @@ public @interface Resource {
 }
 ```
 
-## 7 aop:scoped-proxy
+## 8 aop:scoped-proxy
 
 [Link](https://docs.spring.io/spring/docs/4.3.x/spring-framework-reference/htmlsingle/#beans-factory-scopes-other-injection)
 
@@ -136,3 +147,19 @@ public @interface Resource {
 ```
 
 如果没有`<aop:scoped-proxy/>` spring 在启动的时候会报错
+
+## 9 @PostConstruct and @PreDestroy
+
+[Link](https://docs.spring.io/spring/docs/4.3.x/spring-framework-reference/htmlsingle/#beans-postconstruct-and-predestroy-annotations)
+
+@PostConstruct  `<bean class="" init-method="init">`
+
+@PreDestroy  `<bean class="" destroy-method="shutdown">`
+
+## 10 @Component
+
+[Link](https://docs.spring.io/spring/docs/4.3.x/spring-framework-reference/htmlsingle/#beans-stereotype-annotations)
+
+Spring @Repository, @Service, and @Controller 都是基于@Component的，分开处理是为了分配切面和后续扩展
+
+Therefore, you can annotate your component classes with @Component, but by annotating them with @Repository, @Service, or @Controller instead, your classes are more properly suited for processing by tools or associating with aspects
