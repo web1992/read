@@ -1,14 +1,14 @@
 # Core Technologies
 
-- 1 [Lazy-initialized beans](#1-lazy-initialized-beans)
-- 2 [Singleton beans with prototype-bean dependencies](#2-singleton-beans-with-prototype-bean-dependencies)
-- 3 [Autowiring modes](#3-autowiring-modes)
-- 4 [Method injection](#4-method-injection)
-- 5 [Dependency Injection](#5-dependency-injection)
-- 6 [@Resource](#6-resource)
-- 7 [Autowired VS Resource](#7-autowired-vs-resource)
-- 8 [aop:scoped-proxy](#8-aopscoped-proxy)
-- 9 [@PostConstruct and @PreDestroy](#9-postconstruct-and-predestroy)
+- 01 [Lazy-initialized beans](#1-lazy-initialized-beans)
+- 02 [Singleton beans with prototype-bean dependencies](#2-singleton-beans-with-prototype-bean-dependencies)
+- 03 [Autowiring modes](#3-autowiring-modes)
+- 04 [Method injection](#4-method-injection)
+- 05 [Dependency Injection](#5-dependency-injection)
+- 06 [@Resource](#6-resource)
+- 07 [Autowired VS Resource](#7-autowired-vs-resource)
+- 08 [aop:scoped-proxy](#8-aopscoped-proxy)
+- 09 [@PostConstruct and @PreDestroy](#9-postconstruct-and-predestroy)
 - 10 [@Component](#10-component)
 
 ## 1 Lazy-initialized beans
