@@ -3,6 +3,10 @@
 - 01 [PlatformTransactionManager](#1-platformtransactionmanager)
 - 02 [TransactionDefinition](#2-transactiondefinition )
 - 03 [TransactionStatus](#3-transactionstatus)
+- 04 [tx:advice settings](#4-tx-advice-settings)
+- 05 [@Transactional](#5-Transactional)
+- 06 [@Transactional settings](#6-transactional-settings)
+- 07 [Transaction propagation](#7-transaction-propagation)
 
 ## 1 PlatformTransactionManager
 
@@ -51,3 +55,59 @@ public interface TransactionStatus extends SavepointManager {
 
 }
 ```
+
+## 4 tx-advice-settings
+
+[Link](https://docs.spring.io/spring/docs/4.3.x/spring-framework-reference/htmlsingle/#transaction-declarative-txadvice-settings)
+
+- Propagation setting is REQUIRED.
+- Isolation level is DEFAULT.
+- Transaction is read/write.
+- Transaction timeout defaults to the default timeout of the underlying transaction system, or none if timeouts are not supported.
+- Any RuntimeException triggers rollback, and any checked Exception does not.
+
+![](images/tx-methond.png)
+
+## 5 @Transactional
+
+[Link](https://docs.spring.io/spring/docs/4.3.x/spring-framework-reference/htmlsingle/#transaction-declarative-annotations)
+
+配置：
+
+```xml
+ <!-- this is the service object that we want to make transactional -->
+    <bean id="fooService" class="x.y.service.DefaultFooService"/>
+
+    <!-- enable the configuration of transactional behavior based on annotations -->
+    <tx:annotation-driven transaction-manager="txManager"/><!-- a PlatformTransactionManager is still required -->
+    <bean id="txManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+        <!-- (this dependency is defined somewhere else) -->
+        <property name="dataSource" ref="dataSource"/>
+    </bean>
+
+    <!-- other <bean/> definitions here -->
+```
+
+注意点：
+
+- @Transactional 注解修饰的方法必须是`public`的
+- In proxy mode (which is the default), only external method calls coming in through the proxy are intercepted (like `@PostConstruct`)
+- Spring recommends that you only annotate concrete classes (and methods of concrete classes) with the @Transactional annotation, as opposed to annotating interfaces. You certainly can place the @Transactional annotation on an interface (or an interface method), but this works only as you would expect it to if you are using interface-based proxies. The fact that Java annotations are not inherited from interfaces means that if you are using class-based proxies ( proxy-target-class="true") or the weaving-based aspect ( mode="aspectj"), then the transaction settings are not recognized by the proxying and weaving infrastructure, and the object will not be wrapped in a transactional proxy, which would be decidedly bad.
+
+## 6 @Transactional settings
+
+[Link](https://docs.spring.io/spring/docs/4.3.x/spring-framework-reference/htmlsingle/#transaction-declarative-attransactional-settings)
+
+The @Transactional annotation is metadata that specifies that an interface, class, or method must have transactional semantics; for example, "start a brand new read-only transaction when this method is invoked, suspending any existing transaction". The default @Transactional settings are as follows:
+
+- Propagation setting is PROPAGATION_REQUIRED.
+- Isolation level is ISOLATION_DEFAULT.
+- Transaction is read/write.
+- Transaction timeout defaults to the default timeout of the underlying transaction system, or to none if timeouts are not supported.
+- Any RuntimeException triggers rollback, and any checked Exception does not.
+
+![](images/transaactional-settings.png)
+
+## 7 Transaction propagation
+
+事物的传播属性

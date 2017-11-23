@@ -10,7 +10,7 @@
 - 08 [aop:scoped-proxy](#8-aopscoped-proxy)
 - 09 [@PostConstruct and @PreDestroy](#9-postconstruct-and-predestroy)
 - 10 [@Component](#10-component)
-- 11 [ @Bean and @Configuration](#11-bean-and-configuration)
+- 11 [@Bean and @Configuration](#11-bean-and-configuration)
 
 ## 1 Lazy-initialized beans
 
