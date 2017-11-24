@@ -8,6 +8,7 @@
 - 06 [@Transactional settings](#6-transactional-settings)
 - 07 [Transaction propagation](#7-transaction-propagation)
 - 08 [Advising transactional operations](#8-advising-transactional-operations)
+- 09 [Programmatic transaction management](#9-programmatic-transaction-management)
 
 ## 1 PlatformTransactionManager
 
@@ -133,4 +134,7 @@ PROPAGATION_REQUIRES_NEW
 
 [Link](https://docs.spring.io/spring/docs/4.3.x/spring-framework-reference/htmlsingle/#transaction-declarative-applying-more-than-just-tx-advice)
 
-## 9 Using @Transactional with AspectJ
+## 9 Programmatic transaction management
+
+- Using the TransactionTemplate. [Link](https://docs.spring.io/spring/docs/4.3.x/spring-framework-reference/htmlsingle/#tx-prog-template)
+- Using a PlatformTransactionManager implementation directly. [Link](https://docs.spring.io/spring/docs/4.3.x/spring-framework-reference/htmlsingle/#transaction-programmatic-ptm)
