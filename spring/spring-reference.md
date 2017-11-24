@@ -29,8 +29,8 @@
 
 > V. Data Access
 - 17 Transaction Management [Link→](spring-reference-017.md)
-- 18 DAO support
-- 19 Data access with JDBC
+- 18 DAO support [Link→](spring-reference-018.md)
+- 19 Data access with JDBC [Link→](spring-reference-019.md)
 - 20 Object Relational Mapping (ORM) Data Access
 - 21 Marshalling XML using O/X Mappers
 
