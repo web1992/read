@@ -7,7 +7,7 @@
 - 05 [@Transactional](#5-Transactional)
 - 06 [@Transactional settings](#6-transactional-settings)
 - 07 [Transaction propagation](#7-transaction-propagation)
-- 08 [Advising transactional operations](8-advising-transactional-operations)
+- 08 [Advising transactional operations](#8-advising-transactional-operations)
 
 ## 1 PlatformTransactionManager
 
