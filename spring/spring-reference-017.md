@@ -7,6 +7,7 @@
 - 05 [@Transactional](#5-Transactional)
 - 06 [@Transactional settings](#6-transactional-settings)
 - 07 [Transaction propagation](#7-transaction-propagation)
+- 08 [Advising transactional operations](8-advising-transactional-operations)
 
 ## 1 PlatformTransactionManager
 
@@ -111,3 +112,25 @@ The @Transactional annotation is metadata that specifies that an interface, clas
 ## 7 Transaction propagation
 
 事物的传播属性
+
+### Required
+
+PROPAGATION_REQUIRED
+
+![](images/tx_prop_required.png)
+
+### RequiresNew
+
+PROPAGATION_REQUIRES_NEW
+
+![](images/tx_prop_requires_new.png)
+
+> PROPAGATION_REQUIRES_NEW, in contrast to PROPAGATION_REQUIRED, uses a completely independent transaction for each affected transaction scope. In that case, the underlying physical transactions are different and hence can commit or roll back independently, with an outer transaction not affected by an inner transaction’s rollback status.
+
+## 8 Advising transactional operations
+
+通知 + 事务（顺序可控） 实现`Ordered`接口
+
+[Link](https://docs.spring.io/spring/docs/4.3.x/spring-framework-reference/htmlsingle/#transaction-declarative-applying-more-than-just-tx-advice)
+
+## 9 Using @Transactional with AspectJ
