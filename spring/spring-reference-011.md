@@ -1,6 +1,12 @@
 # Aspect Oriented Programming with Spring
 
 - 01 [AOP concepts](#1-aop-concepts)
+- 02 [Spring AOP capabilities and goals](#1-spring-aop-capabilities-and-goals)
+- 03 [Enabling @AspectJ Support](#3-enabling-aspectj-support)
+- 04 [@Aspect](#4-aspect)
+- 05 [@Pointcut](#5-pointcut)
+- 06 [Supported Pointcut Designators](#6-supported-pointcut-designators)
+- 07 [execution](#7-execution)
 
 ## 1 AOP concepts
 
@@ -29,3 +35,59 @@ Types of advice:
 - `After throwing advice`: Advice to be executed if a method exits by throwing an exception.
 - `After (finally) advice`: Advice to be executed regardless of the means by which a join point exits (normal or exceptional return).
 - `Around advice`: Advice that surrounds a join point such as a method invocation. This is the most powerful kind of advice. Around advice can perform custom behavior before and after the method invocation. It is also responsible for choosing whether to proceed to the join point or to shortcut the advised method execution by returning its own return value or throwing an exception.
+
+## 2 Spring AOP capabilities and goals
+
+[Link](https://docs.spring.io/spring/docs/4.3.x/spring-framework-reference/htmlsingle/#aop-introduction-spring-defn)
+
+## 3  Enabling @AspectJ Support
+
+`aspectjweaver.jar`
+
+> The @AspectJ support can be enabled with XML or Java style configuration. In either case you will also need to ensure that AspectJ’s aspectjweaver.jar library is on the classpath of your application (version 1.6.8 or later). This library is available in the 'lib' directory of an AspectJ distribution or via the Maven Central repository.
+
+Enabling @AspectJ Support with Java configuration
+
+```java
+@Configuration
+@EnableAspectJAutoProxy
+public class AppConfig {
+}
+```
+
+Enabling @AspectJ Support with XML configuration
+
+```xml
+<aop:aspectj-autoproxy/>
+```
+
+## 4 Aspect
+
+ `org.aspectj.lang.annotation.Aspect`
+
+ Aspects (classes annotated with @Aspect) may have methods and fields just like any other class. They may also contain `pointcut`, `advic`e, and `introduction (inter-type) declarations`.
+
+## 5 Pointcut
+
+> and the pointcut expression is indicated using the @Pointcut annotation (the method serving as the pointcut signature must have a void return type).
+
+## 6 Supported Pointcut Designators
+
+- `execution` - for matching method execution join points, this is the primary pointcut designator you will use when working with Spring AOP
+- `within` - limits matching to join points within certain types (simply the execution of a method declared within a matching type when using Spring AOP)
+- `this` - limits matching to join points (the execution of methods when using Spring AOP) where the bean reference (Spring AOP proxy) is an instance of the given type
+- `target` - limits matching to join points (the execution of methods when using Spring AOP) where the target object (application object being proxied) is an instance of the given type
+- `args` - limits matching to join points (the execution of methods when using Spring AOP) where the arguments are instances of the given types
+- `@target` - limits matching to join points (the execution of methods when using Spring AOP) where the class of the executing object has an annotation of the given type
+- `@args` - limits matching to join points (the execution of methods when using Spring AOP) where the runtime type of the actual arguments passed have annotations of the given type(s)
+- `@within` - limits matching to join points within types that have the given annotation (the execution of methods declared in types with the given annotation when using Spring AOP)
+- `@annotation` - limits matching to join points where the subject of the join point (method being executed in Spring AOP) has the given annotation
+
+## 7 execution
+
+```java
+execution(modifiers-pattern? ret-type-pattern declaring-type-pattern?name-pattern(param-pattern)
+            throws-pattern?)
+```
+
+[Example](https://docs.spring.io/spring/docs/4.3.x/spring-framework-reference/htmlsingle/#aop-pointcuts-examples)
