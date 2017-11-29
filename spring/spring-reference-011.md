@@ -93,7 +93,7 @@ execution(modifiers-pattern? ret-type-pattern declaring-type-pattern?name-patter
 
 [Example](https://docs.spring.io/spring/docs/4.3.x/spring-framework-reference/htmlsingle/#aop-pointcuts-examples)
 
-## 8  Declaring advice
+## 8 Declaring advice
 
 [Link](https://docs.spring.io/spring/docs/4.3.x/spring-framework-reference/htmlsingle/#aop-advice)
 
