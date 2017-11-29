@@ -7,6 +7,7 @@
 - 05 [@Pointcut](#5-pointcut)
 - 06 [Supported Pointcut Designators](#6-supported-pointcut-designators)
 - 07 [execution](#7-execution)
+- 8  [Declaring advice](#8-declaring-advice)
 
 ## 1 AOP concepts
 
@@ -91,3 +92,11 @@ execution(modifiers-pattern? ret-type-pattern declaring-type-pattern?name-patter
 ```
 
 [Example](https://docs.spring.io/spring/docs/4.3.x/spring-framework-reference/htmlsingle/#aop-pointcuts-examples)
+
+## 8  Declaring advice
+
+- Before advice
+- After returning advice
+- After throwing advice
+- After (finally) advice
+- Around advice
