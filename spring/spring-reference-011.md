@@ -97,8 +97,28 @@ execution(modifiers-pattern? ret-type-pattern declaring-type-pattern?name-patter
 
 [Link](https://docs.spring.io/spring/docs/4.3.x/spring-framework-reference/htmlsingle/#aop-advice)
 
-- Before advice
-- After returning advice
-- After throwing advice
-- After (finally) advice
-- Around advice
+- Before advice  `@Before` 在方法执行之前执行的`Aspect`
+- After returning advice  `@AfterThrowing` 在方法`return`之前执行的`Aspect` 可以拦截到`return`的结果 [Link](https://docs.spring.io/spring/docs/4.3.x/spring-framework-reference/htmlsingle/#aop-schema-advice-after-returning)
+- After throwing advice `@AfterThrowing`  在发生异常的时候执行，可以指定异常的类型,如：`DataAccessException`
+- After (finally) advice `@After` 通常用来释放资源
+- Around advice `@Around`
+
+Around
+
+```javav
+@Aspect
+public class AroundExample {
+
+    @Around("com.xyz.myapp.SystemArchitecture.businessService()")
+    public Object doBasicProfiling(ProceedingJoinPoint pjp) throws Throwable {
+        // start stopwatch
+        Object retVal = pjp.proceed();
+        // stop stopwatch
+        return retVal;
+    }
+}
+```
+
+> The value returned by the around advice will be the return value seen by the caller of the method. A simple caching aspect for example could return a value from a cache if it has one, and invoke proceed() if it does not. Note that proceed may be invoked once, many times, or not at all within the body of the around advice, all of these are quite legal.
+
+可以用力缓存`昂贵的`计算结果,如果有，就不需要调用`pjp.proceed()`直接返回
