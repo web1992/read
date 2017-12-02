@@ -122,3 +122,5 @@ public class AroundExample {
 > The value returned by the around advice will be the return value seen by the caller of the method. A simple caching aspect for example could return a value from a cache if it has one, and invoke proceed() if it does not. Note that proceed may be invoked once, many times, or not at all within the body of the around advice, all of these are quite legal.
 
 可以用来缓存`昂贵的`计算结果,如果有，就不需要调用`pjp.proceed()`直接返回
+
+- Advice parameters
