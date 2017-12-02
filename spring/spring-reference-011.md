@@ -124,3 +124,7 @@ public class AroundExample {
 可以用来缓存`昂贵的`计算结果,如果有，就不需要调用`pjp.proceed()`直接返回
 
 - Advice parameters
+
+- Access to the current JoinPoint
+
+- Passing parameters to advice
