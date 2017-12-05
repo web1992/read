@@ -7,7 +7,8 @@
 - 05 [@Pointcut](#5-pointcut)
 - 06 [Supported Pointcut Designators](#6-supported-pointcut-designators)
 - 07 [execution](#7-execution)
-- 8  [Declaring advice](#8-declaring-advice)
+- 08 [Declaring advice](#8-declaring-advice)
+- 09 [Schema-based AOP support](#9-schema-based-aop-support)
 
 ## 1 AOP concepts
 
@@ -127,4 +128,116 @@ public class AroundExample {
 
 - Access to the current JoinPoint
 
+`org.aspectj.lang.JoinPoint`
+
 - Passing parameters to advice
+
+```java
+@Before("com.xyz.myapp.SystemArchitecture.dataAccessOperation() && args(account,..)")
+public void validateAccount(Account account) {
+    // ...
+}
+```
+
+## 9 Schema-based AOP support
+
+- Declaring an aspect
+
+```xml
+aop:config>
+    <aop:aspect id="myAspect" ref="aBean">
+        ...
+    </aop:aspect>
+</aop:config>
+
+<bean id="aBean" class="...">
+    ...
+</bean>
+```
+
+- Declaring a pointcut
+
+```xml
+<aop:config>
+
+    <aop:pointcut id="businessService"
+        expression="execution(* com.xyz.myapp.service.*.*(..))"/>
+
+</aop:config>
+```
+
+- Declaring advice
+
+- Before advice
+
+```xml
+<aop:aspect id="beforeExample" ref="aBean">
+
+    <aop:before
+        pointcut-ref="dataAccessOperation"
+        method="doAccessCheck"/>
+
+    ...
+
+</aop:aspect>
+```
+
+- After returning advice
+
+```xml
+aop:aspect id="afterReturningExample" ref="aBean">
+
+    <aop:after-returning
+        pointcut-ref="dataAccessOperation"
+        returning="retVal"
+        method="doAccessCheck"/>
+
+    ...
+
+</aop:aspect>
+```
+
+- After throwing advice
+
+```xml
+<aop:aspect id="afterThrowingExample" ref="aBean">
+
+    <aop:after-throwing
+        pointcut-ref="dataAccessOperation"
+        throwing="dataAccessEx"
+        method="doRecoveryActions"/>
+
+    ...
+
+</aop:aspect>
+```
+
+- After (finally) advice
+
+```xml
+<aop:aspect id="afterFinallyExample" ref="aBean">
+
+    <aop:after
+        pointcut-ref="dataAccessOperation"
+        method="doReleaseLock"/>
+
+    ...
+
+</aop:aspect>
+```
+
+- Around advice
+
+```xml
+<aop:aspect id="aroundExample" ref="aBean">
+
+    <aop:around
+        pointcut-ref="businessService"
+        method="doBasicProfiling"/>
+
+    ...
+
+</aop:aspect>
+```
+
+- Advice parameters
