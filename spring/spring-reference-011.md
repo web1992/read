@@ -9,6 +9,8 @@
 - 07 [execution](#7-execution)
 - 08 [Declaring advice](#8-declaring-advice)
 - 09 [Schema-based AOP support](#9-schema-based-aop-support)
+- 10 [Advisors](#10-advisors)
+- 11 [Choosing which AOP declaration style to use](#11-choosing-which-aop-declaration-style-to-use)
 
 ## 1 AOP concepts
 
@@ -241,3 +243,70 @@ aop:aspect id="afterReturningExample" ref="aBean">
 ```
 
 - Advice parameters
+
+```xml
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:aop="http://www.springframework.org/schema/aop"
+    xsi:schemaLocation="
+        http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd">
+
+    <!-- this is the object that will be proxied by Spring's AOP infrastructure -->
+    <bean id="fooService" class="x.y.service.DefaultFooService"/>
+
+    <!-- this is the actual advice itself -->
+    <bean id="profiler" class="x.y.SimpleProfiler"/>
+
+    <aop:config>
+        <aop:aspect ref="profiler">
+
+            <aop:pointcut id="theExecutionOfSomeFooServiceMethod"
+                expression="execution(* x.y.service.FooService.getFoo(String,int))
+                and args(name, age)"/>
+
+            <aop:around pointcut-ref="theExecutionOfSomeFooServiceMethod"
+                method="profile"/>
+
+        </aop:aspect>
+    </aop:config>
+
+</beans>
+```
+
+## 10 Advisors
+
+```xml
+<aop:config>
+
+    <aop:pointcut id="businessService"
+        expression="execution(* com.xyz.myapp.service.*.*(..))"/>
+
+    <aop:advisor
+        pointcut-ref="businessService"
+        advice-ref="tx-advice"/>
+
+</aop:config>
+
+<tx:advice id="tx-advice">
+    <tx:attributes>
+        <tx:method name="*" propagation="REQUIRED"/>
+    </tx:attributes>
+</tx:advice>
+```
+
+## 11 Choosing which AOP declaration style to use
+
+- 应用需要
+- 开发工具
+- 团队习惯
+
+Once you have decided that an aspect is the best approach for implementing a given requirement, how do you decide between using Spring AOP or AspectJ, and between the Aspect language (code) style, @AspectJ annotation style, or the Spring XML style? These decisions are influenced by a number of factors including `application requirements`, `development tools`, and `team familiarity with AOP`.
+
+## 12 @AspectJ or XML for Spring AOP?
+
+- xml 对于熟悉使用spring 的人上手很快
+- xml POJO
+- xml 一目了然
+- xml only singleton
+- xml  不能用 && 组合Pointcut
