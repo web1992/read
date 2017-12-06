@@ -11,6 +11,8 @@
 - 09 [Schema-based AOP support](#9-schema-based-aop-support)
 - 10 [Advisors](#10-advisors)
 - 11 [Choosing which AOP declaration style to use](#11-choosing-which-aop-declaration-style-to-use)
+- 12 [@AspectJ or XML for Spring AOP](#12-aspectj-or-xml-for-spring-aop)
+- 13 [Proxying mechanisms](#13-proxying-mechanisms)
 
 ## 1 AOP concepts
 
@@ -303,10 +305,46 @@ aop:aspect id="afterReturningExample" ref="aBean">
 
 Once you have decided that an aspect is the best approach for implementing a given requirement, how do you decide between using Spring AOP or AspectJ, and between the Aspect language (code) style, @AspectJ annotation style, or the Spring XML style? These decisions are influenced by a number of factors including `application requirements`, `development tools`, and `team familiarity with AOP`.
 
-## 12 @AspectJ or XML for Spring AOP?
+## 12 @AspectJ or XML for Spring AOP
 
 - xml 对于熟悉使用spring 的人上手很快
 - xml POJO
 - xml 一目了然
 - xml only singleton
 - xml  不能用 && 组合Pointcut
+
+## 13 Proxying mechanisms
+
+代理的原理
+
+> CGLIB  & JDK
+
+代理的限制&注意点
+
+- final methods cannot be advised, as they cannot be overridden.
+- As of Spring 3.2, it is no longer necessary to add CGLIB to your project classpath, as CGLIB classes are repackaged under org.springframework and included directly in the spring-core JAR. This means that CGLIB-based proxy support 'just works' in the same way that JDK dynamic proxies always have.
+- As of Spring 4.0, the constructor of your proxied object will NOT be called twice anymore since the CGLIB proxy instance will be created via Objenesis. Only if your JVM does not allow for constructor bypassing, you might see double invocations and corresponding debug log entries from Spring’s AOP support.
+
+> To force the use of CGLIB proxies set the value of the proxy-target-class attribute of the <aop:config> element to true:
+
+```xml
+<aop:config proxy-target-class="true">
+    <!-- other beans defined here... -->
+</aop:config>
+```
+
+> To force CGLIB proxying when using the @AspectJ autoproxy support, set the 'proxy-target-class' attribute of the <aop:aspectj-autoproxy> element to true:
+
+```xml
+<aop:aspectj-autoproxy proxy-target-class="true"/>
+```
+
+图解
+
+没有使用proxy
+
+![](images/aop-proxy-plain-pojo-call.png)
+
+使用了proxy
+
+![](images/aop-proxy-call.png)
