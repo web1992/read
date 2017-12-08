@@ -103,7 +103,7 @@ execution(modifiers-pattern? ret-type-pattern declaring-type-pattern?name-patter
 [Link](https://docs.spring.io/spring/docs/4.3.x/spring-framework-reference/htmlsingle/#aop-advice)
 
 - Before advice  `@Before` 在方法执行之前执行的`Aspect`
-- After returning advice  `@AfterThrowing` 在方法`return`之前执行的`Aspect` 可以拦截到`return`的结果 [Link](https://docs.spring.io/spring/docs/4.3.x/spring-framework-reference/htmlsingle/#aop-schema-advice-after-returning)
+- After returning advice  `@AfterReturning` 在方法`return`之前执行的`Aspect` 可以拦截到`return`的结果 [Link](https://docs.spring.io/spring/docs/4.3.x/spring-framework-reference/htmlsingle/#aop-schema-advice-after-returning)
 - After throwing advice `@AfterThrowing`  在发生异常的时候执行，可以指定异常的类型,如：`DataAccessException`
 - After (finally) advice `@After` 通常用来释放资源
 - Around advice `@Around`
