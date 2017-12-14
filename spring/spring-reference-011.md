@@ -348,3 +348,15 @@ Once you have decided that an aspect is the best approach for implementing a giv
 使用了proxy
 
 ![](images/aop-proxy-call.png)
+
+## 14 Working with multiple application contexts
+
+## 15 Other Spring aspects for AspectJ
+
+`@Transactional`
+
+The aspect that interprets @Transactional annotations is the AnnotationTransactionAspect. When using this aspect, you must annotate the implementation class (and/or methods within that class), not the interface (if any) that the class implements. AspectJ follows Java’s rule that annotations on interfaces are not inherited.
+
+## 16 Load-time weaving with AspectJ in the Spring Framework
+
+[link](https://docs.spring.io/spring/docs/4.3.x/spring-framework-reference/htmlsingle/#aop-aj-ltw)
