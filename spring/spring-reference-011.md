@@ -359,4 +359,6 @@ The aspect that interprets @Transactional annotations is the AnnotationTransacti
 
 ## 16 Load-time weaving with AspectJ in the Spring Framework
 
+LTW  Load time weaving
+
 [link](https://docs.spring.io/spring/docs/4.3.x/spring-framework-reference/htmlsingle/#aop-aj-ltw)
