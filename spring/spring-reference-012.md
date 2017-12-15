@@ -28,7 +28,7 @@ public interface Pointcut {
 
 ClassFilter
 
-The ClassFilter interface is used to restrict the pointcut to a given set of target classes. If the matches() method always returns true, all target classes will be matched:
+The ClassFilter interface is used to restrict(`限制`) the pointcut to a given set of target classes. If the matches() method always returns true, all target classes will be matched:
 
 ```java
 public interface ClassFilter {
@@ -110,7 +110,7 @@ public final class PointcutPrimitive extends TypeSafeEnum {
 
 切点的实现
 
-Static pointcuts
+- Static pointcuts
 
 ```java
 class TestStaticPointcut extends StaticMethodMatcherPointcut {
@@ -120,5 +120,18 @@ class TestStaticPointcut extends StaticMethodMatcherPointcut {
     }
 }
 ```
+
+- Regular expression pointcuts
+
+`org.springframework.aop.support.JdkRegexpMethodPointcut`
+`RegexpMethodPointcutAdvisor`
+
+- Attribute-driven pointcuts
+
+An important type of static pointcut is a metadata-driven pointcut. This uses the values of metadata attributes: typically, source-level metadata.
+
+- Dynamic pointcuts
+
+- Control flow pointcuts
 
 ## 5 Advice API in Spring
