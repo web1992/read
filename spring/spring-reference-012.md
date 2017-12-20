@@ -135,3 +135,52 @@ An important type of static pointcut is a metadata-driven pointcut. This uses th
 - Control flow pointcuts
 
 ## 5 Advice API in Spring
+
+### Interception around advice
+
+[link](https://docs.spring.io/spring/docs/4.3.x/spring-framework-reference/htmlsingle/#aop-api-advice-around)
+
+The most fundamental advice type in Spring is interception around advice.
+
+Spring is compliant with the AOP Alliance interface for around advice using method interception. MethodInterceptors implementing around advice should implement the following interface:
+
+```java
+public interface MethodInterceptor extends Interceptor {
+
+    Object invoke(MethodInvocation invocation) throws Throwable;
+}
+```
+
+### Before advice
+
+A simpler advice type is a before advice. This does not need a MethodInvocation object, since it will only be called before entering the method.
+
+The main advantage of a before advice is that there is no need to invoke the proceed() method, and therefore no possibility of inadvertently failing to proceed down the interceptor chain.
+
+```java
+public interface MethodBeforeAdvice extends BeforeAdvice {
+
+    void before(Method m, Object[] args, Object target) throws Throwable;
+}
+```
+
+异常处理：
+
+Note the return type is void. Before advice can insert custom behavior before the join point executes, but cannot change the return value. If a before advice throws an exception, this will abort further execution of the interceptor chain. The exception will propagate back up the interceptor chain. If it is unchecked, or on the signature of the invoked method, it will be passed directly to the client; otherwise it will be wrapped in an unchecked exception by the AOP proxy.
+
+### Throws advice
+
+```java
+public static class CombinedThrowsAdvice implements ThrowsAdvice {
+
+    public void afterThrowing(RemoteException ex) throws Throwable {
+        // Do something with remote exception
+    }
+
+    public void afterThrowing(Method m, Object[] args, Object target, ServletException ex) {
+        // Do something with all arguments
+    }
+}
+```
+
+### Introduction advice
