@@ -186,3 +186,16 @@ public static class CombinedThrowsAdvice implements ThrowsAdvice {
 ### Introduction advice
 
 [Link](https://docs.spring.io/spring/docs/4.3.x/spring-framework-reference/htmlsingle/#aop-api-advice-introduction)
+
+### Proxying classes
+
+[Link](https://docs.spring.io/spring/docs/4.3.x/spring-framework-reference/htmlsingle/#aop-api-proxying-class)
+
+### Creating AOP proxies programmatically with the ProxyFactory
+
+```java
+ProxyFactory factory = new ProxyFactory(myBusinessInterfaceImpl);
+factory.addAdvice(myMethodInterceptor);
+factory.addAdvisor(myAdvisor);
+MyBusinessInterface tb = (MyBusinessInterface) factory.getProxy();
+```
