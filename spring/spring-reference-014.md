@@ -15,18 +15,18 @@ True unit tests typically run extremely quickly, as there is no runtime infrastr
 
 ## 01 Mock Objects
 
-Environment
+### Environment
 
 `org.springframework.mock.env`
 
 - MockEnvironment
 - MockPropertySource
 
-JNDI
+### JNDI
 
 `org.springframework.mock.jndi`
 
-Servlet API
+### Servlet API
 
 `org.springframework.mock.web`
 
@@ -34,7 +34,7 @@ The `org.springframework.mock.web` package contains a comprehensive set of Servl
 
 For thorough integration testing of your Spring MVC and REST Controllers in conjunction with your WebApplicationContext configuration for Spring MVC, see the [Spring MVC Test Framework](https://docs.spring.io/spring/docs/4.3.x/spring-framework-reference/htmlsingle/#spring-mvc-test-framework).
 
-Portlet API
+### Portlet API
 
 The `org.springframework.mock.web.portlet` package contains a set of Portlet API mock objects, targeted at usage with Spring’s Portlet MVC framework.
 
