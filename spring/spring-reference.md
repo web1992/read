@@ -24,7 +24,7 @@
 
 - 13 Introduction to Spring Testing [Link→](spring-reference-013.md)
 - 14 Unit Testing [Link→](spring-reference-014.md)
-- 15 Integration Testing
+- 15 Integration Testing [Link→](spring-reference-015.md)
 - 16 Further Resources
 
 > V. Data Access
