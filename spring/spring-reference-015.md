@@ -88,3 +88,28 @@ public class DeveloperIntegrationTests {
 
 @TestPropertySource
 
+@TestPropertySource is a class-level annotation that is used to configure the locations of properties files and inlined properties to be added to the set of PropertySources in the Environment for an ApplicationContext loaded for an integration test.
+
+The following example demonstrates how to declare a properties file from the classpath.
+
+```java
+@ContextConfiguration
+@TestPropertySource("/test.properties")
+public class MyIntegrationTests {
+    // class body...
+}
+```
+
+The following example demonstrates how to declare inlined properties.
+
+```java
+@ContextConfiguration
+@TestPropertySource(properties = { "timezone = GMT", "port: 4242" })
+public class MyIntegrationTests {
+    // class body...
+}
+```
+
+@DirtiesContext
+
+@TestExecutionListeners
