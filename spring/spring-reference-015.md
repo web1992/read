@@ -1,6 +1,19 @@
 # Integration Testing
 
-## Goals of Integration Testing
+-01 [Goals of Integration Testing](#01-goals-of-integration-testing)
+-02 [Context management and cachin](#02-context-management-and-cachin)
+-03 [Dependency Injection of test fixtures](#03-dependency-injection-of-test-fixtures)
+-04 [Transaction management](#04-transaction-management)
+-05 [Support classes for integration testing](#05-support-classes-for-integration-testing)
+-06 [JDBC Testing Support](#06-jdbc-testing-support)
+-07 [Annotations](#07-annotations)
+-08 [Spring Testing Annotations](#08-spring-testing-annotations)
+-09 [Standard Annotation Support](#09-standard-annotation-support)
+-10 [Spring JUnit 4 Testing Annotations](#10-spring-junit-4-testing-annotations)
+-11 [Meta-Annotation Support for Testing](#11-meta-annotation-support-for-testing)
+-12 [Key abstractions](#12-key-abstractions)
+
+## 01 Goals of Integration Testing
 
 Spring’s integration testing support has the following primary goals:
 
@@ -11,31 +24,31 @@ Spring’s integration testing support has the following primary goals:
 
 The next few sections describe each goal and provide links to implementation and configuration details.
 
-## Context management and caching
+## 02 Context management and caching
 
 See Section 15.5.4, [Context managemen](https://docs.spring.io/spring/docs/4.3.x/spring-framework-reference/htmlsingle/#testcontext-ctx-management) and the section called [Context caching](https://docs.spring.io/spring/docs/4.3.x/spring-framework-reference/htmlsingle/#testcontext-ctx-management-caching) with the TestContext framework.
 
-## Dependency Injection of test fixtures
+## 03 Dependency Injection of test fixtures
 
-## Transaction management
+## 04 Transaction management
 
-## Support classes for integration testing
+## 05 Support classes for integration testing
 
 - ApplicationContext
 
 - JdbcTemplate
 
-## JDBC Testing Support
+## 06 JDBC Testing Support
 
 - JdbcTestUtils
 - AbstractTransactionalJUnit4SpringContextTests
 - AbstractTransactionalTestNGSpringContextTests
 
-## Annotations
+## 07 Annotations
 
 [Link](https://docs.spring.io/spring/docs/4.3.x/spring-framework-reference/htmlsingle/#integration-testing-annotations)
 
-### Spring Testing Annotations
+### 08 Spring Testing Annotations
 
 @BootstrapWith
 
@@ -150,7 +163,7 @@ public void testProcessWithoutRollback() {
 
 @SqlGroup
 
-## Standard Annotation Support
+## 09 Standard Annotation Support
 
 `@Autowired`
 `@Qualifier`
@@ -162,7 +175,7 @@ public void testProcessWithoutRollback() {
 `@PersistenceUnit` (javax.persistence) if JPA is present
 `@Required`
 
-## Spring JUnit 4 Testing Annotations
+## 10 Spring JUnit 4 Testing Annotations
 
 The following annotations are only supported when used in conjunction with the SpringRunner, Spring’s JUnit rules, or Spring’s JUnit 4 support classes.
 
@@ -195,29 +208,29 @@ public void testProcessRepeatedly() {
 }
 ```
 
-## Meta-Annotation Support for Testing
+## 11 Meta-Annotation Support for Testing
 
-`@BootstrapWith`
-`@ContextConfiguration`
-`@ContextHierarchy`
-`@ActiveProfiles`
-`@TestPropertySource`
-`@DirtiesContext`
-`@WebAppConfiguration`
-`@TestExecutionListeners`
-`@Transactional`
-`@BeforeTransaction`
-`@AfterTransaction`
-`@Commit`
-`@Rollback`
-`@Sql`
-`@SqlConfig`
-`@SqlGroup`
-`@Repeat`
-`@Timed`
-`@IfProfileValue`
-`@ProfileValueSourceConfiguration`
+- `@BootstrapWith`
+- `@ContextConfiguration`
+- `@ContextHierarchy`
+- `@ActiveProfiles`
+- `@TestPropertySource`
+- `@DirtiesContext`
+- `@WebAppConfiguration`
+- `@TestExecutionListeners`
+- `@Transactional`
+- `@BeforeTransaction`
+- `@AfterTransaction`
+- `@Commit`
+- `@Rollback`
+- `@Sql`
+- `@SqlConfig`
+- `@SqlGroup`
+- `@Repeat`
+- `@Timed`
+- `@IfProfileValue`
+- `@ProfileValueSourceConfiguration`
 
 > For example, if we discover that we are repeating the following configuration across our JUnit 4 based test suite…​
 
-## Key abstractions
+## 12 Key abstractions
