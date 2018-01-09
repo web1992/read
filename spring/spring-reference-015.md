@@ -1,17 +1,17 @@
 # Integration Testing
 
--01 [Goals of Integration Testing](#01-goals-of-integration-testing)
--02 [Context management and cachin](#02-context-management-and-cachin)
--03 [Dependency Injection of test fixtures](#03-dependency-injection-of-test-fixtures)
--04 [Transaction management](#04-transaction-management)
--05 [Support classes for integration testing](#05-support-classes-for-integration-testing)
--06 [JDBC Testing Support](#06-jdbc-testing-support)
--07 [Annotations](#07-annotations)
--08 [Spring Testing Annotations](#08-spring-testing-annotations)
--09 [Standard Annotation Support](#09-standard-annotation-support)
--10 [Spring JUnit 4 Testing Annotations](#10-spring-junit-4-testing-annotations)
--11 [Meta-Annotation Support for Testing](#11-meta-annotation-support-for-testing)
--12 [Key abstractions](#12-key-abstractions)
+- 01 [Goals of Integration Testing](#01-goals-of-integration-testing)
+- 02 [Context management and cachin](#02-context-management-and-cachin)
+- 03 [Dependency Injection of test fixtures](#03-dependency-injection-of-test-fixtures)
+- 04 [Transaction management](#04-transaction-management)
+- 05 [Support classes for integration testing](#05-support-classes-for-integration-testing)
+- 06 [JDBC Testing Support](#06-jdbc-testing-support)
+- 07 [Annotations](#07-annotations)
+- 08 [Spring Testing Annotations](#08-spring-testing-annotations)
+- 09 [Standard Annotation Support](#09-standard-annotation-support)
+- 10 [Spring JUnit 4 Testing Annotations](#10-spring-junit-4-testing-annotations)
+- 11 [Meta-Annotation Support for Testing](#11-meta-annotation-support-for-testing)
+- 12 [Key abstractions](#12-key-abstractions)
 
 ## 01 Goals of Integration Testing
 
