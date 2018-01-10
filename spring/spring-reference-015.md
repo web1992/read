@@ -234,3 +234,84 @@ public void testProcessRepeatedly() {
 > For example, if we discover that we are repeating the following configuration across our JUnit 4 based test suite…​
 
 ## 12 Key abstractions
+
+TestContextManager
+TestContext
+TestExecutionListener
+SmartContextLoader
+
+## 13 Context management
+
+Context configuration with XML resources
+```java
+@RunWith(SpringRunner.class)
+// ApplicationContext will be loaded from "/app-config.xml" and
+// "/test-config.xml" in the root of the classpath
+@ContextConfiguration(locations={"/app-config.xml", "/test-config.xml"})
+public class MyTest {
+    // class body...
+}
+```
+
+Context configuration with Groovy scripts
+
+```java
+@RunWith(SpringRunner.class)
+// ApplicationContext will be loaded from "/AppConfig.groovy" and
+// "/TestConfig.groovy" in the root of the classpath
+@ContextConfiguration({"/AppConfig.groovy", "/TestConfig.Groovy"})
+public class MyTest {
+    // class body...
+}
+```
+
+Context configuration with annotated classes
+
+```java
+@RunWith(SpringRunner.class)
+// ApplicationContext will be loaded from AppConfig and TestConfig
+@ContextConfiguration(classes = {AppConfig.class, TestConfig.class})
+public class MyTest {
+    // class body...
+}
+```
+
+@Configuration
+
+```java
+@RunWith(SpringRunner.class)
+// ApplicationContext will be loaded from the
+// static nested Config class
+@ContextConfiguration
+public class OrderServiceTest {
+
+    @Configuration
+    static class Config {
+
+        // this bean will be injected into the OrderServiceTest class
+        @Bean
+        public OrderService orderService() {
+            OrderService orderService = new OrderServiceImpl();
+            // set properties, etc.
+            return orderService;
+        }
+    }
+
+    @Autowired
+    private OrderService orderService;
+
+    @Test
+    public void testOrderService() {
+        // test the orderService
+    }
+
+}
+```
+
+## 14 Context configuration inheritance
+
+## 15 Mixing XML, Groovy scripts, and annotated classes
+
+If you want to use resource locations (e.g., XML or Groovy) and @Configuration classes to configure your tests, you will have to pick one as the entry point, and that one will have to include or import the other. For example, in XML or Groovy scripts you can include @Configuration classes via component scanning or define them as normal Spring beans; whereas, in a @Configuration class you can use @ImportResource to import XML configuration files or Groovy scripts. Note that this behavior is semantically equivalent to how you configure your application in production: in production configuration you will define either a set of XML or Groovy resource locations or a set of @Configuration classes that your production ApplicationContext will be loaded from, but you still have the freedom to include or import the other type of configuration.
+
+## 16 Context configuration with context initializers
