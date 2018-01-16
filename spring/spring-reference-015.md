@@ -315,3 +315,28 @@ public class OrderServiceTest {
 If you want to use resource locations (e.g., XML or Groovy) and @Configuration classes to configure your tests, you will have to pick one as the entry point, and that one will have to include or import the other. For example, in XML or Groovy scripts you can include @Configuration classes via component scanning or define them as normal Spring beans; whereas, in a @Configuration class you can use @ImportResource to import XML configuration files or Groovy scripts. Note that this behavior is semantically equivalent to how you configure your application in production: in production configuration you will define either a set of XML or Groovy resource locations or a set of @Configuration classes that your production ApplicationContext will be loaded from, but you still have the freedom to include or import the other type of configuration.
 
 ## 16 Context configuration with context initializers
+
+## 17 Context configuration inheritance
+
+inheritLocations
+
+inheritInitializers
+
+```java
+RunWith(SpringRunner.class)
+// ApplicationContext will be loaded from "/base-config.xml"
+// in the root of the classpath
+@ContextConfiguration("/base-config.xml")
+public class BaseTest {
+    // class body...
+}
+
+// ApplicationContext will be loaded from "/base-config.xml" and
+// "/extended-config.xml" in the root of the classpath
+@ContextConfiguration("/extended-config.xml")
+public class ExtendedTest extends BaseTest {
+    // class body...
+}
+```
+
+## 18 Context configuration with environment profiles
