@@ -340,3 +340,7 @@ public class ExtendedTest extends BaseTest {
 ```
 
 ## 18 Context configuration with environment profiles
+
+## 19 Loading a WebApplicationContext
+
+This is interpreted as a path relative to the root of your JVM (i.e., normally the path to your project). If you’re familiar with the directory structure of a web application in a Maven project, you’ll know that "src/main/webapp" is the default location for the root of your WAR. If you need to override this default, simply provide an alternate path to the @WebAppConfiguration annotation (e.g., @WebAppConfiguration("src/test/webapp")). If you wish to reference a base resource path from the classpath instead of the file system, just use Spring’s classpath: prefix.
