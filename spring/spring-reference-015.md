@@ -345,7 +345,7 @@ public class ExtendedTest extends BaseTest {
 
 This is interpreted as a path relative to the root of your JVM (i.e., normally the path to your project). If you’re familiar with the directory structure of a web application in a Maven project, you’ll know that "src/main/webapp" is the default location for the root of your WAR. If you need to override this default, simply provide an alternate path to the @WebAppConfiguration annotation (e.g., @WebAppConfiguration("src/test/webapp")). If you wish to reference a base resource path from the classpath instead of the file system, just use Spring’s classpath: prefix.
 
-## Context caching
+## 20 Context caching
 
 缓存费时的`ApplicationContext`
 
@@ -354,3 +354,9 @@ This is interpreted as a path relative to the root of your JVM (i.e., normally t
 The Spring TestContext framework stores application contexts in a static cache. This means that the context is literally stored in a static variable. In other words, if tests execute in separate processes the static cache will be cleared between each test execution, and this will effectively disable the caching mechanism.
 
 To benefit from the caching mechanism, all tests must run within the same process or test suite. This can be achieved by executing all tests as a group within an IDE. Similarly, when executing tests with a build framework such as Ant, Maven, or Gradle it is important to make sure that the build framework does not fork between tests. For example, if the forkMode for the Maven Surefire plug-in is set to always or pertest, the TestContext framework will not be able to cache application contexts between test classes and the build process will run significantly slower as a result.
+
+## 21 Context hierarchies
+
+[Link](https://docs.spring.io/spring/docs/4.3.x/spring-framework-reference/htmlsingle/#testcontext-ctx-management-ctx-hierarchies)
+
+When writing integration tests that rely on a loaded Spring ApplicationContext, it is often sufficient to test against a single context; however, there are times when it is beneficial or even necessary to test against a hierarchy of ApplicationContexts. For example, if you are developing a Spring MVC web application you will typically have a root WebApplicationContext loaded via Spring’s ContextLoaderListener and a child WebApplicationContext loaded via Spring’s DispatcherServlet. This results in a parent-child context hierarchy where shared components and infrastructure configuration are declared in the root context and consumed in the child context by web-specific components. Another use case can be found in Spring Batch applications where you often have a parent context that provides configuration for shared batch infrastructure and a child context for the configuration of a specific batch job.
