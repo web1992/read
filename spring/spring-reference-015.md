@@ -360,3 +360,121 @@ To benefit from the caching mechanism, all tests must run within the same proces
 [Link](https://docs.spring.io/spring/docs/4.3.x/spring-framework-reference/htmlsingle/#testcontext-ctx-management-ctx-hierarchies)
 
 When writing integration tests that rely on a loaded Spring ApplicationContext, it is often sufficient to test against a single context; however, there are times when it is beneficial or even necessary to test against a hierarchy of ApplicationContexts. For example, if you are developing a Spring MVC web application you will typically have a root WebApplicationContext loaded via Spring’s ContextLoaderListener and a child WebApplicationContext loaded via Spring’s DispatcherServlet. This results in a parent-child context hierarchy where shared components and infrastructure configuration are declared in the root context and consumed in the child context by web-specific components. Another use case can be found in Spring Batch applications where you often have a parent context that provides configuration for shared batch infrastructure and a child context for the configuration of a specific batch job.
+
+## 22 Dependency injection of test fixtures
+
+`DependencyInjectionTestExecutionListener`
+
+- @Autowired and @Qualifier
+
+- @Inject and @Named
+
+## 23 Testing request and session scoped beans
+
+- `MockHttpServletRequest`
+
+- `MockHttpSession`
+
+## 24 Transaction management
+
+`TransactionalTestExecutionListener`
+
+By default, test transactions will be automatically rolled back after completion of the test; however, transactional commit and rollback behavior can be configured declaratively via the `@Commit` and `@Rollback` annotations. See the corresponding entries in the annotation support section for further details.
+
+Demonstration of all transaction-related annotations
+
+```java
+@RunWith(SpringRunner.class)
+@ContextConfiguration
+@Transactional(transactionManager = "txMgr")
+@Commit
+public class FictitiousTransactionalTest {
+
+    @BeforeTransaction
+    void verifyInitialDatabaseState() {
+        // logic to verify the initial state before a transaction is started
+    }
+
+    @Before
+    public void setUpTestDataWithinTransaction() {
+        // set up test data within the transaction
+    }
+
+    @Test
+    // overrides the class-level @Commit setting
+    @Rollback
+    public void modifyDatabaseWithinTransaction() {
+        // logic which uses the test data and modifies database state
+    }
+
+    @After
+    public void tearDownWithinTransaction() {
+        // execute "tear down" logic within the transaction
+    }
+
+    @AfterTransaction
+    void verifyFinalDatabaseState() {
+        // logic to verify the final state after transaction has rolled back
+    }
+
+}
+```
+
+## 25 TestContext Framework support classes
+
+Spring JUnit 4 Runner
+
+`@RunWith(SpringJUnit4ClassRunner.class)` `@RunWith(SpringRunner.class)`
+
+The Spring TestContext Framework offers full integration with JUnit 4 through a custom runner (supported on JUnit 4.12 or higher). By annotating test classes with @RunWith(SpringJUnit4ClassRunner.class) or the shorter @RunWith(SpringRunner.class) variant, developers can implement standard JUnit 4 based unit and integration tests and simultaneously reap the benefits of the TestContext framework such as support for loading application contexts, dependency injection of test instances, transactional test method execution, and so on. If you would like to use the Spring TestContext Framework with an alternative runner such as JUnit 4’s Parameterized or third-party runners such as the MockitoJUnitRunner, you may optionally use Spring’s support for JUnit rules instead.
+
+```java
+@RunWith(SpringRunner.class)
+@TestExecutionListeners({})
+public class SimpleTest {
+
+    @Test
+    public void testMethod() {
+        // execute test logic...
+    }
+}
+```
+
+Spring JUnit 4 Rules
+
+In order to support the full functionality of the TestContext framework, a SpringClassRule must be combined with a SpringMethodRule. The following example demonstrates the proper way to declare these rules in an integration test.
+
+```java
+// Optionally specify a non-Spring Runner via @RunWith(...)
+@ContextConfiguration
+public class IntegrationTest {
+
+    @ClassRule
+    public static final SpringClassRule springClassRule = new SpringClassRule();
+
+    @Rule
+    public final SpringMethodRule springMethodRule = new SpringMethodRule();
+
+    @Test
+    public void testMethod() {
+        // execute test logic...
+    }
+}
+```
+
+JUnit 4 support classes
+
+- `AbstractJUnit4SpringContextTests` -> `ApplicationContext`
+- `AbstractTransactionalJUnit4SpringContextTests` -> `javax.sql.DataSource` -> `PlatformTransactionManager` -> `ApplicationContext` -> `jdbcTemplate`
+
+TestNG support classes
+
+[link](https://docs.spring.io/spring/docs/4.3.x/spring-framework-reference/htmlsingle/#testcontext-support-classes-testng)
+
+## 26 Spring MVC Test Framework
+
+The Spring MVC Test framework provides first class support for testing Spring MVC code using a fluent API that can be used with JUnit, TestNG, or any other testing framework. It’s built on the Servlet API mock objects from the spring-test module and hence does not use a running Servlet container. It uses the DispatcherServlet to provide full Spring MVC runtime behavior and provides support for loading actual Spring configuration with the TestContext framework in addition to a standalone mode in which controllers may be instantiated manually and tested one at a time.
+
+Spring MVC Test also provides client-side support for testing code that uses the RestTemplate. Client-side tests mock the server responses and also do not use a running server.
+
+[Differences between Out-of-Container and End-to-End Integration Tests](https://docs.spring.io/spring/docs/4.3.x/spring-framework-reference/htmlsingle/#spring-mvc-test-vs-end-to-end-integration-tests)
