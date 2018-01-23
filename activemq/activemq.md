@@ -8,7 +8,7 @@
 - [jdbc-master-slave](http://activemq.apache.org/jdbc-master-slave.html)
 - [failover-transport-reference](http://activemq.apache.org/failover-transport-reference.html)
 - [exclusive-consumer](http://activemq.apache.org/exclusive-consumer.html)
-= [message-groups](http://activemq.apache.org/message-groups.html)
+- [message-groups](http://activemq.apache.org/message-groups.html)
 
 producers
 
