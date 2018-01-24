@@ -26,13 +26,13 @@
 - 24 [Transaction management](#24-transaction-management)
 - 25 [TestContext Framework support classes](#25-testcontext-framework-support-classes)
 - 26 [Spring MVC Test Framework](#26-spring-mvc-test-framework)
-  - [26.1 Server-Side Tests](#26.1-server-side-tests)
-  - [26.2 Performing requests](#26.2-performing-requests)
-  - [26.3 Defining expectations](#26.3-defining-expectations)
-  - [26.4 Filter Registrations](#26.4-filter-registrations)
-  - [26.5 Differences between Out-of-Container and End-to-End Integration Tests](#26.5-differences-between-out-of-container-and-end-to-end-integration-tests)
-  - [26.6 Client-Side REST Tests](#26.6-client-side-rest-tests)
-  - [26.7 HtmlUnit Integration](#26.7-htmlunit-integration)
+  - [26.1 Server-Side Tests](#261-server-side-tests)
+  - [26.2 Performing requests](#262-performing-requests)
+  - [26.3 Defining expectations](#263-defining-expectations)
+  - [26.4 Filter Registrations](#264-filter-registrations)
+  - [26.5 Differences between Out-of-Container and End-to-End Integration Tests](#265-differences-between-out-of-container-and-end-to-end-integration-tests)
+  - [26.6 Client-Side REST Tests](#266-client-side-rest-tests)
+  - [26.7 HtmlUnit Integration](#267-htmlunit-integration)
 
 ## 01 Goals of Integration Testing
 
