@@ -12,6 +12,20 @@
 - 10 [Spring JUnit 4 Testing Annotations](#10-spring-junit-4-testing-annotations)
 - 11 [Meta-Annotation Support for Testing](#11-meta-annotation-support-for-testing)
 - 12 [Key abstractions](#12-key-abstractions)
+- [13 Context management](#13-context-management)
+- [14 Context configuration inheritance](#14-context-configuration-inheritance)
+- [15 Mixing XML, Groovy scripts, and annotated classes](#15-mixing-xml-groovy-scripts-and-annotated-classes)
+- [16 Context configuration with context initializers](#16-context-configuration-with-context-initializers)
+- [17 Context configuration inheritance](#17-context-configuration-inheritance)
+- [18 Context configuration with environment profiles](#18-context-configuration-with-environment-profiles)
+- [19 Loading a WebApplicationContext](#19-loading-a-webapplicationcontext)
+- [20 Context caching](#20-context-caching)
+- [21 Context hierarchies](#21-context-hierarchies)
+- [22 Dependency injection of test fixtures](#22-dependency-injection-of-test-fixtures)
+- [23 Testing request and session scoped beans](#23-testing-request-and-session-scoped-beans)
+- [24 Transaction management](#24-transaction-management)
+- [25 TestContext Framework support classes](#25-testcontext-framework-support-classes)
+- [26 Spring MVC Test Framework](#26-spring-mvc-test-framework)
 
 ## 01 Goals of Integration Testing
 
@@ -235,14 +249,15 @@ public void testProcessRepeatedly() {
 
 ## 12 Key abstractions
 
-TestContextManager
-TestContext
-TestExecutionListener
-SmartContextLoader
+`TestContextManager`
+`TestContext`
+`TestExecutionListener`
+`SmartContextLoader`
 
 ## 13 Context management
 
 Context configuration with XML resources
+
 ```java
 @RunWith(SpringRunner.class)
 // ApplicationContext will be loaded from "/app-config.xml" and
