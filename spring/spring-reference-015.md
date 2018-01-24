@@ -12,20 +12,27 @@
 - 10 [Spring JUnit 4 Testing Annotations](#10-spring-junit-4-testing-annotations)
 - 11 [Meta-Annotation Support for Testing](#11-meta-annotation-support-for-testing)
 - 12 [Key abstractions](#12-key-abstractions)
-- [13 Context management](#13-context-management)
-- [14 Context configuration inheritance](#14-context-configuration-inheritance)
-- [15 Mixing XML, Groovy scripts, and annotated classes](#15-mixing-xml-groovy-scripts-and-annotated-classes)
-- [16 Context configuration with context initializers](#16-context-configuration-with-context-initializers)
-- [17 Context configuration inheritance](#17-context-configuration-inheritance)
-- [18 Context configuration with environment profiles](#18-context-configuration-with-environment-profiles)
-- [19 Loading a WebApplicationContext](#19-loading-a-webapplicationcontext)
-- [20 Context caching](#20-context-caching)
-- [21 Context hierarchies](#21-context-hierarchies)
-- [22 Dependency injection of test fixtures](#22-dependency-injection-of-test-fixtures)
-- [23 Testing request and session scoped beans](#23-testing-request-and-session-scoped-beans)
-- [24 Transaction management](#24-transaction-management)
-- [25 TestContext Framework support classes](#25-testcontext-framework-support-classes)
-- [26 Spring MVC Test Framework](#26-spring-mvc-test-framework)
+- 13 [Context management](#13-context-management)
+- 14 [Context configuration inheritance](#14-context-configuration-inheritance)
+- 15 [Mixing XML, Groovy scripts, and annotated classes](#15-mixing-xml-groovy-scripts-and-annotated-classes)
+- 16 [Context configuration with context initializers](#16-context-configuration-with-context-initializers)
+- 17 [Context configuration inheritance](#17-context-configuration-inheritance)
+- 18 [Context configuration with environment profiles](#18-context-configuration-with-environment-profiles)
+- 19 [Loading a WebApplicationContext](#19-loading-a-webapplicationcontext)
+- 20 [Context caching](#20-context-caching)
+- 21 [Context hierarchies](#21-context-hierarchies)
+- 22 [Dependency injection of test fixtures](#22-dependency-injection-of-test-fixtures)
+- 23 [Testing request and session scoped beans](#23-testing-request-and-session-scoped-beans)
+- 24 [Transaction management](#24-transaction-management)
+- 25 [TestContext Framework support classes](#25-testcontext-framework-support-classes)
+- 26 [Spring MVC Test Framework](#26-spring-mvc-test-framework)
+  - [26.1 Server-Side Tests](#26.1-server-side-tests)
+  - [26.2 Performing requests](#26.2-performing-requests)
+  - [26.3 Defining expectations](#26.3-defining-expectations)
+  - [26.4 Filter Registrations](#26.4-filter-registrations)
+  - [26.5 Differences between Out-of-Container and End-to-End Integration Tests](#26.5-differences-between-out-of-container-and-end-to-end-integration-tests)
+  - [26.6 Client-Side REST Tests](#26.6-client-side-rest-tests)
+  - [26.7 HtmlUnit Integration](#26.7-htmlunit-integration)
 
 ## 01 Goals of Integration Testing
 
@@ -493,3 +500,140 @@ The Spring MVC Test framework provides first class support for testing Spring MV
 Spring MVC Test also provides client-side support for testing code that uses the RestTemplate. Client-side tests mock the server responses and also do not use a running server.
 
 [Differences between Out-of-Container and End-to-End Integration Tests](https://docs.spring.io/spring/docs/4.3.x/spring-framework-reference/htmlsingle/#spring-mvc-test-vs-end-to-end-integration-tests)
+
+## 26.1 Server-Side Tests
+
+> The goal of Spring MVC Test is to provide an effective way for testing controllers by performing requests and generating responses through the actual `DispatcherServlet`.
+
+Spring MVC Test builds on the familiar "mock" implementations of the Servlet API available in the spring-test module. This allows performing requests and generating responses without the need for running in a Servlet container. For the most part everything should work as it does at runtime with a few notable exceptions as explained in the section called “Differences between Out-of-Container and End-to-End Integration Tests”. Here is a JUnit 4 based example of using Spring MVC Test:
+
+```java
+// Static Imports
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+
+@RunWith(SpringRunner.class)
+@WebAppConfiguration
+@ContextConfiguration("test-servlet-context.xml")
+public class ExampleTests {
+
+    @Autowired
+    private WebApplicationContext wac;
+
+    private MockMvc mockMvc;
+
+    @Before
+    public void setup() {
+        this.mockMvc = MockMvcBuilders.webAppContextSetup(this.wac).build();
+        // add controller
+        // this.mockMvc = MockMvcBuilders.standaloneSetup(new AccountController()).build();
+    }
+
+    @Test
+    public void getAccount() throws Exception {
+        this.mockMvc.perform(get("/accounts/1").accept(MediaType.parseMediaType("application/json;charset=UTF-8")))
+            .andExpect(status().isOk())
+            .andExpect(content().contentType("application/json"))
+            .andExpect(jsonPath("$.name").value("Lee"));
+    }
+}
+```
+
+## 26.2 Performing Requests
+
+[#Performing Requests](https://docs.spring.io/spring/docs/4.3.x/spring-framework-reference/htmlsingle/#spring-mvc-test-server-performing-requests)
+
+It’s easy to perform requests using any HTTP method:
+
+```java
+mockMvc.perform(post("/hotels/{id}", 42).accept(MediaType.APPLICATION_JSON));
+```
+
+You can also perform file upload requests that internally use MockMultipartHttpServletRequest so that there is no actual parsing of a multipart request but rather you have to set it up:
+
+```java
+mockMvc.perform(fileUpload("/doc").file("a1", "ABC".getBytes("UTF-8")));
+```
+
+You can specify query parameters in URI template style:
+
+```java
+mockMvc.perform(get("/hotels?foo={foo}", "bar"));
+```
+
+Or you can add Servlet request parameters representing either query of form parameters:
+
+```java
+mockMvc.perform(get("/hotels").param("foo", "bar"));
+```
+
+If application code relies on Servlet request parameters and doesn’t check the query string explicitly (as is most often the case) then it doesn’t matter which option you use. Keep in mind however that query params provided with the URI template will be decoded while request parameters provided through the param(…​) method are expected to already be decoded.
+
+In most cases it’s preferable to leave out the context path and the Servlet path from the request URI. If you must test with the full request URI, be sure to set the contextPath and servletPath accordingly so that request mappings will work:
+
+```java
+mockMvc.perform(get("/app/main/hotels/{id}").contextPath("/app").servletPath("/main"))
+```
+
+Looking at the above example, it would be cumbersome to set the contextPath and servletPath with every performed request. Instead you can set up default request properties:
+
+```java
+public class MyWebTests {
+
+    private MockMvc mockMvc;
+
+    @Before
+    public void setup() {
+        mockMvc = standaloneSetup(new AccountController())
+            .defaultRequest(get("/")
+            .contextPath("/app").servletPath("/main")
+            .accept(MediaType.APPLICATION_JSON).build();
+    }
+```
+
+The above properties will affect every request performed through the MockMvc instance. If the same property is also specified on a given request, it overrides the default value. That is why the HTTP method and URI in the default request don’t matter since they must be specified on every request.
+
+## 26.3 Defining Expectations
+
+`andExpect`
+
+```java
+mockMvc.perform(get("/accounts/1")).andExpect(status().isOk());
+```
+
+`print()` 打印log
+
+```java
+mockMvc.perform(post("/persons"))
+    .andDo(print())
+    .andExpect(status().isOk())
+    .andExpect(model().attributeHasErrors("person"));
+```
+
+`.andReturn()`
+
+```java
+MvcResult mvcResult = mockMvc.perform(post("/persons")).andExpect(status().isOk()).andReturn();
+```
+
+## 26.4 Filter Registrations
+
+When setting up a MockMvc instance, you can register one or more Servlet Filter instances:
+
+```java
+mockMvc = standaloneSetup(new PersonController()).addFilters(new CharacterEncodingFilter()).build();
+```
+
+Registered filters will be invoked through via the MockFilterChain from spring-test, and the last filter will delegate to the DispatcherServlet.
+
+## 26.5 Differences between Out-of-Container and End-to-End Integration Tests
+
+[link](https://docs.spring.io/spring/docs/4.3.x/spring-framework-reference/htmlsingle/#spring-mvc-test-vs-end-to-end-integration-tests)
+
+## 26.6 Client-Side REST Tests
+
+[link](https://docs.spring.io/spring/docs/4.3.x/spring-framework-reference/htmlsingle/#spring-mvc-test-client)
+
+## 26.7 HtmlUnit Integration
+
+[link](https://docs.spring.io/spring/docs/4.3.x/spring-framework-reference/htmlsingle/#spring-mvc-test-server-htmlunit)
