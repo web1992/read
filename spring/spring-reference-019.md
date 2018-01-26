@@ -12,7 +12,7 @@ The value-add provided by the Spring Framework JDBC abstraction is perhaps best 
 
 - `SimpleJdbcInsert` and `SimpleJdbcCall` optimize database metadata to limit the amount of necessary configuration. This approach simplifies coding so that you only need to provide the name of the table or procedure and provide a map of parameters matching the column names. This only works if the database provides adequate metadata. If the database doesn’t provide this metadata, you will have to provide explicit configuration of the parameters.
 
--RDBMS Objects including `MappingSqlQuery`, `SqlUpdate` and `StoredProcedure` requires you to create reusable and thread-safe objects during initialization of your data access layer. This approach is modeled after JDO Query wherein you define your query string, declare parameters, and compile the query. Once you do that, execute methods can be called multiple times with various parameter values passed in.
+- RDBMS Objects including `MappingSqlQuery`, `SqlUpdate` and `StoredProcedure` requires you to create reusable and thread-safe objects during initialization of your data access layer. This approach is modeled after JDO Query wherein you define your query string, declare parameters, and compile the query. Once you do that, execute methods can be called multiple times with various parameter values passed in.
 
 ## Package hierarchy
 
@@ -22,3 +22,7 @@ The value-add provided by the Spring Framework JDBC abstraction is perhaps best 
 - `org.springframework.jdbc.datasource`
 - `org.springframework.jdbc.object`
 - `org.springframework.jdbc.support`
+
+## JdbcTemplate
+
+[link](https://docs.spring.io/spring/docs/4.3.x/spring-framework-reference/htmlsingle/#jdbc-JdbcTemplate)
