@@ -122,3 +122,4 @@ C3P0 configuration
 - DriverManagerDataSource -> for test 测试使用
 - TransactionAwareDataSourceProxy
 - DataSourceTransactionManager -> support timeout 
+- NativeJdbcExtractor
