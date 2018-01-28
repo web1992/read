@@ -123,3 +123,14 @@ C3P0 configuration
 - TransactionAwareDataSourceProxy
 - DataSourceTransactionManager -> support timeout 
 - NativeJdbcExtractor
+ - SimpleNativeJdbcExtractor
+ - C3P0NativeJdbcExtractor
+ - CommonsDbcpNativeJdbcExtractor
+ - JBossNativeJdbcExtractor
+ - WebLogicNativeJdbcExtractor
+ - WebSphereNativeJdbcExtractor
+ - XAPoolNativeJdbcExtractor
+
+ ## JDBC batch operations
+
+可以参考Spring 如何进行处理的
