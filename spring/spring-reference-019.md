@@ -26,3 +26,99 @@ The value-add provided by the Spring Framework JDBC abstraction is perhaps best 
 ## JdbcTemplate
 
 [link](https://docs.spring.io/spring/docs/4.3.x/spring-framework-reference/htmlsingle/#jdbc-JdbcTemplate)
+
+
+queryObject
+
+```java
+import javax.sql.DataSource;
+import org.springframework.jdbc.core.JdbcTemplate;
+
+public class RunAQuery {
+
+    private JdbcTemplate jdbcTemplate;
+
+    public void setDataSource(DataSource dataSource) {
+        this.jdbcTemplate = new JdbcTemplate(dataSource);
+    }
+
+    public int getCount() {
+        return this.jdbcTemplate.queryForObject("select count(*) from mytable", Integer.class);
+    }
+
+    public String getName() {
+        return this.jdbcTemplate.queryForObject("select name from mytable", String.class);
+    }
+}
+```
+
+queryList
+
+````java
+private JdbcTemplate jdbcTemplate;
+
+public void setDataSource(DataSource dataSource) {
+    this.jdbcTemplate = new JdbcTemplate(dataSource);
+}
+
+public List<Map<String, Object>> getList() {
+    return this.jdbcTemplate.queryForList("select * from mytable");
+}
+```
+
+update
+
+```java
+import javax.sql.DataSource;
+
+import org.springframework.jdbc.core.JdbcTemplate;
+
+public class ExecuteAnUpdate {
+
+    private JdbcTemplate jdbcTemplate;
+
+    public void setDataSource(DataSource dataSource) {
+        this.jdbcTemplate = new JdbcTemplate(dataSource);
+    }
+
+    public void setName(int id, String name) {
+        this.jdbcTemplate.update("update mytable set name = ? where id = ?", name, id);
+    }
+}
+```
+
+## Controlling database connections
+
+DBCP configuration
+
+```xml
+<bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
+    <property name="driverClassName" value="${jdbc.driverClassName}"/>
+    <property name="url" value="${jdbc.url}"/>
+    <property name="username" value="${jdbc.username}"/>
+    <property name="password" value="${jdbc.password}"/>
+</bean>
+
+<context:property-placeholder location="jdbc.properties"/>
+```
+
+C3P0 configuration
+
+```xml
+<bean id="dataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource" destroy-method="close">
+    <property name="driverClass" value="${jdbc.driverClassName}"/>
+    <property name="jdbcUrl" value="${jdbc.url}"/>
+    <property name="user" value="${jdbc.username}"/>
+    <property name="password" value="${jdbc.password}"/>
+</bean>
+
+<context:property-placeholder location="jdbc.properties"/>
+```
+
+- DataSourceUtils
+- SmartDataSource
+- AbstractDataSource -> 抽象
+- SingleConnectionDataSource
+- DriverManagerDataSource -> for test 测试使用
+- TransactionAwareDataSourceProxy
+- DataSourceTransactionManager -> support timeout 
