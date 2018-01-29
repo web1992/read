@@ -3,9 +3,10 @@
 -01 [Choosing an approach for JDBC database access](#01-choosing-an-approach-for-jdbc-database-access)
 -02 [Package hierarchy](#02-package-hierarchy)
 -03 [JdbcTemplate](#03-jdbcTemplate)
--04 [NamedParameterJdbcTemplate](#04-namedparameterjdbctemplate)
--05 [Controlling database connection](#04-controlling-database-connection)
--06 [JDBC batch operations](#05-jdbc-batch-operations)
+-04 [JdbcTemplate best practices](#04-jdbctemplate-best-practices)
+-05 [NamedParameterJdbcTemplate](#05-namedparameterjdbctemplate)
+-06 [Controlling database connection](#06-controlling-database-connection)
+-07 [JDBC batch operations](#07-jdbc-batch-operations)
 
 The value-add provided by the Spring Framework JDBC abstraction is perhaps best shown by the sequence of actions outlined in the table below. The table shows what actions Spring will take care of and which actions are the responsibility of you, the application developer.
 
@@ -32,7 +33,7 @@ The value-add provided by the Spring Framework JDBC abstraction is perhaps best 
 
 ## 03 JdbcTemplate
 
-[link](https://docs.spring.io/spring/docs/4.3.x/spring-framework-reference/htmlsingle/#jdbc-JdbcTemplate)
+[Link](https://docs.spring.io/spring/docs/4.3.x/spring-framework-reference/htmlsingle/#jdbc-JdbcTemplate)
 
 queryObject
 
@@ -93,13 +94,34 @@ public class ExecuteAnUpdate {
 }
 ```
 
-## 04 NamedParameterJdbcTemplate
+## 04 JdbcTemplate best practices
+
+[Link](https://docs.spring.io/spring/docs/4.3.x/spring-framework-reference/htmlsingle/#jdbc-JdbcTemplate-idioms)
+
+Instances of the JdbcTemplate class are threadsafe once configured. This is important because it means that you can configure a single instance of a JdbcTemplate and then safely inject this shared reference into multiple DAOs (or repositories). The JdbcTemplate is stateful, in that it maintains a reference to a DataSource, but this state is not conversational state.
+
+A common practice when using the JdbcTemplate class (and the associated NamedParameterJdbcTemplate classes) is to configure a DataSource in your Spring configuration file, and then dependency-inject that shared DataSource bean into your DAO classes; the JdbcTemplate is created in the setter for the DataSource. This leads to DAOs that look in part like the following:
+
+```java
+public class JdbcCorporateEventDao implements CorporateEventDao {
+
+    private JdbcTemplate jdbcTemplate;
+
+    public void setDataSource(DataSource dataSource) {
+        this.jdbcTemplate = new JdbcTemplate(dataSource);
+    }
+
+    // JDBC-backed implementations of the methods on the CorporateEventDao follow...
+}
+```
+
+## 05 NamedParameterJdbcTemplate
 
 Remember that the NamedParameterJdbcTemplate class wraps a classic JdbcTemplate template; if you need access to the wrapped JdbcTemplate instance to access functionality only present in the JdbcTemplate class, you can use the getJdbcOperations() method to access the wrapped JdbcTemplate through the JdbcOperations interface.
 
 See also [the section called “JdbcTemplate best practices”](#https://docs.spring.io/spring/docs/4.3.x/spring-framework-reference/htmlsingle/#jdbc-JdbcTemplate-idioms) for guidelines on using the NamedParameterJdbcTemplate class in the context of an application.
 
-## 05 Controlling database connections
+## 06 Controlling database connections
 
 DBCP configuration
 
@@ -143,7 +165,7 @@ C3P0 configuration
   - WebSphereNativeJdbcExtractor
   - XAPoolNativeJdbcExtractor
 
-## 06 JDBC batch operations
+## 07 JDBC batch operations
 
 可以参考Spring 如何进行处理的
 
