@@ -1,12 +1,12 @@
 # Data access with JDBC
 
--01 [Choosing an approach for JDBC database access](#01-choosing-an-approach-for-jdbc-database-access)
--02 [Package hierarchy](#02-package-hierarchy)
--03 [JdbcTemplate](#03-jdbcTemplate)
--04 [JdbcTemplate best practices](#04-jdbctemplate-best-practices)
--05 [NamedParameterJdbcTemplate](#05-namedparameterjdbctemplate)
--06 [Controlling database connection](#06-controlling-database-connection)
--07 [JDBC batch operations](#07-jdbc-batch-operations)
+- 01 [Choosing an approach for JDBC database access](#01-choosing-an-approach-for-jdbc-database-access)
+- 02 [Package hierarchy](#02-package-hierarchy)
+- 03 [JdbcTemplate](#03-jdbcTemplate)
+- 04 [JdbcTemplate best practices](#04-jdbctemplate-best-practices)
+- 05 [NamedParameterJdbcTemplate](#05-namedparameterjdbctemplate)
+- 06 [Controlling database connection](#06-controlling-database-connection)
+- 07 [JDBC batch operations](#07-jdbc-batch-operations)
 
 The value-add provided by the Spring Framework JDBC abstraction is perhaps best shown by the sequence of actions outlined in the table below. The table shows what actions Spring will take care of and which actions are the responsibility of you, the application developer.
 
