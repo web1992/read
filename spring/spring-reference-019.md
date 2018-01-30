@@ -174,3 +174,71 @@ C3P0 configuration
 - Basic batch operations with the JdbcTemplate -> dbcTemplate.batchUpdate + BatchPreparedStatementSetter
 - Batch operations with a List of objects
 - Batch operations with multiple batches
+
+## 08 Modeling JDBC operations as Java objects
+
+- SqlQuery 使用 `MappingSqlQuery`代替
+- MappingSqlQuery
+- SqlUpdate
+- StoredProcedure
+
+```java
+public class ActorMappingQuery extends MappingSqlQuery<Actor> {
+
+    public ActorMappingQuery(DataSource ds) {
+        super(ds, "select id, first_name, last_name from t_actor where id = ?");
+        super.declareParameter(new SqlParameter("id", Types.INTEGER));
+        compile();
+    }
+
+    @Override
+    protected Actor mapRow(ResultSet rs, int rowNumber) throws SQLException {
+        Actor actor = new Actor();
+        actor.setId(rs.getLong("id"));
+        actor.setFirstName(rs.getString("first_name"));
+        actor.setLastName(rs.getString("last_name"));
+        return actor;
+    }
+
+}
+```
+
+## 09 Handling BLOB and CLOB objects
+
+[Link](https://docs.spring.io/spring/docs/4.3.x/spring-framework-reference/htmlsingle/#jdbc-lob)
+
+## 10 Embedded database support
+
+- HSQL
+- H2
+- Derby
+
+The `org.springframework.jdbc.datasource.embedded` package provides support for embedded Java database engines. Support for `HSQL`, `H2`, and `Derby` is provided natively. You can also use an extensible API to plug in new embedded database types and DataSource implementations.
+
+```xml
+<jdbc:embedded-database id="dataSource" generate-name="true">
+    <jdbc:script location="classpath:schema.sql"/>
+    <jdbc:script location="classpath:test-data.sql"/>
+</jdbc:embedded-database>
+```
+
+```java
+EmbeddedDatabase db = new EmbeddedDatabaseBuilder()
+		.generateUniqueName(true)
+		.setType(H2)
+		.setScriptEncoding("UTF-8")
+		.ignoreFailedDrops(true)
+		.addScript("schema.sql")
+		.addScripts("user_data.sql", "country_data.sql")
+		.build();
+
+// perform actions against the db (EmbeddedDatabase extends javax.sql.DataSource)
+
+db.shutdown()
+```
+
+## 11 Initialization of other components that depend on the database
+
+如何修改(控制)`spring`的初始化过程
+
+[Link](https://docs.spring.io/spring/docs/4.3.x/spring-framework-reference/htmlsingle/#jdbc-client-component-initialization)
