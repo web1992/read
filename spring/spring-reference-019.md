@@ -8,7 +8,7 @@
 - 06 [Controlling database connection](#06-controlling-database-connection)
 - 07 [JDBC batch operations](#07-jdbc-batch-operations)
 - 08 [Modeling JDBC operations as Java objects](#08-modeling-jdbc-operations-as-java-objects)
-- 09 [Handling BLOB and CLOB objects](09-handling-blob-and-clob-objects)
+- 09 [Handling BLOB and CLOB objects](#09-handling-blob-and-clob-objects)
 - 10 [Embedded database support](#10-embedded-database-support)
 - 11 [Initialization of other components that depend on the database](#11-initialization-of-other-components-that-depend-on-the-database)
 
