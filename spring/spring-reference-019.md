@@ -7,6 +7,10 @@
 - 05 [NamedParameterJdbcTemplate](#05-namedparameterjdbctemplate)
 - 06 [Controlling database connection](#06-controlling-database-connection)
 - 07 [JDBC batch operations](#07-jdbc-batch-operations)
+- 08 [Modeling JDBC operations as Java objects](#08-modeling-jdbc-operations-as-java-objects)
+- 09 [Handling BLOB and CLOB objects](09-handling-blob-and-clob-objects)
+- 10 [Embedded database support](#10-embedded-database-support)
+- 11 [Initialization of other components that depend on the database](#11-initialization-of-other-components-that-depend-on-the-database)
 
 The value-add provided by the Spring Framework JDBC abstraction is perhaps best shown by the sequence of actions outlined in the table below. The table shows what actions Spring will take care of and which actions are the responsibility of you, the application developer.
 
