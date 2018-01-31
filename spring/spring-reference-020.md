@@ -11,3 +11,23 @@ The major goal of Spring’s ORM integration is clear application layering, with
 ## Resource and transaction management
 
 ## Exception translation
+
+## Hibernate
+
+- 20.3.1. SessionFactory setup in a Spring container
+- 20.3.2. Implementing DAOs based on plain Hibernate API
+- 20.3.3. Declarative transaction demarcation
+- 20.3.4. Programmatic transaction demarcation
+- 20.3.5. Transaction management strategies
+- 20.3.6. Comparing container-managed and locally defined resources
+- 20.3.7. Spurious application server warnings with Hibernate
+
+## JDO
+
+- 20.4.1. PersistenceManagerFactory setup
+- 20.4.2. Implementing DAOs based on the plain JDO API
+- 20.4.3. Transaction management
+- 20.4.4. JdoDialect
+
+## JPA
+
