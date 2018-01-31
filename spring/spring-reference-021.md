@@ -13,7 +13,7 @@ Some of the benefits of using Spring for your O/X mapping needs are:
 - [Consistent exception hierarchy](https://docs.spring.io/spring/docs/4.3.x/spring-framework-reference/htmlsingle/#_consistent_exception_hierarchy)
 
 
-> spring object -> xml xml -> object
+> spring object -> xml / xml -> object
 
 As stated in the introduction, a marshaller serializes an object to XML, and an unmarshaller deserializes XML stream to an object. In this section, we will describe the two Spring interfaces used for this purpose.
 
