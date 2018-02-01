@@ -27,4 +27,4 @@ As stated in the introduction, a marshaller serializes an object to XML, and an 
 
 ## XmlMappingException
 
-![](images/oxm-exceptions.png)
+![oxm-exceptions](images/oxm-exceptions.png)

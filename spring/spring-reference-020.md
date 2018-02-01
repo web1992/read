@@ -30,4 +30,3 @@ The major goal of Spring’s ORM integration is clear application layering, with
 - 20.4.4. JdoDialect
 
 ## JPA
-
