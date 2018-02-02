@@ -120,7 +120,50 @@ public class GolfingWebAppInitializer extends AbstractAnnotationConfigDispatcher
 - FlashMapManager
 
 ## Default DispatcherServlet Configuration
-[Section 22.16, “Configuring Spring MVC”]
-(https://docs.spring.io/spring/docs/4.3.x/spring-framework-reference/htmlsingle/#mvc-config)
+
+[Section 22.16, Configuring Spring MVC](https://docs.spring.io/spring/docs/4.3.x/spring-framework-reference/htmlsingle/#mvc-config)
 
 `DispatcherServlet.properties`
+
+## DispatcherServlet initialization parameters
+
+- contextClass
+- contextConfigLocation
+- namespace
+
+## Defining a controller with @Controller
+
+[Link](https://docs.spring.io/spring/docs/4.3.x/spring-framework-reference/htmlsingle/#mvc-ann-controller)
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:p="http://www.springframework.org/schema/p"
+    xmlns:context="http://www.springframework.org/schema/context"
+    xsi:schemaLocation="
+        http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/context
+        http://www.springframework.org/schema/context/spring-context.xsd">
+
+    <context:component-scan base-package="org.springframework.samples.petclinic.web"/>
+
+    <!-- ... -->
+
+</beans>
+```
+## Mapping Requests With @RequestMapping
+
+
+## Composed @RequestMapping Variants
+
+- @GetMapping
+- @PostMapping
+- @PutMapping
+- @DeleteMapping
+- @PatchMapping
+
+## URI Template Patterns
+
+`@PathVariable`
