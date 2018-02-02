@@ -27,9 +27,100 @@ A simple yet powerful JSP tag library known as the Spring tag library that provi
 A JSP form tag library, introduced in Spring 2.0, that makes writing forms in JSP pages much easier. For information on the tag library descriptor, see the appendix entitled Chapter 44, spring-form JSP Tag Library
 Beans whose lifecycle is scoped to the current HTTP request or HTTP Session. This is not a specific feature of Spring MVC itself, but rather of the WebApplicationContext container(s) that Spring MVC uses. These bean scopes are described in Section 7.5.4, “Request, session, global session, application, and WebSocket scopes”
 
-
 - Pluggability of other MVC implementations
 
 ## The DispatcherServlet
 
 ![mvc](images/mvc.png)
+
+> confg
+
+```xml
+<web-app>
+    <servlet>
+        <servlet-name>example</servlet-name>
+        <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
+        <load-on-startup>1</load-on-startup>
+    </servlet>
+
+    <servlet-mapping>
+        <servlet-name>example</servlet-name>
+        <url-pattern>/example/*</url-pattern>
+    </servlet-mapping>
+
+</web-app>
+```
+
+## Typical context hierarchy in Spring Web MVC
+
+![mvc-context-hierarchy](images/mvc-context-hierarchy.png)
+
+## Single root context in Spring Web MVC
+
+![Single root context in Spring Web MVC](images/mvc-root-context.png)
+
+This can be configured by setting an empty contextConfigLocation servlet init parameter, as shown below
+
+```xml
+<web-app>
+    <context-param>
+        <param-name>contextConfigLocation</param-name>
+        <param-value>/WEB-INF/root-context.xml</param-value>
+    </context-param>
+    <servlet>
+        <servlet-name>dispatcher</servlet-name>
+        <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
+        <init-param>
+            <param-name>contextConfigLocation</param-name>
+            <param-value></param-value>
+        </init-param>
+        <load-on-startup>1</load-on-startup>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>dispatcher</servlet-name>
+        <url-pattern>/*</url-pattern>
+    </servlet-mapping>
+    <listener>
+        <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
+    </listener>
+</web-app>
+```
+
+```java
+public class GolfingWebAppInitializer extends AbstractAnnotationConfigDispatcherServletInitializer {
+
+    @Override
+    protected Class<?>[] getRootConfigClasses() {
+        // GolfingAppConfig defines beans that would be in root-context.xml
+        return new Class[] { GolfingAppConfig.class };
+    }
+
+    @Override
+    protected Class<?>[] getServletConfigClasses() {
+        // GolfingWebConfig defines beans that would be in golfing-servlet.xml
+        return new Class[] { GolfingWebConfig.class };
+    }
+
+    @Override
+    protected String[] getServletMappings() {
+        return new String[] { "/golfing/*" };
+    }
+}
+```
+
+## Special bean types in the WebApplicationContext
+
+- HandlerMapping
+- HandlerAdapter
+- HandlerExceptionResolver
+- ViewResolver
+- LocaleResolver & LocaleContextResolver
+- ThemeResolver
+- MultipartResolver
+- FlashMapManager
+
+## Default DispatcherServlet Configuration
+[Section 22.16, “Configuring Spring MVC”]
+(https://docs.spring.io/spring/docs/4.3.x/spring-framework-reference/htmlsingle/#mvc-config)
+
+`DispatcherServlet.properties`
