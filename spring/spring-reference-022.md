@@ -167,3 +167,28 @@ public class GolfingWebAppInitializer extends AbstractAnnotationConfigDispatcher
 ## URI Template Patterns
 
 `@PathVariable`
+
+## Matrix Variables
+
+## Consumable Media Types
+
+```java
+@PostMapping(path = "/pets", consumes = "application/json")
+public void addPet(@RequestBody Pet pet, Model model) {
+    // implementation omitted
+}
+```
+
+>The consumes condition is supported on the type and on the method level. Unlike most other conditions, when used at the type level, method-level consumable types override rather than extend type-level consumable types
+
+## Producible Media Types
+
+```java
+@GetMapping(path = "/pets/{petId}", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+@ResponseBody
+public Pet getPet(@PathVariable String petId, Model model) {
+    // implementation omitted
+}
+```
+
+> The produces condition is supported on the type and on the method level. Unlike most other conditions, when used at the type level, method-level producible types override rather than extend type-level producible types
