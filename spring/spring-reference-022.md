@@ -192,3 +192,40 @@ public Pet getPet(@PathVariable String petId, Model model) {
 ```
 
 > The produces condition is supported on the type and on the method level. Unlike most other conditions, when used at the type level, method-level producible types override rather than extend type-level producible types
+
+## Request Parameters and Header Values
+
+```java
+@Controller
+@RequestMapping("/owners/{ownerId}")
+public class RelativePathUriTemplateController {
+
+    @GetMapping(path = "/pets/{petId}", params = "myParam=myValue")
+    public void findPet(@PathVariable String ownerId, @PathVariable String petId, Model model) {
+        // implementation omitted
+    }
+
+}
+```
+
+```java
+@Controller
+@RequestMapping("/owners/{ownerId}")
+public class RelativePathUriTemplateController {
+
+    @GetMapping(path = "/pets", headers = "myHeader=myValue")
+    public void findPet(@PathVariable String ownerId, @PathVariable String petId, Model model) {
+        // implementation omitted
+    }
+
+}
+```
+
+## Defining @RequestMapping handler methods
+
+[link](https://docs.spring.io/spring/docs/4.3.x/spring-framework-reference/htmlsingle/#mvc-ann-methods)
+
+## Supported method argument types
+
+[link](https://docs.spring.io/spring/docs/4.3.x/spring-framework-reference/htmlsingle/#mvc-ann-arguments)
+
