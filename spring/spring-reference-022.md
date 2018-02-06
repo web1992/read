@@ -153,8 +153,8 @@ public class GolfingWebAppInitializer extends AbstractAnnotationConfigDispatcher
 
 </beans>
 ```
-## Mapping Requests With @RequestMapping
 
+## Mapping Requests With @RequestMapping
 
 ## Composed @RequestMapping Variants
 
@@ -228,4 +228,3 @@ public class RelativePathUriTemplateController {
 ## Supported method argument types
 
 [link](https://docs.spring.io/spring/docs/4.3.x/spring-framework-reference/htmlsingle/#mvc-ann-arguments)
-
