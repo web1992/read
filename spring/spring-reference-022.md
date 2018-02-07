@@ -228,3 +228,42 @@ public class RelativePathUriTemplateController {
 ## Supported method argument types
 
 [link](https://docs.spring.io/spring/docs/4.3.x/spring-framework-reference/htmlsingle/#mvc-ann-arguments)
+
+## Asynchronous Request Processing
+
+Spring MVC 3.2 introduced Servlet 3 based asynchronous request processing. Instead of returning a value, as usual, a controller method can now return a java.util.concurrent.Callable and produce the return value from a Spring MVC managed thread. Meanwhile the main Servlet container thread is exited and released and allowed to process other requests. Spring MVC invokes the Callable in a separate thread with the help of a TaskExecutor and when the Callable returns, the request is dispatched back to the Servlet container to resume processing using the value returned by the Callable. Here is an example of such a controller method:
+
+
+```java
+@PostMapping
+public Callable<String> processUpload(final MultipartFile file) {
+
+    return new Callable<String>() {
+        public String call() throws Exception {
+            // ...
+            return "someView";
+        }
+    };
+
+}
+```
+
+## HTTP Streaming
+
+```java
+@RequestMapping("/events")
+public ResponseBodyEmitter handle() {
+    ResponseBodyEmitter emitter = new ResponseBodyEmitter();
+    // Save the emitter somewhere..
+    return emitter;
+}
+
+// In some other thread
+emitter.send("Hello once");
+
+// and again later on
+emitter.send("Hello again");
+
+// and done at some point
+emitter.complete();
+```
