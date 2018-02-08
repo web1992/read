@@ -267,3 +267,23 @@ emitter.send("Hello again");
 // and done at some point
 emitter.complete();
 ```
+## Intercepting requests with a HandlerInterceptor
+
+```xml
+<beans>
+    <bean id="handlerMapping"
+            class="org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping">
+        <property name="interceptors">
+            <list>
+                <ref bean="officeHoursInterceptor"/>
+            </list>
+        </property>
+    </bean>
+
+    <bean id="officeHoursInterceptor"
+            class="samples.TimeBasedAccessInterceptor">
+        <property name="openingTime" value="9"/>
+        <property name="closingTime" value="18"/>
+    </bean>
+</beans>
+```
