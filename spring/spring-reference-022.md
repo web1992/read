@@ -231,8 +231,7 @@ public class RelativePathUriTemplateController {
 
 ## Asynchronous Request Processing
 
-Spring MVC 3.2 introduced Servlet 3 based asynchronous request processing. Instead of returning a value, as usual, a controller method can now return a java.util.concurrent.Callable and produce the return value from a Spring MVC managed thread. Meanwhile the main Servlet container thread is exited and released and allowed to process other requests. Spring MVC invokes the Callable in a separate thread with the help of a TaskExecutor and when the Callable returns, the request is dispatched back to the Servlet container to resume processing using the value returned by the Callable. Here is an example of such a controller method:
-
+Spring MVC 3.2 introduced Servlet 3 based asynchronous request processing. Instead of returning a value, as usual, a controller method can now return a `java.util.concurrent.Callable`and produce the return value from a Spring MVC managed thread. Meanwhile the main Servlet container thread is exited and released and allowed to process other requests. Spring MVC invokes the `Callable` in a separate thread with the help of a `TaskExecutor` and when the `Callable` returns, the request is dispatched back to the Servlet container to resume processing using the value returned by the `Callable`. Here is an example of such a controller method:
 
 ```java
 @PostMapping
@@ -246,6 +245,44 @@ public Callable<String> processUpload(final MultipartFile file) {
     };
 
 }
+```
+
+> This may be difficult to understand without any knowledge of the Servlet 3.0 asynchronous request processing features. It would certainly help to read up on that. Here are a few basic facts about the underlying mechanism:
+
+- A ServletRequest can be put in asynchronous mode by calling request.startAsync(). The main effect of doing so is that the Servlet, as well as any Filters, can exit but the response will remain open to allow processing to complete later.
+- The call to request.startAsync() returns AsyncContext which can be used for further control over async processing. For example it provides the method dispatch, that is similar to a forward from the Servlet API except it allows an application to resume request processing on a Servlet container thread.
+- The ServletRequest provides access to the current DispatcherType that can be used to distinguish between processing the initial request, an async dispatch, a forward, and other dispatcher types.
+
+With the above in mind, the following is the sequence of events for async request processing with a Callable:
+
+- Controller returns a Callable.
+- Spring MVC starts asynchronous processing and submits the Callable to a TaskExecutor for processing in a separate thread.
+- The DispatcherServlet and all Filter’s exit the Servlet container thread but the response remains open.
+- The Callable produces a result and Spring MVC dispatches the request back to the Servlet container to resume processing.
+- The DispatcherServlet is invoked again and processing resumes with the asynchronously produced result from the Callable.
+
+The sequence for DeferredResult is very similar except it’s up to the application to produce the asynchronous result from any thread:
+
+- Controller returns a DeferredResult and saves it in some in-memory queue or list where it can be accessed.
+- Spring MVC starts async processing.
+- The DispatcherServlet and all configured Filter’s exit the request processing thread but the response remains open.
+- The application sets the DeferredResult from some thread and Spring MVC dispatches the request back to the Servlet container.
+- The DispatcherServlet is invoked again and processing resumes with the asynchronously produced result.
+- For further background on the motivation for async request processing and when or why to use it please read this blog post series.
+
+Another option is for the controller method to return an instance of DeferredResult. In this case the return value will also be produced from any thread, i.e. one that is not managed by Spring MVC. For example the result may be produced in response to some external event such as a JMS message, a scheduled task, and so on. Here is an example of such a controller method:
+
+```java
+@RequestMapping("/quotes")
+@ResponseBody
+public DeferredResult<String> quotes() {
+    DeferredResult<String> deferredResult = new DeferredResult<String>();
+    // Save the deferredResult somewhere..
+    return deferredResult;
+}
+
+// In some other thread...
+deferredResult.setResult(data);
 ```
 
 ## HTTP Streaming
@@ -267,6 +304,33 @@ emitter.send("Hello again");
 // and done at some point
 emitter.complete();
 ```
+
+## Configuring Asynchronous Request Processing
+
+```xml
+<web-app xmlns="http://java.sun.com/xml/ns/javaee"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="
+            http://java.sun.com/xml/ns/javaee
+            http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd"
+    version="3.0">
+
+    <filter>
+        <filter-name>Spring OpenEntityManagerInViewFilter</filter-name>
+        <filter-class>org.springframework.~.OpenEntityManagerInViewFilter</filter-class>
+        <async-supported>true</async-supported>
+    </filter>
+
+    <filter-mapping>
+        <filter-name>Spring OpenEntityManagerInViewFilter</filter-name>
+        <url-pattern>/*</url-pattern>
+        <dispatcher>REQUEST</dispatcher>
+        <dispatcher>ASYNC</dispatcher>
+    </filter-mapping>
+
+</web-app>
+```
+
 ## Intercepting requests with a HandlerInterceptor
 
 ```xml
