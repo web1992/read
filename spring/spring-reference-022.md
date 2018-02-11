@@ -351,3 +351,87 @@ emitter.complete();
     </bean>
 </beans>
 ```
+
+## Resolving views
+
+> ViewResolver
+
+- AbstractCachingViewResolver
+- XmlViewResolver
+- ResourceBundleViewResolver
+- UrlBasedViewResolver
+- InternalResourceViewResolver
+- VelocityViewResolver
+- FreeMarkerViewResolver
+- ContentNegotiatingViewResolver
+
+### Chaining ViewResolvers
+
+### Redirecting to Views
+
+### ContentNegotiatingViewResolver
+
+The ContentNegotiatingViewResolver does not resolve views itself but rather delegates to other view resolvers, selecting the view that resembles the representation requested by the client. Two strategies exist for a client to request a representation from the server:
+
+- Use a distinct URI for each resource, typically by using a different file extension in the URI. For example, the URI http://www.example.com/users/fred.pdf requests a PDF representation of the user fred, and http://www.example.com/users/fred.xml requests an XML representation.
+
+- Use the same URI for the client to locate the resource, but set the Accept HTTP request header to list the media types that it understands. For example, an HTTP request for http://www.example.com/users/fred with an Accept header set to application/pdf requests a PDF representation of the user fred, while http://www.example.com/users/fred with an Accept header set to text/xml requests an XML representation. This strategy is known as content negotiation.
+
+To support multiple representations of a resource, Spring provides the ContentNegotiatingViewResolver to resolve a view based on the file extension or Accept header of the HTTP request. ContentNegotiatingViewResolver does not perform the view resolution itself but instead delegates to a list of view resolvers that you specify through the bean property ViewResolvers.
+
+Here is an example configuration of a ContentNegotiatingViewResolver:
+
+```xml
+<bean class="org.springframework.web.servlet.view.ContentNegotiatingViewResolver">
+    <property name="viewResolvers">
+        <list>
+            <bean class="org.springframework.web.servlet.view.BeanNameViewResolver"/>
+            <bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+                <property name="prefix" value="/WEB-INF/jsp/"/>
+                <property name="suffix" value=".jsp"/>
+            </bean>
+        </list>
+    </property>
+    <property name="defaultViews">
+        <list>
+            <bean class="org.springframework.web.servlet.view.json.MappingJackson2JsonView"/>
+        </list>
+    </property>
+</bean>
+
+<bean id="content" class="com.foo.samples.rest.SampleContentAtomView"/>
+```
+
+### Building URIs
+
+```java
+UriComponents uriComponents = UriComponentsBuilder.fromUriString(
+        "http://example.com/hotels/{hotel}/bookings/{booking}").build();
+
+URI uri = uriComponents.expand("42", "21").encode().toUri();
+```
+
+### Building URIs to Controllers and methods
+
+Spring MVC also provides a mechanism for building links to controller methods. For example, given:
+
+```java
+@Controller
+@RequestMapping("/hotels/{hotel}")
+public class BookingController {
+
+    @GetMapping("/bookings/{booking}")
+    public String getBooking(@PathVariable Long booking) {
+        // ...
+    }
+}
+```
+
+You can prepare a link by referring to the method by name:
+
+```java
+UriComponents uriComponents = MvcUriComponentsBuilder
+    .fromMethodName(BookingController.class, "getBooking", 21).buildAndExpand(42);
+
+URI uri = uriComponents.encode().toUri();
+```
