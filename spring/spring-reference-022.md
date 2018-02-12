@@ -435,3 +435,206 @@ UriComponents uriComponents = MvcUriComponentsBuilder
 
 URI uri = uriComponents.encode().toUri();
 ```
+
+### Using themes
+
+```props
+styleSheet=/themes/cool/style.css
+background=/themes/cool/img/coolBg.jpg
+```
+
+```xml
+<%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
+<html>
+    <head>
+        <link rel="stylesheet" href="<spring:theme code='styleSheet'/>" type="text/css"/>
+    </head>
+    <body style="background=<spring:theme code='background'/>">
+        ...
+    </body>
+</html>
+```
+
+### Spring’s multipart (file upload) support
+
+> Introduction
+
+Spring’s built-in multipart support handles file uploads in web applications. You enable this multipart support with pluggable MultipartResolver objects, defined in the org.springframework.web.multipart package. Spring provides one MultipartResolver implementation for use with Commons FileUpload and another for use with Servlet 3.0 multipart request parsing.
+
+By default, Spring does no multipart handling, because some developers want to handle multiparts themselves. You enable Spring multipart handling by adding a multipart resolver to the web application’s context. Each request is inspected to see if it contains a multipart. If no multipart is found, the request continues as expected. If a multipart is found in the request, the MultipartResolver that has been declared in your context is used. After that, the multipart attribute in your request is treated like any other attribute.
+
+```xml
+<bean id="multipartResolver"
+        class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+
+    <!-- one of the properties available; the maximum file size in bytes -->
+    <property name="maxUploadSize" value="100000"/>
+
+</bean>
+```
+
+### Handling a file upload in a form
+
+```html
+<html>
+    <head>
+        <title>Upload a file please</title>
+    </head>
+    <body>
+        <h1>Please upload a file</h1>
+        <form method="post" action="/form" enctype="multipart/form-data">
+            <input type="text" name="name"/>
+            <input type="file" name="file"/>
+            <input type="submit"/>
+        </form>
+    </body>
+</html>
+```
+
+use MultipartFile
+
+```java
+@Controller
+public class FileUploadController {
+
+    @PostMapping("/form")
+    public String handleFormUpload(@RequestParam("name") String name,
+            @RequestParam("file") MultipartFile file) {
+
+        if (!file.isEmpty()) {
+            byte[] bytes = file.getBytes();
+            // store the bytes somewhere
+            return "redirect:uploadSuccess";
+        }
+
+        return "redirect:uploadFailure";
+    }
+
+}
+```
+
+use servlet 3.0 `javax.servlet.http.Part`
+
+```java
+@Controller
+public class FileUploadController {
+
+    @PostMapping("/form")
+    public String handleFormUpload(@RequestParam("name") String name,
+            @RequestParam("file") Part file) {
+
+        InputStream inputStream = file.getInputStream();
+        // store bytes from uploaded file somewhere
+
+        return "redirect:uploadSuccess";
+    }
+
+}
+```
+
+### Handling a file upload request from programmatic clients
+
+```java
+@PostMapping("/someUrl")
+public String onSubmit(@RequestPart("meta-data") MetaData metadata,
+        @RequestPart("file-data") MultipartFile file) {
+
+    // ...
+
+}
+```
+
+Notice how MultipartFile method arguments can be accessed with @RequestParam or with @RequestPart interchangeably. However, the @RequestPart("meta-data") MetaData method argument in this case is read as JSON content based on its 'Content-Type' header and converted with the help of the MappingJackson2HttpMessageConverter.
+
+## Handling exceptions
+
+`HandlerExceptionResolver`
+`SimpleMappingExceptionResolver`
+`ExceptionHandler`
+
+Use to `ExceptionHandler` handler `IOException`
+
+```java
+@Controller
+public class SimpleController {
+
+    // @RequestMapping methods omitted ...
+
+    @ExceptionHandler(IOException.class)
+    public ResponseEntity<String> handleIOException(IOException ex) {
+        // prepare responseEntity
+        return responseEntity;
+    }
+
+}
+```
+
+`DefaultHandlerExceptionResolver`
+
+Exception   HTTP Status Code
+
+- BindException   400 (Bad Request)
+
+- ConversionNotSupportedException 500 (Internal Server Error)
+
+- HttpMediaTypeNotAcceptableException 406 (Not Acceptable)
+
+- HttpMediaTypeNotSupportedException 415 (Unsupported Media Type)
+
+- HttpMessageNotReadableException 400 (Bad Request)
+
+- HttpMessageNotWritableException 500 (Internal Server Error)
+
+- HttpRequestMethodNotSupportedException 405 (Method Not Allowed)
+
+- MethodArgumentNotValidException 400 (Bad Request)
+
+- MissingPathVariableException 500 (Internal Server Error)
+
+- MissingServletRequestParameterException 400 (Bad Request)
+
+- MissingServletRequestPartException 400 (Bad Request)
+
+- NoHandlerFoundException 404 (Not Found)
+
+- NoSuchRequestHandlingMethodException 404 (Not Found)
+
+- TypeMismatchException 400 (Bad Request)
+
+### Customizing the Default Servlet Container Error Page
+
+`web.xml`
+
+```xml
+<error-page>
+    <location>/error</location>
+</error-page>
+```
+
+```java
+@Controller
+public class ErrorController {
+
+    @RequestMapping(path = "/error", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    @ResponseBody
+    public Map<String, Object> handle(HttpServletRequest request) {
+
+        Map<String, Object> map = new HashMap<String, Object>();
+        map.put("status", request.getAttribute("javax.servlet.error.status_code"));
+        map.put("reason", request.getAttribute("javax.servlet.error.message"));
+
+        return map;
+    }
+
+}
+```
+
+```jsp
+<%@ page contentType="application/json" pageEncoding="UTF-8"%>
+{
+    status:<%=request.getAttribute("javax.servlet.error.status_code") %>,
+    reason:<%=request.getAttribute("javax.servlet.error.message") %>
+}
+```
+
+### Convention over configuration support
