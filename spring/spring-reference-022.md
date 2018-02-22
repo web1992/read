@@ -638,3 +638,27 @@ public class ErrorController {
 ```
 
 ### Convention over configuration support
+
+> The Controller ControllerClassNameHandlerMapping
+
+`ControllerClassNameHandlerMapping`
+
+```xml
+<bean class="org.springframework.web.servlet.mvc.support.ControllerClassNameHandlerMapping"/>
+
+<bean id="viewShoppingCart" class="x.y.z.ViewShoppingCartController">
+    <!-- inject dependencies as required... -->
+</bean>
+```
+
+`WelcomeController` maps to the /welcome* request URL
+`HomeController` maps to the /home* request URL
+`IndexController` maps to the /index* request URL
+`RegisterController` maps to the /register* request URL
+
+> The Model ModelMap (ModelAndView)
+
+[link](https://docs.spring.io/spring/docs/4.3.x/spring-framework-reference/htmlsingle/#mvc-coc-modelmap)
+
+`ModelAndView`
+`ModelMap`
