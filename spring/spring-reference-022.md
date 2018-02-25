@@ -662,3 +662,23 @@ public class ErrorController {
 
 `ModelAndView`
 `ModelMap`
+
+```java
+public class DisplayShoppingCartController implements Controller {
+
+    public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response) {
+
+        List cartItems = // get a List of CartItem objects
+        User user = // get the User doing the shopping
+
+        ModelAndView mav = new ModelAndView("displayShoppingCart"); <-- the logical view name
+
+        mav.addObject(cartItems); <-- look ma, no name, just the object
+        mav.addObject(user); <-- and again ma!
+
+        return mav;
+    }
+}
+```
+
+## Default view name
