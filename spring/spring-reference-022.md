@@ -682,3 +682,63 @@ public class DisplayShoppingCartController implements Controller {
 ```
 
 ## Default view name
+
+## HTTP caching support
+
+The 'Cache-Control' HTTP response header advises private caches (e.g. browsers) and public caches (e.g. proxies) on how they can cache HTTP responses for further reuse.
+
+## HTTP caching support for static resources
+
+```java
+@Configuration
+@EnableWebMvc
+public class WebConfig extends WebMvcConfigurerAdapter {
+
+    @Override
+    public void addResourceHandlers(ResourceHandlerRegistry registry) {
+        registry.addResourceHandler("/resources/**")
+                .addResourceLocations("/public-resources/")
+                .setCacheControl(CacheControl.maxAge(1, TimeUnit.HOURS).cachePublic());
+    }
+
+}
+```
+
+```xml
+<mvc:resources mapping="/resources/**" location="/public-resources/">
+    <mvc:cache-control max-age="3600" cache-public="true"/>
+</mvc:resources>
+```
+
+## Code-based Servlet container initialization
+
+In a Servlet 3.0+ environment, you have the option of configuring the Servlet container programmatically as an alternative or in combination with a web.xml file. Below is an example of registering a DispatcherServlet:
+
+[Link](https://docs.spring.io/spring/docs/4.3.x/spring-framework-reference/htmlsingle/#mvc-container-config)
+
+```java
+import org.springframework.web.WebApplicationInitializer;
+
+public class MyWebApplicationInitializer implements WebApplicationInitializer {
+
+    @Override
+    public void onStartup(ServletContext container) {
+        XmlWebApplicationContext appContext = new XmlWebApplicationContext();
+        appContext.setConfigLocation("/WEB-INF/spring/dispatcher-config.xml");
+
+        ServletRegistration.Dynamic registration = container.addServlet("dispatcher", new DispatcherServlet(appContext));
+        registration.setLoadOnStartup(1);
+        registration.addMapping("/");
+    }
+
+}
+```
+
+## Configuring Spring MVC
+
+[Link](https://docs.spring.io/spring/docs/4.3.x/spring-framework-reference/htmlsingle/#mvc-config)
+
+- Enabling the MVC Java Config or the MVC XML Namespace
+- Customizing the Provided Configuration
+- Conversion and Formatting
+- Validation
