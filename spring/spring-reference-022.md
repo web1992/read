@@ -736,9 +736,28 @@ public class MyWebApplicationInitializer implements WebApplicationInitializer {
 
 ## Configuring Spring MVC
 
+You can overwriter the method `WebMvcConfigurerAdapter` if you need customer spring mvc config
+
 [Link](https://docs.spring.io/spring/docs/4.3.x/spring-framework-reference/htmlsingle/#mvc-config)
 
 - Enabling the MVC Java Config or the MVC XML Namespace
 - Customizing the Provided Configuration
 - Conversion and Formatting
 - Validation
+- Interceptors
+- Content Negotiation
+
+If not using the MVC Java config or the MVC namespace, you’ll need to create an instance of ContentNegotiationManager and use it to configure RequestMappingHandlerMapping for request mapping purposes, and RequestMappingHandlerAdapter and ExceptionHandlerExceptionResolver for content negotiation purposes.
+
+Note that ContentNegotiatingViewResolver now can also be configured with a ContentNegotiationManager, so you can use one shared instance throughout Spring MVC.
+
+In more advanced cases, it may be useful to configure multiple ContentNegotiationManager instances that in turn may contain custom ContentNegotiationStrategy implementations. For example you could configure ExceptionHandlerExceptionResolver with a ContentNegotiationManager that always resolves the requested media type to "application/json". Or you may want to plug a custom strategy that has some logic to select a default content type (e.g. either XML or JSON) if no content types were requested.
+
+- View Controllers
+- View Resolvers
+- Serving of Resources
+- Default Servlet
+- Path Matching
+- Message Converters
+- Advanced Customizations with MVC Java Config
+- Advanced Customizations with the MVC Namespace
