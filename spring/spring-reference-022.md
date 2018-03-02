@@ -756,6 +756,11 @@ In more advanced cases, it may be useful to configure multiple ContentNegotiatio
 - View Controllers
 - View Resolvers
 - Serving of Resources
+
+`ResourceUrlEncodingFilter`
+
+Webjars are also supported with `WebJarsResourceResolver`, which is automatically registered when the "`org.webjars:webjars-locator`" library is on classpath. This resolver allows the resource chain to resolve version agnostic libraries from HTTP GET requests "GET /jquery/jquery.min.js" will return resource `"/jquery/1.2.0/jquery.min.js"`. It also works by rewriting resource URLs in templates `<script src="/jquery/jquery.min.js"/> → <script src="/jquery/1.2.0/jquery.min.js"/>`.
+
 - Default Servlet
 - Path Matching
 - Message Converters
