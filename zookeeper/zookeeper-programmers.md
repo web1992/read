@@ -17,11 +17,22 @@ You can see origin document at here [Zookeeper Programmers](https://zookeeper.ap
 - Ephemeral Nodes
 - Sequence Nodes -- Unique Naming
 
-
 ## ZooKeeper Watches
 
 - One-time trigger
 - Sent to the client
 - The data for which the watch was set
 
+## Pluggable ZooKeeper authentication
 
+```java
+public interface AuthenticationProvider {
+    String getScheme();
+    KeeperException.Code handleAuthentication(ServerCnxn cnxn, byte authData[]);
+    boolean isValid(String id);
+    boolean matches(String id, String aclExpr);
+    boolean isAuthenticated();
+}
+```
+
+## Consistency Guarantees
