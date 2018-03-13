@@ -1,5 +1,12 @@
 # CORS Support
 
+- 1 [Introduction](#introduction)
+- 2 [Controller method CORS configuration](#controller-method-cors-configuration)
+- 3 [Global CORS configuration](#global-cors-configuration)
+    - [JavaConfig](#javaconfig)
+    - [XML namespace](#xml-namespace)
+- 4 [Filter based CORS support](#filter-based-cors-support)
+
 ## Introduction
 
 [link](https://docs.spring.io/spring/docs/4.3.x/spring-framework-reference/htmlsingle/#cors)
