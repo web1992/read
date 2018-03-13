@@ -1,5 +1,10 @@
 # View Technologies
 
+- 1 [Introduction](#introduction)
+- 2 [Context configuration](#context-configuration)
+- 3 [Advanced configuration](#advanced-configuration)
+- 4 [Document views: PDF, Excel](#document-views:-pdf,-excel)
+
 ## Introduction
 
 One of the areas in which Spring excels is in the separation of view technologies from the rest of the MVC framework. For example, deciding to use Groovy Markup Templates or Thymeleaf in place of an existing JSP is primarily a matter of configuration. This chapter covers the major view technologies that work with Spring and touches briefly on how to add new ones. This chapter assumes you are already familiar with [Section 22.5](https://docs.spring.io/spring/docs/4.3.x/spring-framework-reference/htmlsingle/#mvc-viewresolver), “Resolving views” which covers the basics of how views in general are coupled to the MVC framework.
@@ -8,7 +13,7 @@ One of the areas in which Spring excels is in the separation of view technologie
 - Groovy Markup
 - Velocity & FreeMarker
 
- Context configuration
+## Context configuration
 
  ```xml
  <!--
@@ -48,7 +53,7 @@ different view resolving based on Locale, you have to use the resource bundle re
 </bean>
  ```
 
-Advanced configuration
+## Advanced configuration
 
 `velocity.properties`
 
