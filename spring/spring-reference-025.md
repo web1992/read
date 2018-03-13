@@ -1,5 +1,10 @@
 # Portlet MVC Framework
 
+- 1 [Controllers - The C in MVC](#controllers---the-c-in-mvc)
+- 2 [Views - The V in MVC](#views---the-v-in-mvc)
+- 3 [The DispatcherPortlet](#the-dispatcherportlet)
+- 4 [The ViewRendererServlet](#the-viewrendererservlet)
+
 ## Controllers - The C in MVC
 
 The default handler is still a very simple Controller interface, offering just two methods:
