@@ -495,7 +495,7 @@ background=/themes/cool/img/coolBg.jpg
 </html>
 ```
 
-### Spring’s multipart (file upload) support
+### Spring’s multipart file upload support
 
 > Introduction
 
