@@ -28,7 +28,7 @@
 - 26 [building-uris](#building-uris)
 - 27 [building-uris-to-controllers-and-methods](#building-uris-to-controllers-and-methods)
 - 28 [using-themes](#using-themes)
-- 29 [spring’s-multipart-(file-upload)-support](#spring’s-multipart-(file-upload)-support)
+- 29 [spring’s-multipart-file-upload-support](#spring’s-multipart-file-upload-support)
 - 30 [handling-a-file-upload-in-a-form](#handling-a-file-upload-in-a-form)
 - 31 [handling-a-file-upload-request-from-programmatic-clients](#handling-a-file-upload-request-from-programmatic-clients)
 - 32 [handling-exceptions](#handling-exceptions)
