@@ -49,7 +49,7 @@
 - 30 JMS (Java Message Service) [Link→](spring-reference-030.md)
 - 31 JMX
 - 32 JCA CCI
-- 33 Email
+- 33 Email [Link→](spring-reference-033.md)
 - 34 Task Execution and Scheduling
 - 35 Dynamic language support
 - 36 Cache Abstraction
