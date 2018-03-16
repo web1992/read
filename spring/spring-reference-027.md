@@ -37,7 +37,8 @@ public class AccountController {
     }
 }
 
-``
+```
+
 It is also possible to enable CORS for the whole controller:
 
 ```java
@@ -61,7 +62,6 @@ public class AccountController {
 ```
 
 ## Global CORS configuration
-
 
 ### JavaConfig
 
@@ -111,6 +111,7 @@ The following minimal XML configuration enables CORS for the /** path pattern wi
 <mvc:cors>
     <mvc:mapping path="/**" />
 </mvc:cors>
+```
 
 It is also possible to declare several CORS mappings with customized properties:
 

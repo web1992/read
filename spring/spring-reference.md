@@ -17,7 +17,7 @@
 - 8 Resources
 - 9 Validation, Data Binding, and Type Conversion
 - 10 Spring Expression Language (SpEL)
-- 11 Aspect Oriented Programming with Spring [Link](spring-reference-011.md)
+- 11 Aspect Oriented Programming with Spring [Link→](spring-reference-011.md)
 - 12 Spring AOP APIs [Link](spring-reference-012.md)
 
 > IV. Testing
