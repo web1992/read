@@ -46,7 +46,7 @@
 
 - 28 Remoting and web services using Spring
 - 29 Enterprise JavaBeans (EJB) integration
-- 30 JMS (Java Message Service)
+- 30 JMS (Java Message Service) [Link→](spring-reference-030.md)
 - 31 JMX
 - 32 JCA CCI
 - 33 Email
