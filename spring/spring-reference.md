@@ -50,7 +50,7 @@
 - 31 JMX
 - 32 JCA CCI
 - 33 Email [Link→](spring-reference-033.md)
-- 34 Task Execution and Scheduling
+- 34 Task Execution and Scheduling [Link→](spring-reference-034.md)
 - 35 Dynamic language support
 - 36 Cache Abstraction
 
