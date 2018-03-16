@@ -25,22 +25,22 @@
 - 13 Introduction to Spring Testing [Link→](spring-reference-013.md)
 - 14 Unit Testing [Link→](spring-reference-014.md)
 - 15 Integration Testing [Link→](spring-reference-015.md)
-- 16 Further Resources
+- 16 Further Resources [Link→](spring-reference-016.md)
 
 > V. Data Access
 - 17 Transaction Management [Link→](spring-reference-017.md)
 - 18 DAO support [Link→](spring-reference-018.md)
 - 19 Data access with JDBC [Link→](spring-reference-019.md)
-- 20 Object Relational Mapping (ORM) Data Access
-- 21 Marshalling XML using O/X Mappers
+- 20 Object Relational Mapping (ORM) Data Access [Link→](spring-reference-020.md)
+- 21 Marshalling XML using O/X Mappers [Link→](spring-reference-021.md)
 
 > VI. The Web
 - 22 Web MVC framework [Link→](spring-reference-022.md)
-- 23 View technologies
-- 24 Integrating with other web frameworks
-- 25 Portlet MVC Framework
-- 26 WebSocket Support
-- 27 CORS Support
+- 23 View technologies [Link→](spring-reference-023.md)
+- 24 Integrating with other web frameworks [Link→](spring-reference-024.md)
+- 25 Portlet MVC Framework [Link→](spring-reference-025.md)
+- 26 WebSocket Support [Link→](spring-reference-026.md)
+- 27 CORS Support [Link→](spring-reference-027.md)
 
 > VII. Integration
 
