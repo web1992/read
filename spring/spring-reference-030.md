@@ -10,7 +10,7 @@
 - 8 [using-message-converters](#using-message-converters)
 - 9 [receiving-a-message](#receiving-a-message)
 - 10 [synchronous-reception](#synchronous-reception)
-- 11 [asynchronous-reception:-message-driven-pojos](#asynchronous-reception:-message-driven-pojos)
+- 11 [asynchronous-reception-message-driven-pojos](#asynchronous-reception-message-driven-pojos)
 - 12 [sessionawaremessagelistener-interface](#sessionawaremessagelistener-interface)
 - 13 [messagelisteneradapter](#messagelisteneradapter)
 - 14 [processing-messages-within-transactions](#processing-messages-within-transactions)
@@ -127,7 +127,7 @@ MapMessage={
 
 While JMS is typically associated with asynchronous processing, it is possible to consume messages synchronously. The overloaded receive(..) methods provide this functionality. During a synchronous receive, `the calling thread blocks until a message becomes available`. This can be a dangerous operation since the calling thread can potentially be blocked indefinitely. The property receiveTimeout specifies how long the receiver should wait before giving up waiting for a message.
 
-### Asynchronous reception: Message-Driven POJOs
+### Asynchronous reception Message-Driven POJOs
 
 [Link](https://docs.spring.io/spring/docs/4.3.x/spring-framework-reference/htmlsingle/#jms-asynchronousMessageReception)
 
