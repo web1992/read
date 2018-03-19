@@ -2,6 +2,14 @@
 
 [Link](https://docs.spring.io/spring/docs/4.3.x/spring-framework-reference/htmlsingle/#mail)
 
+- 1 [usage](#usage)
+- 2 [basic-mailsender-and-simplemailmessage-usage](#basic-mailsender-and-simplemailmessage-usage)
+- 3 [using-the-javamail-mimemessagehelper](#using-the-javamail-mimemessagehelper)
+- 4 [sending-attachments-and-inline-resources](#sending-attachments-and-inline-resources)
+- 5 [attachments](#attachments)
+- 6 [inline-resources](#inline-resources)
+- 7 [creating-email-content-using-a-templating-library](#creating-email-content-using-a-templating-library)
+
 ## Usage
 
 ### Basic MailSender and SimpleMailMessage usage
