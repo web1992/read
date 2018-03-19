@@ -29,9 +29,9 @@ The classes offer various convenience methods for the sending of messages, consu
 
 ## Connections
 
-ConnectionFactory
-SingleConnectionFactory
-CachingConnectionFactory
+`ConnectionFactory`
+`SingleConnectionFactory`
+`CachingConnectionFactory`
 
 ### Caching Messaging Resources
 
@@ -39,11 +39,20 @@ ConnectionFactory->Connection->Session->MessageProducer->send
 
 ## Destination Management
 
+## Message Listener Containers
+
+A message listener container is used to receive messages from a JMS message queue and drive the MessageListener that is injected into it. The listener container is responsible for all threading of message reception and dispatches into the listener for processing. A message listener container is the intermediary between an MDP and a messaging provider, and takes care of registering to receive messages, participating in transactions, resource acquisition and release, exception conversion and suchlike. This allows you as an application developer to write the (possibly complex) business logic associated with receiving a message (and possibly responding to it), and delegates boilerplate JMS infrastructure concerns to the framework.
+
+There are two standard JMS message listener containers packaged with Spring, each with its specialised feature set.
+
+`SimpleMessageListenerContainer`
+`DefaultMessageListenerContainer`
+
 ## Transaction management
 
 ## Sending a Message
 
-The JmsTemplate contains many convenience methods to send a message. There are send methods that specify the destination using a javax.jms.Destination object and those that specify the destination using a string for use in a JNDI lookup. The send method that takes no destination argument uses the default destination.
+The JmsTemplate contains many convenience methods to send a message. There are send methods that specify the destination using a `javax.jms.Destination` object and those that specify the destination using a string for use in a JNDI lookup. The send method that takes no destination argument uses the default destination.
 
 ```java
 import javax.jms.ConnectionFactory;
@@ -86,7 +95,7 @@ public class JmsQueueSender {
 `BytesMesssage`
 `MessagePostProcessor`
 
-To accommodate the setting of a message’s properties, headers, and body that can not be generically encapsulated inside a converter class, the MessagePostProcessor interface gives you access to the message after it has been converted, but before it is sent. The example below demonstrates how to modify a message header and a property after a java.util.Map is converted to a message.
+To accommodate the setting of a message’s properties, headers, and body that can not be generically encapsulated inside a converter class, the `MessagePostProcessor` interface gives you access to the message after it has been converted, but before it is sent. The example below demonstrates how to modify a message header and a property after a java.util.Map is converted to a message.
 
 ```java
 public void sendWithConversion() {
@@ -131,7 +140,7 @@ While JMS is typically associated with asynchronous processing, it is possible t
 
 [Link](https://docs.spring.io/spring/docs/4.3.x/spring-framework-reference/htmlsingle/#jms-asynchronousMessageReception)
 
-In a fashion similar to a Message-Driven Bean (MDB) in the EJB world, the Message-Driven POJO (MDP) acts as a receiver for JMS messages. The one restriction (but see also below for the discussion of the MessageListenerAdapter class) on an MDP is that it must implement the javax.jms.MessageListener interface. Please also be aware that in the case where your POJO will be receiving messages on multiple threads, it is important to ensure that your implementation is thread-safe.
+In a fashion similar to a Message-Driven Bean (MDB) in the EJB world, the Message-Driven POJO (MDP) acts as a receiver for JMS messages. The one restriction (but see also below for the discussion of the MessageListenerAdapter class) on an MDP is that it must implement the `javax.jms.MessageListener` interface. Please also be aware that in the case where your POJO will be receiving messages on multiple threads, it is important to ensure that your implementation is thread-safe.
 
 Below is a simple implementation of an MDP:
 
@@ -162,7 +171,7 @@ public class ExampleListener implements MessageListener {
 
 Once you’ve implemented your MessageListener, it’s time to create a message listener container.
 
-Find below an example of how to define and configure one of the message listener containers that ships with Spring (in this case the DefaultMessageListenerContainer).
+Find below an example of how to define and configure one of the message listener containers that ships with Spring (in this case the `DefaultMessageListenerContainer`).
 
 ```xml
 <!-- this is the Message Driven POJO (MDP) -->
