@@ -114,7 +114,7 @@ public void sendWithConversion() {
 
 This results in a message of the form:
 
-```json
+```
 MapMessage={
 	Header={
 		... standard headers ...
@@ -139,6 +139,8 @@ While JMS is typically associated with asynchronous processing, it is possible t
 ### Asynchronous reception Message-Driven POJOs
 
 [Link](https://docs.spring.io/spring/docs/4.3.x/spring-framework-reference/htmlsingle/#jms-asynchronousMessageReception)
+
+`DefaultMessageListenerContainer` 使用`线程池`，进行异步消息处理
 
 In a fashion similar to a Message-Driven Bean (MDB) in the EJB world, the Message-Driven POJO (MDP) acts as a receiver for JMS messages. The one restriction (but see also below for the discussion of the MessageListenerAdapter class) on an MDP is that it must implement the `javax.jms.MessageListener` interface. Please also be aware that in the case where your POJO will be receiving messages on multiple threads, it is important to ensure that your implementation is thread-safe.
 
