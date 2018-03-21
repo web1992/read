@@ -1,5 +1,14 @@
 # Extensible XML authoring
 
+- 1 [introduction](#introduction)
+- 2 [authoring-the-schema](#authoring-the-schema)
+- 3 [coding-a-namespacehandler](#coding-a-namespacehandler)
+- 4 [beandefinitionparser](#beandefinitionparser)
+- 5 [registering-the-handler-and-the-schema](#registering-the-handler-and-the-schema)
+- 6 [using-a-custom-extension-in-your-spring-xml-configuration](#using-a-custom-extension-in-your-spring-xml-configuration)
+- 7 [nesting-custom-tags-within-custom-tags](#nesting-custom-tags-within-custom-tags)
+- 8 [custom-attributes-on-'normal'-elements](#custom-attributes-on-normal-elements)
+
 [Link](https://docs.spring.io/spring/docs/4.3.x/spring-framework-reference/htmlsingle/#xml-custom)
 
 ## Introduction
@@ -141,6 +150,6 @@ public class SimpleDateFormatBeanDefinitionParser extends AbstractSingleBeanDefi
 
 [Link](https://docs.spring.io/spring/docs/4.3.x/spring-framework-reference/htmlsingle/#extensible-xml-custom-nested)
 
-## Custom attributes on 'normal' elements
+## Custom attributes on normal elements
 
 [Link](https://docs.spring.io/spring/docs/4.3.x/spring-framework-reference/htmlsingle/#extensible-xml-custom-just-attributes)
