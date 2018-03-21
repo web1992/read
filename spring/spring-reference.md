@@ -14,7 +14,7 @@
 
 > III. Core Technologies
 - 7 The IoC container [Link→](spring-reference-007.md)
-- 8 Resources
+- 8 Resources [Link→](spring-reference-008.md)
 - 9 Validation, Data Binding, and Type Conversion
 - 10 Spring Expression Language (SpEL)
 - 11 Aspect Oriented Programming with Spring [Link→](spring-reference-011.md)
@@ -61,6 +61,6 @@
 - 39 Classic Spring Usage
 - 40 Classic Spring AOP Usage
 - 41 XML Schema-based configuration
-- 42 Extensible XML authoring
+- 42 Extensible XML authoring [Link→](spring-reference-042.md)
 - 43 spring JSP Tag Library
 - 44 spring-form JSP Tag Library
