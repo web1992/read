@@ -52,7 +52,7 @@
 - 33 Email [Link→](spring-reference-033.md)
 - 34 Task Execution and Scheduling [Link→](spring-reference-034.md)
 - 35 Dynamic language support
-- 36 Cache Abstraction
+- 36 Cache Abstraction [Link→](spring-reference-036.md)
 
 > VIII. Appendices
 
