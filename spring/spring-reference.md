@@ -46,7 +46,7 @@ The document version of spring reference is [4.3.x](https://docs.spring.io/sprin
 
 > VII. Integration
 
-- 28 Remoting and web services using Spring
+- 28 Remoting and web services using Spring [Link→](spring-reference-028.md)
 - 29 Enterprise JavaBeans (EJB) integration
 - 30 JMS (Java Message Service) [Link→](spring-reference-030.md)
 - 31 JMX
