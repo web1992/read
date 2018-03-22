@@ -1,5 +1,12 @@
 # Resources
 
+- 1 [introduction](#introduction)
+- 2 [the-resource-interface](#the-resource-interface)
+- 3 [built-in-resource-implementations](#built-in-resource-implementations)
+- 4 [resourceloader](#resourceloader)
+- 5 [resources-as-dependencies](#resources-as-dependencies)
+- 6 [wildcards-in-application-context-constructor-resource-paths](#wildcards-in-application-context-constructor-resource-paths)
+
 [Link](https://docs.spring.io/spring/docs/4.3.x/spring-framework-reference/htmlsingle/#resources)
 
 ## Introduction
