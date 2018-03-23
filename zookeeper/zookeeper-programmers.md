@@ -1,5 +1,11 @@
 # Zookeeper Programmers
 
+- 1 [the-zookeeper-data-model](#the-zookeeper-data-model)
+- 2 [zookeeper-watches](#zookeeper-watches)
+- 3 [pluggable-zookeeper-authentication](#pluggable-zookeeper-authentication)
+- 4 [consistency-guarantees](#consistency-guarantees)
+- 5 [building-blocks:-a-guide-to-zookeeper-operations](#building-blocks:-a-guide-to-zookeeper-operations)
+
 ZooKeeper Programmer's Guide
 
 Developing Distributed Applications that use ZooKeeper
