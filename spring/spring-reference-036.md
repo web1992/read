@@ -2,8 +2,8 @@
 
 ## Introduction
 
-`org.springframework.cache.Cache`
-`org.springframework.cache.CacheManager`
+- `org.springframework.cache.Cache`
+- `org.springframework.cache.CacheManager`
 
 ## Important
 
@@ -43,8 +43,8 @@ public Book findBook(ISBN isbn) {...}
 
 ### Default Key Generation
 
-`KeyGenerator`
-`SimpleKey`
+- `KeyGenerator`
+- `SimpleKey`
 
 ### Custom Key Generation Declaration
 
