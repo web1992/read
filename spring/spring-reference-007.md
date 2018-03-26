@@ -12,6 +12,39 @@
 - 10 [@Component](#10-component)
 - 11 [@Bean and @Configuration](#11-bean-and-configuration)
 
+## Container overview
+
+![container-magic](images/container-magic.png)
+
+## Instantiating a container
+
+Instantiating a Spring IoC container is straightforward. The location path or paths supplied to an ApplicationContext constructor are actually resource strings that allow the container to load configuration metadata from a variety of external resources such as the local file system, from the Java CLASSPATH, and so on
+
+```java
+ApplicationContext context = new ClassPathXmlApplicationContext("services.xml", "daos.xml");
+```
+
+## Using the container
+
+The `ApplicationContext` is the interface for an advanced factory capable of maintaining a registry of different beans and their dependencies. Using the method `T getBean(String name, Class<T> requiredType)` you can retrieve instances of your beans.
+
+The `ApplicationContext` enables you to read bean definitions and access them as follows:
+
+```java
+// create and configure beans
+ApplicationContext context = new ClassPathXmlApplicationContext("services.xml", "daos.xml");
+
+// retrieve configured instance
+PetStoreService service = context.getBean("petStore", PetStoreService.class);
+
+// use configured instance
+List<String> userList = service.getUsernameList();
+```
+
+## java.beans.Introspector.decapitalize
+
+`java.beans.Introspector.decapitalize` a util to gen bean name
+
 ## 1 Lazy-initialized beans
 
 spring  延时加载
