@@ -45,6 +45,38 @@ List<String> userList = service.getUsernameList();
 
 `java.beans.Introspector.decapitalize` a util to gen bean name
 
+##Dependency Injection
+
+```xml
+<beans>
+    <bean id="foo" class="x.y.Foo">
+        <constructor-arg ref="bar"/>
+        <constructor-arg ref="baz"/>
+    </bean>
+
+    <bean id="bar" class="x.y.Bar"/>
+
+    <bean id="baz" class="x.y.Baz"/>
+</beans>
+```
+
+```xml
+<bean id="exampleBean" class="examples.ExampleBean">
+    <constructor-arg type="int" value="7500000"/>
+    <constructor-arg type="java.lang.String" value="42"/>
+</bean>
+
+<bean id="exampleBean" class="examples.ExampleBean">
+    <constructor-arg index="0" value="7500000"/>
+    <constructor-arg index="1" value="42"/>
+</bean>
+
+```
+
+## Setter-based dependency injection
+
+
+
 ## 1 Lazy-initialized beans
 
 spring  延时加载
