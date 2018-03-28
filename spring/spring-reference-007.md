@@ -45,7 +45,7 @@ List<String> userList = service.getUsernameList();
 
 `java.beans.Introspector.decapitalize` a util to gen bean name
 
-##Dependency Injection
+## Dependency Injection
 
 ```xml
 <beans>
@@ -75,8 +75,24 @@ List<String> userList = service.getUsernameList();
 
 ## Setter-based dependency injection
 
+```java
+public class SimpleMovieLister {
 
-## Constructor-based or setter-based DI?
+    // the SimpleMovieLister has a dependency on the MovieFinder
+    private MovieFinder movieFinder;
+
+    // a setter method so that the Spring container can inject a MovieFinder
+    public void setMovieFinder(MovieFinder movieFinder) {
+        this.movieFinder = movieFinder;
+    }
+
+    // business logic that actually uses the injected MovieFinder is omitted...
+}
+```
+
+The ApplicationContext supports constructor-based and setter-based DI for the beans it manages. It also supports setter-based DI after some dependencies have already been injected through the constructor approach. You configure the dependencies in the form of a BeanDefinition, which you use in conjunction with PropertyEditor instances to convert properties from one format to another. However, most Spring users do not work with these classes directly (i.e., programmatically) but rather with XML bean definitions, annotated components (i.e., classes annotated with @Component, @Controller, etc.), or @Bean methods in Java-based @Configuration classes. These sources are then converted internally into instances of BeanDefinition and used to load an entire Spring IoC container instance.
+
+## Constructor-based or setter-based DI
 
 Since you can mix constructor-based and setter-based DI, it is a good rule of thumb to use constructors for mandatory dependencies and setter methods or configuration methods for optional dependencies. Note that use of the @Required annotation on a setter method can be used to make the property a required dependency.
 
