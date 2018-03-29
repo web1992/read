@@ -281,6 +281,6 @@ Spring @Repository, @Service, and @Controller 都是基于@Component的，分开
 
 Therefore, you can annotate your component classes with @Component, but by annotating them with @Repository, @Service, or @Controller instead, your classes are more properly suited for processing by tools or associating with aspects
 
-## 11 @Bean and @Configuration
+## @Bean and @Configuration
 
 [Link](https://docs.spring.io/spring/docs/4.3.x/spring-framework-reference/htmlsingle/#beans-java-basic-concepts)
