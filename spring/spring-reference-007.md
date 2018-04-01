@@ -284,3 +284,45 @@ Therefore, you can annotate your component classes with @Component, but by annot
 ## @Bean and @Configuration
 
 [Link](https://docs.spring.io/spring/docs/4.3.x/spring-framework-reference/htmlsingle/#beans-java-basic-concepts)
+
+## AnnotationConfigApplicationContext
+
+> Building the container programmatically using register(Class<?>…​)
+
+An AnnotationConfigApplicationContext may be instantiated using a no-arg constructor and then configured using the register() method. This approach is particularly useful when programmatically building an AnnotationConfigApplicationContext.
+
+```java
+public static void main(String[] args) {
+    AnnotationConfigApplicationContext ctx = new AnnotationConfigApplicationContext();
+    ctx.register(AppConfig.class, OtherConfig.class);
+    ctx.register(AdditionalConfig.class);
+    ctx.refresh();
+    MyService myService = ctx.getBean(MyService.class);
+    myService.doStuff();
+}
+```
+
+## Enabling component scanning with scan(String…​)
+
+
+```java
+Configuration
+@ComponentScan(basePackages = "com.acme")
+public class AppConfig  {
+    ...
+}
+
+```
+
+> Experienced Spring users will be familiar with the XML declaration equivalent from Spring’s context: namespace
+
+```xml
+<beans>
+    <context:component-scan base-package="com.acme"/>
+</beans>
+
+```
+
+Remember that @Configuration classes are meta-annotated with @Component, so they are candidates for component-scanning! In the example above, assuming that AppConfig is declared within the com.acme package (or any package underneath), it will be picked up during the call to scan(), and upon refresh() all its @Bean methods will be processed and registered as bean definitions within the container.
+
+## Support for web applications with AnnotationConfigWebApplicationContext
