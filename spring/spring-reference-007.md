@@ -326,3 +326,37 @@ public class AppConfig  {
 Remember that @Configuration classes are meta-annotated with @Component, so they are candidates for component-scanning! In the example above, assuming that AppConfig is declared within the com.acme package (or any package underneath), it will be picked up during the call to scan(), and upon refresh() all its @Bean methods will be processed and registered as bean definitions within the container.
 
 ## Support for web applications with AnnotationConfigWebApplicationContext
+
+
+## Declaring a bean
+
+```java
+@Configuration
+public class AppConfig {
+
+    @Bean
+    public TransferServiceImpl transferService() {
+        return new TransferServiceImpl();
+    }
+}
+
+```
+
+## Using the @Scope annotation
+
+The default scope is singleton, but you can override this with the @Scope annotation
+
+```java
+@Configuration
+public class MyConfiguration {
+
+    @Bean
+    @Scope("prototype")
+    public Encryptor encryptor() {
+        // ...
+    }
+}
+
+```
+
+## Using the @Configuration annotation
