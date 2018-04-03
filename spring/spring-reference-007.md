@@ -360,3 +360,54 @@ public class MyConfiguration {
 ```
 
 ## Using the @Configuration annotation
+
+## PropertySource abstraction
+
+
+```java
+ApplicationContext ctx = new GenericApplicationContext();
+Environment env = ctx.getEnvironment();
+boolean containsFoo = env.containsProperty("foo");
+System.out.println("Does my environment contain the 'foo' property? " + containsFoo);
+
+```
+
+In the snippet above, we see a high-level way of asking Spring whether the foo property is defined for the current environment. To answer this question, the Environment object performs a search over a set of PropertySource objects. A PropertySource is a simple abstraction over any source of key-value pairs, and Spring’s StandardEnvironment is configured with two PropertySource objects — one representing the set of JVM system properties (a la System.getProperties()) and one representing the set of system environment variables (a la System.getenv()).
+
+- ServletConfig parameters (if applicable, e.g. in case of a DispatcherServlet context)
+- ServletContext parameters (web.xml context-param entries)
+- JNDI environment variables ("java:comp/env/" entries)
+- JVM system properties ("-D" command-line arguments)
+- JVM system environment (operating system environment variables)
+
+
+## PropertySource
+
+```java
+@Configuration
+@PropertySource("classpath:/com/myco/app.properties")
+public class AppConfig {
+
+    @Autowired
+    Environment env;
+
+    @Bean
+    public TestBean testBean() {
+        TestBean testBean = new TestBean();
+        testBean.setName(env.getProperty("testbean.name"));
+        return testBean;
+    }
+}
+
+```
+
+
+> Placeholder resolution in statements
+
+
+```xml
+<beans>
+    <import resource="com/bank/service/${customer}-config.xml"/>
+</beans>
+
+```
