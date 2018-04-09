@@ -501,3 +501,15 @@ The resulting output from the running of the above program will be…​
 Ebagum lad, the 'userDao' argument is required, I say, required.
 
 `ReloadableResourceBundleMessageSource`
+
+## Standard and custom events
+
+- `ApplicationListener`
+- `ApplicationEvent`
+- `ContextRefreshedEvent`
+- `ContextStartedEvent`
+- `ContextStoppedEvent`
+- `ContextClosedEvent`
+- `RequestHandledEvent`
+
+Spring’s eventing mechanism is designed for simple communication between Spring beans within the same application context. However, for more sophisticated enterprise integration needs, the separately-maintained Spring Integration project provides complete support for building lightweight, pattern-oriented, event-driven architectures that build upon the well-known Spring programming model.
