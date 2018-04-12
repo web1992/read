@@ -6,4 +6,4 @@
 
 - [lambda](lambda.md)
 - [stream](stream.md)
-- [default methond](default-methond.md)
+- [default methond](default-method.md)
