@@ -123,6 +123,96 @@ One possible solution is to edit the source code of some classes to be configure
 
 Unlike the typical case (with no circular dependencies), a circular dependency between bean A and bean B forces one of the beans to be injected into the other prior to being fully initialized itself (a classic chicken/egg scenario).
 
+## Examples of dependency injection
+
+The following example uses XML-based configuration metadata for setter-based DI. A small part of a Spring XML configuration file specifies some bean definitions:
+
+```xml
+<bean id="exampleBean" class="examples.ExampleBean">
+    <!-- setter injection using the nested ref element -->
+    <property name="beanOne">
+        <ref bean="anotherExampleBean"/>
+    </property>
+
+    <!-- setter injection using the neater ref attribute -->
+    <property name="beanTwo" ref="yetAnotherBean"/>
+    <property name="integerProperty" value="1"/>
+</bean>
+
+<bean id="anotherExampleBean" class="examples.AnotherBean"/>
+<bean id="yetAnotherBean" class="examples.YetAnotherBean"/>
+```
+
+In the preceding example, setters are declared to match against the properties specified in the XML file. The following example uses constructor-based DI:
+
+```xml
+<bean id="exampleBean" class="examples.ExampleBean">
+    <!-- constructor injection using the nested ref element -->
+    <constructor-arg>
+        <ref bean="anotherExampleBean"/>
+    </constructor-arg>
+
+    <!-- constructor injection using the neater ref attribute -->
+    <constructor-arg ref="yetAnotherBean"/>
+
+    <constructor-arg type="int" value="1"/>
+</bean>
+
+<bean id="anotherExampleBean" class="examples.AnotherBean"/>
+<bean id="yetAnotherBean" class="examples.YetAnotherBean"/>
+
+```
+
+## Dependencies and configuration in detail
+
+[link](https://docs.spring.io/spring/docs/4.3.x/spring-framework-reference/htmlsingle/#beans-factory-properties-detailed)
+
+## Collections
+
+
+In the <list/>, <set/>, <map/>, and <props/> elements, you set the properties and arguments of the Java Collection types List, Set, Map, and Properties, respectively.
+
+```xml
+<bean id="moreComplexObject" class="example.ComplexObject">
+    <!-- results in a setAdminEmails(java.util.Properties) call -->
+    <property name="adminEmails">
+        <props>
+            <prop key="administrator">administrator@example.org</prop>
+            <prop key="support">support@example.org</prop>
+            <prop key="development">development@example.org</prop>
+        </props>
+    </property>
+    <!-- results in a setSomeList(java.util.List) call -->
+    <property name="someList">
+        <list>
+            <value>a list element followed by a reference</value>
+            <ref bean="myDataSource" />
+        </list>
+    </property>
+    <!-- results in a setSomeMap(java.util.Map) call -->
+    <property name="someMap">
+        <map>
+            <entry key="an entry" value="just some string"/>
+            <entry key ="a ref" value-ref="myDataSource"/>
+        </map>
+    </property>
+    <!-- results in a setSomeSet(java.util.Set) call -->
+    <property name="someSet">
+        <set>
+            <value>just some string</value>
+            <ref bean="myDataSource" />
+        </set>
+    </property>
+</bean>
+
+```
+The value of a map key or value, or a set value, can also again be any of the following elements:
+
+> bean | ref | idref | list | set | map | props | value | null
+
+
+## References to other beans (collaborators)
+
 
 
 
