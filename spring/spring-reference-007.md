@@ -293,7 +293,7 @@ public class CommandManager implements ApplicationContextAware {
 }
 
 ```
-## 4 Method injection
+## Method injection
 
 [Link](https://docs.spring.io/spring/docs/4.3.x/spring-framework-reference/htmlsingle/#beans-factory-method-injection)
 
@@ -330,12 +330,89 @@ public class CommandManager implements ApplicationContextAware {
 
 
 
-## 5 Dependency Injection
+## Dependency Injection
 
 - Constructor-based dependency injection [Link](https://docs.spring.io/spring/docs/4.3.x/spring-framework-reference/htmlsingle/#beans-constructor-injection)
 - Setter-based dependency injection [Link](https://docs.spring.io/spring/docs/4.3.x/spring-framework-reference/htmlsingle/#beans-setter-injection)
 
-## 6 @Resource
+
+## The singleton scope
+
+![singleton](./images/singleton.png)
+
+## The prototype scope
+
+![prototype](./images/prototype.png)
+
+In contrast to the other scopes, Spring does not manage the complete lifecycle of a prototype bean: the container instantiates, configures, and otherwise assembles a prototype object, and hands it to the client, with no further record of that prototype instance. Thus, although initialization lifecycle callback methods are called on all objects regardless of scope, in the case of prototypes, configured destruction lifecycle callbacks are not called. The client code must clean up prototype-scoped objects and release expensive resources that the prototype bean(s) are holding. To get the Spring container to release resources held by prototype-scoped beans, try using a custom bean post-processor, which holds a reference to beans that need to be cleaned up.
+
+In some respects, the Spring container’s role in regard to a prototype-scoped bean is a replacement for the Java new operator. All lifecycle management past that point must be handled by the client. (For details on the lifecycle of a bean in the Spring container, see Section 7.6.1, “Lifecycle callbacks”.)
+
+## Request scope
+
+every HTTP request
+
+## Session scope
+
+a single HTTP Session.
+
+## Global session scope
+
+a single portlet web application
+
+## Application scope
+
+It is a singleton per ServletContext,
+
+##Custom scopes
+
+`org.springframework.beans.factory.config.Scope`
+
+```java
+    Object get(String name, ObjectFactory objectFactory)
+    Object remove(String name)
+    void registerDestructionCallback(String name, Runnable destructionCallback)
+    String getConversationId()
+```
+
+## Using a custom scope
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:aop="http://www.springframework.org/schema/aop"
+    xsi:schemaLocation="http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/aop
+        http://www.springframework.org/schema/aop/spring-aop.xsd">
+
+    <bean class="org.springframework.beans.factory.config.CustomScopeConfigurer">
+        <property name="scopes">
+            <map>
+                <entry key="thread">
+                    <bean class="org.springframework.context.support.SimpleThreadScope"/>
+                </entry>
+            </map>
+        </property>
+    </bean>
+
+    <bean id="bar" class="x.y.Bar" scope="thread">
+        <property name="name" value="Rick"/>
+        <aop:scoped-proxy/>
+    </bean>
+
+    <bean id="foo" class="x.y.Foo">
+        <property name="bar" ref="bar"/>
+    </bean>
+
+</beans>
+
+```
+
+## Using a custom scope
+
+## @Resource
 
 [Link](https://docs.spring.io/spring/docs/4.3.x/spring-framework-reference/htmlsingle/#beans-resource-annotation)
 
@@ -354,7 +431,7 @@ public class SimpleMovieLister {
 }
 ```
 
-## 7 Autowired VS Resource
+## Autowired VS Resource
 
 > @Autowired applies to fields, constructors, and multi-argument methods, allowing for narrowing through qualifier annotations at the parameter level. By contrast, @Resource is supported only for fields and bean property setter methods with a single argument. As a consequence, stick with qualifiers if your injection target is a constructor or a multi-argument method.
 
@@ -388,7 +465,7 @@ public @interface Resource {
 }
 ```
 
-## 8 aop:scoped-proxy
+## aop:scoped-proxy
 
 [Link](https://docs.spring.io/spring/docs/4.3.x/spring-framework-reference/htmlsingle/#beans-factory-scopes-other-injection)
 
@@ -407,7 +484,7 @@ public @interface Resource {
 
 如果没有`<aop:scoped-proxy/>` spring 在启动的时候会报错
 
-## 9 @PostConstruct and @PreDestroy
+## @PostConstruct and @PreDestroy
 
 [Link](https://docs.spring.io/spring/docs/4.3.x/spring-framework-reference/htmlsingle/#beans-postconstruct-and-predestroy-annotations)
 
@@ -415,7 +492,7 @@ public @interface Resource {
 
 @PreDestroy  `<bean class="" destroy-method="shutdown">`
 
-## 10 @Component
+## @Component
 
 [Link](https://docs.spring.io/spring/docs/4.3.x/spring-framework-reference/htmlsingle/#beans-stereotype-annotations)
 
