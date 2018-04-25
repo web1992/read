@@ -490,7 +490,38 @@ public class AnotherExampleBean implements DisposableBean {
 but does not couple the code to Spring.
 
 
+## Default initialization and destroy methods
 
+You can configure the Spring container to look for named initialization and destroy callback method names on every bean. This means that you, as an application developer, can write your application classes and use an initialization callback called init(), without having to configure an init-method="init" attribute with each bean definition. The Spring IoC container calls that method when the bean is created (and in accordance with the standard lifecycle callback contract described previously). This feature also enforces a consistent naming convention for initialization and destroy method callbacks.
+
+
+
+```xml
+<beans default-init-method="init">
+
+    <bean id="blogService" class="com.foo.DefaultBlogService">
+        <property name="blogDao" ref="blogDao" />
+    </bean>
+
+</beans>
+
+```
+
+## Combining lifecycle mechanisms
+
+Multiple lifecycle mechanisms configured for the same bean, with different initialization methods, are called as follows:
+
+Methods annotated with @PostConstruct
+afterPropertiesSet() as defined by the InitializingBean callback interface
+A custom configured init() method
+Destroy methods are called in the same order:
+
+Methods annotated with @PreDestroy
+destroy() as defined by the DisposableBean callback interface
+A custom configured destroy() method
+
+
+## ApplicationContextAware and BeanNameAware
 
 ## @Resource
 
