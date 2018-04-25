@@ -364,7 +364,7 @@ a single portlet web application
 
 It is a singleton per ServletContext,
 
-##Custom scopes
+## Custom scopes
 
 `org.springframework.beans.factory.config.Scope`
 
@@ -410,7 +410,87 @@ It is a singleton per ServletContext,
 
 ```
 
-## Using a custom scope
+## Lifecycle callbacks
+
+`InitializingBean`
+`DisposableBean`
+`@PostConstruct`
+`@PreDestroy`
+`BeanPostProcessor`
+`Lifecycle`
+
+Internally, the Spring Framework uses BeanPostProcessor implementations to process any callback interfaces it can find and call the appropriate methods. If you need custom features or other lifecycle behavior Spring does not offer out-of-the-box, you can implement a BeanPostProcessor yourself. For more information, see Section 7.8, “Container Extension Points”.
+
+In addition to the initialization and destruction callbacks, Spring-managed objects may also implement the Lifecycle interface so that those objects can participate in the startup and shutdown process as driven by the container’s own lifecycle.
+
+The lifecycle callback interfaces are described in this section.
+
+## Initialization callbacks
+
+```java
+org.springframework.beans.factory.InitializingBean
+
+void afterPropertiesSet() throws Exception;
+
+```
+
+```xml
+<bean id="exampleInitBean" class="examples.ExampleBean" init-method="init"/>
+public class ExampleBean {
+
+    public void init() {
+        // do some initialization work
+    }
+}
+```
+
+…​is exactly the same as…​
+
+```xml
+<bean id="exampleInitBean" class="examples.AnotherExampleBean"/>
+```
+
+```java
+public class AnotherExampleBean implements InitializingBean {
+
+    public void afterPropertiesSet() {
+        // do some initialization work
+    }
+}
+```
+
+but does not couple the code to Spring.
+
+## Destruction callbacks
+```xml
+<bean id="exampleInitBean" class="examples.ExampleBean" destroy-method="cleanup"/>
+```
+```java
+public class ExampleBean {
+
+    public void cleanup() {
+        // do some destruction work (like releasing pooled connections)
+    }
+}
+```
+
+is exactly the same as:
+
+```xml
+<bean id="exampleInitBean" class="examples.AnotherExampleBean"/>
+```
+```java
+public class AnotherExampleBean implements DisposableBean {
+
+    public void destroy() {
+        // do some destruction work (like releasing pooled connections)
+    }
+}
+```
+but does not couple the code to Spring.
+
+
+
 
 ## @Resource
 
