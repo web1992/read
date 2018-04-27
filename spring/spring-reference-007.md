@@ -523,6 +523,24 @@ A custom configured destroy() method
 
 ## ApplicationContextAware and BeanNameAware
 
+`org.springframework.context.ApplicationContextAware`
+
+```java
+public interface ApplicationContextAware {
+
+    void setApplicationContext(ApplicationContext applicationContext) throws BeansException;
+}
+
+public interface BeanNameAware {
+
+    void setBeanName(String name) throws BeansException;
+}
+
+```
+
+Note again that usage of these interfaces ties your code to the Spring API and does not follow the Inversion of Control style. As such, they are recommended for `infrastructure` beans that require programmatic access to the container.
+
+
 ## @Resource
 
 [Link](https://docs.spring.io/spring/docs/4.3.x/spring-framework-reference/htmlsingle/#beans-resource-annotation)
