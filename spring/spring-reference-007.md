@@ -631,7 +631,40 @@ A bean definition can contain a lot of configuration information, including cons
     <property name="password" value="${jdbc.password}"/>
 </bean>
 
+<context:property-placeholder location="classpath:com/foo/jdbc.properties"/>
+
 ```
+
+## Customizing instantiation logic with a FactoryBean
+
+`FactoryBean`
+
+The FactoryBean interface provides three methods:
+
+Object getObject(): returns an instance of the object this factory creates. The instance can possibly be shared, depending on whether this factory returns singletons or prototypes.
+boolean isSingleton(): returns true if this FactoryBean returns singletons, false otherwise.
+Class getObjectType(): returns the object type returned by the getObject() method or null if the type is not known in advance.
+
+## Annotation-based container configuration
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:context="http://www.springframework.org/schema/context"
+    xsi:schemaLocation="http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/context
+        http://www.springframework.org/schema/context/spring-context.xsd">
+
+    <context:annotation-config/>
+
+</beans>
+
+```
+(The implicitly registered post-processors include `AutowiredAnnotationBeanPostProcessor`, `CommonAnnotationBeanPostProcessor`, `PersistenceAnnotationBeanPostProcessor`, as well as the aforementioned `RequiredAnnotationBeanPostProcessor`.)
+
+<context:annotation-config/> only looks for annotations on beans in the same application context in which it is defined. This means that, if you put <context:annotation-config/> in a WebApplicationContext for a DispatcherServlet, it only checks for @Autowired beans in your controllers, and not your services. See Section 22.2, “The DispatcherServlet” for more information.
 
 ## @Resource
 
