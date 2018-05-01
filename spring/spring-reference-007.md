@@ -871,6 +871,32 @@ public class AppConfig  {
 
 Remember that @Configuration classes are meta-annotated with @Component, so they are candidates for component-scanning! In the example above, assuming that AppConfig is declared within the com.acme package (or any package underneath), it will be picked up during the call to scan(), and upon refresh() all its @Bean methods will be processed and registered as bean definitions within the container.
 
+## Using filters to customize scanning
+
+The following example shows the configuration ignoring all @Repository annotations and using "stub" repositories instead.
+
+```java
+@Configuration
+@ComponentScan(basePackages = "org.example",
+        includeFilters = @Filter(type = FilterType.REGEX, pattern = ".*Stub.*Repository"),
+        excludeFilters = @Filter(Repository.class))
+public class AppConfig {
+    ...
+}
+```
+and the equivalent using XML
+
+```xml
+<beans>
+    <context:component-scan base-package="org.example">
+        <context:include-filter type="regex"
+                expression=".*Stub.*Repository"/>
+        <context:exclude-filter type="annotation"
+                expression="org.springframework.stereotype.Repository"/>
+    </context:component-scan>
+</beans>
+```
+
 ## Support for web applications with AnnotationConfigWebApplicationContext
 
 
