@@ -1081,6 +1081,8 @@ Assuming that "my.placeholder" is present in one of the property sources already
 
 ## Additional capabilities of the ApplicationContext
 
+`MessageSource` 实现多语言切换
+
 The ApplicationContext interface extends an interface called MessageSource, and therefore provides internationalization (i18n) functionality. Spring also provides the interface HierarchicalMessageSource, which can resolve messages hierarchically. Together these interfaces provide the foundation upon which Spring effects message resolution. The methods defined on these interfaces include:
 
 - String getMessage(String code, Object[] args, String default, Locale loc): The basic method used to retrieve a message from the MessageSource. When no message is found for the specified locale, the default message is used. Any arguments passed in become replacement values, using the MessageFormat functionality provided by the standard library.
@@ -1170,6 +1172,9 @@ Ebagum lad, the 'userDao' argument is required, I say, required.
 `ReloadableResourceBundleMessageSource`
 
 ## Standard and custom events
+
+Event handling in the ApplicationContext is provided through the ApplicationEvent class and ApplicationListener interface. If a bean that implements the ApplicationListener interface is deployed into the context, every time an ApplicationEvent gets published to the ApplicationContext, that bean is notified. Essentially, this is the standard Observer design pattern.
+
 
 - `ApplicationListener`
 - `ApplicationEvent`
