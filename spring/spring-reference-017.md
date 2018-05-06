@@ -25,7 +25,18 @@ Excellent integration with Spring’s data access abstractions.
 
 ## Global transactions
 
-## 1 PlatformTransactionManager
+Global transactions enable you to work with multiple transactional resources, typically relational databases and message queues
+
+## Local transactions
+
+Local transactions are resource-specific, such as a transaction associated with a JDBC connection. Local transactions may be easier to use, but have significant disadvantages: they cannot work across multiple transactional resources. For example, code that manages transactions using a JDBC connection cannot run within a global JTA transaction. Because the application server is not involved in transaction management, it cannot help ensure correctness across multiple resources. (It is worth noting that most applications use a single transaction resource.) Another downside is that local transactions are invasive to the programming model.
+
+
+
+## Understanding the Spring Framework transaction abstraction
+
+The key to the Spring transaction abstraction is the notion of a transaction strategy. A transaction strategy is defined by the org.springframework.transaction.PlatformTransactionManager interface:
+
 
 [Link](https://docs.spring.io/spring/docs/4.3.x/spring-framework-reference/htmlsingle/#transaction-strategies)
 
@@ -71,6 +82,29 @@ public interface TransactionStatus extends SavepointManager {
     boolean isCompleted();
 
 }
+```
+
+## DataSourceTransactionManager
+
+PlatformTransactionManager implementations normally require knowledge of the environment in which they work: JDBC, JTA, Hibernate, and so on. The following examples show how you can define a local PlatformTransactionManager implementation. (This example works with plain JDBC.)
+
+You define a JDBC DataSource
+
+```xml
+<bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
+    <property name="driverClassName" value="${jdbc.driverClassName}" />
+    <property name="url" value="${jdbc.url}" />
+    <property name="username" value="${jdbc.username}" />
+    <property name="password" value="${jdbc.password}" />
+</bean>
+```
+
+The related PlatformTransactionManager bean definition will then have a reference to the DataSource definition. It will look like this:
+
+```xml
+<bean id="txManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+    <property name="dataSource" ref="dataSource"/>
+</bean>
 ```
 
 ## 4 tx-advice-settings
