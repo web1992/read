@@ -113,6 +113,9 @@ The concept of rollback rules is important: they enable you to specify which exc
 
 Although EJB container default behavior automatically rolls back the transaction on a system exception (usually a runtime exception), EJB CMT does not roll back the transaction automatically on anapplication exception (that is, a checked exception other than java.rmi.RemoteException). While the Spring default behavior for declarative transaction management follows EJB convention (roll back is automatic only on unchecked exceptions), it is often useful to customize this behavior.
 
+## Understanding the Spring Framework’s declarative transaction implementation
+
+![tx](./images/tx.png)
 
 ## 4 tx-advice-settings
 
