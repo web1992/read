@@ -10,6 +10,21 @@
 - 08 [Advising transactional operations](#8-advising-transactional-operations)
 - 09 [Programmatic transaction management](#9-programmatic-transaction-management)
 
+## Introduction to Spring Framework transaction management
+
+Consistent programming model across different transaction APIs such as Java Transaction API (JTA), JDBC, Hibernate, Java Persistence API (JPA), and Java Data Objects (JDO).
+Support for declarative transaction management.
+Simpler API for programmatic transaction management than complex transaction APIs such as JTA.
+Excellent integration with Spring’s data access abstractions.
+
+
+- Consistent programming model across different transaction APIs such as Java Transaction API (JTA), JDBC, Hibernate, Java Persistence API (JPA), and Java Data Objects (JDO).
+- Support for declarative transaction management.
+- Simpler API for programmatic transaction management than complex transaction APIs such as JTA.
+- Excellent integration with Spring’s data access abstractions.
+
+## Global transactions
+
 ## 1 PlatformTransactionManager
 
 [Link](https://docs.spring.io/spring/docs/4.3.x/spring-framework-reference/htmlsingle/#transaction-strategies)
