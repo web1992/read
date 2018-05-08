@@ -115,6 +115,10 @@ Although EJB container default behavior automatically rolls back the transaction
 
 ## Understanding the Spring Framework’s declarative transaction implementation
 
+The most important concepts to grasp with regard to the Spring Framework’s declarative transaction support are that this support is enabled via AOP proxies, and that the transactional advice is driven by metadata (currently XML- or annotation-based). The combination of AOP with transactional metadata yields an AOP proxy that uses a `TransactionInterceptor` in conjunction with an appropriate `PlatformTransactionManager` implementation to drive transactions around method invocations.
+
+
+
 ![tx](./images/tx.png)
 
 ## 4 tx-advice-settings
