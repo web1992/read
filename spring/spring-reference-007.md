@@ -39,22 +39,32 @@
 - 37 [customizing-beans-using-a-beanpostprocessor](#customizing-beans-using-a-beanpostprocessor)
 - 38 [customizing-configuration-metadata-with-a-beanfactorypostprocessor](#customizing-configuration-metadata-with-a-beanfactorypostprocessor)
 - 39 [example:-the-class-name-substitution-propertyplaceholderconfigurer](#example:-the-class-name-substitution-propertyplaceholderconfigurer)
-- 40 [resource](#resource)
-- 41 [autowired-vs-resource](#autowired-vs-resource)
-- 42 [aop:scoped-proxy](#aop:scoped-proxy)
-- 43 [postconstruct-and-predestroy](#postconstruct-and-predestroy)
-- 44 [component](#component)
-- 45 [bean-and-configuration](#bean-and-configuration)
-- 46 [annotationconfigapplicationcontext](#annotationconfigapplicationcontext)
-- 47 [enabling-component-scanning-with-scanstring…​](#enabling-component-scanning-with-scanstring…​)
-- 48 [support-for-web-applications-with-annotationconfigwebapplicationcontext](#support-for-web-applications-with-annotationconfigwebapplicationcontext)
-- 49 [declaring-a-bean](#declaring-a-bean)
-- 50 [using-the-scope-annotation](#using-the-scope-annotation)
-- 51 [using-the-configuration-annotation](#using-the-configuration-annotation)
-- 52 [propertysource-abstraction](#propertysource-abstraction)
-- 53 [propertysource](#propertysource)
-- 54 [additional-capabilities-of-the-applicationcontext](#additional-capabilities-of-the-applicationcontext)
-- 55 [standard-and-custom-events](#standard-and-custom-events)
+- 40 [customizing-instantiation-logic-with-a-factorybean](#customizing-instantiation-logic-with-a-factorybean)
+- 41 [annotation-based-container-configuration](#annotation-based-container-configuration)
+- 42 [autowired](#autowired)
+- 43 [primary-and-qualifier](#primary-and-qualifier)
+- 44 [resource](#resource)
+- 45 [autowired-vs-resource](#autowired-vs-resource)
+- 46 [aop:scoped-proxy](#aop:scoped-proxy)
+- 47 [postconstruct-and-predestroy](#postconstruct-and-predestroy)
+- 48 [component](#component)
+- 49 [bean-and-configuration](#bean-and-configuration)
+- 50 [annotationconfigapplicationcontext](#annotationconfigapplicationcontext)
+- 51 [enabling-component-scanning-with-scanstring…​](#enabling-component-scanning-with-scanstring…​)
+- 52 [using-filters-to-customize-scanning](#using-filters-to-customize-scanning)
+- 53 [support-for-web-applications-with-annotationconfigwebapplicationcontext](#support-for-web-applications-with-annotationconfigwebapplicationcontext)
+- 54 [declaring-a-bean](#declaring-a-bean)
+- 55 [using-the-scope-annotation](#using-the-scope-annotation)
+- 56 [using-the-configuration-annotation](#using-the-configuration-annotation)
+- 57 [environment-abstraction](#environment-abstraction)
+- 58 [profile](#profile)
+- 59 [activating-a-profile](#activating-a-profile)
+- 60 [default-profile](#default-profile)
+- 61 [propertysource-abstraction](#propertysource-abstraction)
+- 62 [propertysource](#propertysource)
+- 63 [additional-capabilities-of-the-applicationcontext](#additional-capabilities-of-the-applicationcontext)
+- 64 [standard-and-custom-events](#standard-and-custom-events)
+- 65 [the-beanfactory](#the-beanfactory)
 
 
 ## Container overview
@@ -631,6 +641,112 @@ A bean definition can contain a lot of configuration information, including cons
     <property name="password" value="${jdbc.password}"/>
 </bean>
 
+<context:property-placeholder location="classpath:com/foo/jdbc.properties"/>
+
+```
+
+## Customizing instantiation logic with a FactoryBean
+
+`FactoryBean`
+
+The FactoryBean interface provides three methods:
+
+Object getObject(): returns an instance of the object this factory creates. The instance can possibly be shared, depending on whether this factory returns singletons or prototypes.
+boolean isSingleton(): returns true if this FactoryBean returns singletons, false otherwise.
+Class getObjectType(): returns the object type returned by the getObject() method or null if the type is not known in advance.
+
+## Annotation-based container configuration
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:context="http://www.springframework.org/schema/context"
+    xsi:schemaLocation="http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/context
+        http://www.springframework.org/schema/context/spring-context.xsd">
+
+    <context:annotation-config/>
+
+</beans>
+
+```
+(The implicitly registered post-processors include `AutowiredAnnotationBeanPostProcessor`, `CommonAnnotationBeanPostProcessor`, `PersistenceAnnotationBeanPostProcessor`, as well as the aforementioned `RequiredAnnotationBeanPostProcessor`.)
+
+<context:annotation-config/> only looks for annotations on beans in the same application context in which it is defined. This means that, if you put <context:annotation-config/> in a WebApplicationContext for a DispatcherServlet, it only checks for @Autowired beans in your controllers, and not your services. See Section 22.2, “The DispatcherServlet” for more information.
+
+## @Autowired
+
+You can also use @Autowired for interfaces that are well-known resolvable dependencies: BeanFactory, ApplicationContext, Environment, ResourceLoader, ApplicationEventPublisher, and MessageSource. These interfaces and their extended interfaces, such as ConfigurableApplicationContext or ResourcePatternResolver, are automatically resolved, with no special setup necessary.
+
+## @Primary and @Qualifier
+
+[link](https://docs.spring.io/spring/docs/4.3.x/spring-framework-reference/htmlsingle/#beans-autowired-annotation-qualifiers)
+
+```java
+public class MovieRecommender {
+
+    @Autowired
+    @Qualifier("main")
+    private MovieCatalog movieCatalog;
+
+    // ...
+}
+
+// The @Qualifier annotation can also be specified on individual constructor arguments or method parameters:
+
+
+
+public class MovieRecommender {
+
+    private MovieCatalog movieCatalog;
+
+    private CustomerPreferenceDao customerPreferenceDao;
+
+    @Autowired
+    public void prepare(@Qualifier("main")MovieCatalog movieCatalog,
+            CustomerPreferenceDao customerPreferenceDao) {
+        this.movieCatalog = movieCatalog;
+        this.customerPreferenceDao = customerPreferenceDao;
+    }
+
+    // ...
+}
+
+
+```
+
+The corresponding bean definitions appear as follows. The bean with qualifier value "main" is wired with the constructor argument that is qualified with the same value.
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:context="http://www.springframework.org/schema/context"
+    xsi:schemaLocation="http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/context
+        http://www.springframework.org/schema/context/spring-context.xsd">
+
+    <context:annotation-config/>
+
+    <bean class="example.SimpleMovieCatalog">
+        <qualifier value="main"/>
+
+        <!-- inject any dependencies required by this bean -->
+    </bean>
+
+    <bean class="example.SimpleMovieCatalog">
+        <qualifier value="action"/>
+
+        <!-- inject any dependencies required by this bean -->
+    </bean>
+
+    <bean id="movieRecommender" class="example.MovieRecommender"/>
+
+</beans>
+
 ```
 
 ## @Resource
@@ -765,6 +881,32 @@ public class AppConfig  {
 
 Remember that @Configuration classes are meta-annotated with @Component, so they are candidates for component-scanning! In the example above, assuming that AppConfig is declared within the com.acme package (or any package underneath), it will be picked up during the call to scan(), and upon refresh() all its @Bean methods will be processed and registered as bean definitions within the container.
 
+## Using filters to customize scanning
+
+The following example shows the configuration ignoring all @Repository annotations and using "stub" repositories instead.
+
+```java
+@Configuration
+@ComponentScan(basePackages = "org.example",
+        includeFilters = @Filter(type = FilterType.REGEX, pattern = ".*Stub.*Repository"),
+        excludeFilters = @Filter(Repository.class))
+public class AppConfig {
+    ...
+}
+```
+and the equivalent using XML
+
+```xml
+<beans>
+    <context:component-scan base-package="org.example">
+        <context:include-filter type="regex"
+                expression=".*Stub.*Repository"/>
+        <context:exclude-filter type="annotation"
+                expression="org.springframework.stereotype.Repository"/>
+    </context:component-scan>
+</beans>
+```
+
 ## Support for web applications with AnnotationConfigWebApplicationContext
 
 
@@ -801,6 +943,80 @@ public class MyConfiguration {
 
 ## Using the @Configuration annotation
 
+
+## Environment abstraction
+
+The Environment is an abstraction integrated in the container that models two key aspects of the application environment: profiles and properties.
+
+A profile is a named, logical group of bean definitions to be registered with the container only if the given profile is active. Beans may be assigned to a profile whether defined in XML or via annotations. The role of the Environment object with relation to profiles is in determining which profiles (if any) are currently active, and which profiles (if any) should be active by default.
+
+Properties play an important role in almost all applications, and may originate from a variety of sources: properties files, JVM system properties, system environment variables, JNDI, servlet context parameters, ad-hoc Properties objects, Maps, and so on. The role of the Environment object with relation to properties is to provide the user with a convenient service interface for configuring property sources and resolving properties from them.
+
+## @Profile
+
+```xml
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:jdbc="http://www.springframework.org/schema/jdbc"
+    xmlns:jee="http://www.springframework.org/schema/jee"
+    xsi:schemaLocation="...">
+
+    <!-- other bean definitions -->
+
+    <beans profile="development">
+        <jdbc:embedded-database id="dataSource">
+            <jdbc:script location="classpath:com/bank/config/sql/schema.sql"/>
+            <jdbc:script location="classpath:com/bank/config/sql/test-data.sql"/>
+        </jdbc:embedded-database>
+    </beans>
+
+    <beans profile="production">
+        <jee:jndi-lookup id="dataSource" jndi-name="java:comp/env/jdbc/datasource"/>
+    </beans>
+</beans>
+
+```
+## Activating a profile
+
+Activating a profile can be done in several ways, but the most straightforward is to do it programmatically against the Environment API which is available via an ApplicationContext:
+
+```java
+AnnotationConfigApplicationContext ctx = new AnnotationConfigApplicationContext();
+ctx.getEnvironment().setActiveProfiles("development");
+ctx.register(SomeConfig.class, StandaloneDataConfig.class, JndiDataConfig.class);
+ctx.refresh();
+
+```
+Note that profiles are not an "either-or" proposition; it is possible to activate multiple profiles at once. Programmatically, simply provide multiple profile names to the setActiveProfiles() method, which accepts String…​ varargs:
+
+```java
+ctx.getEnvironment().setActiveProfiles("profile1", "profile2");
+```
+
+Declaratively, spring.profiles.active may accept a comma-separated list of profile names:
+
+`-Dspring.profiles.active="profile1,profile2"`
+
+## Default profile
+
+```java
+@Configuration
+@Profile("default")
+public class DefaultDataConfig {
+
+    @Bean
+    public DataSource dataSource() {
+        return new EmbeddedDatabaseBuilder()
+            .setType(EmbeddedDatabaseType.HSQL)
+            .addScript("classpath:com/bank/config/sql/schema.sql")
+            .build();
+    }
+}
+
+```
+
+The name of the default profile can be changed using setDefaultProfiles() on the Environment or declaratively using the `spring.profiles.default` property
+
 ## PropertySource abstraction
 
 
@@ -812,7 +1028,7 @@ System.out.println("Does my environment contain the 'foo' property? " + contains
 
 ```
 
-In the snippet above, we see a high-level way of asking Spring whether the foo property is defined for the current environment. To answer this question, the Environment object performs a search over a set of PropertySource objects. A PropertySource is a simple abstraction over any source of key-value pairs, and Spring’s StandardEnvironment is configured with two PropertySource objects — one representing the set of JVM system properties (a la System.getProperties()) and one representing the set of system environment variables (a la System.getenv()).
+In the snippet above, we see a high-level way of asking Spring whether the foo property is defined for the current environment. To answer this question, the Environment object performs a search over a set of `PropertySource` objects. A `PropertySource` is a simple abstraction over any source of key-value pairs, and Spring’s `StandardEnvironment` is configured with two PropertySource objects — one representing the set of JVM system properties (a la `System.getProperties()`) and one representing the set of system environment variables (a la `System.getenv()`).
 
 - ServletConfig parameters (if applicable, e.g. in case of a DispatcherServlet context)
 - ServletContext parameters (web.xml context-param entries)
@@ -841,6 +1057,27 @@ public class AppConfig {
 
 ```
 
+```java
+Configuration
+@PropertySource("classpath:/com/${my.placeholder:default/path}/app.properties")
+public class AppConfig {
+
+    @Autowired
+    Environment env;
+
+    @Bean
+    public TestBean testBean() {
+        TestBean testBean = new TestBean();
+        testBean.setName(env.getProperty("testbean.name"));
+        return testBean;
+    }
+}
+
+```
+
+Assuming that "my.placeholder" is present in one of the property sources already registered, e.g. system properties or environment variables, the placeholder will be resolved to the corresponding value. If not, then "`default/path`" will be used as a default. If no default is specified and a property cannot be resolved, an `IllegalArgumentException` will be thrown.
+
+
 
 > Placeholder resolution in statements
 
@@ -853,6 +1090,8 @@ public class AppConfig {
 ```
 
 ## Additional capabilities of the ApplicationContext
+
+`MessageSource` 实现多语言切换
 
 The ApplicationContext interface extends an interface called MessageSource, and therefore provides internationalization (i18n) functionality. Spring also provides the interface HierarchicalMessageSource, which can resolve messages hierarchically. Together these interfaces provide the foundation upon which Spring effects message resolution. The methods defined on these interfaces include:
 
@@ -944,6 +1183,9 @@ Ebagum lad, the 'userDao' argument is required, I say, required.
 
 ## Standard and custom events
 
+Event handling in the ApplicationContext is provided through the ApplicationEvent class and ApplicationListener interface. If a bean that implements the ApplicationListener interface is deployed into the context, every time an ApplicationEvent gets published to the ApplicationContext, that bean is notified. Essentially, this is the standard Observer design pattern.
+
+
 - `ApplicationListener`
 - `ApplicationEvent`
 - `ContextRefreshedEvent`
@@ -953,3 +1195,10 @@ Ebagum lad, the 'userDao' argument is required, I say, required.
 - `RequestHandledEvent`
 
 Spring’s eventing mechanism is designed for simple communication between Spring beans within the same application context. However, for more sophisticated enterprise integration needs, the separately-maintained Spring Integration project provides complete support for building lightweight, pattern-oriented, event-driven architectures that build upon the well-known Spring programming model.
+
+## The BeanFactory
+
+The BeanFactory provides the underlying basis for Spring’s IoC functionality but it is only used directly in integration with other third-party frameworks and is now largely historical in nature for most users of Spring. The BeanFactory and related interfaces, such as BeanFactoryAware, InitializingBean, DisposableBean, are still present in Spring for the purposes of backward compatibility with the large number of third-party frameworks that integrate with Spring. Often third-party components that can not use more modern equivalents such as @PostConstruct or @PreDestroy in order to avoid a dependency on JSR-250.
+
+This section provides additional background into the differences between the BeanFactory and ApplicationContext and how one might access the IoC container directly through a classic singleton lookup.
+
