@@ -12,10 +12,13 @@
 ### filter
 
 ```java
-    List<String> list=Arrays.asList("java","stream","filter")
-    list.stream()
-        .filter(str.length()>4)
-        .collect(toList());
+    List<String> list= Arrays.asList("java","stream","filter");
+    List<String> afterList = list
+                        .stream()
+                        .filter(str -> str.length() > 4)
+                        .collect(toList());
+    System.out.println(afterList);
+    // [stream, filter]
 ```
 
 ### distinct
