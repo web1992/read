@@ -2,4 +2,5 @@
 
 ## vscode for java
 
-[java with maven](https://code.visualstudio.com/docs/java/java-tutorial)
+[tutorial with vscode](https://code.visualstudio.com/docs/java/java-tutorial)
+[java extensions](https://code.visualstudio.com/docs/java/extensions)
