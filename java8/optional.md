@@ -31,7 +31,7 @@
         return Optional
                 .ofNullable(person)
                 .flatMap(Person::getCar)
-                .flatMap(Car:getInsurance)
+                .flatMap(Car::getInsurance)
                 .flatMap(Insurance::getName)
                 .orElse("Unknown");
     }
