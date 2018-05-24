@@ -1,4 +1,4 @@
-# future
+# Future
 
 ## CompletableFuture
 
