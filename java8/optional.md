@@ -46,7 +46,7 @@
 ```java
     public class Person{
         private Car car;
-        // 表示Car字段可能是空的
+        // 表示Car字段可能是空的
         // Optional 提供了新的语义
         public Optional<Car> getCar(){
             return Optional.ofNullable(car);
