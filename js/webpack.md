@@ -5,13 +5,14 @@
 
 ## get start
 
-[➡](https://webpack.js.org/guides/getting-started)
+[link→](https://webpack.js.org/guides/getting-started)
 
 There are problems with managing JavaScript projects this way:
 
-It is not immediately apparent that the script depends on an external library.
-If a dependency is missing, or included in the wrong order, the application will not function properly.
-If a dependency is included but not used, the browser will be forced to download unnecessary code.
+* It is not immediately apparent that the script depends on an external library.
+* If a dependency is missing, or included in the wrong order, the application will not function properly.
+* If a dependency is included but not used, the browser will be forced to download unnecessary code.
+
 Let's use webpack to manage these scripts instead.
 
 ## code splitting
