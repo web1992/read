@@ -15,6 +15,14 @@ There are problems with managing JavaScript projects this way:
 
 Let's use webpack to manage these scripts instead.
 
+## Asset Management
+
+* Loading CSS
+* Loading Images
+* Loading Fonts
+* Loading Data
+* Global Assets
+
 ## code splitting
 
 There are three general approaches to code splitting available:
