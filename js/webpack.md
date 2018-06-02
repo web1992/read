@@ -23,6 +23,14 @@ Let's use webpack to manage these scripts instead.
 * Loading Data
 * Global Assets
 
+## Output Management
+
+auto generate `index.html` with `bundle.js`
+
+* [HtmlWebpackPlugin](https://webpack.js.org/plugins/html-webpack-plugin)
+* [clean-webpack-plugin](https://www.npmjs.com/package/clean-webpack-plugin)
+* [WebpackManifestPlugin](https://github.com/danethurber/webpack-manifest-plugin)
+
 ## code splitting
 
 There are three general approaches to code splitting available:
