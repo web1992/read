@@ -31,6 +31,31 @@ auto generate `index.html` with `bundle.js`
 * [clean-webpack-plugin](https://www.npmjs.com/package/clean-webpack-plugin)
 * [WebpackManifestPlugin](https://github.com/danethurber/webpack-manifest-plugin)
 
+## Development
+
+* Using source maps
+
+```js
+    devtool: 'inline-source-map'
+```
+
+* Choosing a Development Tool
+
+There are a couple of different options available in webpack that help you automatically compile your code whenever it changes:
+
+* webpack's Watch Mode
+* webpack-dev-server
+* webpack-dev-middleware
+
+```js
+    // webpack-dev-server
+    devServer: {
+        contentBase: './dist'
+    },
+```
+
+In most cases, you probably would want to use webpack-dev-server, but let's explore all of the above options.
+
 ## code splitting
 
 There are three general approaches to code splitting available:
