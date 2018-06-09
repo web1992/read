@@ -92,7 +92,6 @@
     List<Integer> collect = wordList.stream().map(String::length).collect(Collectors.toList());
     System.out.println(collect);
     // [6, 4, 5, 6, 6]
-
 ```
 
 ### flatMap
@@ -115,31 +114,48 @@
     List<Person> collect = wordList.stream().sorted(Comparator.comparing(Person::getAge)).collect(Collectors.toList());
     System.out.println(collect);
     // [Person{name='web1992', age=25}, Person{name='Steve Jobs', age=56}, Person{name='Bill Gates', age=63}]
-
 ```
 
 ### anyMatch
 
-
 ### noneMatch
-
 
 ### allMatch
 
-
-
 ### findAny
-
 
 ### findFirst
 
-
 ### forEach
-
 
 ### collect
 
-
 ### reduce
+
+`Optional<T> reduce(BinaryOperator<T> accumulator);`
+
+```java
+        boolean foundAny = false;
+        T result = null;
+        for (T element : this stream) {
+             if (!foundAny) {
+                 foundAny = true;
+                  result = element;
+              }
+              else{
+               result = accumulator.apply(result, element);
+              }
+         }
+        return foundAny ? Optional.of(result) : Optional.empty();
+```
+
+`T reduce(T identity, BinaryOperator<T> accumulator);`
+
+```java
+         T result = identity;
+         for (T element : this stream)
+              result = accumulator.apply(result, element)
+         return result;
+```
 
 ### count
