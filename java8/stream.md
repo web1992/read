@@ -98,7 +98,7 @@
 ### flatMap
 
 ```java
-
+<R> Stream<R> flatMap(Function<? super T, ? extends Stream<? extends R>> mapper);
 ```
 
 ### sorted
@@ -120,26 +120,54 @@
 
 ### anyMatch
 
+```java
+boolean anyMatch(Predicate<? super T> predicate);
+```
 
 ### noneMatch
 
+```java
+ boolean noneMatch(Predicate<? super T> predicate);
+```
 
 ### allMatch
 
-
+```java
+boolean allMatch(Predicate<? super T> predicate);
+```
 
 ### findAny
 
+```java
+ Optional<T> findAny();
+```
 
 ### findFirst
 
+```java
+Optional<T> findFirst();
+```
 
 ### forEach
 
+```java
+void forEach(Consumer<? super T> action);
+```
 
 ### collect
 
+```java
+<R, A> R collect(Collector<? super T, A, R> collector);
+```
 
 ### reduce
 
+```java
+Optional<T> reduce(BinaryOperator<T> accumulator);
+```
+
 ### count
+
+```java
+
+```
