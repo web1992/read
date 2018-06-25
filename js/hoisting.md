@@ -5,4 +5,4 @@
 
 ## Only functions create a new scope
 
-This is because JavaScript has function-level scope. This is radically different from the C family. Blocks, such as if statements, do not create a new scope. **Only functions create a new scope.**
+This is because JavaScript has `function-level scope`. This is radically different from the C family. Blocks, such as if statements, do not create a new scope. **Only functions create a new scope.**
