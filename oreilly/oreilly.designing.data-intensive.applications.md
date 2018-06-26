@@ -21,3 +21,18 @@ The main arguments in favor of the document data model are schema flexibility, b
 ter performance due to locality, and that for some applications it is closer to the data
 structures used by the application. The relational model counters by providing better
 support for joins, and many-to-one and many-to-many relationships.
+
+## stream processing
+
+### Acknowledgments and redelivery
+
+Consumers may crash at any time, so it could happen that a broker delivers a mes‐
+sage to a consumer but the consumer never processes it, or only partially processes it
+before crashing. In order to ensure that the message is not lost, message brokers use
+acknowledgments: a client must explicitly tell the broker when it has finished process‐
+ing a message so that the broker can remove it from the queue.
+If the connection to a client is closed or times out without the broker receiving an
+acknowledgment, it assumes that the message was not processed, and therefore it
+delivers the message again to another consumer. (Note that it could happen that the
+message actually was fully processed, but the acknowledgment was lost in the net‐
+work. Handling this case requires an atomic commit
