@@ -1,5 +1,12 @@
 # Reilly.Designing.Data-Intensive.Applications
 
+## Who Should Read This Book
+
+- You want to learn how to make data systems scalable, for example, to support web or mobile apps with millions of users.
+- You need to make applications highly available (minimizing downtime) and operationally robust.
+- You are looking for ways of making systems easier to maintain in the long run,even as they grow and as requirements and technologies change.
+- You have a natural curiosity for the way things work and want to know what goes on inside major websites and online services. This book breaks down the internals of various databases and data processing syste
+
 ## The Unix Philosophy
 
 > A Unix shell like bash lets us easily compose these small programs into surprisingly
