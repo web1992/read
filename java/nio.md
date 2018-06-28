@@ -25,3 +25,7 @@
 ## Reading and writing primitive arrays to a NIO buffer: wrapper buffers
 
 - [Reading and writing primitive arrays to a NIO buffer: wrapper buffers](https://www.javamex.com/tutorials/io/nio_buffers_arrays_2.shtml)
+
+## NIO Channels
+
+- [NIO Channels](https://www.javamex.com/tutorials/io/nio_channels.shtml)
