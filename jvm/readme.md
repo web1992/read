@@ -7,6 +7,7 @@
 - [StackOverflowError in Java](https://examples.javacodegeeks.com/java-basics/exceptions/java-lang-stackoverflowerror-how-to-solve-stackoverflowerror/)
 - [-Xss](http://xmlandmore.blogspot.com/2014/09/jdk-8-thread-stack-size-tuning.html)
 - [jstat](https://www.cnblogs.com/yjd_hycf_space/p/7755633.html)
+- [metaspace](https://www.cnblogs.com/paddix/p/5309550.html)
 
 ## 参数设置
 
