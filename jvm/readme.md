@@ -9,6 +9,8 @@
 - [jstat](https://www.cnblogs.com/yjd_hycf_space/p/7755633.html)
 - [metaspace](https://www.cnblogs.com/paddix/p/5309550.html)
 - [metaspace](https://plumbr.io/outofmemoryerror/metaspace)
+- [gclog](https://blog.csdn.net/renfufei/article/details/49230943)
+- [gclog](https://plumbr.io/blog/garbage-collection/understanding-garbage-collection-logs)
 
 ## 参数设置
 
