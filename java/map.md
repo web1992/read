@@ -29,3 +29,5 @@ Map 的集合实现可以分三类：
 1. 可以实现`Comparator`接口，当成参数传给`TreeMap`,`TreeMap`会使用`Comparator`的`compare`方法进行比较，实现排序
 2. 如果没有使用`Comparator`,`TreeMap`会使用`key`的对应的`Comparable`的`compareTo`方法进行比较(此时key不能为null)
 3. `TreeMap` 重写了`Map`的`put`方法,使用`红黑二叉树(From CLR)`算法保证顺序（每次put元素之后，都会遍历整个树，保证顺序）
+
+具体的算法实现可以参考 [TreeMap的算法实现](https://liujiacai.net/blog/2015/09/04/java-treemap/)
