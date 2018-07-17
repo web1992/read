@@ -142,3 +142,7 @@ void afterNodeAccess(Node<K,V> p) { }
 3. `TreeMap` 重写了`Map`的`put`方法,使用`红黑二叉树(From CLR)`算法保证顺序（每次put元素之后，都会遍历整个树，保证顺序）
 
 具体的算法实现可以参考 [TreeMap的算法实现](https://liujiacai.net/blog/2015/09/04/java-treemap/)
+
+## ConcurrentHashMap
+
+[ConcurrentHashMap from IBM doc](https://www.ibm.com/developerworks/cn/java/java-lo-concurrenthashmap/index.html)
