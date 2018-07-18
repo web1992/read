@@ -146,3 +146,7 @@ void afterNodeAccess(Node<K,V> p) { }
 ## ConcurrentHashMap
 
 [ConcurrentHashMap from IBM doc](https://www.ibm.com/developerworks/cn/java/java-lo-concurrenthashmap/index.html)
+
+## 好文链接
+
+[讲述了hastcode方法的优点，缺点](https://ericlippert.com/2011/02/28/guidelines-and-rules-for-gethashcode/)
