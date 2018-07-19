@@ -149,4 +149,4 @@ void afterNodeAccess(Node<K,V> p) { }
 
 ## 好文链接
 
-[讲述了hastcode方法的优点，缺点](https://ericlippert.com/2011/02/28/guidelines-and-rules-for-gethashcode/)
+[讲述了hashcode方法的优点，缺点](https://ericlippert.com/2011/02/28/guidelines-and-rules-for-gethashcode/)
