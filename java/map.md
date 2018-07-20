@@ -2,6 +2,8 @@
 
 - [map (oracle doc)](https://docs.oracle.com/javase/tutorial/collections/implementations/map.html)
 
+![Map](images/map.png)
+
 ## 概要
 
 Map 的集合实现可以分三类：
