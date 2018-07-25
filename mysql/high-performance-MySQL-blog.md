@@ -1,12 +1,9 @@
-> MySQL 相关博文
+# MySQL 相关博文
 
-# 目录
+## 目录
 
-
-* [MySQL 优化](#优化)
-* [MySQL 原理](#原理)
-
-
+- [MySQL 优化](#优化)
+- [MySQL 原理](#原理)
 
 ## 优化
 
@@ -29,3 +26,4 @@
 ## 原理
 
 - [MySQL `线程池`](http://blog.jobbole.com/109695/)
+- [索引](https://www.jianshu.com/p/d7665192aaaf)
