@@ -2,7 +2,7 @@
 
 ## CompletableFuture
 
-**常用的方法**
+## 常用的方法
 
 ```java
     public static <U> CompletableFuture<U> supplyAsync(Supplier<U> supplier) {
