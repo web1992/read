@@ -1,5 +1,9 @@
 # nio
 
+## books
+
+- [nio book](https://github.com/web1992/books/tree/master/java-nio)
+
 ## The Layout of a NIO buffer
 
 - [nio_buffer_layout](https://www.javamex.com/tutorials/io/nio_buffer_layout.shtml)
