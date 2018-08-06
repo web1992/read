@@ -1,0 +1,36 @@
+# socket
+
+## ServerSocketChannel
+
+demo
+
+```java
+public class SSC {
+    public static void main(String[] args) throws IOException, InterruptedException {
+
+        System.out.println("start service...");
+        ServerSocketChannel ssc = ServerSocketChannel.open();
+
+        ssc.socket().bind(new InetSocketAddress(9999));
+        ssc.configureBlocking(false);
+
+        String msg = "Hello I am server";
+        ByteBuffer byteBuffer = ByteBuffer.wrap(msg.getBytes());
+        while (true) {
+            SocketChannel sc = ssc.accept();
+
+            if (sc != null) {
+                System.out.println();
+                System.out.println("" + sc.socket().getRemoteSocketAddress());
+                byteBuffer.rewind();
+                sc.write(byteBuffer);
+                sc.close();
+            } else {
+                Thread.sleep(1000);
+            }
+        }
+
+
+    }
+}
+```
