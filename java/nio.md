@@ -33,3 +33,24 @@
 ## NIO Channels
 
 - [NIO Channels](https://www.javamex.com/tutorials/io/nio_channels.shtml)
+
+## flip rewind
+
+```java
+public final Buffer flip() {
+        limit = position;
+        position = 0;// diff
+        mark = -1;
+        return this;
+    }
+```
+`rewind`比`flip`方法少了`position = 0;`,比如在buffer中填满了数据，就可以使用`rewind`
+因为此时`limit = position`(`limit`已经等于`position`了)
+
+```java
+public final Buffer rewind() {
+        position = 0;
+        mark = -1;
+        return this;
+    }
+```
