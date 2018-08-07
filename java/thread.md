@@ -13,7 +13,8 @@
 
 使用`volatile`标记+`interrupt`
 
-- volatile变量，如果线程检查到的状态是关闭的，那么次变量不接受新的任务即可
+- volatile变量,如果线程检查到的状态是关闭的，那么次变量不接受新的任务即可
+- volatile变量,保证可见性（一个线程修改变量的结果，对其他线程可见）
 - interrupt 使阻塞（blocked）状态的线程，出现`InterruptedException`异常，进行终止
 
 ## join
