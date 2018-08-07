@@ -7,6 +7,7 @@
 ## interrupt
 
 - [Interrupts](https://docs.oracle.com/javase/tutorial/essential/concurrency/interrupt.html)
+- [Thread stop](http://www.java67.com/2015/07/how-to-stop-thread-in-java-example.html)
 
 我们知道启动一个线程是用`start()`方法，但是如何关闭（安全的）一个线程呢？
 
@@ -66,6 +67,13 @@
 ## yield
 
 ## sleep
+
+```java
+    // use TimeUnit
+    TimeUnit.MILLISECONDS.sleep(200);
+    // user Thread
+    Thread..sleep(200);
+```
 
 ## InterruptedException
 
