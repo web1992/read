@@ -2,7 +2,26 @@
 
 ## start
 
+```java
+        Thread t = new Thread(() -> System.out.println(Thread.currentThread().getName()+" start ..."));
+        t.start();// 启动线程
+```
+
+`start` 会调用一个`start0`方法，让jvm启用一个线程
+
+Causes this thread to begin execution; the Java Virtual Machine
+calls the `run` method of this thread.
+
 ## run
+
+```java
+    @Override
+    public void run() {
+        if (target != null) {
+            target.run();
+        }
+    }
+```
 
 ## interrupt
 
@@ -66,6 +85,10 @@
 ```
 
 ## yield
+
+- [thread yield](https://www.javamex.com/tutorials/threads/yield.shtml)
+
+线程让出cpu（别用）
 
 ## sleep
 
