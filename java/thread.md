@@ -10,6 +10,11 @@
 
 我们知道启动一个线程是用`start()`方法，但是如何关闭（安全的）一个线程呢？
 
+使用`volatile`标记+`interrupt`
+
+- volatile变量，如果线程检查到的状态是关闭的，那么次变量不接受新的任务即可
+- interrupt 使阻塞（blocked）状态的线程，出现`InterruptedException`异常，进行终止
+
 ## join
 
 ```java
@@ -61,3 +66,40 @@
 ## yield
 
 ## sleep
+
+## InterruptedException
+
+`InterruptedException` 是如何产生的demo
+
+```java
+    public static void main(String[] args) throws InterruptedException {
+
+        Runnable r = () -> {
+            try {
+                System.out.println("[I am " + Thread.currentThread().getName() + "] thread");
+                Thread.sleep(2 * 1000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        };
+
+        Thread t = new Thread(r);
+        t.start();
+        // throw InterruptedException
+        System.out.println("[I am " + Thread.currentThread().getName() + "] thread");
+        t.interrupt();
+    }
+```
+
+日志
+
+```txt
+[I am main] thread
+[I am Thread-0] thread
+java.lang.InterruptedException: sleep interrupted
+    at java.lang.Thread.sleep(Native Method)
+    at com.aldb.payment.remit.T.lambda$main$0(T.java:24)
+    at java.lang.Thread.run(Thread.java:748)
+```
+
+- 1.如果一个线程在`sleep`状态（wait,join,sleep），调用interrupt 会出现`InterruptedException`异常
