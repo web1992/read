@@ -7,6 +7,7 @@
 ## CountDownLatch
 
 - [CountDownLatch](https://www.cnblogs.com/shiyanch/archive/2011/04/04/2005233.html)
+- [CountDownLatch](https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/CountDownLatch.html)
 
 ## Increased reliability
 
