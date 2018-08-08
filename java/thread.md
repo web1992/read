@@ -38,6 +38,9 @@ calls the `run` method of this thread.
 
 ## join
 
+- 一个线程等待另一个线程完成后，该线程继续执行
+- join 实现的是`wait()`+`notifyAll`(`notify`)
+
 ```java
     public static void main(String[] args) throws Exception {
         Runnable r = () -> {
