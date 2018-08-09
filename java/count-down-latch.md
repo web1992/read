@@ -3,6 +3,15 @@
 - [CountDownLatch](https://www.cnblogs.com/shiyanch/archive/2011/04/04/2005233.html)
 - [CountDownLatch from oracle docs](https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/CountDownLatch.html)
 
+## 总结
+
+>A synchronization aid that allows one or more threads to wait until
+>a set of operations being performed in other threads completes.
+
+[Thread#join()](thread.md#join)A程等待B线程执行完毕之后，A线程继续执行，实现了二个线程协作的机制
+
+`CountDownLatch`A线程等待B,C,D,E线程等完成之后，A线程继续执行，实现了N个线程之间的协作机制
+
 demo
 
 ```java
