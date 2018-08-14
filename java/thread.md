@@ -1,5 +1,12 @@
 # thread
 
+
+## ThreadFactory
+可以方便的定义thread name，daemon status，priority, thread Group
+`java.util.concurrent.Executors.DefaultThreadFactory`
+
+## ThreadGroup
+
 ## start
 
 ```java
