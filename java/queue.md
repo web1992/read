@@ -10,4 +10,8 @@
 ------|----------|-------------|------|----------
 Insert|add(e)|offer(e)|put(e)|offer(e, time, unit)
 Remove|remove()|poll()|take()|poll(time, unit)
-Examine|element()|peek()|not applicable|not applicable
+Examine(检查)|element()|peek()|not applicable|not applicable
+
+## ArrayBlockingQueue
+
+![ArrayBlockingQueue](./images/ArrayBlockingQueue.png)
