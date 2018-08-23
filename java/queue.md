@@ -18,6 +18,7 @@ Examine(检查)|element()|peek()|not applicable|not applicable
 
 - FIFO (first-in-first-out)先进先出
 - 底层实现是数组
+- 线程安全，只使用一个可重入锁来来控制线程访问
 - 添加元素总是在队列末部
 - 删除元素总是在队列头部
 - 基于数组,大小在初始化时固定不变
@@ -56,3 +57,9 @@ take 方法
         }
     }
 ```
+
+## LinkedBlockingQueue
+
+- 底层使用链表而非数组存储元素
+- 使用两个锁来控制线程访问，这样队列可以同时进行put和take的操作，因此吞吐量相对ArrayBlockingQueue就高
+- 可以不指定队列大小，此时默认大小为Integer.MAX_VALUE (无边际的队列，会导致内存泄漏)
