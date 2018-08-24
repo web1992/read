@@ -110,6 +110,12 @@ take 方法
 
 `LinkedBlockingQueue`插入的图解[源文件(可导入draw.io进行编辑)](./draw.io/linked-bloking-queue.xml)
 
+下面的图分为3部分:
+
+1. init
+2. 第一次put
+3. 第二次put
+
 ![linked-blocking-queue-put](./images/linked-blocking-queue-put.png)
 
 下面是demo,里面的方法参考`LinkedBlockingQueue`中实现
@@ -194,5 +200,10 @@ head = Node{item=null, next=Node{item=2, next=null}}
 last = Node{item=null, next=null}
 head = Node{item=null, next=null}
 ```
+
+总结：
+
+`LinkedBlockingQueue`中使用`last`&`head`二个变量实现了链表,`last`用于插入新的节点,`head`用于维护链表&实现`FIFO`
+`last`&`head`在初始化的是都是指向同一个对象，因此修改了`last`同时也会影响`head`的中的对象
 
 ## SynchronousQueue
