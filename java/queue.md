@@ -1,10 +1,14 @@
 # Queue
 
+## 参考文档
+
 - [Queue (from oracle docs)](https://docs.oracle.com/javase/tutorial/collections/implementations/queue.html)
+
+## queue的实现类
 
 ![Queue](images/queue.png)
 
-## BlockingQueue Method
+## BlockingQueue Method list
 
 ||Throws exception|Special value|Blocks|Times out
 ------|----------|-------------|------|----------
@@ -23,7 +27,7 @@ Examine(检查)|element()|peek()|not applicable|not applicable
 - 删除元素总是在队列头部
 - 基于数组,大小在初始化时固定不变
 - 如果queue满了，`put`方法继续添加元素的时候，就会阻塞
-- 如果quue是空的，`take`方法会阻塞一直到有数据插入
+- 如果qu2ue是空的，`take`方法会阻塞一直到有数据插入
 
 put 方法
 
@@ -200,6 +204,14 @@ head = Node{item=null, next=Node{item=2, next=null}}
 last = Node{item=null, next=null}
 head = Node{item=null, next=null}
 ```
+
+## help GC
+
+```java
+h.next = h; // help GC 参考下面的文档
+```
+
+-[help GC(stackoverflow)](https://stackoverflow.com/questions/10106191/openjdks-linkedblockingqueue-implementation-node-class-and-gc)
 
 总结：
 
