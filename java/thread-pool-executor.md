@@ -2,6 +2,8 @@
 
 - [draw.io file](./draw.io/ThreadPoolExecutor.xml)
 
+## 类图
+
 ![ThreadPoolExecutor](./images/ThreadPoolExecutor.png)
 
 ## 线程池大小策略
