@@ -6,7 +6,9 @@
 - [java-8-tutorial](http://winterbe.com/posts/2014/03/16/java-8-tutorial/)
 - [lambda (from oracle)](https://docs.oracle.com/javase/tutorial/java/javaOO/lambdaexpressions.html)
 
-## 方法引用
+## Method References
+
+- [Method References](https://docs.oracle.com/javase/tutorial/java/javaOO/methodreferences.html)
 
 ```java
 List<String> list=new ArrayList<>();
