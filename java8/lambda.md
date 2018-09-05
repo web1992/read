@@ -27,3 +27,11 @@ Reference to a constructor                              |   ClassName::new
         // 符合这样的方法签名
         int a = lambda.compareToIgnoreCase(lambda);
 ```
+
+## functional interface
+
+A functional interface is any interface that contains only one abstract method. (A functional interface may contain one or more default methods or static methods.)
+
+1. any interface that contains only one abstract method
+2. may contain one or more default methods or static methods
+3. Because a functional interface contains only one abstract method, you can omit the name of that method when you implement it
