@@ -1,4 +1,4 @@
-# map
+# stream.map
 
 ## getOrDefault
 
