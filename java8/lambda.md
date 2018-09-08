@@ -35,3 +35,13 @@ A functional interface is any interface that contains only one abstract method. 
 1. any interface that contains only one abstract method
 2. may contain one or more default methods or static methods
 3. Because a functional interface contains only one abstract method, you can omit the name of that method when you implement it
+
+## IntStream
+
+```java
+ IntStream.range(0, 20).forEach(
+                index -> {
+                    System.out.println("run = " + index);
+                }
+        );
+```

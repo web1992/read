@@ -1,7 +1,7 @@
 # ThreadPoolExecutor
 
 - [draw.io file](./draw.io/ThreadPoolExecutor.xml)
-- [ from oracle](https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/ThreadPoolExecutor.html)
+- [from oracle](https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/ThreadPoolExecutor.html)
 
 ## 类图
 
@@ -36,6 +36,8 @@ thread 构造策略
 异常策略
 
 ## Hook methods
+
+钩子方法，可以在任务执行之前，之后做一些操作，如：统计信息
 
 ## Queue maintenance
 
