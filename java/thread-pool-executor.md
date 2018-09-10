@@ -41,7 +41,7 @@ thread 构造策略
 
 ## Rejected tasks
 
-异常策略，当Queuing有边界说，多于的任务，如何处理
+异常策略，当Queuing有边界说，多于的任务，如何处理
 
 ## Hook methods
 
@@ -49,7 +49,7 @@ thread 构造策略
 
 ## Queue maintenance
 
-Method`getQueue() ` 为了调试设计
+Method `getQueue()` 为了调试设计
 
 ## Finalization
 
@@ -60,7 +60,7 @@ Method`getQueue() ` 为了调试设计
 
 `ThreadPoolExecutor`使用`BlockingQueue`来存储多余的任务，那为什么不使用`ArrayList`,`LinkedList`呢？
 
-1. `ArrayList`,`LinkedList`不是线程安全，如过使用这些来存储任务，会增加API的设计难度，而`BlockingQueue`天生为多线程而生
+1. `ArrayList`,`LinkedList`不是线程安全，如过使用这些来存储任务，会增加API的设计难度，而`BlockingQueue`天生为多线程而生
 2. 暂时没想到😂
 
 - 创建固定大小的线程池
@@ -96,4 +96,3 @@ public static ExecutorService newCachedThreadPool() {
                                       new SynchronousQueue<Runnable>());
 }
 ```
-
