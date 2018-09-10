@@ -41,7 +41,36 @@ thread 构造策略
 
 ## Rejected tasks
 
-异常策略，当Queuing有边界说，多于的任务，如何处理
+异常策略，当Queuing有边界时(如果queue是没有边界的则不会触发)，多于的任务，如何处理
+
+demo
+
+```java
+public static void main(String[] args) throws InterruptedException {
+        RejectedExecutionHandler reh = (Runnable r, ThreadPoolExecutor executor) -> {
+            System.err.println("the task " + r.toString() + " is rejected ... poll status " + executor.toString());
+        };
+        // new LinkedBlockingDeque<>(2) // 有边界的queue
+        ThreadPoolExecutor tpe = new ThreadPoolExecutor(5, 5, 1, TimeUnit.SECONDS, new LinkedBlockingDeque<>(2), reh);
+        System.out.println(tpe.toString());
+        IntStream.range(0, 10).forEach(
+                index -> {
+                    tpe.execute(() -> {
+                        try {
+                            TimeUnit.SECONDS.sleep(1L);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                        System.out.println("run = " + index);
+                    });
+                }
+        );
+
+        System.out.println("end");
+        System.out.println(tpe);
+        tpe.shutdown();
+    }
+```
 
 ## Hook methods
 
@@ -49,7 +78,7 @@ thread 构造策略
 
 ## Queue maintenance
 
-Method `getQueue()` 为了调试设计
+Method `getQueue()` 为了调试设计,其他忽用
 
 ## Finalization
 
@@ -57,6 +86,8 @@ Method `getQueue()` 为了调试设计
 
 `Executors`中一些常用方法的说明，如果理解这些方法的`作用`和`不同点`，可以避免使用中的坑
 如`newFixedThreadPool`和`newSingleThreadExecutor`都使用`LinkedBlockingQueue`来存储多余的任务，如果线程处理的速度小于任务创建的速度，那么无法处理的任务都会放入`Queue`中,随着队列的无限增大会导致内存资源耗尽
+
+下面`Executors`提供的几个方法，底层的Queue都是没有边界的，使用时候请注意内存泄露
 
 `ThreadPoolExecutor`使用`BlockingQueue`来存储多余的任务，那为什么不使用`ArrayList`,`LinkedList`呢？
 
