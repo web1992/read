@@ -29,7 +29,7 @@
 
 ## demo
 
-已经实现一个`AtomicInteger`
+自己实现一个`AtomicInteger`
 
 ```java
     private static final Integer MAX = 50000;

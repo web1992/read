@@ -1,6 +1,7 @@
 # Charset
 
 ## defaultCharset
+
 ```java
 Charset.defaultCharset()
 ```
