@@ -41,7 +41,7 @@ thread 构造策略
 
 ## Rejected tasks
 
-异常策略，当Queuing有边界时(如果queue是没有边界的则不会触发)，多于的任务，如何处理
+异常策略，当Queuing有边界时(如果queue是没有边界的则不会触发)，超过queue大小的任务，如何处理
 
 demo
 
@@ -130,6 +130,10 @@ public static ExecutorService newCachedThreadPool() {
 
 可以看到 上面的三个方法都使用`LinkedBlockingQueue`作用queue，那么为什么不使用`ArrayBlockingQueue`呢？
 
-1. 如果知道了`ArrayList`与`LinkedList` 的区别，那么就很容易知道，基于链表实现的集合，插入和删除元素的速度更快
+如果知道了`ArrayList`与`LinkedList` 的区别，那么就很容易知道，基于链表实现的集合，插入和删除元素的速度更快
 而`LinkedList`只需要改变链接元素之间的指向，速度当然快,而`ThreadPoolExecutor`中的queue就是用了存储任务的，
 必定存在频繁的`插入`和`删除`操作，因此使用`LinkedBlockingQueue`
+
+## 参考
+
+- [ArrayList vs LinkedList](https://github.com/web1992/read/blob/master/java/list.md)
