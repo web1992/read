@@ -27,3 +27,12 @@ Chapter 5 explores various writer
 ## Reader
 
 ![Reader](images/reader.png)
+
+## 总结
+
+java中的`OutputStream` and `InputStream` 是面向`字节流`,但是他们不支持`character encodings`(编码/解码)
+因此引入了`Writer` and `Reader`来支持编码.
+
+- 常用的stream类：`FileInputStream`,`FileOutputStream`,`BufferedInputStream`,`ByteArrayInputStream`
+- 常用的reader类：`FileReader`,`BufferedReader`
+- 常用的writer类：`FilterWriter`,`BufferedWriter`
