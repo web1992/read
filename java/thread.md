@@ -148,3 +148,8 @@ java.lang.InterruptedException: sleep interrupted
 ```
 
 - 1.如果一个线程在`sleep`状态（wait,join,sleep），调用interrupt 会出现`InterruptedException`异常
+
+## stop
+
+- [threads](http://winterbe.com/posts/2015/04/07/java8-concurrency-tutorial-thread-executor-examples/)
+- [stop thread](http://forward.com.au/javaProgramming/HowToStopAThread.html)
