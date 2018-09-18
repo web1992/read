@@ -7,3 +7,7 @@
 ## Roadmap
 
 ![netty in action](images/netty-in-action.png)
+
+## Introducing Netty
+
+- hide the complexity of underlying implementations behind simpler abstractions
