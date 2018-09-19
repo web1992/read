@@ -1,14 +1,25 @@
 # Transaction Management
 
-- 01 [PlatformTransactionManager](#1-platformtransactionmanager)
-- 02 [TransactionDefinition](#2-transactiondefinition )
-- 03 [TransactionStatus](#3-transactionstatus)
-- 04 [tx:advice settings](#4-tx-advice-settings)
-- 05 [@Transactional](#5-Transactional)
-- 06 [@Transactional settings](#6-transactional-settings)
-- 07 [Transaction propagation](#7-transaction-propagation)
-- 08 [Advising transactional operations](#8-advising-transactional-operations)
-- 09 [Programmatic transaction management](#9-programmatic-transaction-management)
+- 01 [introduction-to-spring-framework-transaction-management](#introduction-to-spring-framework-transaction-management)
+- 02 [global-transactions](#global-transactions)
+- 03 [local-transactions](#local-transactions)
+- 04 [understanding-the-spring-framework-transaction-abstraction](#understanding-the-spring-framework-transaction-abstraction)
+- 05 [transactiondefinition](#transactiondefinition)
+- 06 [transactionstatus](#transactionstatus)
+- 07 [datasourcetransactionmanager](#datasourcetransactionmanager)
+- 08 [declarative-transaction-management](#declarative-transaction-management)
+- 09 [understanding-the-spring-frameworks-declarative-transaction-implementation](#understanding-the-spring-frameworks-declarative-transaction-implementation)
+- 10 [example-of-declarative-transaction-implementation](#example-of-declarative-transaction-implementation)
+- 11 [rolling-back-a-declarative-transaction](#rolling-back-a-declarative-transaction)
+- 12 [configuring-different-transactional-semantics-for-different-beans](#configuring-different-transactional-semantics-for-different-beans)
+- 13 [tx-advice-settings](#tx-advice-settings)
+- 14 [transactional](#transactional)
+- 15 [transactional-settings](#transactional-settings)
+- 16 [transaction-propagation](#transaction-propagation)
+- 17 [required](#required)
+- 18 [requiresnew](#requiresnew)
+- 19 [advising-transactional-operations](#advising-transactional-operations)
+- 20 [programmatic-transaction-management](#programmatic-transaction-management)
 
 ## Introduction to Spring Framework transaction management
 
@@ -16,7 +27,6 @@ Consistent programming model across different transaction APIs such as Java Tran
 Support for declarative transaction management.
 Simpler API for programmatic transaction management than complex transaction APIs such as JTA.
 Excellent integration with Spring’s data access abstractions.
-
 
 - Consistent programming model across different transaction APIs such as Java Transaction API (JTA), JDBC, Hibernate, Java Persistence API (JPA), and Java Data Objects (JDO).
 - Support for declarative transaction management.
@@ -31,12 +41,9 @@ Global transactions enable you to work with multiple transactional resources, ty
 
 Local transactions are resource-specific, such as a transaction associated with a JDBC connection. Local transactions may be easier to use, but have significant disadvantages: they cannot work across multiple transactional resources. For example, code that manages transactions using a JDBC connection cannot run within a global JTA transaction. Because the application server is not involved in transaction management, it cannot help ensure correctness across multiple resources. (It is worth noting that most applications use a single transaction resource.) Another downside is that local transactions are invasive to the programming model.
 
-
-
 ## Understanding the Spring Framework transaction abstraction
 
-The key to the Spring transaction abstraction is the notion of a transaction strategy. A transaction strategy is defined by the org.springframework.transaction.PlatformTransactionManager interface:
-
+The key to the Spring transaction abstraction is the notion of a transaction strategy. A transaction strategy is defined by the `org.springframework.transaction.PlatformTransactionManager` interface:
 
 [Link](https://docs.spring.io/spring/docs/4.3.x/spring-framework-reference/htmlsingle/#transaction-strategies)
 
@@ -51,7 +58,7 @@ public interface PlatformTransactionManager {
 }
 ```
 
-## 2 TransactionDefinition
+## TransactionDefinition
 
 [Link](https://docs.spring.io/spring/docs/4.3.x/spring-framework-reference/htmlsingle/#transaction-strategies)
 
@@ -62,7 +69,7 @@ The TransactionDefinition interface specifies:
 - Timeout: How long this transaction runs before timing out and being rolled back automatically by the underlying transaction infrastructure.
 - Read-only status: A read-only transaction can be used when your code reads but does not modify data. Read-only transactions can be a useful optimization in some cases, such as when you are using Hibernate.
 
-## 3 TransactionStatus
+## TransactionStatus
 
 [Link](https://docs.spring.io/spring/docs/4.3.x/spring-framework-reference/htmlsingle/#transaction-strategies)
 
@@ -113,16 +120,13 @@ The concept of rollback rules is important: they enable you to specify which exc
 
 Although EJB container default behavior automatically rolls back the transaction on a system exception (usually a runtime exception), EJB CMT does not roll back the transaction automatically on anapplication exception (that is, a checked exception other than java.rmi.RemoteException). While the Spring default behavior for declarative transaction management follows EJB convention (roll back is automatic only on unchecked exceptions), it is often useful to customize this behavior.
 
-## Understanding the Spring Framework’s declarative transaction implementation
+## Understanding the Spring Frameworks declarative transaction implementation
 
 The most important concepts to grasp with regard to the Spring Framework’s declarative transaction support are that this support is enabled via AOP proxies, and that the transactional advice is driven by metadata (currently XML- or annotation-based). The combination of AOP with transactional metadata yields an AOP proxy that uses a `TransactionInterceptor` in conjunction with an appropriate `PlatformTransactionManager` implementation to drive transactions around method invocations.
 
-
 ![tx](./images/tx.png)
 
-
 ## Example of declarative transaction implementation
-
 
 ```xml
 <!-- from the file 'context.xml' -->
@@ -184,7 +188,6 @@ In its default configuration, the Spring Framework’s transaction infrastructur
 
 You can configure exactly which Exception types mark a transaction for rollback, including checked exceptions. The following XML snippet demonstrates how you configure rollback for a checked, application-specific Exception type.
 
-
 ```xml
 <tx:advice id="txAdvice" transaction-manager="txManager">
     <tx:attributes>
@@ -203,9 +206,7 @@ You can configure exactly which Exception types mark a transaction for rollback,
 
 ## Configuring different transactional semantics for different beans
 
-
-
-## 4 tx-advice-settings
+## tx-advice-settings
 
 [Link](https://docs.spring.io/spring/docs/4.3.x/spring-framework-reference/htmlsingle/#transaction-declarative-txadvice-settings)
 
@@ -217,7 +218,7 @@ You can configure exactly which Exception types mark a transaction for rollback,
 
 ![](images/tx-methond.png)
 
-## 5 @Transactional
+## @Transactional
 
 [Link](https://docs.spring.io/spring/docs/4.3.x/spring-framework-reference/htmlsingle/#transaction-declarative-annotations)
 
@@ -243,7 +244,7 @@ You can configure exactly which Exception types mark a transaction for rollback,
 - In proxy mode (which is the default), only external method calls coming in through the proxy are intercepted (like `@PostConstruct`)
 - Spring recommends that you only annotate concrete classes (and methods of concrete classes) with the @Transactional annotation, as opposed to annotating interfaces. You certainly can place the @Transactional annotation on an interface (or an interface method), but this works only as you would expect it to if you are using interface-based proxies. The fact that Java annotations are not inherited from interfaces means that if you are using class-based proxies ( proxy-target-class="true") or the weaving-based aspect ( mode="aspectj"), then the transaction settings are not recognized by the proxying and weaving infrastructure, and the object will not be wrapped in a transactional proxy, which would be decidedly bad.
 
-## 6 @Transactional settings
+## @Transactional settings
 
 [Link](https://docs.spring.io/spring/docs/4.3.x/spring-framework-reference/htmlsingle/#transaction-declarative-attransactional-settings)
 
@@ -255,9 +256,9 @@ The @Transactional annotation is metadata that specifies that an interface, clas
 - Transaction timeout defaults to the default timeout of the underlying transaction system, or to none if timeouts are not supported.
 - Any RuntimeException triggers rollback, and any checked Exception does not.
 
-![](images/transaactional-settings.png)
+![transaactional-settings](images/transaactional-settings.png)
 
-## 7 Transaction propagation
+## Transaction propagation
 
 事物的传播属性
 
@@ -265,23 +266,23 @@ The @Transactional annotation is metadata that specifies that an interface, clas
 
 PROPAGATION_REQUIRED
 
-![](images/tx_prop_required.png)
+![tx_prop_required](images/tx_prop_required.png)
 
 ### RequiresNew
 
 PROPAGATION_REQUIRES_NEW
 
-![](images/tx_prop_requires_new.png)
+![tx_prop_requires_new](images/tx_prop_requires_new.png)
 
 > PROPAGATION_REQUIRES_NEW, in contrast to PROPAGATION_REQUIRED, uses a completely independent transaction for each affected transaction scope. In that case, the underlying physical transactions are different and hence can commit or roll back independently, with an outer transaction not affected by an inner transaction’s rollback status.
 
-## 8 Advising transactional operations
+## Advising transactional operations
 
 通知 + 事务（顺序可控） 实现`Ordered`接口
 
 [Link](https://docs.spring.io/spring/docs/4.3.x/spring-framework-reference/htmlsingle/#transaction-declarative-applying-more-than-just-tx-advice)
 
-## 9 Programmatic transaction management
+## Programmatic transaction management
 
 - Using the TransactionTemplate. [Link](https://docs.spring.io/spring/docs/4.3.x/spring-framework-reference/htmlsingle/#tx-prog-template)
 - Using a PlatformTransactionManager implementation directly. [Link](https://docs.spring.io/spring/docs/4.3.x/spring-framework-reference/htmlsingle/#transaction-programmatic-ptm)
