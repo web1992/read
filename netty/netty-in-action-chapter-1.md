@@ -19,6 +19,13 @@ What is the connection between asynchrony and scalability?
 
 ## Nettry Channels
 
+A  Channel is a basic construct of Java  NIO . It represents
+an open connection to an entity such as a hardware device, a file, a
+network socket, or a program component that is capable of performing
+one or more distinct I/O operations, for example reading or writing. 9
+For now, think of a  Channel as a vehicle for incoming (inbound) and outgoing (out-
+bound) data. As such, it can be open or closed, connected or disconnected
+
 ## Nettry Callbacks
 
 ## Nettry Futures
