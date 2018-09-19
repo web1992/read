@@ -1,12 +1,28 @@
 # CHAPTER 1
 
-## Netty feature summary
+## java nio
 
-Category         | Netty features
------------------| ----------------
-Design           | Unified API for multiple transport types, both blocking and non-blocking.Simple but powerful threading model.True connectionless datagram socket support.Chaining of logic components to support reuse.
-Ease of use      | Extensive Javadoc and large example set.No required dependencies beyond JDK 1.6+. (Some optional features may requireJava 1.7+ and/or additional dependencies.)
-Performance      | Better  throughput and lower latency than core Java APIs.Reduced resource consumption thanks to pooling and reuse.Minimal memory copying.
-Robustness       | No OutOfMemoryError due to slow, fast, or overloaded connection.Eliminates unfair read/write ratio typical of NIO applications in high-speed networks.
-Security         | Complete SSL/TLS and StartTLS support.Usable in restricted environments such as Applet or OSGI.
-Community-driven | Release early and often.
+- Using  setsockopt() you can configure  socket s so that read/write calls will return immediately if there is no data; that is, if a blocking call would haveblocked.
+- You can register a set of non-blocking sockets using the system’s event notification API 2 to determine whether any of them have data ready for reading or writing.
+
+## java nio selectors
+
+![java nio selectors](images/java-nio-selector.png)
+
+## Asynchronous and event-driven
+
+What is the connection between asynchrony and scalability?
+
+- Non-blocking network calls free us from having to wait for the completion of an operation. Fully asynchronous  I/O builds on this feature and carries it a step further: an asynchronous method returns immediately and notifies the user when it is complete, directly or at a later time.
+
+- Selectors allow us to monitor many connections for events with many fewer threads.
+
+## Nettry Channels
+
+## Nettry Callbacks
+
+## Nettry Futures
+
+## Nettry Events and handlers
+
+## Putting it all together
