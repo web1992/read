@@ -10,6 +10,7 @@
 - [Chapter 2](netty-in-action-chapter-2.md)
 - [Chapter 3](netty-in-action-chapter-3.md)
 - [Chapter 4](netty-in-action-chapter-4.md)
+- [Chapter 5](netty-in-action-chapter-5.md)
 
 ## Roadmap
 
