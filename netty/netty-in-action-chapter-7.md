@@ -1,7 +1,7 @@
 # CHAPTER 7
 
-This chapter covers
-ss
+This chapter covers:
+
 - Threading model overview
 - Event loop concept and implementation
 - Task scheduling
