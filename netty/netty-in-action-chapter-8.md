@@ -1,5 +1,11 @@
 # CHAPTER 8
 
+This chapter covers
+- Bootstrapping clients and servers
+- Bootstrapping clients from within a Channel
+- Adding ChannelHandlers
+- Using ChannelOptions and attributes
+
 ![Bootstrap](./images/Bootstrap.png)
 
 ## Bootstrap class
