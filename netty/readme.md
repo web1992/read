@@ -14,6 +14,7 @@
 - [Chapter 6](netty-in-action-chapter-6.md)
 - [Chapter 7](netty-in-action-chapter-7.md)
 - [Chapter 8](netty-in-action-chapter-8.md)
+- [Chapter 9](netty-in-action-chapter-9.md)
 
 ## Roadmap
 
