@@ -8,15 +8,15 @@
 
 ### Part 1  Netty concepts and architecture
 
-- [Chapter 1](netty-in-action-chapter-1.md)
-- [Chapter 2](netty-in-action-chapter-2.md)
-- [Chapter 3](netty-in-action-chapter-3.md)
-- [Chapter 4](netty-in-action-chapter-4.md)
-- [Chapter 5](netty-in-action-chapter-5.md)
-- [Chapter 6](netty-in-action-chapter-6.md)
-- [Chapter 7](netty-in-action-chapter-7.md)
-- [Chapter 8](netty-in-action-chapter-8.md)
-- [Chapter 9](netty-in-action-chapter-9.md)
+- [Chapter 1](netty-in-action-chapter-01.md)
+- [Chapter 2](netty-in-action-chapter-02.md)
+- [Chapter 3](netty-in-action-chapter-03.md)
+- [Chapter 4](netty-in-action-chapter-04.md)
+- [Chapter 5](netty-in-action-chapter-05.md)
+- [Chapter 6](netty-in-action-chapter-06.md)
+- [Chapter 7](netty-in-action-chapter-07.md)
+- [Chapter 8](netty-in-action-chapter-08.md)
+- [Chapter 9](netty-in-action-chapter-09.md)
 
 ### Part 2 codec
 
