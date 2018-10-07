@@ -23,7 +23,7 @@
 - [Chapter 10](netty-in-action-chapter-10.md)
 - [Chapter 11](netty-in-action-chapter-11.md)
 
-## Part 3 Network protocols
+### Part 3 Network protocols
 
 - [Chapter 12](netty-in-action-chapter-12.md)
 
