@@ -26,6 +26,7 @@
 ### Part 3 Network protocols
 
 - [Chapter 12](netty-in-action-chapter-12.md)
+- [Chapter 13](netty-in-action-chapter-13.md)
 
 ## Roadmap
 
