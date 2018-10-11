@@ -7,28 +7,11 @@
 
 ## Chapter List
 
-### Part 1  Netty concepts and architecture
+- [## Chapter List](netty-inaction.md)
 
-- [Chapter 1](netty-in-action-chapter-01.md)
-- [Chapter 2](netty-in-action-chapter-02.md)
-- [Chapter 3](netty-in-action-chapter-03.md)
-- [Chapter 4](netty-in-action-chapter-04.md)
-- [Chapter 5](netty-in-action-chapter-05.md)
-- [Chapter 6](netty-in-action-chapter-06.md)
-- [Chapter 7](netty-in-action-chapter-07.md)
-- [Chapter 8](netty-in-action-chapter-08.md)
-- [Chapter 9](netty-in-action-chapter-09.md)
+## Summary
 
-### Part 2 codec
-
-- [Chapter 10](netty-in-action-chapter-10.md)
-- [Chapter 11](netty-in-action-chapter-11.md)
-
-### Part 3 Network protocols
-
-- [Chapter 12](netty-in-action-chapter-12.md)
-- [Chapter 13](netty-in-action-chapter-13.md)
-- [Chapter 14](netty-in-action-chapter-14.md)
+- [Summary](netty-in-action-summary.md)
 
 ## Roadmap
 
