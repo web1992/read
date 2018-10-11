@@ -7,7 +7,7 @@
 
 ## Chapter List
 
-- [## Chapter List](netty-inaction.md)
+- [Chapter List](netty-inaction.md)
 
 ## Summary
 
