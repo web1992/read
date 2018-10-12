@@ -36,8 +36,7 @@ Pipeline. The primary function of a ChannelHandlerContext is to manage the inter
 of its associated ChannelHandler with others in the same ChannelPipeline.
 
 
-ChannelHandlerContext, Channel, and ChannelPipeline. Figure
-6.4 shows the relationships among them
+ChannelHandlerContext, Channel, and ChannelPipeline. Figure 6.4 shows the relationships among them
 
 ![channel-context](./images/channel-context.png)
 
@@ -69,10 +68,10 @@ ChannelFuture future = channel.write(someMessage);
 future.addListener(new ChannelFutureListener() {
 @Override
 public void operationComplete(ChannelFuture f) {
-if (!f.isSuccess()) {
-f.cause().printStackTrace();
-f.channel().close();
-}
+    if (!f.isSuccess()) {
+        f.cause().printStackTrace();
+        f.channel().close();
+    }
 }
 });
 ```

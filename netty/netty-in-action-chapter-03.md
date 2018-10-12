@@ -11,27 +11,27 @@ The following sections will add detail to our discussion of the  `Channel` ,  `E
 and  `ChannelFuture` classes which, taken together, can be thought of as representing
 Netty’s networking abstraction:
 
-- ■ Channel — Sockets
-- ■ EventLoop —Control flow, multithreading, concurrency
-- ■ ChannelFuture —Asynchronous notification
+- Channel —> Sockets
+- EventLoop —> Control flow, multithreading, concurrency
+- ChannelFuture —> Asynchronous notification
 
 predefined, specialized implementations
 
-- ■ EmbeddedChannel
-- ■ LocalServerChannel
-- ■ NioDatagramChannel
-- ■ NioSctpChannel
-- ■ NioSocketChannel
+- EmbeddedChannel
+- LocalServerChannel
+- NioDatagramChannel
+- NioSctpChannel
+- NioSocketChannel
 
 ## EventLoop
 
 These relationships are:
 
-- ■ An  EventLoopGroup contains one or more  EventLoops.
-- ■ An  EventLoop is bound to a single  Thread for its lifetime.
-- ■ All  I/O events processed by an  EventLoop are handled on its dedicated  Thread.
-- ■ A  Channel is registered for its lifetime with a single  EventLoop.
-- ■ A single  EventLoop may be assigned to one or more  Channels.
+- An  `EventLoopGroup` contains one or more  EventLoops.
+- An  `EventLoop` is bound to a single  Thread for its lifetime.
+- All  I/O events processed by an  `EventLoop` are handled on its dedicated  Thread.
+- A  `Channel` is registered for its lifetime with a single  `EventLoop`.
+- A single  `EventLoop` may be assigned to one or more  Channels.
 
 ![Netty components and design](images/netty-in-action-components-and-design.png)
 
@@ -41,10 +41,10 @@ These relationships are:
 
 ## ChannelHandler
 
-- ■ ChannelHandlerAdapter
-- ■ ChannelInboundHandlerAdapter
-- ■ ChannelOutboundHandlerAdapter
-- ■ ChannelDuplexHandlerAdapter
+- `ChannelHandlerAdapter`
+- `ChannelInboundHandlerAdapter`
+- `ChannelOutboundHandlerAdapter`
+- `ChannelDuplexHandlerAdapter`
 
 ## ChannelPipeline
 

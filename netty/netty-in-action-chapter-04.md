@@ -6,11 +6,11 @@ netty's transport
 
 Typical uses for ChannelHandlers include:
 
-- ■ Transforming data from one format to another
-- ■ Providing notification of exceptions
-- ■ Providing notification of a Channel becoming active or inactive
-- ■ Providing notification when a Channel is registered with or deregistered from an EventLoop
-- ■ Providing notification about user-defined events
+- Transforming data from one format to another
+- Providing notification of exceptions
+- Providing notification of a Channel becoming active or inactive
+- Providing notification when a Channel is registered with or deregistered from an EventLoop
+- Providing notification about user-defined events
 
 ## Netty-provided transports
 
@@ -24,9 +24,9 @@ Embedded| io.netty.channel.embedded   | An embedded transport, which allows usin
 
 ## Optimal transport for an application
 
-Application needs | Recommended transport
------------------ | ---------------------
+Application needs                       | Recommended transport
+-----------------                       | ---------------------
 Non-blocking code base or general starting point | NIO (or epoll on Linux)
-Blocking code base | OIO
-Communication within the same | JVM Local
-Testing ChannelHandler implementations |Embedded
+Blocking code base                      | OIO
+Communication within the same           | JVM Local
+Testing ChannelHandler implementations  | Embedded
