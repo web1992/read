@@ -11,9 +11,9 @@ The following sections will add detail to our discussion of the  `Channel` ,  `E
 and  `ChannelFuture` classes which, taken together, can be thought of as representing
 Netty’s networking abstraction:
 
-- Channel —> Sockets
-- EventLoop —> Control flow, multithreading, concurrency
-- ChannelFuture —> Asynchronous notification
+- `Channel` —> Sockets
+- `EventLoop` —> Control flow, multithreading, concurrency
+- `ChannelFuture` —> Asynchronous notification
 
 predefined, specialized implementations
 
