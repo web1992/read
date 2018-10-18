@@ -4,3 +4,7 @@
 
 - [Observer Pattern](observer-pattern.md)
 - [State Pattern](state-pattern.md)
+
+## 模型
+
+- [线程模型](https://my.oschina.net/u/1024107/blog/752025)
