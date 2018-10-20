@@ -1,11 +1,13 @@
 # Design Patterns
 
 - [设计模式](https://zh.wikipedia.org/wiki/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F_(%E8%AE%A1%E7%AE%97%E6%9C%BA))
+- [Design Patterns](https://en.wikipedia.org/wiki/Design_Patterns)
 
 - [Observer Pattern](observer-pattern.md)
 - [State Pattern](state-pattern.md)
 - [Strategy pattern(Policy Pattern)](strategy-pattern.md)
 - [Reactor Pattern(from wiki)](https://en.wikipedia.org/wiki/Reactor_pattern)
+- [Template method pattern](template-method-pattern.md)
 
 ## 模型
 
