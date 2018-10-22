@@ -1,0 +1,1 @@
+# Gang of Four patterns
