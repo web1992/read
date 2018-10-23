@@ -14,7 +14,6 @@ it’s also not terribly efficient. In this section we’ll see what Netty has t
 - ObjectDecoder(netty)
 - ObjectEncoder(netty)
 
-
 ## Serialization with JBoss Marshalling
 
 JBoss Marshalling codecs

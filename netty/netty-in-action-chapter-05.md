@@ -10,6 +10,7 @@
 - `ByteBufHolder` interface
 
 These are some of the advantages of the ByteBuf API:
+
 - It’s extensible to user-defined buffer types.
 - Transparent zero-copy is achieved by a built-in composite buffer type.
 - Capacity is expanded on demand (as with the JDK StringBuilder).

@@ -35,7 +35,6 @@ a ChannelPipeline and is created whenever a ChannelHandler is added to a Channel
 Pipeline. The primary function of a ChannelHandlerContext is to manage the interaction
 of its associated ChannelHandler with others in the same ChannelPipeline.
 
-
 ChannelHandlerContext, Channel, and ChannelPipeline. Figure 6.4 shows the relationships among them
 
 ![channel-context](./images/channel-context.png)
@@ -45,19 +44,17 @@ ChannelHandlerContext, Channel, and ChannelPipeline. Figure 6.4 shows the relati
 
 Why would you want to propagate an event starting at a specific point in the Channel-
 Pipeline?
- - To reduce the overhead of passing the event through ChannelHandlers that are
-not interested in it
-- To prevent processing of the event by handlers that would be interested in
-the event
+
+- To reduce the overhead of passing the event through ChannelHandlers that are not interested in it
+- To prevent processing of the event by handlers that would be interested in the event
 
 ## Handling inbound exceptions
 
-To summarize,
-- The default implementation of ChannelHandler.exceptionCaught() forwards
-the current exception to the next handler in the pipeline.
+To summarize
+
+- The default implementation of ChannelHandler.exceptionCaught() forwards the current exception to the next handler in the pipeline.
 - If an exception reaches the end of the pipeline, it’s logged as unhandled.
-- To define custom handling, you override exceptionCaught(). It’s then your
-decision whether to propagate the exception beyond that point.
+- To define custom handling, you override exceptionCaught(). It’s then your decision whether to propagate the exception beyond that point.
 
 ## Handling outbound exceptions
 

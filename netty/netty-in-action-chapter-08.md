@@ -1,6 +1,7 @@
 # CHAPTER 8
 
 This chapter covers
+
 - Bootstrapping clients and servers
 - Bootstrapping clients from within a Channel
 - Adding ChannelHandlers

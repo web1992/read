@@ -2,7 +2,6 @@
 
 ## WebSocket
 
-
 ## ChatServer
 
 ```java
