@@ -5,3 +5,4 @@
 - [性能测试工具jmh](https://antoniogoncalves.org/2015/01/15/micro-benchmarking-with-jmh-measure-dont-guess/)
 - [LinkedHashMap](https://mp.weixin.qq.com/s/KLLjY2Mt6Vg-5z8qeF-bDg)
 - [Metaspace](http://www.importnew.com/14933.html)
+- [Java位运算](http://xxgblog.com/2013/09/15/java-bitmask/)
