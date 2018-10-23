@@ -64,10 +64,12 @@ extends AbstractBootstrap<ServerBootstrap,ServerChannel>
         });
 }
 ```
+
 ## IllegalStateException
 
 More on IllegalStateException When bootstrapping, before you call `bind()` or `connect()` you must call the following
 methods to set up the required components.
+
 - group()
 - channel() or channnelFactory()
 - handler()

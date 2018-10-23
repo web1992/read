@@ -5,6 +5,8 @@
 - [netty.io](http://netty.io/)
 - [user-guide-for-4.x](https://netty.io/wiki/user-guide-for-4.x.html)
 
+![components](./images/components.png)
+
 ## Chapter List
 
 - [Chapter List](netty-inaction.md)
