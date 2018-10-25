@@ -11,7 +11,9 @@ java的nio中，`SelectionKey`用四个标识来表示可进行`某一事件`
 先看下源码：
 
 ```java
-
+    // 插入一个事件
+    public abstract SelectionKey interestOps(int ops);
+    // 查询事件
     public abstract int readyOps();
 
     // 可进行读
@@ -85,6 +87,19 @@ OP_ACCEPT  |  16   | 00010000
 因此只有`readyOps()`是本身，结果才不是`零`。即 `OP_READ & OP_READ` = `00000001 & 00000001`结果是`不是零`(二进制`00000001`)
 
 因此 `(readyOps() & OP_READ) != 0` 表示可以进行读事件
+
+## 更进一步
+
+如果 `readyOps()` 的二进制是`00000101`的时候，代表的什么事件？
+
+`00000101` &  OP_READ  =  `00000101` & `00000001` = `00000001`
+`00000101` &  OP_WRITE =  `00000101` & `00000100` = `00000100`
+
+代表了读事件(`OP_READ`)&写(`OP_WRITE`)事件!
+
+那么`00000101`是怎么来的，可通过 `OP_READ | OP_WRITE` = `00000001` | `00000100` = `00000101`
+
+我们可以通过`interestOps(int ops)`这个方法插入读事件&写事件,即:`interestOps(OP_READ | OP_WRITE)`
 
 ## 参考文章
 
