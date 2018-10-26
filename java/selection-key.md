@@ -95,11 +95,13 @@ OP_ACCEPT  |  16   | 00010000
 - `00000101` &  OP_READ  =  `00000101` & `00000001` = `00000001`
 - `00000101` &  OP_WRITE =  `00000101` & `00000100` = `00000100`
 
-代表了读事件(`OP_READ`)&写(`OP_WRITE`)事件!
+上面的运算结果都不是零，代表了读事件(`OP_READ`)&写(`OP_WRITE`)事件!
 
 那么`00000101`是怎么来的，可通过 `OP_READ | OP_WRITE` = `00000001` | `00000100` = `00000101`
 
-我们可以通过`interestOps(int ops)`这个方法插入读事件&写事件,即:`interestOps(OP_READ | OP_WRITE)`
+我们可以通过`interestOps(int ops)`这个方法同时插入读事件&写事件
+
+即: `interestOps(OP_READ | OP_WRITE)`
 
 ## 参考文章
 
