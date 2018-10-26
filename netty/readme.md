@@ -1,5 +1,7 @@
 # Netty in action
 
+`Netty in action` 笔记
+
 - [draw.io](draw.io/netty-in-action.xml)
 - [Netty in action (source code with the book)](https://github.com/normanmaurer/netty-in-action)
 - [netty.io](http://netty.io/)
