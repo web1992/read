@@ -44,6 +44,7 @@ public final Buffer flip() {
         return this;
     }
 ```
+
 `rewind`比`flip`方法少了`position = 0;`,比如在buffer中填满了数据，就可以使用`rewind`
 因为此时`limit = position`(`limit`已经等于`position`了)
 
