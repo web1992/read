@@ -153,3 +153,61 @@ lock.release();
 }
 ```
 ## Socket Channels
+
+- `ServerSocketChannel`
+- `SocketChannel`
+- `DatagramChannel`
+
+Note Unlike buffers, which are not thread-safe, server socket channels, socket
+channels, and datagram channels are thread-safe.
+
+## Understanding Nonblocking Mode
+
+`SelectableChannel`
+
+```java
+ServerSocketChannel ssc = ServerSocketChannel.open();
+ssc.configureBlocking(false); // enable nonblocking mode
+```
+
+## Exploring Server Socket Channels
+
+- static ServerSocketChannel open()
+- ServerSocket socket()
+- SocketChannel accept()
+
+You create a new server socket channel by invoking the static open() factory
+method. If all goes well, open() returns a ServerSocketChannel instance
+associated with an unbound peer ServerSocket object. You can obtain this
+object by invoking socket(), and then invoke ServerSocket’s bind() method
+to bind the server socket (and ultimately the server socket channel) to a
+specific address.
+You can then invoke ServerSocketChannel’s accept() method to accept an
+incoming connection. Depending on whether or not you have configured
+the server socket channel to be nonblocking, this method either returns
+immediately with null or a socket channel to an incoming connection, or
+blocks until there is an incoming connection.
+
+## Exploring Socket Channels
+
+A socket channel behaves as a client in the TCP/IP stream protocol. You use
+socket channels to initiate connections to listening servers.
+Create a new socket channel by calling either of the open() methods.
+Behind the scenes, a peer Socket object is created. Invoke SocketChannel’s
+socket() method to return this peer object. Also, you can return the original
+socket channel by invoking getChannel() on the peer Socket object.
+A socket channel obtained from the noargument open() method isn’t
+connected. Attempting to read from or write to this socket channel results in
+java.nio.channels.NotYetConnectedException. To connect the socket, call
+the connect() method on the socket channel or on its peer socket.
+After a socket channel has been connected, it remains connected until
+closed. To determine if a socket channel is connected, invoke
+SocketChannel’s boolean isConnected() method.
+The open() method that takes a java.net.InetSocketAddress argument also
+lets you connect to another host at the specified remote address, as follows:
+
+```java
+SocketChannel sc = SocketChannel.open(new InetSocketAddress("localhost", 9999));
+```
+
+Exploring Datagram Channels
