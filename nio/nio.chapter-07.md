@@ -132,7 +132,6 @@ public static void main(String[] args) throws IOException
     System.out.print(buffer.getChar());
 }
 }
-
 ```
 
 ## Locking Files
