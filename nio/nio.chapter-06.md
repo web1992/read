@@ -7,18 +7,10 @@ services via channels. This chapter introduces you to NIO’s buffer classes.
 
 Buffers possess four properties:
 
-- `Capacity`: The total number of data items that can be stored in the buffer. 
-The capacity is specified when the buffer is created and cannot be changed later.
-- `Limit`: The zero-based index of the first element that
-should not be read or written. In other words, it identifies
-the number of “live” data items in the buffer.
-- `Position`: The zero-based index of the next data item
-that can be read or the location where the data item can
-be written.
-- `Mark`: A zero-based index to which the buffer’s
-position will be reset when the buffer’s `reset()` method
-(presented shortly) is called. The mark is initially
-undefined.
+- `Capacity`: The total number of data items that can be stored in the buffer. The capacity is specified when the buffer is created and cannot be changed later.
+- `Limit`: The zero-based index of the first element that should not be read or written. In other words, it identifies the number of “live” data items in the buffer.
+- `Position`: The zero-based index of the next data item that can be read or the location where the data item can be written.
+- `Mark`: A zero-based index to which the buffer’s position will be reset when the buffer’s `reset()` method (presented shortly) is called. The mark is initially undefined.
 
 ## Buffer and its Children
 
@@ -61,3 +53,38 @@ discards the mark’s value. This method throws
 java.nio.InvalidMarkException when the mark hasn’t
 been set; otherwise, it returns this buffer.
 
+## Buffer Writing and Reading
+
+`Tip` For maximum efficiency, you can perform bulk data transfers by using
+the `ByteBuffer put(byte[] src)`, `ByteBuffer put(byte[] src,int offset, int length)`, `ByteBuffer get(byte[] dst)`, and
+`ByteBuffer get(byte[] dst, int offset, int length)` methods to write and read an array of bytes.
+
+## Flipping Buffers
+
+> BufferDemo
+
+```java
+import java.nio.CharBuffer;
+
+public class BufferDemo {
+    public static void main(String[] args) {
+        String[] poem = {"Roses are red", "Violets are blue", "Sugar is sweet", "And so are you."};
+        CharBuffer buffer = CharBuffer.allocate(50);
+        for (int i = 0; i < poem.length; i++) {
+            // Fill the buffer.
+            for (int j = 0; j < poem[i].length(); j++) {
+                buffer.put(poem[i].charAt(j));
+            }
+            // Flip the buffer so that its contents can be read.
+            buffer.flip();
+            // Drain the buffer.
+            while (buffer.hasRemaining()) {
+                System.out.print(buffer.get());
+            }
+            // Empty the buffer to prevent BufferOverflowException.
+            buffer.clear();
+            System.out.println();
+        }
+    }
+}
+```
