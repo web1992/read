@@ -9,3 +9,4 @@
 ## New I/O APIs
 
 - [Chapter 6](nio.chapter-06.md)
+- [Chapter 7](nio.chapter-07.md)
