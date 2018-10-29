@@ -10,3 +10,7 @@
 
 - [Chapter 6](nio.chapter-06.md)
 - [Chapter 7](nio.chapter-07.md)
+
+## More New I/O APIs
+
+- [Chapter 13](nio.chapter-13.md)
