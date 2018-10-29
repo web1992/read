@@ -225,39 +225,39 @@ public class ChannelServer
 {
 final static int PORT = 9999;
 public static void main(String[] args) throws IOException
-{
-System.out.println("server starting and listening on port " +
-PORT + " for incoming requests...");
-DatagramChannel dcServer = DatagramChannel.open();
-dcServer.socket().bind(new InetSocketAddress(PORT));
-ByteBuffer symbol = ByteBuffer.allocate(4);
-ByteBuffer payload = ByteBuffer.allocate(16);
-while (true)
-{
-payload.clear();
-symbol.clear();
-SocketAddress sa = dcServer.receive(symbol);
-if (sa == null)
-return;
-System.out.println("Received request from " + sa);
-String stockSymbol = new String(symbol.array(), 0, 4);
-System.out.println("Symbol: " + stockSymbol);
-if (stockSymbol.toUpperCase().equals("MSFT"))
-{
-payload.putFloat(0, 37.40f); // open share price
-payload.putFloat(4, 37.22f); // low share price
-payload.putFloat(8, 37.48f); // high share price
-payload.putFloat(12, 37.41f); // close share price
-}
-else
-{
-payload.putFloat(0, 0.0f);
-payload.putFloat(4, 0.0f);
-payload.putFloat(8, 0.0f);
-payload.putFloat(12, 0.0f);
-}
-dcServer.send(payload, sa);
-}
+    {
+    System.out.println("server starting and listening on port " +
+    PORT + " for incoming requests...");
+    DatagramChannel dcServer = DatagramChannel.open();
+    dcServer.socket().bind(new InetSocketAddress(PORT));
+    ByteBuffer symbol = ByteBuffer.allocate(4);
+    ByteBuffer payload = ByteBuffer.allocate(16);
+    while (true)
+    {
+        payload.clear();
+        symbol.clear();
+        SocketAddress sa = dcServer.receive(symbol);
+        if (sa == null)
+        return;
+        System.out.println("Received request from " + sa);
+        String stockSymbol = new String(symbol.array(), 0, 4);
+        System.out.println("Symbol: " + stockSymbol);
+    if (stockSymbol.toUpperCase().equals("MSFT"))
+    {
+        payload.putFloat(0, 37.40f); // open share price
+        payload.putFloat(4, 37.22f); // low share price
+        payload.putFloat(8, 37.48f); // high share price
+        payload.putFloat(12, 37.41f); // close share price
+    }
+    else
+    {
+        payload.putFloat(0, 0.0f);
+        payload.putFloat(4, 0.0f);
+        payload.putFloat(8, 0.0f);
+        payload.putFloat(12, 0.0f);
+    }
+        dcServer.send(payload, sa);
+    }
 }
 }
 ```
@@ -274,22 +274,22 @@ public class ChannelClient
 final static int PORT = 9999;
 public static void main(String[] args) throws IOException
 {
-if (args.length != 1)
-{
-System.err.println("usage: java ChannelClient stocksymbol");
-return;
-}
-DatagramChannel dcClient = DatagramChannel.open();
-ByteBuffer symbol = ByteBuffer.wrap(args[0].getBytes());
-ByteBuffer response = ByteBuffer.allocate(16);
-InetSocketAddress sa = new InetSocketAddress("localhost", PORT);
-dcClient.send(symbol, sa);
-System.out.println("Receiving datagram from " +
-dcClient.receive(response));
-System.out.println("Open price: " + response.getFloat(0));
-System.out.println("Low price: " + response.getFloat(4));
-System.out.println("High price: " + response.getFloat(8));
-System.out.println("Close price: " + response.getFloat(12));
+    if (args.length != 1)
+    {
+    System.err.println("usage: java ChannelClient stocksymbol");
+    return;
+    }
+    DatagramChannel dcClient = DatagramChannel.open();
+    ByteBuffer symbol = ByteBuffer.wrap(args[0].getBytes());
+    ByteBuffer response = ByteBuffer.allocate(16);
+    InetSocketAddress sa = new InetSocketAddress("localhost", PORT);
+    dcClient.send(symbol, sa);
+    System.out.println("Receiving datagram from " +
+    dcClient.receive(response));
+    System.out.println("Open price: " + response.getFloat(0));
+    System.out.println("Low price: " + response.getFloat(4));
+    System.out.println("High price: " + response.getFloat(8));
+    System.out.println("Close price: " + response.getFloat(12));
 }
 }
 ```
