@@ -176,13 +176,13 @@ ssc.configureBlocking(false); // enable nonblocking mode
 - ServerSocket socket()
 - SocketChannel accept()
 
-You create a new server socket channel by invoking the static open() factory
-method. If all goes well, open() returns a ServerSocketChannel instance
-associated with an unbound peer ServerSocket object. You can obtain this
-object by invoking socket(), and then invoke ServerSocket’s bind() method
+You create a new server socket channel by invoking the static `open()` factory
+method. If all goes well, `open()` returns a `ServerSocketChannel` instance
+associated with an unbound peer `ServerSocket` object. You can obtain this
+object by invoking `socket()`, and then invoke `ServerSocket’s bind()` method
 to bind the server socket (and ultimately the server socket channel) to a
 specific address.
-You can then invoke ServerSocketChannel’s accept() method to accept an
+You can then invoke `ServerSocketChannel’s accept()` method to accept an
 incoming connection. Depending on whether or not you have configured
 the server socket channel to be nonblocking, this method either returns
 immediately with null or a socket channel to an incoming connection, or
@@ -275,8 +275,8 @@ public static void main(String[] args) throws IOException
 {
     if (args.length != 1)
     {
-    System.err.println("usage: java ChannelClient stocksymbol");
-    return;
+        System.err.println("usage: java ChannelClient stocksymbol");
+        return;
     }
     DatagramChannel dcClient = DatagramChannel.open();
     ByteBuffer symbol = ByteBuffer.wrap(args[0].getBytes());
