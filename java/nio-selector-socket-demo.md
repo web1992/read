@@ -1,8 +1,20 @@
-# socket
+# Selector
 
-## ServerSocketChannel
+使用java nio `SocketChannel`,`ServerSocketChannel`,`Selector` 的服务器&客户端交互Demo
 
-demo
+## server and client
+
+demo 1
+
+- [client](https://github.com/web1992/java_note/blob/master/app_tools/src/main/java/cn/web1992/utils/demo/nio/SelectorClient.java)
+- [server](https://github.com/web1992/java_note/blob/master/app_tools/src/main/java/cn/web1992/utils/demo/nio/SelectorServer.java)
+
+demo 2
+
+- [client](https://github.com/web1992/java_note/blob/master/app_tools/src/main/java/cn/web1992/utils/demo/nio/SelectorClient2.java)
+- [server](https://github.com/web1992/java_note/blob/master/app_tools/src/main/java/cn/web1992/utils/demo/nio/SelectorServer2.java)
+
+demo 3
 
 ```java
 import java.io.IOException;
