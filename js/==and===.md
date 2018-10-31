@@ -7,6 +7,4 @@ JavaScript has both strict and type–converting comparisons. A strict compariso
 Strings are compared based on standard lexicographical ordering, using Unicode values.
 
 - == 如果类型不同会进行类型转化
-- == 如果是对象直接的比较，指向同一对象才是ture
-
-
+- == 如果是对象直接的比较，指向同一对象才是`true`

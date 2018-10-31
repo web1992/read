@@ -23,7 +23,7 @@ for (var i = 0; i < animals.length; i++) {
 
 output
 
-```
+```log
     > "#0 Lion: King"
     > "#1 Whale: Fail"
 ```

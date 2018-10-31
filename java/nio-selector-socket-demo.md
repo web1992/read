@@ -1,6 +1,6 @@
 # Selector
 
-使用java nio `SocketChannel`,`ServerSocketChannel`,`Selector` 的服务器&客户端交互Demo
+使用 java nio `SocketChannel`,`ServerSocketChannel`,`Selector` 的服务器&客户端交互 Demo
 
 ## server and client
 
