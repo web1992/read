@@ -7,5 +7,9 @@
 
 ## 阅读笔记
 
-- [Java.I.O.NIO.and.NIO.2](https://github.com/web1992/read/tree/master/nio)
-- [Netty in action](https://github.com/web1992/read/tree/master/netty)
+- [Java.I.O.NIO.and.NIO.2](nio/readme.md)
+- [Netty in action](netty/readme.md)
+
+## 设计模式
+
+- [软件开发设计模式](design-patterns/readme.md)
