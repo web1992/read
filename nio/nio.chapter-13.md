@@ -126,3 +126,27 @@ public class AFCDemo {
 ```
 
 ## Asynchronous Socket Channels
+
+## AsynchronousServerSocketChannel
+
+```java
+AsynchronousServerSocketChannel ch;
+ch = AsynchronousServerSocketChannel.open();
+```
+
+## AsynchronousSocketChannel
+
+```java
+AsynchronousSocketChannel ch = AsynchronousSocketChannel.open();
+```
+
+## Asynchronous Channel Groups
+
+The abstract java.nio.channels.AsynchronousChannelGroup class describes
+a grouping of asynchronous channels for the purpose of resource sharing.
+A group has an associated thread pool to which tasks are submitted, to
+handle I/O events and to dispatch to completion handlers that consume the
+results of asynchronous operations performed on the group’s channels.
+
+`Note` When writing a completion handler, it’s important to avoid operations
+that may block the thread. `The entire application could block when all threads are blocked. For a custom or cached thread pool, the queue could grow very large and ultimately result in an out-of-memory situation.`
