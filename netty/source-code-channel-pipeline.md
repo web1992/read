@@ -18,9 +18,9 @@ Channle 在初始化的时候，会进行`unsafe`和`pipeline`的初始化,代�
 读事件触发的代码:
 
 ```java
-   @Override
+    @Override
     public final ChannelPipeline fireChannelRead(Object msg) {
-        // head 代表这个`pipeline`链中的第一个，进行读事件的流转
+        // head 代表这个pipeline链中的第一个，进行读事件的流转
         // msg 是已经读取的原始数据(byte数据)
         AbstractChannelHandlerContext.invokeChannelRead(head, msg);
         return this;
@@ -70,6 +70,39 @@ Channle 在初始化的时候，会进行`unsafe`和`pipeline`的初始化,代�
         invokeChannelRead(findContextInbound(), msg);
         return this;
     }
+
+    private AbstractChannelHandlerContext findContextInbound() {
+        AbstractChannelHandlerContext ctx = this;
+        do {
+            ctx = ctx.next;
+        } while (!ctx.inbound);
+        return ctx;
+    }
+
+```
+
+`SimpleChannelInboundHandler#channelRead` demo
+
+```java
+    @Override
+    public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
+        boolean release = true;
+        try {
+            if (acceptInboundMessage(msg)) {
+                @SuppressWarnings("unchecked")
+                I imsg = (I) msg;
+                channelRead0(ctx, imsg);
+            } else {
+                release = false;
+                // 这里把这个msg传递给下一个ChannelHandler
+                ctx.fireChannelRead(msg);
+            }
+        } finally {
+            if (autoRelease && release) {
+                ReferenceCountUtil.release(msg);
+            }
+        }
+    }
 ```
 
 ## 读事件的流程
@@ -78,5 +111,15 @@ Channle 在初始化的时候，会进行`unsafe`和`pipeline`的初始化,代�
 2. 然后这个事件被转发到`AbstractNioChannel.NioUnsafe`这个类
 3. 而`AbstractNioChannel` -> `AbstractNioChannel` -> `AbstractChannel` 这个三个类的继承,因此可以在`AbstractNioChannel`中获取`pipeline`,`pipeline`开始进行事件的转发
 4. `pipeline`从链头部，开始进行读事件的处理
+5. 进入自定义的ChannelHandler,如`SimpleChannelInboundHandler`
 
-pipeline -> AbstractChannelHandlerContext(head) -> ChannelHandler -> HeadContext -> AbstractChannelHandlerContext -> findContextInbound -> AbstractChannelHandlerContext(head.next)
+```java
+pipeline.fireChannelRead
+         -> AbstractChannelHandlerContext.invokeChannelRead(head, msg)
+         -> AbstractChannelHandlerContext.invokeChannelRead
+         -> HeadContext.channelRead
+         -> AbstractChannelHandlerContext.fireChannelRead
+         -> findContextInbound
+         -> AbstractChannelHandlerContext.invokeChannelRead
+         -> AbstractChannelHandlerContext.channelRead(head.next自定义的handler)
+```
