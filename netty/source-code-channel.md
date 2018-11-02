@@ -25,6 +25,19 @@
     }
 ```
 
+`AbstractChannel#AbstractChannel`
+
+Channle 在初始化的时候，会进行`unsafe`和`pipeline`的初始化,代码如下:
+
+```java
+    protected AbstractChannel(Channel parent) {
+        this.parent = parent;
+        id = newId();
+        unsafe = newUnsafe();
+        pipeline = newChannelPipeline();
+    }
+```
+
 ## when Channel bind to address
 
 `NioServerSocketChannel#doBind`
