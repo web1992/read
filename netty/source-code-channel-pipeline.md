@@ -142,3 +142,15 @@ Channel 在初始化的时候，会进行`unsafe`和`pipeline`的初始化,代�
         }
     }
 ```
+
+`AbstractChannelHandlerContext`用来维护这个 pipeline 链
+
+```java
+ private void addFirst0(AbstractChannelHandlerContext newCtx) {
+        AbstractChannelHandlerContext nextCtx = head.next;
+        newCtx.prev = head;
+        newCtx.next = nextCtx;
+        head.next = newCtx;
+        nextCtx.prev = newCtx;
+    }
+```
