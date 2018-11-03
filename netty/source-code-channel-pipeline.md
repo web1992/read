@@ -34,13 +34,15 @@ Channel 在初始化的时候，会进行`unsafe`和`pipeline`的初始化,代�
 
 读事件触发的代码:
 
+`DefaultChannelPipeline#fireChannelRead`
+
 ```java
     @Override
     public final ChannelPipeline fireChannelRead(Object msg) {
         // head 代表这个pipeline链中的第一个，进行读事件的流转
         // head 就是HeadContext
         // msg 是已经读取的原始数据(byte数据)
-        AbstractChannelHandlerContext.invokeChannelRead(head, msg);
+        AbstractChannelHandlerContext.invokeChannelRead(this.head, msg);
         return this;
     }
 ```
