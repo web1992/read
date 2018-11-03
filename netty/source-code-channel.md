@@ -1,6 +1,10 @@
 # Channel
 
-## NioServerSocketChannel
+了解`NioServerSocketChannel`
+
+1. 什么时候初始化
+2. 绑定到端口
+3. 交给 Selector 进行管理
 
 ![NioServerSocketChannel](./images/NioServerSocketChannel.png)
 
@@ -27,7 +31,7 @@
 
 `AbstractChannel#AbstractChannel`
 
-Channle 在初始化的时候，会进行`unsafe`和`pipeline`的初始化,代码如下:
+Channel 在初始化的时候，会进行`unsafe`和`pipeline`的初始化,代码如下:
 
 ```java
     protected AbstractChannel(Channel parent) {
@@ -55,7 +59,7 @@ Channle 在初始化的时候，会进行`unsafe`和`pipeline`的初始化,代�
     }
 ```
 
-## when Channel register SelectionKey
+## when Channel register Selector
 
 `AbstractNioChannel#doRegister`
 
