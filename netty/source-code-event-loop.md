@@ -15,7 +15,7 @@
 下面从这几个方面进行分析：
 
 1. EventLoop 的初始化
-2. EventLoop 的线程模型
+2. EventLoop 的定时任务
 3. EventLoop 进行事件的分发
 4. EventLoop与EventLoopGroup
 
@@ -28,21 +28,9 @@
 ```java
         @Override
         public final void register(EventLoop eventLoop, final ChannelPromise promise) {
-            if (eventLoop == null) {
-                throw new NullPointerException("eventLoop");
-            }
-            if (isRegistered()) {
-                promise.setFailure(new IllegalStateException("registered to an event loop already"));
-                return;
-            }
-            if (!isCompatible(eventLoop)) {
-                promise.setFailure(
-                        new IllegalStateException("incompatible event loop type: " + eventLoop.getClass().getName()));
-                return;
-            }
             // Channel 与eventLoop 进行关联
             AbstractChannel.this.eventLoop = eventLoop;
-
+            // 其他注册事件处理
             if (eventLoop.inEventLoop()) {
                 register0(promise);
             } else {
@@ -63,49 +51,17 @@
                 }
             }
         }
-
-
-        private void register0(ChannelPromise promise) {
-            try {
-                // check if the channel is still open as it could be closed in the mean time when the register
-                // call was outside of the eventLoop
-                if (!promise.setUncancellable() || !ensureOpen(promise)) {
-                    return;
-                }
-                boolean firstRegistration = neverRegistered;
-                doRegister();
-                neverRegistered = false;
-                registered = true;
-
-                // Ensure we call handlerAdded(...) before we actually notify the promise. This is needed as the
-                // user may already fire events through the pipeline in the ChannelFutureListener.
-                // 处理那些在注册事件之前的事件
-                pipeline.invokeHandlerAddedIfNeeded();
-
-                safeSetSuccess(promise);
-                // 向pipeline发送注册事件
-                pipeline.fireChannelRegistered();
-                // Only fire a channelActive if the channel has never been registered. This prevents firing
-                // multiple channel actives if the channel is deregistered and re-registered.
-                if (isActive()) {
-                    if (firstRegistration) {
-                        pipeline.fireChannelActive();
-                    } else if (config().isAutoRead()) {
-                        // This channel was registered before and autoRead() is set. This means we need to begin read
-                        // again so that we process inbound data.
-                        //
-                        // See https://github.com/netty/netty/issues/4805
-                        beginRead();
-                    }
-                }
-            } catch (Throwable t) {
-                // Close the channel directly to avoid FD leak.
-                closeForcibly();
-                closeFuture.setClosed();
-                safeSetFailure(promise, t);
-            }
-        }
 ```
+
+### EventLoop 的定时任务
+
+下面来自 `Netty in action`
+
+Occasionally you’ll need to schedule a task for later (deferred) or periodic execution.
+For example, you might want to register a task to be fired after a client has been con-
+nected for five minutes. A common use case is to send a heartbeat message to a
+remote peer to check whether the connection is still alive. If there is no response, you
+know you can close the channel
 
 ## NioEventLoopGroup
 
@@ -116,12 +72,12 @@ NioEventLoopGroup 的类图
 1. `EventExecutorGroup`的作用
 2. `EventExecutorGroup`的初始化
 
-> `EventExecutorGroup`的作用
+### `EventExecutorGroup`的作用
 
 `EventExecutorGroup` 维护了一组`NioEventLoop`,并且提供了`EventExecutor next();`方法在这个数组中选择一个`NioEventLoop`进行事件的处理
 这个方法提供了一个轮询策略，来选择不同的线程(可参考这篇文章[EventExecutorChooser](source-code-EventExecutorChooser.md))
 
-> `EventExecutorGroup`的初始化
+### `EventExecutorGroup`的初始化
 
 我们在构造一个`ServerBootstrap`对象的时候，需要一个`EventLoopGroup`，代码如下：
 
