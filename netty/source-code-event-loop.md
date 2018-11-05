@@ -16,8 +16,9 @@
 
 1. EventLoop 的初始化
 2. EventLoop 的定时任务
-3. EventLoop 进行事件的分发
-4. EventLoop与EventLoopGroup
+3. EventLoop 的异步任务
+4. EventLoop I/O task and non-I/O tasks
+5. EventLoop与EventLoopGroup
 
 ### EventLoop 的初始化
 
@@ -28,6 +29,7 @@
 ```java
         @Override
         public final void register(EventLoop eventLoop, final ChannelPromise promise) {
+            // 省略其它代码
             // Channel 与eventLoop 进行关联
             AbstractChannel.this.eventLoop = eventLoop;
             // 其他注册事件处理
@@ -57,11 +59,91 @@
 
 下面来自 `Netty in action`
 
-Occasionally you’ll need to schedule a task for later (deferred) or periodic execution.
+Occasionally(偶尔) you’ll need to schedule a task for later (deferred) or periodic execution.
 For example, you might want to register a task to be fired after a client has been con-
 nected for five minutes. A common use case is to send a heartbeat message to a
 remote peer to check whether the connection is still alive. If there is no response, you
 know you can close the channel
+
+个人理解 `EventLoop`提供的定时任务和jdk 提供的定时任务执行API功能相似，但是netty的`EventLoop`与
+`Channel`进行了关联，可以定时对`Channel`连接执行一些操作(如心跳检查)
+
+### EventLoop 的异步任务
+
+下面来自 `Netty in action`
+
+If the calling  Thread is that of the  EventLoop , the code block in question is exe-
+cuted. Otherwise, the  EventLoop schedules a task for later execution and puts it in an
+internal queue. When the  EventLoop next processes its events, it will execute those in
+the queue. This explains how any  Thread can interact directly with the  Channel with-
+out requiring synchronization in the  ChannelHandlers.
+
+如果当前运行的线程和`EventLoop`是同一个线程，那么就直接执行这个任务，否则就吧这个任务提交到任务队列
+进行异步任务的执行
+
+```java
+    // SingleThreadEventExecutor 中维护了一个任务队列，进行异步任务的处理
+   private final Queue<Runnable> taskQueue;
+```
+
+![EventLoop](./images/EventLoop.png)
+
+代码例子：
+
+```java
+            if (eventLoop.inEventLoop()) {
+                // 是同一个线程
+                register0(promise);
+            } else {
+                // 不是同一个线程
+                // 包装成Runnable，放到任务队列进行执行
+                eventLoop.execute(new Runnable() {
+                        @Override
+                        public void run() {
+                            register0(promise);
+                        }
+                    });
+            }
+```
+
+We stated earlier the importance of not blocking the current  I/O thread. We’ll say
+it again in another way: “Never put a long-running task in the execution queue,
+because it will `block` any other task from executing on the same thread.” If you must
+make blocking calls or execute long-running tasks, we advise the use of a dedicated EventExecutor
+
+> 请不要在`taskQueue`进行`耗时`的异步任务，耗时的任务会阻塞其他任务的执行（性能会下降）
+
+### EventLoop I/O task and non-I/O tasks
+
+- I/O task
+- non-I/O tasks
+
+ioRatio 默认是`1:1`的比率，执行1秒IO，再执行1秒task
+
+```java
+if (ioRatio == 100) {
+    try {
+        // 如果 ioRatio=100
+        // 执行发生的IO事件(IO连接，读事件，写事件)
+        processSelectedKeys();
+    } finally {
+        // Ensure we always run tasks.
+        // 执行在taskQueue中的任务
+        runAllTasks();
+    }
+} else {
+    final long ioStartTime = System.nanoTime();
+    try {
+        processSelectedKeys();
+    } finally {
+        // Ensure we always run tasks.
+        final long ioTime = System.nanoTime() - ioStartTime;
+        // 如果ioTime执行了 60 纳秒，ioRatio=50
+        // 那么执行任务的时间就是60纳秒
+        runAllTasks(ioTime * (100 - ioRatio) / ioRatio);
+    }
+}
+```
 
 ## NioEventLoopGroup
 
