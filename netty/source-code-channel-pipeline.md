@@ -1,6 +1,6 @@
 # ChannelPipeline
 
-这里介绍下面几个点：
+这里从下面几点分析：
 
 1. `ChannelPipeline` 什么时候初始化
 2. 如何进行进行`流处理`

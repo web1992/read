@@ -18,7 +18,7 @@
 2. EventLoop 的定时任务
 3. EventLoop 的异步任务
 4. EventLoop I/O task and non-I/O tasks
-5. EventLoop与EventLoopGroup
+5. EventLoop 与 EventLoopGroup
 
 ### EventLoop 的初始化
 
@@ -60,23 +60,21 @@
 下面来自 `Netty in action`
 
 Occasionally(偶尔) you’ll need to schedule a task for later (deferred) or periodic execution.
-For example, you might want to register a task to be fired after a client has been con-
-nected for five minutes. A common use case is to send a heartbeat message to a
+For example, you might want to register a task to be fired after a client has been connected for five minutes. A common use case is to send a heartbeat message to a
 remote peer to check whether the connection is still alive. If there is no response, you
 know you can close the channel
 
-个人理解 `EventLoop`提供的定时任务和jdk 提供的定时任务执行API功能相似，但是netty的`EventLoop`与
+个人理解 `EventLoop`提供的定时任务和 jdk 提供的定时任务执行 API 功能相似，但是 netty 的`EventLoop`与
 `Channel`进行了关联，可以定时对`Channel`连接执行一些操作(如心跳检查)
 
 ### EventLoop 的异步任务
 
 下面来自 `Netty in action`
 
-If the calling  Thread is that of the  EventLoop , the code block in question is exe-
-cuted. Otherwise, the  EventLoop schedules a task for later execution and puts it in an
-internal queue. When the  EventLoop next processes its events, it will execute those in
-the queue. This explains how any  Thread can interact directly with the  Channel with-
-out requiring synchronization in the  ChannelHandlers.
+If the calling Thread is that of the EventLoop , the code block in question is executed. Otherwise, the EventLoop schedules a task for later execution and puts it in an
+internal queue. When the EventLoop next processes its events, it will execute those in
+the queue. This explains how any Thread can interact directly with the Channel with-
+out requiring synchronization in the ChannelHandlers.
 
 如果当前运行的线程和`EventLoop`是同一个线程，那么就直接执行这个任务，否则就吧这个任务提交到任务队列
 进行异步任务的执行
@@ -106,7 +104,7 @@ out requiring synchronization in the  ChannelHandlers.
             }
 ```
 
-We stated earlier the importance of not blocking the current  I/O thread. We’ll say
+We stated earlier the importance of not blocking the current I/O thread. We’ll say
 it again in another way: “Never put a long-running task in the execution queue,
 because it will `block` any other task from executing on the same thread.” If you must
 make blocking calls or execute long-running tasks, we advise the use of a dedicated EventExecutor
@@ -115,10 +113,10 @@ make blocking calls or execute long-running tasks, we advise the use of a dedica
 
 ### EventLoop I/O task and non-I/O tasks
 
-- I/O task  IO 事件
-- non-I/O tasks 非IO事件
+- I/O task IO 事件
+- non-I/O tasks 非 IO 事件
 
-ioRatio 默认是`1:1`的比率，执行1秒IO，再执行1秒非IO事件
+ioRatio 默认是`1:1`的比率，执行 1 秒 IO，再执行 1 秒非 IO 事件
 
 ```java
 if (ioRatio == 100) {
@@ -198,7 +196,7 @@ NioEventLoopGroup 的类图
 this(nThreads, executor, DefaultEventExecutorChooserFactory.INSTANCE, args);
 ```
 
-这个方法提供4个参数：
+这个方法提供 4 个参数：
 
 - nThreads 线程池的线程个数
 - executor 线程执行器
@@ -220,14 +218,14 @@ this(nThreads, executor, DefaultEventExecutorChooserFactory.INSTANCE, args);
 - this NioEventLoopGroup,这个线程所在的线程组
 - executor 线程执行器
 - SelectorProvider
-- Selector 事件模型,nio中Selector的实现
+- Selector 事件模型,nio 中 Selector 的实现
 - RejectedExecutionHandler 异常处理
 
 初始之后，`EventExecutorGroup`,`NioEventLoop`类之间的引用关系:
 
 ![EventExecutorGroup](./images/EventExecutorGroup.png)
 
-虽然`EventExecutorGroup`中有多个`NioEventLoop`,但是只有一个`NioEventLoop`会与`Channel`进行关联，处理IO事件的转发
+虽然`EventExecutorGroup`中有多个`NioEventLoop`,但是只有一个`NioEventLoop`会与`Channel`进行关联，处理 IO 事件的转发
 
 ## 参考资料
 
