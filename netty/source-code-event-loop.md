@@ -115,16 +115,16 @@ make blocking calls or execute long-running tasks, we advise the use of a dedica
 
 ### EventLoop I/O task and non-I/O tasks
 
-- I/O task
-- non-I/O tasks
+- I/O task  IO 事件
+- non-I/O tasks 非IO事件
 
-ioRatio 默认是`1:1`的比率，执行1秒IO，再执行1秒task
+ioRatio 默认是`1:1`的比率，执行1秒IO，再执行1秒非IO事件
 
 ```java
 if (ioRatio == 100) {
     try {
         // 如果 ioRatio=100
-        // 执行发生的IO事件(IO连接，读事件，写事件)
+        // 执行发生的IO事件(比如：socket连接，socket读事件，socket写事件)
         processSelectedKeys();
     } finally {
         // Ensure we always run tasks.
