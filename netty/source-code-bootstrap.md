@@ -4,7 +4,7 @@
 
 服务器`ServerBootstrap`初始化过程
 
- 类的继承关系
+类的继承关系
 
 ![ServerBootstrap](./images/ServerBootstrap.png)
 
