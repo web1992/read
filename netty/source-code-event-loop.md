@@ -568,7 +568,9 @@ this(nThreads, executor, DefaultEventExecutorChooserFactory.INSTANCE, args);
 
 初始之后，`EventExecutorGroup`,`NioEventLoop`类之间的引用关系:
 
-![EventExecutorGroup](./images/EventExecutorGroup.png)
+来自`Netty in action`
+
+![EventExecutorGroup](./images/EventLoop-Channel.png)
 
 虽然`EventExecutorGroup`中有多个`NioEventLoop`,但是只有一个`NioEventLoop`会与`Channel`进行关联，处理 IO 事件的转发
 
