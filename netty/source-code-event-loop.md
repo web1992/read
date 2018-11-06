@@ -172,7 +172,7 @@ if (ioRatio == 100) {
     }
 
  protected void run() {
-        for (;;) {//无线循环
+        for (;;) {//无限循环
             try {
                 // 根据条件，来决定是去SELECT还是继续当前的循环
                 switch (selectStrategy.calculateStrategy(selectNowSupplier, hasTasks())) {
@@ -248,13 +248,13 @@ if (ioRatio == 100) {
 
             // 这里来说下Netty是怎么优化进行Selectkey的优化的
             // java的NIO中Selector的实现类中，使用HashSet来存储已经就绪的IO事件的
-            // Netty中在 NioEventLoop#openSelector 这个方式中，利用反射，自己实现了一个set
+            // Netty中在 NioEventLoop#openSelector 这个方式中，利用反射，自己实现了一个set->SelectedSelectionKeySet
             // 而netty这个set是基于数组实现的，
             // netty实现类SelectedSelectionKeySet继承了AbstractSet并重写了add和iterator方法
-            // 而我们知道HashSet在add 的时候会对key做hash操作,而netty实现的SelectedSelectionKeySet的add操作
-            // 直接通过数组下标，进行add操作，效率比HashSet更快(少了hasgcode这个步骤)
+            // 而我们知道HashSet在add的时候会对key做hashcode操作,而netty实现的SelectedSelectionKeySet的add操作
+            // 直接通过数组下标，进行add操作，效率比HashSet更快(少了hashcode这个步骤)
 
-            // 首先我们知道 一个Selector可以管理多个Channel,
+            // 首先我们知道 一个Selector可以管理多个Channel
             // 优化的同时也引入了另一个问题，HashSet 有remove方法来删除已经处理的IO事件(可以理解为Selector中hashset 与 Channel引用关系)，而
             // SelectedSelectionKeySet 没有实现remove方法，因此需要我们自己手动断开IO事件与数组引用，保证GC正常回收
             // Selector 与 Channel 是绑定的，因此Selector中的HashSet是常驻内存的。如果不进行回收，重复的垃圾对象会一直增加,
