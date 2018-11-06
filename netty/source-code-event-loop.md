@@ -81,11 +81,11 @@ internal queue. When the EventLoop next processes its events, it will execute th
 the queue. This explains how any Thread can interact directly with the Channel with-
 out requiring synchronization in the ChannelHandlers.
 
-如果当前运行的线程和`EventLoop`是同一个线程，那么就直接执行这个任务，否则就吧这个任务提交到任务队列
+如果当前运行的线程和`EventLoop`是同一个线程，那么就直接执行这个任务，否则就把这个任务提交到任务队列
 进行异步任务的执行
 
 ```java
-    // SingleThreadEventExecutor 中维护了一个任务队列，进行异步任务的处理
+    // NioEventLoop 继承了 SingleThreadEventExecutor 中维护了一个任务队列，进行异步任务的处理
    private final Queue<Runnable> taskQueue;
 ```
 
@@ -167,7 +167,7 @@ if (ioRatio == 100) {
     @Override
     public int calculateStrategy(IntSupplier selectSupplier, boolean hasTasks) throws Exception {
         // 如果有任务，就返回selectNow,否则去执行SELECT操作，SELECT阻塞操作，同时可以用wakenUp结束阻塞，（即唤醒）
-        // SELECT 里面是一个无限运行，根据wakenUp等条件，可以决定是否结束循环
+        // SELECT 里面是一个无限循环，根据wakenUp等条件，可以决定是进行事件处理还是继续循环
         return hasTasks ? selectSupplier.get() : SelectStrategy.SELECT;
     }
 
@@ -255,12 +255,13 @@ if (ioRatio == 100) {
             // 直接通过数组下标，进行add操作，效率比HashSet更快(少了hashcode这个步骤)
 
             // 首先我们知道 一个Selector可以管理多个Channel
-            // 优化的同时也引入了另一个问题，HashSet 有remove方法来删除已经处理的IO事件(可以理解为Selector中hashset 与 Channel引用关系)，而
-            // SelectedSelectionKeySet 没有实现remove方法，因此需要我们自己手动断开IO事件与数组引用，保证GC正常回收
-            // Selector 与 Channel 是绑定的，因此Selector中的HashSet是常驻内存的。如果不进行回收，重复的垃圾对象会一直增加,
+            // 优化的同时也引入了另一个问题，HashSet 有remove方法来删除已经处理的IO事件
+            // (可以理解为Selector中hashset与Channel引用关系)
+            // 而SelectedSelectionKeySet 没有实现remove方法，因此需要我们自己手动断开IO事件与数组引用，保证GC正常回收
+            // Selector与Channel是绑定的，因此Selector中的HashSet是常驻内存的。如果不进行回收，重复的垃圾对象会一直增加
             // 比如: Channel发生了一次IO事件，就会向这个selectedKeys中插入一个key
             // 可以在 SelectedSelectionKeySet的reset方法中找到相关的操作
-            // 此外 selectedKeys.keys[i] = null; 这个操作断开了Selector 与 Channel 之间的引用关系，在之后某一个Channel关闭的时候
+            // 此外 selectedKeys.keys[i]=null这个操作断开了Selector与Channel之间的引用关系，在之后某一个Channel关闭的时候
             // 保证GC可以回收这个Channel
             processSelectedKeysOptimized();
         } else {
@@ -273,7 +274,7 @@ if (ioRatio == 100) {
 
 ### EventLoop 核心方法 processSelectedKey
 
-这个方法是遍历所有IO实践的后续处理
+这个方法是遍历所有IO实践的后续处理,处理读写等事件
 
 ```java
     private void processSelectedKey(SelectionKey k, AbstractNioChannel ch) {
@@ -441,14 +442,14 @@ private void select(boolean oldWakenUp) throws IOException {
 
 ### EventLoop 核心方法 runAllTasks
 
-`runAllTasks`有两个重载的方法
+`runAllTasks`有两个重载的方法,有timeoutNanos参数的方法表示执行一段时间结束执行，进行其他事件的处理
 
 ```java
     protected boolean runAllTasks(long timeoutNanos) {
         // NioEventLoop中有三种类别的任务队列
-        // scheduledTaskQueue 从 AbstractScheduledEventExecutor 继承而来
-        // taskQueue 从 SingleThreadEventExecutor 继承而来
-        // tailTasks 从 SingleThreadEventLoop 继承而来
+        // scheduledTaskQueue 从 AbstractScheduledEventExecutor 继承而来,表示定时任务
+        // taskQueue 从 SingleThreadEventExecutor 继承而来，表示异步任务(一次性任务)
+        // tailTasks 从 SingleThreadEventLoop 继承而来,表示阻塞的任务
         fetchFromScheduledTaskQueue();// 把 scheduledTaskQueue的任务放到 taskQueue中
         Runnable task = pollTask();
         if (task == null) {
