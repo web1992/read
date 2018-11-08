@@ -1,5 +1,20 @@
 # CHAPTER 11
 
+## Idle connections and timeouts
+
+- `IdleStateHandler`
+- `ReadTimeoutHandler`
+- `WriteTimeoutHandler`
+
+## Delimited protocols
+
+Delimited message protocols use defined characters to mark the beginning or end of a
+message or message segment, often called a frame. This is true of many protocols for-
+mally defined by  RFC documents, such as  SMTP ,  POP3 ,  IMAP , and Telnet. 5 And, of
+course, private organizations often have their own proprietary formats.
+
+## Length-based protocols
+
 ## Serializing data
 
 The JDK provides `ObjectOutputStream` and `ObjectInputStream` for serializing and deserializing primitive data types and graphs of POJOs over the network. The API isn’t
