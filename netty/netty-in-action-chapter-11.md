@@ -22,3 +22,12 @@ Name | Description
 -----|-------------
 CompatibleMarshallingDecoder CompatibleMarshallingEncoder | For compatibility with peers that use JDK serialization.
 MarshallingDecoder MarshallingEncoder | For use with peers that use JBoss Marshalling. These classes must be used together.
+
+## Serialization via Protocol Buffers
+
+The last of Netty’s solutions for serialization is a codec that utilizes Protocol Buffers, 8 a
+data interchange format developed by Google and now open source. The code can be
+found at https://github.com/google/protobuf.
+Protocol Buffers encodes and decodes structured data in a way that’s compact and
+efficient. It has bindings for many programming languages, making it a good fit for
+cross-language projects
