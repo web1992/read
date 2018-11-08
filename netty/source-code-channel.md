@@ -6,13 +6,13 @@
 
 1. [创建实例](#创建实例)
 2. [open ServerSocketChannel](#open)
-3. [unsafe和pipeline的初始化](#unsafe和pipeline的初始化)
+3. [unsafe 和 pipeline 的初始化](#unsafe和pipeline的初始化)
 4. [设置为非阻塞模式](#设置为非阻塞模式)
-5. [绑定Selector](#绑定Selector)
-6. [绑定Socket](#绑定Socket)
+5. [绑定 Selector](#绑定Selector)
+6. [绑定 Socket](#绑定Socket)
 
-> 上面的步骤在java Nio中是`同步`的代码调用，而在Netty中，进行了`异步`的处理,把5,6步骤放到了taskQueue,让NioEventLoop进行处理
-> 同时也会把注册事件放入到pipeline中进行流处理(比如你可以注册一个ChannelHandler对注册事件进行特殊的处理)
+> 上面的步骤在 java Nio 中是`同步`的代码调用，而在 Netty 中，进行了`异步`的处理,把 5,6 步骤放到了 taskQueue,让 NioEventLoop 进行处理
+> 同时也会把注册事件放入到 pipeline 中进行流处理(比如你可以注册一个 ChannelHandler 对注册事件进行特殊的处理)
 
 ![NioServerSocketChannel](./images/NioServerSocketChannel.png)
 
@@ -76,7 +76,7 @@
     }
 ```
 
-## unsafe和pipeline的初始化
+## unsafe 和 pipeline 的初始化
 
 `AbstractChannel#AbstractChannel`
 
@@ -91,11 +91,11 @@ Channel 在初始化的时候，会进行`unsafe`和`pipeline`的初始化,代�
     }
 ```
 
-## 绑定Selector
+## 绑定 Selector
 
 `AbstractNioChannel#doRegister`
 
-这个过程是异步的,这个绑定`Selector`事件是通过pipeline提交给EventLoop进行绑定的
+这个过程是异步的,这个绑定`Selector`事件是通过 pipeline 提交给 EventLoop 进行绑定的
 
 最终的实现代码如下：
 
@@ -147,11 +147,11 @@ Channel 在初始化的时候，会进行`unsafe`和`pipeline`的初始化,代�
     }
 ```
 
-### 绑定Socket
+### 绑定 Socket
 
 `NioServerSocketChannel#doBind`
 
-这个过程是异步的,这个绑定`Socket`事件是通过pipeline提交给EventLoop进行绑定的
+这个过程是异步的,这个绑定`Socket`事件是通过 pipeline 提交给 EventLoop 进行绑定的
 
 最终的实现代码如下：
 

@@ -1,6 +1,6 @@
 # Chapter List
 
-## Part 1  Netty concepts and architecture
+## Part 1 Netty concepts and architecture
 
 - [Chapter 1](netty-in-action-chapter-01.md)
 - [Chapter 2](netty-in-action-chapter-02.md)

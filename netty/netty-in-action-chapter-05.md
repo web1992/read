@@ -43,14 +43,13 @@ these methods.
 
 ## ReferenceCounted
 
-
 ## Summary
 
 These are the main points we covered:
 
--  The use of distinct read and write indices to control data access
--  Different approaches to memory usage—backing arrays and direct buffers
--  The aggregate view of multiple ByteBufs using CompositeByteBuf
--  Data-access methods: searching, slicing, and copying
--  The read, write, get, and set APIs
--  ByteBufAllocator pooling and reference counting
+- The use of distinct read and write indices to control data access
+- Different approaches to memory usage—backing arrays and direct buffers
+- The aggregate view of multiple ByteBufs using CompositeByteBuf
+- Data-access methods: searching, slicing, and copying
+- The read, write, get, and set APIs
+- ByteBufAllocator pooling and reference counting

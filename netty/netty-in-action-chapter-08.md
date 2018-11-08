@@ -167,7 +167,7 @@ such cases you’ll need to bootstrap a client Channel from a ServerChannel.
 
 ## handler and childHandler
 
-Sets the  ChannelHandler that’s added to the  ChannelPipeline of accepted  Channel s. The difference between  handler() and  childHandler() is that the former adds a handler that’s processed by the accepting ServerChannel , whereas  childHandler() adds a handler that’s processed by an accepted  Channel , which represents a socket bound to a remote peer.
+Sets the ChannelHandler that’s added to the ChannelPipeline of accepted Channel s. The difference between handler() and childHandler() is that the former adds a handler that’s processed by the accepting ServerChannel , whereas childHandler() adds a handler that’s processed by an accepted Channel , which represents a socket bound to a remote peer.
 
 ## Shutdown
 

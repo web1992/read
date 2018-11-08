@@ -2,7 +2,7 @@
 
 `io.netty.util.concurrent.DefaultEventExecutorChooserFactory`
 
-这个是netty中的一个线程轮询策略
+这个是 netty 中的一个线程轮询策略
 
 代码：
 

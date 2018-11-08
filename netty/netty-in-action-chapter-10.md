@@ -13,13 +13,13 @@ data and a `decoder` handles `inbound` data.
 
 ## Decoders
 
-- Decoding bytes to messages— `ByteToMessageDecoder` and  `ReplayingDecoder`
+- Decoding bytes to messages— `ByteToMessageDecoder` and `ReplayingDecoder`
 - Decoding one message type to another— `MessageToMessageDecoder`
 
 ## ByteToMessageDecoder
 
 Decoding from bytes to messages (or to another sequence of bytes) is such a common
-task that Netty provides an abstract base class for it:  `ByteToMessageDecoder` . Since you
+task that Netty provides an abstract base class for it: `ByteToMessageDecoder` . Since you
 can’t know whether the remote peer will send a complete message all at once, this
 class buffers inbound data `until it’s ready for processing`
 
@@ -37,8 +37,8 @@ public class ToIntegerDecoder extends ByteToMessageDecoder {
 }
 ```
 
-You might find it a bit `annoying` to have to verify that the input  ByteBuf has enough data for
-you to call  `readInt()` . In the next section we’ll discuss  `ReplayingDecoder` , a special
+You might find it a bit `annoying` to have to verify that the input ByteBuf has enough data for
+you to call `readInt()` . In the next section we’ll discuss `ReplayingDecoder` , a special
 decoder that eliminates this step, at the cost of a small amount of overhead.
 
 > Reference counting in codecs
@@ -47,7 +47,7 @@ As we mentioned in chapters 5 and 6, reference counting requires special attenti
 In the case of encoders and decoders, the procedure is quite simple: once a mes-
 sage has been encoded or decoded, it will automatically be released by a call to
 ReferenceCountUtil.release(message) . If you need to keep a reference for later
-use you can call  ReferenceCountUtil.retain(message) . This increments the ref-
+use you can call ReferenceCountUtil.retain(message) . This increments the ref-
 erence count, preventing the message from being released.
 
 ## ReplayingDecoder
@@ -61,11 +61,11 @@ More decoders
 
 The following classes handle more complex use cases:
 
-- io.netty.handler.codec.LineBasedFrameDecoder —This class, used internally by Netty, uses end-of-line control characters ( \n or  \r\n ) to parse the message data.
+- io.netty.handler.codec.LineBasedFrameDecoder —This class, used internally by Netty, uses end-of-line control characters ( \n or \r\n ) to parse the message data.
 - io.netty.handler.codec.http.HttpObjectDecoder —A decoder for HTTP data.
 
 You’ll find additional encoder and decoder implementations for special use cases in
-the subpackages of  io.netty.handler.codec . Please consult the Netty Javadoc for
+the subpackages of io.netty.handler.codec . Please consult the Netty Javadoc for
 more information.
 
 ## MessageToMessageDecoder
@@ -80,7 +80,7 @@ public abstract class MessageToMessageDecoder<I> extends ChannelInboundHandlerAd
 }
 ```
 
-HttpObjectAggregator For a more complex example, please examine the class  `io.netty.handler.codec.http.HttpObjectAggregator` , which extends  `MessageToMessageDecoder<HttpObject>`
+HttpObjectAggregator For a more complex example, please examine the class `io.netty.handler.codec.http.HttpObjectAggregator` , which extends `MessageToMessageDecoder<HttpObject>`
 
 ## TooLongFrameException
 
