@@ -47,3 +47,21 @@ implementation and discuss its advantages and limitations.
 ## Thread management
 
 ## EventLoop/thread allocation
+
+`EventLoop`与线程之间的关系
+
+ASYNCHRONOUS TRANSPORTS 异步传输
+
+Asynchronous implementations use only a few  `EventLoops` (and their associated
+Threads), and in the current model these may be shared among  `Channels`. This allows
+many  Channels to be served by the smallest possible number of  Threads, rather than
+assigning a  Thread per  Channel .
+Figure 7.4 displays an  EventLoopGroup with a fixed size of three  EventLoop s (each
+powered by one  Thread ). The  EventLoop s (and their  Thread s) are allocated directly
+when the  EventLoopGroup is created to ensure that they will be available when needed.
+The  EventLoopGroup is responsible for allocating an  EventLoop to each newly cre-
+ated  Channel . In the current implementation, using a round-robin approach achieves
+a balanced distribution, and the same  EventLoop may be assigned to multiple  Channel s.
+(This may change in future versions.)
+
+![EventLoop](./images/EventLoop-Channel.png)
