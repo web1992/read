@@ -1,20 +1,20 @@
 # Channel
 
-## NioServerSocketChannel
-
-从下面几点了解`NioServerSocketChannel`
+从下面几点了解`NioServerSocketChannel`与`NioSocketChannel`
 
 1. [创建实例](#创建实例)
-2. [open ServerSocketChannel](#ServerSocketChannel)
+2. [open ServerSocketChannel](#创建ServerSocketChannel)
 3. [unsafe 和 pipeline 的初始化](#unsafe和pipeline的初始化)
 4. [设置为非阻塞模式](#设置为非阻塞模式)
 5. [NioServerSocketChannel绑定 Selector](#绑定Selector)
 6. [NioServerSocketChannel绑定 Socket](#绑定Socket)
-7. [NioSocketChannel 与 NioServerSocketChannel](#NioSocketChannel)
+7. [NioSocketChannel 与 NioServerSocketChannel](#NioSocketChannel与NioServerSocketChannel)
 8. [NioSocketChannel与Selector绑定](#ServerBootstrapAcceptor)
 
-> 上面的步骤在 java Nio 中是`同步`的代码调用，而在 Netty 中，进行了`异步`的处理,把 5,6 步骤放到了 taskQueue,让 NioEventLoop 进行处理
+> 上面的几个步骤在 java Nio 中是`同步`的代码调用，而在 Netty 中，进行了`异步`的处理,把 5,6 步骤放到了 taskQueue,让 NioEventLoop 进行处理
 > 同时也会把注册事件放入到 pipeline 中进行流处理(比如你可以注册一个 ChannelHandler 对注册事件进行特殊的处理)
+
+## NioServerSocketChannel
 
 ![NioServerSocketChannel](./images/NioServerSocketChannel.png)
 
@@ -29,7 +29,7 @@
     init(channel);
 ```
 
-### ServerSocketChannel
+### 创建ServerSocketChannel
 
 `NioServerSocketChannel#newSocket`
 
@@ -62,6 +62,7 @@
         this.ch = ch;
         this.readInterestOp = readInterestOp;
         try {
+            // 设置为非阻塞模式
             ch.configureBlocking(false);
         } catch (IOException e) {
             try {
@@ -82,7 +83,7 @@
 
 `AbstractChannel#AbstractChannel`
 
-Channel 在初始化的时候，会进行`unsafe`和`pipeline`的初始化,代码如下:
+`Channel` 在初始化的时候，会进行`unsafe`和`pipeline`的初始化,代码如下:
 
 ```java
     protected AbstractChannel(Channel parent) {
@@ -97,7 +98,7 @@ Channel 在初始化的时候，会进行`unsafe`和`pipeline`的初始化,代�
 
 `AbstractNioChannel#doRegister`
 
-这个过程是异步的,这个绑定`Selector`事件是通过 pipeline 提交给 EventLoop 进行绑定的
+这个过程是异步的,这个绑定`Selector`事件是通过`pipeline`提交给`EventLoop`进行绑定的
 
 最终的实现代码如下：
 
@@ -168,7 +169,7 @@ Channel 在初始化的时候，会进行`unsafe`和`pipeline`的初始化,代�
     }
 ```
 
-### NioSocketChannel
+### NioSocketChannel与NioServerSocketChannel
 
 | NioSocketChannel                                   | NioServerSocketChannel                                         |
 | -------------------------------------------------- | -------------------------------------------------------------- |
@@ -203,6 +204,24 @@ NioServerSocketChannel 继承了 `AbstractNioMessageChannel`
     }
 ```
 
+在EventLopp中有下面这个代码:
+
+```java
+            // Also check for readOps of 0 to workaround possible JDK bug which may otherwise lead
+            // to a spin loop
+            if ((readyOps & (SelectionKey.OP_READ | SelectionKey.OP_ACCEPT)) != 0 || readyOps == 0) {
+                // 正式因为这个unsafe类型的不同，可以可以对OP_READ事件和OP_ACCEPT分别进行处理
+                // 如果是OP_ACCEPT事件，unsafe就是 -> NioServerSocketChannel 的unsafe
+                // 否则就是 -> NioSocketChannel 的的unsafe
+                // 而NioServerSocketChannel的unsafe的读事件中，调用accept，并初始化了NioSocketChannel(客户端)
+                // 并通过  pipeline.fireChannelRead(readBuf.get(i)); 进行事件广播
+                // 最终事件被ServerBootstrapAcceptor（其实也是一个ChannelHandler）处理
+                // ServerBootstrapAcceptor 负责把这个客户端的NioSocketChannel与EventLoop，Selector进行关联
+                // 具体的代码实现可以看下面ServerBootstrapAcceptor的实现
+                unsafe.read();
+            }
+```
+
 ## ServerBootstrapAcceptor
 
 ```java
@@ -212,7 +231,7 @@ NioServerSocketChannel 继承了 `AbstractNioMessageChannel`
  }
 ```
 
-`ServerBootstrapAcceptor`重新了`channelRead`方法,代码如下:
+`ServerBootstrapAcceptor`重写了`channelRead`方法,代码如下:
 
 ```java
         @Override
