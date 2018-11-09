@@ -5,7 +5,7 @@
 从下面几点了解`NioServerSocketChannel`
 
 1. [创建实例](#创建实例)
-2. [open ServerSocketChannel](#open ServerSocketChannel)
+2. [open ServerSocketChannel](#ServerSocketChannel)
 3. [unsafe 和 pipeline 的初始化](#unsafe和pipeline的初始化)
 4. [设置为非阻塞模式](#设置为非阻塞模式)
 5. [NioServerSocketChannel绑定 Selector](#绑定Selector)
@@ -29,7 +29,7 @@
     init(channel);
 ```
 
-### open ServerSocketChannel
+### ServerSocketChannel
 
 `NioServerSocketChannel#newSocket`
 
