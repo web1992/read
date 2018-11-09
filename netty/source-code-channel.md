@@ -5,11 +5,13 @@
 从下面几点了解`NioServerSocketChannel`
 
 1. [创建实例](#创建实例)
-2. [open ServerSocketChannel](#open)
+2. [open ServerSocketChannel](#open ServerSocketChannel)
 3. [unsafe 和 pipeline 的初始化](#unsafe和pipeline的初始化)
 4. [设置为非阻塞模式](#设置为非阻塞模式)
-5. [绑定 Selector](#绑定Selector)
-6. [绑定 Socket](#绑定Socket)
+5. [NioServerSocketChannel绑定 Selector](#绑定Selector)
+6. [NioServerSocketChannel绑定 Socket](#绑定Socket)
+7. [NioSocketChannel 与 NioServerSocketChannel](#NioSocketChannel)
+8. [NioSocketChannel与Selector绑定](#ServerBootstrapAcceptor)
 
 > 上面的步骤在 java Nio 中是`同步`的代码调用，而在 Netty 中，进行了`异步`的处理,把 5,6 步骤放到了 taskQueue,让 NioEventLoop 进行处理
 > 同时也会把注册事件放入到 pipeline 中进行流处理(比如你可以注册一个 ChannelHandler 对注册事件进行特殊的处理)
@@ -76,7 +78,7 @@
     }
 ```
 
-## unsafe 和 pipeline 的初始化
+## unsafe和pipeline的初始化
 
 `AbstractChannel#AbstractChannel`
 
@@ -91,7 +93,7 @@ Channel 在初始化的时候，会进行`unsafe`和`pipeline`的初始化,代�
     }
 ```
 
-## 绑定 Selector
+## 绑定Selector
 
 `AbstractNioChannel#doRegister`
 
@@ -147,7 +149,7 @@ Channel 在初始化的时候，会进行`unsafe`和`pipeline`的初始化,代�
     }
 ```
 
-### 绑定 Socket
+### 绑定Socket
 
 `NioServerSocketChannel#doBind`
 
@@ -165,3 +167,87 @@ Channel 在初始化的时候，会进行`unsafe`和`pipeline`的初始化,代�
         }
     }
 ```
+
+### NioSocketChannel
+
+| NioSocketChannel                                   | NioServerSocketChannel                                         |
+| -------------------------------------------------- | -------------------------------------------------------------- |
+| ![NioSocketChannel](./images/NioSocketChannel.png) | ![NioServerSocketChannel](./images/NioServerSocketChannel.png) |
+
+从类图中可以看出`NioSocketChannel`与`NioServerSocketChannel`不同:
+
+NioSocketChannel 继承了 `AbstractNioByteChannel`
+NioServerSocketChannel 继承了 `AbstractNioMessageChannel`
+
+> NioServerSocketChannel 代表服务端，NioSocketChannel代表连接的客户端
+
+`AbstractNioByteChannel` 与 `AbstractNioMessageChannel` 实现了不同的 `newUnsafe`方法
+
+`AbstractNioByteChannel#newUnsafe`
+
+```java
+    @Override
+    protected AbstractNioUnsafe newUnsafe() {
+        // NioSocketChannel 的的unsafe
+        return new NioByteUnsafe();
+    }
+```
+
+`AbstractNioMessageChannel#newUnsafe`
+
+```java
+    @Override
+    protected AbstractNioUnsafe newUnsafe() {
+        // NioServerSocketChannel 的unsafe
+        return new NioMessageUnsafe();
+    }
+```
+
+## ServerBootstrapAcceptor
+
+```java
+ // ServerBootstrapAcceptor 继承了ChannelInboundHandlerAdapter,其实就是一个ChannelHandler
+ // 可以把ServerBootstrapAcceptor放入到pipeline进行流处理
+ private static class ServerBootstrapAcceptor extends ChannelInboundHandlerAdapter {
+ }
+```
+
+`ServerBootstrapAcceptor`重新了`channelRead`方法,代码如下:
+
+```java
+        @Override
+        @SuppressWarnings("unchecked")
+        public void channelRead(ChannelHandlerContext ctx, Object msg) {
+            final Channel child = (Channel) msg;
+
+            child.pipeline().addLast(childHandler);
+
+            setChannelOptions(child, childOptions, logger);
+
+            for (Entry<AttributeKey<?>, Object> e: childAttrs) {
+                child.attr((AttributeKey<Object>) e.getKey()).set(e.getValue());
+            }
+
+            try {
+                // childGroup 本质上也是一个EventLoopGroup
+                // childGroup 是在ServerBootstrap初始的时候初始化的
+                // childGroup.register 这个方法的含义是从childGroup选择一个(轮询的方式)EventLoop与Channel
+                // 进行绑定，并且使用Selector管理Channel，
+                // 从而形成了下图的EventLoop 与Channel映射关系
+                childGroup.register(child).addListener(new ChannelFutureListener() {
+                    @Override
+                    public void operationComplete(ChannelFuture future) throws Exception {
+                        if (!future.isSuccess()) {
+                            forceClose(child, future.cause());
+                        }
+                    }
+                });
+            } catch (Throwable t) {
+                forceClose(child, t);
+            }
+        }
+```
+
+EventLoop与Channel关系图
+
+![EventLoop](./images/EventLoop-Channel.png)
