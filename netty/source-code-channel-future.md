@@ -1,6 +1,6 @@
 # ChannelFuture
 
-`ChannelFuture`代表`netty`中`IO`事件的异步任务的结果
+`ChannelFuture`代表`netty`中`IO`事件的异步任务的结果
 
 `ChannelFuture`有四中状态，如下图:
 
