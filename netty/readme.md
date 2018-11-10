@@ -6,6 +6,7 @@
 - [Netty in action (source code with the book)](https://github.com/normanmaurer/netty-in-action)
 - [netty.io](http://netty.io/)
 - [user-guide-for-4.x](https://netty.io/wiki/user-guide-for-4.x.html)
+- [关于 Netty 的文章](https://netty.io/wiki/related-articles.html)
 
 ![components](./images/components.png)
 
@@ -17,13 +18,15 @@
 
 - [Summary](netty-in-action-summary.md)
 
-## Roadmap
+## RoadMap
 
 ![netty in action](images/netty-in-action.png)
 
 ## 源码分析
 
 源码版本：[4.1.31.Final](https://github.com/netty/netty/releases/tag/netty-4.1.31.Final)
+
+Netty 3 与 Netty 4 的实现是进行过大量修改的
 
 `Netty in action` 每个章节的代码例子：[netty-in-action](https://github.com/normanmaurer/netty-in-action)
 
