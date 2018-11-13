@@ -1,6 +1,6 @@
 # ByteToMessageDecoder
 
-Netty 中负责吧字节流转化成一个具体对象的基类
+Netty 中负责把字节流转化成一个具体对象的基类
 
 > 来自Netty docs:
 
