@@ -1,6 +1,11 @@
-# MessageToMessageDecoder
+# MessageToMessageCodec
 
-通过下面二个类的相关的功能，分析`MessageToMessageDecoder`的用法
+## Decoder&Encoder
+
+- `MessageToMessageDecoder`
+- `MessageToMessageEncoder`
+
+通过下面二个类的相关的功能，分析`MessageToMessageCodec`的用法
 
 - `StringDecoder`
 - `StringEncoder`
