@@ -131,3 +131,9 @@ BEFORE DECODE (16 bytes)                       AFTER DECODE (13 bytes)
 | 0xCA | 0x0010 | 0xFE | "HELLO, WORLD" |      | 0xFE | "HELLO, WORLD" |
 +------+--------+------+----------------+      +------+----------------+
 ```
+
+## 继承关系图
+
+`LengthFieldBasedFrameDecoder`继承了`ByteToMessageDecoder`
+
+![LengthFieldBasedFrameDecoder](./images/LengthFieldBasedFrameDecoder.png)
