@@ -17,3 +17,31 @@ Netty `序列化`和`反序列化`java对象的工具类，与`ObjectOutputStrea
 | ObjectDecoder                                | ObjectEncoder                                |
 | -------------------------------------------- | -------------------------------------------- |
 | ![ObjectDecoder](./images/ObjectDecoder.png) | ![ObjectEncoder](./images/ObjectEncoder.png) |
+
+## jdk serialization
+
+| Name                    | Description                                                                                                                                                                                                                 |
+| ----------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| CompatibleObjectDecoder | Decoder for interoperating with non-Netty peers that use JDK serialization.                                                                                                                                                 |
+| CompatibleObjectEncoder | Encoder for interoperating with non-Netty peers that use JDK serialization.                                                                                                                                                 |
+| ObjectDecoder           | Decoder that uses custom serialization for decoding on top of JDK serialization; it provides a speed improvement when external dependencies are excluded. Otherwise the other serialization implementations are preferable. |
+| ObjectEncoder           | Encoder that uses custom serialization for encoding on top of JDK serialization; it provides a speed improvement when external dependencies are excluded. Otherwise the other serialization implementations are preferable. |
+
+## Serialization with JBoss Marshalling
+
+JBoss Marshalling codecs
+
+| Name                                                          | Description                                              |
+| ------------------------------------------------------------- | -------------------------------------------------------- |
+| `CompatibleMarshallingDecoder` `CompatibleMarshallingEncoder` | For compatibility with peers that use JDK serialization. |
+| `MarshallingDecoder` `MarshallingEncoder`                     | For use with peers that use JBoss                        |
+
+## Serialization via Protocol Buffers
+
+Protobuf codec
+
+| Name                         | Description                                                                                                                       |
+| ---------------------------- | --------------------------------------------------------------------------------------------------------------------------------- |
+| ProtobufDecoder              | Decodes a message using protobuf                                                                                                  |
+| ProtobufEncoder              | Encodes a message using protobuf                                                                                                  |
+| ProtobufVarint32FrameDecoder | Splits received ByteBufs dynamically by the value of the Google Protocol "Base 128 Varints" a integer length field in the message |
