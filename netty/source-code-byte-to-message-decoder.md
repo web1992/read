@@ -15,9 +15,9 @@ To check for complete frames without modifying the reader index, use methods lik
 读事件是在`NioEventLoop`的`processSelectedKey`中进行触发的
 
 ```java
-            if ((readyOps & (SelectionKey.OP_READ | SelectionKey.OP_ACCEPT)) != 0 || readyOps == 0) {
-                unsafe.read();
-            }
+if ((readyOps & (SelectionKey.OP_READ | SelectionKey.OP_ACCEPT)) != 0 || readyOps == 0) {
+    unsafe.read();
+}
 ```
 
 以`LengthFieldBasedFrameDecoder`为例，在初始的时候，`LengthFieldBasedFrameDecoder`被添加到pipeline中，当读事件触发时，通过pipeline转发到`LengthFieldBasedFrameDecoder`
@@ -42,85 +42,84 @@ ByteToMessageDecoder
 ## channelRead
 
 ```java
-    @Override
-    public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
-        if (msg instanceof ByteBuf) {
-            // 如果是ByteBuf开始处理byte数据
-            CodecOutputList out = CodecOutputList.newInstance();
-            try {
-                ByteBuf data = (ByteBuf) msg;
-                // cumulation为空，是第一次进行读消息,直接把ByteBuf给cumulation
-                first = cumulation == null;
-                if (first) {
-                    cumulation = data;
-                } else {
-                    // 否则就使用cumulator这个byte字节累加器，进行数据累加
-                    // 例子：10byte的数据发送了两次，第一次2btye，第二次8byte,
-                    // 那么这个channelRead就会触发两次
-                    // 第一次cumulation中存储了2byte，第二次cumulation累加8byte，总共10byte
-                    // 每次socket通信发送多少字节，是tcp协议决定的，tcp协议会对发送的数据进行缓存
-                    // 缓存区满了，就进行数据的发送,可参照tpc协议的实现
-                    cumulation = cumulator.cumulate(ctx.alloc(), cumulation, data);
-                }
-                // 去进行解码操作，其实对byte字节按照一定的规则进行解析
-                callDecode(ctx, cumulation, out);
-            } catch (DecoderException e) {
-                throw e;
-            } catch (Exception e) {
-                throw new DecoderException(e);
-            } finally {
-                if (cumulation != null && !cumulation.isReadable()) {
-                    numReads = 0;
-                    cumulation.release();
-                    cumulation = null;
-                } else if (++ numReads >= discardAfterReads) {
-                    // We did enough reads already try to discard some bytes so we not risk to see a OOME.
-                    // See https://github.com/netty/netty/issues/4275
-                    numReads = 0;
-                    discardSomeReadBytes();
-                }
-
-                int size = out.size();
-                decodeWasNull = !out.insertSinceRecycled();
-                fireChannelRead(ctx, out, size);
-                out.recycle();
-            }
-        } else {
-            // 如果不是，数据已经进行了转化，让pipeline中的其他handler进行处理
-            ctx.fireChannelRead(msg);
-        }
-    }
-    /**
-     * Cumulate {@link ByteBuf}s by merge them into one {@link ByteBuf}'s, using memory copies.
-       累加器的实现
-     */
-    public static final Cumulator MERGE_CUMULATOR = new Cumulator() {
-        @Override
-        public ByteBuf cumulate(ByteBufAllocator alloc, ByteBuf cumulation, ByteBuf in) {
-            try {
-                final ByteBuf buffer;
-                if (cumulation.writerIndex() > cumulation.maxCapacity() - in.readableBytes()
-                    || cumulation.refCnt() > 1 || cumulation.isReadOnly()) {
-                    // Expand cumulation (by replace it) when either there is not more room in the buffer
-                    // or if the refCnt is greater then 1 which may happen when the user use slice().retain() or
-                    // duplicate().retain() or if its read-only.
-                    //
-                    // See:
-                    // - https://github.com/netty/netty/issues/2327
-                    // - https://github.com/netty/netty/issues/1764
-                    buffer = expandCumulation(alloc, cumulation, in.readableBytes());
-                } else {
-                    buffer = cumulation;
-                }
-                buffer.writeBytes(in);
-                return buffer;
-            } finally {
-                // We must release in in all cases as otherwise it may produce a leak if writeBytes(...) throw
-                // for whatever release (for example because of OutOfMemoryError)
-                in.release();
-            }
-        }
-    };
+ @Override
+ public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
+     if (msg instanceof ByteBuf) {
+         // 如果是ByteBuf开始处理byte数据
+         CodecOutputList out = CodecOutputList.newInstance();
+         try {
+             ByteBuf data = (ByteBuf) msg;
+             // cumulation为空，是第一次进行读消息,直接把ByteBuf给cumulation
+             first = cumulation == null;
+             if (first) {
+                 cumulation = data;
+             } else {
+                 // 否则就使用cumulator这个byte字节累加器，进行数据累加
+                 // 例子：10byte的数据发送了两次，第一次2btye，第二次8byte,
+                 // 那么这个channelRead就会触发两次
+                 // 第一次cumulation中存储了2byte，第二次cumulation累加8byte，总共10byte
+                 // 每次socket通信发送多少字节，是tcp协议决定的，tcp协议会对发送的数据进行缓存
+                 // 缓存区满了，就进行数据的发送,可参照tpc协议的实现
+                 cumulation = cumulator.cumulate(ctx.alloc(), cumulation, data);
+             }
+             // 去进行解码操作，其实对byte字节按照一定的规则进行解析
+             callDecode(ctx, cumulation, out);
+         } catch (DecoderException e) {
+             throw e;
+         } catch (Exception e) {
+             throw new DecoderException(e);
+         } finally {
+             if (cumulation != null && !cumulation.isReadable()) {
+                 numReads = 0;
+                 cumulation.release();
+                 cumulation = null;
+             } else if (++ numReads >= discardAfterReads) {
+                 // We did enough reads already try to discard some bytes so we not risk to see a OOME.
+                 // See https://github.com/netty/netty/issues/4275
+                 numReads = 0;
+                 discardSomeReadBytes();
+             }
+             int size = out.size();
+             decodeWasNull = !out.insertSinceRecycled();
+             fireChannelRead(ctx, out, size);
+             out.recycle();
+         }
+     } else {
+         // 如果不是，数据已经进行了转化，让pipeline中的其他handler进行处理
+         ctx.fireChannelRead(msg);
+     }
+ }
+ /**
+  * Cumulate {@link ByteBuf}s by merge them into one {@link ByteBuf}'s, using memory copies.
+    累加器的实现
+  */
+ public static final Cumulator MERGE_CUMULATOR = new Cumulator() {
+     @Override
+     public ByteBuf cumulate(ByteBufAllocator alloc, ByteBuf cumulation, ByteBuf in) {
+         try {
+             final ByteBuf buffer;
+             if (cumulation.writerIndex() > cumulation.maxCapacity() - in.readableBytes()
+                 || cumulation.refCnt() > 1 || cumulation.isReadOnly()) {
+                 // Expand cumulation (by replace it) when either there is not more room in the buffer
+                 // or if the refCnt is greater then 1 which may happen when the user use slice().retain() or
+                 // duplicate().retain() or if its read-only.
+                 //
+                 // See:
+                 // - https://github.com/netty/netty/issues/2327
+                 // - https://github.com/netty/netty/issues/1764
+                 buffer = expandCumulation(alloc, cumulation, in.readableBytes());
+             } else {
+                 buffer = cumulation;
+             }
+             buffer.writeBytes(in);
+             return buffer;
+         } finally {
+             // We must release in in all cases as otherwise it may produce a leak if writeBytes(...) throw
+             // for whatever release (for example because of OutOfMemoryError)
+             in.release();
+         }
+     }
+ };
 ```
 
 ## callDecode
