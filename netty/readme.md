@@ -18,10 +18,6 @@
 
 - [Summary](netty-in-action-summary.md)
 
-## RoadMap
-
-![netty in action](images/netty-in-action.png)
-
 ## 源码分析
 
 源码版本：[4.1.31.Final](https://github.com/netty/netty/releases/tag/netty-4.1.31.Final)

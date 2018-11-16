@@ -22,3 +22,7 @@
 - [Chapter 12](netty-in-action-chapter-12.md)
 - [Chapter 13](netty-in-action-chapter-13.md)
 - [Chapter 14](netty-in-action-chapter-14.md)
+
+## Summary
+
+![netty in action](images/netty-in-action.png)
