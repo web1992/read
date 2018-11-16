@@ -18,7 +18,7 @@
 
         idx = new AtomicInteger();
         length = 8;
-
+        // 如果length的长度是偶数，可用&
         for (int i = 0; i < 10; i++) {
             System.out.println("java &="+(idx.getAndIncrement() & length - 1));
         }

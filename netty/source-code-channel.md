@@ -108,10 +108,10 @@
         boolean selected = false;
         for (;;) {
             try {
-                // 第一个参数： Selector与channel进行绑定
+                // 第一个参数： Selector 与 Channel进行绑定
                 // 第二个参数： 这里经典的做法是设置为 SelectionKey#OP_ACCEPT, 但是这里设置为0
-                // Netty是在AbstractNioChannel#doBeginRead 进行了绑定,可看下面的解释
-                // 第三个参数： 把 this就是NioServerSocketChannel当做附件进行绑定，方便后续使用
+                // Netty 是在 AbstractNioChannel#doBeginRead 进行了绑定,可看下面的解释
+                // 第三个参数： 把 this 就是NioServerSocketChannel当做附件进行绑定，方便后续使用
                 selectionKey = javaChannel().register(eventLoop().unwrappedSelector(), 0, this);
                 return;
             } catch (CancelledKeyException e) {
@@ -204,22 +204,24 @@ NioServerSocketChannel 继承了 `AbstractNioMessageChannel`
     }
 ```
 
-在EventLopp中有下面这个代码:
+在EventLoop中有下面这个代码:
+
+`unsafe.read();`有两种类型`NioByteUnsafe`&`NioMessageUnsafe`
 
 ```java
-            // Also check for readOps of 0 to workaround possible JDK bug which may otherwise lead
-            // to a spin loop
-            if ((readyOps & (SelectionKey.OP_READ | SelectionKey.OP_ACCEPT)) != 0 || readyOps == 0) {
-                // 正式因为这个unsafe类型的不同，可以可以对OP_READ事件和OP_ACCEPT分别进行处理
-                // 如果是OP_ACCEPT事件，unsafe就是 -> NioServerSocketChannel 的unsafe
-                // 否则就是 -> NioSocketChannel 的的unsafe
-                // 而NioServerSocketChannel的unsafe的读事件中，调用accept，并初始化了NioSocketChannel(客户端)
-                // 并通过  pipeline.fireChannelRead(readBuf.get(i)); 进行事件广播
-                // 最终事件被ServerBootstrapAcceptor（其实也是一个ChannelHandler）处理
-                // ServerBootstrapAcceptor 负责把这个客户端的NioSocketChannel与EventLoop，Selector进行关联
-                // 具体的代码实现可以看下面ServerBootstrapAcceptor的实现
-                unsafe.read();
-            }
+// Also check for readOps of 0 to workaround possible JDK bug which may otherwise lead
+// to a spin loop
+if ((readyOps & (SelectionKey.OP_READ | SelectionKey.OP_ACCEPT)) != 0 || readyOps == 0) {
+    // 正式因为这个unsafe类型的不同，可以可以对OP_READ事件和OP_ACCEPT分别进行处理
+    // 如果是OP_ACCEPT事件，unsafe就是 -> NioServerSocketChannel 的unsafe
+    // 否则就是 -> NioSocketChannel 的的unsafe
+    // 而NioServerSocketChannel的unsafe的读事件中，调用accept，并初始化了NioSocketChannel(客户端)
+    // 并通过  pipeline.fireChannelRead(readBuf.get(i)); 进行事件广播
+    // 最终事件被ServerBootstrapAcceptor（其实也是一个ChannelHandler）处理
+    // ServerBootstrapAcceptor 负责把这个客户端的NioSocketChannel与EventLoop，Selector进行关联
+    // 具体的代码实现可以看下面ServerBootstrapAcceptor的实现
+    unsafe.read();
+}
 ```
 
 ## ServerBootstrapAcceptor
@@ -234,39 +236,35 @@ NioServerSocketChannel 继承了 `AbstractNioMessageChannel`
 `ServerBootstrapAcceptor`重写了`channelRead`方法,代码如下:
 
 ```java
-        @Override
-        @SuppressWarnings("unchecked")
-        public void channelRead(ChannelHandlerContext ctx, Object msg) {
-            // 这个事件是在EventLoop中unsafe.read()触发的
-            // child 这个channel是客户端的链接
-            final Channel child = (Channel) msg;
-
-            child.pipeline().addLast(childHandler);
-
-            setChannelOptions(child, childOptions, logger);
-
-            for (Entry<AttributeKey<?>, Object> e: childAttrs) {
-                child.attr((AttributeKey<Object>) e.getKey()).set(e.getValue());
+@Override
+@SuppressWarnings("unchecked")
+public void channelRead(ChannelHandlerContext ctx, Object msg) {
+    // 这个事件是在EventLoop中unsafe.read()触发的
+    // child 这个channel是客户端的链接
+    final Channel child = (Channel) msg;
+    child.pipeline().addLast(childHandler);
+    setChannelOptions(child, childOptions, logger);
+    for (Entry<AttributeKey<?>, Object> e: childAttrs) {
+        child.attr((AttributeKey<Object>) e.getKey()).set(e.getValue());
+    }
+    try {
+        // childGroup 本质上也是一个EventLoopGroup
+        // childGroup 是在ServerBootstrap初始的时候初始化的
+        // childGroup.register 这个方法的含义是从childGroup选择一个(轮询的方式)EventLoop与Channel
+        // 进行绑定，并且使用Selector管理Channel，
+        // 从而形成了下图的EventLoop 与Channel映射关系
+        childGroup.register(child).addListener(new ChannelFutureListener() {
+            @Override
+            public void operationComplete(ChannelFuture future) throws Exception {
+                if (!future.isSuccess()) {
+                    forceClose(child, future.cause());
+                }
             }
-
-            try {
-                // childGroup 本质上也是一个EventLoopGroup
-                // childGroup 是在ServerBootstrap初始的时候初始化的
-                // childGroup.register 这个方法的含义是从childGroup选择一个(轮询的方式)EventLoop与Channel
-                // 进行绑定，并且使用Selector管理Channel，
-                // 从而形成了下图的EventLoop 与Channel映射关系
-                childGroup.register(child).addListener(new ChannelFutureListener() {
-                    @Override
-                    public void operationComplete(ChannelFuture future) throws Exception {
-                        if (!future.isSuccess()) {
-                            forceClose(child, future.cause());
-                        }
-                    }
-                });
-            } catch (Throwable t) {
-                forceClose(child, t);
-            }
-        }
+        });
+    } catch (Throwable t) {
+        forceClose(child, t);
+    }
+}
 ```
 
 最终EventLoop与Channel关系，如下图：
