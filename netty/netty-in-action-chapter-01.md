@@ -1,5 +1,11 @@
 # CHAPTER 1
 
+This chapter covers
+
+- Networking in Java
+- Introducing Netty
+- Netty’s core components
+
 ## java nio
 
 - Using `setsockopt()` you can configure socket s so that read/write calls will return immediately if there is no data; that is, if a blocking call would haveblocked.
@@ -19,11 +25,11 @@ What is the connection between asynchrony and scalability?
 
 ## Nettry Channels
 
-A Channel is a basic construct of Java NIO . It represents
+A `Channel` is a basic construct of Java NIO . It represents
 an open connection to an entity such as a hardware device, a file, a
 network socket, or a program component that is capable of performing
 one or more distinct I/O operations, for example reading or writing.
-For now, think of a Channel as a vehicle for incoming (inbound) and outgoing (out-
+For now, think of a `Channel` as a vehicle for incoming (inbound) and outgoing (out-
 bound) data. As such, it can be open or closed, connected or disconnected
 
 ## Nettry Callbacks

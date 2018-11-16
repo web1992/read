@@ -6,4 +6,4 @@
 
 > If there is an ORDER BY clause and a different GROUP BY clause, or if the ORDER BY or GROUP BY contains columns from tables other than the first table in the join queue, a temporary table is created.
 
-## 2 
+## 2
