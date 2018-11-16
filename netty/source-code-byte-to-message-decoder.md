@@ -101,7 +101,9 @@ ByteToMessageDecoder
              // expandCumulation这个扩容操作(本质是copy一份新的，替换旧的)有三种情况：
              // 1: 如果cumulation 累加器空间不足 -> cumulation.writerIndex() > cumulation.maxCapacity() - in.readableBytes()
              //    空间不足肯定要扩容了，思想与ArrayList的实现一样
-             // 2: cumulation.refCnt() > 1 如果引用大于1，说要有其他地方在操作这个byteBuf,那么也copy一份
+             // 2: cumulation.refCnt() > 1
+             //    如果引用大于1，说要有其他地方在操作这个byteBuf,那么也copy一份
+             //    防止并发修改的问题
              // 3: cumulation.isReadOnly() 只读，为了执行writeBytes，也进行copy
              if (cumulation.writerIndex() > cumulation.maxCapacity() - in.readableBytes()
                  || cumulation.refCnt() > 1 || cumulation.isReadOnly()) {
