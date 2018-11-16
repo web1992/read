@@ -572,7 +572,9 @@ this(nThreads, executor, DefaultEventExecutorChooserFactory.INSTANCE, args);
 
 ![EventExecutorGroup](./images/EventLoop-Channel.png)
 
-虽然`EventExecutorGroup`中有多个`NioEventLoop`,但是只有一个`NioEventLoop`会与`Channel`进行关联，处理 IO 事件的转发
+客户端的Channel与EventLoop的绑定是在`ServerBootstrapAccepto`r中进行的
+
+链接：[ServerBootstrapAcceptor](source-code-channel.md#serverbootstrapacceptor)
 
 ## 参考资料
 
