@@ -267,6 +267,8 @@ NioServerSocketChannel 继承了 `AbstractNioMessageChannel`
         }
 ```
 
-EventLoop与Channel关系图
+最终EventLoop与Channel关系，如下图：
+
+一个`EventLoop`会关联多个`Channel`
 
 ![EventLoop](./images/EventLoop-Channel.png)
