@@ -30,6 +30,10 @@ Netty 3 与 Netty 4 的实现是进行过大量修改的
 - [NioEventLoop](source-code-event-loop.md)
 - [NioServerSocketChannel](source-code-channel.md)
 - [ChannelPipeline](source-code-channel-pipeline.md)
+- [ByteToMessageDecoder](source-code-byte-to-message-decoder.md)
+- [ChannelFuture](source-code-channel-future.md)
+- [Channel](source-code-channel.md)
+- [MessageToMessageCodec](source-code-message-to-message-codec.md)
 
 ## 实战demo
 
