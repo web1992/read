@@ -126,6 +126,7 @@ ByteToMessageDecoder
          } finally {
              // We must release in in all cases as otherwise it may produce a leak if writeBytes(...) throw
              // for whatever release (for example because of OutOfMemoryError)
+             // in中的数据已经copy到cumulation中了，释放in中的空间,防止内存溢出
              in.release();
          }
      }
