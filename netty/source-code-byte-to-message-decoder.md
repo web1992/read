@@ -20,6 +20,8 @@ if ((readyOps & (SelectionKey.OP_READ | SelectionKey.OP_ACCEPT)) != 0 || readyOp
 }
 ```
 
+`OP_READ`,`OP_ACCEPT` 的实现可以参照这个文章[java nio SelectionKey](https://github.com/web1992/read/blob/master/java/nio-selection-key.md)
+
 以`LengthFieldBasedFrameDecoder`为例，在初始的时候，`LengthFieldBasedFrameDecoder`被添加到pipeline中，当读事件触发时，通过pipeline转发到`LengthFieldBasedFrameDecoder`
 而`LengthFieldBasedFrameDecoder`继承了`ByteToMessageDecoder`,读事件先被`ByteToMessageDecoder`处理
 而后子类`LengthFieldBasedFrameDecoder`继续进行处理
