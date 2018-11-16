@@ -41,6 +41,7 @@ EventLoopGroup 本质是维护了一组 EventLoop，并提供了 `next` 方法�
 
 childGroup 当做参数给了 ServerBootstrapAcceptor，ServerBootstrapAcceptor 重写了`channelRead`
 方法，用 childGroup.register 方法来绑定客户端的 channel 与 childGroup 中的 EventLoop
+具体细节可以参照[这里](source-code-channel.md#ServerBootstrapAcceptor)
 
 ### channelFactory
 

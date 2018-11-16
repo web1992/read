@@ -237,6 +237,8 @@ NioServerSocketChannel 继承了 `AbstractNioMessageChannel`
         @Override
         @SuppressWarnings("unchecked")
         public void channelRead(ChannelHandlerContext ctx, Object msg) {
+            // 这个事件是在EventLoop中unsafe.read()触发的
+            // child 这个channel是客户端的链接
             final Channel child = (Channel) msg;
 
             child.pipeline().addLast(childHandler);
