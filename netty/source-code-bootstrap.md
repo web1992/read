@@ -110,6 +110,16 @@ private static void doBind0(
     }
 ```
 
+## childHandler
+
+`childHandler` 这个在`ServerBootstrap`中是必须设置的，相当于处理客户端的请求。
+
 ## Bootstrap
 
 客户端`Bootstrap`初始化过程
+
+## channel
+
+## handler
+
+## connect

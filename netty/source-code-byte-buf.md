@@ -14,7 +14,7 @@
 ## Readable bytes (the actual content)
 
 ```java
-// Iterates the readable bytes of a buffer.
+ // Iterates the readable bytes of a buffer.
  ByteBuf buffer = ...;
  while (buffer.isReadable()) {
      System.out.println(buffer.readByte());
@@ -24,7 +24,7 @@
 ## Writable bytes
 
 ```java
-// Fills the writable bytes of a buffer with random integers.
+ // Fills the writable bytes of a buffer with random integers.
  ByteBuf buffer = ...;
  while (buffer.maxWritableBytes() >= 4) {
      buffer.writeInt(random.nextInt());
@@ -79,20 +79,21 @@ readerIndex (0) <= writerIndex (decreased)        <=        capacity
 
 ## Search operations
 
- For simple single-byte searches, use `indexOf(int, int, byte)` and `bytesBefore(int, int, byte)`.`bytesBefore(byte)` is especially useful when you deal with a {@code NUL}-terminated string.
- For complicated searches, use `forEachByte(int, int, ByteProcessor)` with a `ByteProcessor` implementation.
+For simple single-byte searches, use `indexOf(int, int, byte)` and `bytesBefore(int, int, byte)`.`bytesBefore(byte)` is especially useful when you deal with a {@code NUL}-terminated string.
+For complicated searches, use `forEachByte(int, int, ByteProcessor)` with a `ByteProcessor` implementation.
 
 ## Mark and reset
 
 There are two marker indexes in every buffer. One is for storing
 `#readerIndex() readerIndex` and the other is for storing
-`writerIndex() writerIndex`.  You can always reposition one of the
-two indexes by calling a reset method.  It works in a similar fashion to the mark and reset methods in `InputStream` except that there's no
-`readlimit`.
+`writerIndex() writerIndex`. You can always reposition one of the
+two indexes by calling a reset method. It works in a similar fashion
+to the mark and reset methods in `InputStream` except that there's no `readlimit`.
 
 ## Derived buffers(派生)
 
- You can create a view of an existing buffer by calling one of the following methods:
+You can create a view of an existing buffer by calling one of the following methods:
+
 - duplicate()
 - slice()
 - slice(int, int)
