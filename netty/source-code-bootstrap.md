@@ -133,4 +133,6 @@ private static void doBind0(
 
 ## connect
 
-连接到制定的 IP 地址
+连接到指定的 IP 地址
+
+## Resolve
