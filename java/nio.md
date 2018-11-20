@@ -45,7 +45,7 @@ public final Buffer flip() {
     }
 ```
 
-`rewind`比`flip`方法少了`position = 0;`,比如在buffer中填满了数据，就可以使用`rewind`
+`rewind`比`flip`方法少了`position = 0;`,比如在 buffer 中填满了数据，就可以使用`rewind`
 因为此时`limit = position`(`limit`已经等于`position`了)
 
 ```java
@@ -54,4 +54,14 @@ public final Buffer rewind() {
         mark = -1;
         return this;
     }
+```
+
+## compact
+
+```java
+System.arraycopy(hb, ix(position()), hb, ix(0), remaining());
+position(remaining());
+limit(capacity());
+discardMark();
+return this;
 ```
