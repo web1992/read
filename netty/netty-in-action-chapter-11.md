@@ -1,5 +1,29 @@
 # CHAPTER 11
 
+This chapter covers
+
+- Securing Netty applications with SSL/TLS
+- Building Netty HTTP/HTTPS applications
+- Handling idle connections and timeouts
+- Decoding delimited and length-based protocols
+- Writing big data
+
+## Securing Netty applications with SSL/TLS
+
+- OpenSSL/SSLEngine
+- SslHandler
+- The SSL/TLS handshake
+
+## Building Netty HTTP/HTTPS applications
+
+- HTTP decoder, encoder, and codec
+- FullHttpRequest
+- FullHttpResponse
+
+| FullHttpRequest                                  | FullHttpResponse                               |
+| ------------------------------------------------ | ---------------------------------------------- |
+| ![FullHttpRequest](./images/FullHttpRequest.png) | ![FullHttpResponse](./images/FullHttpResponse) |
+
 ## Idle connections and timeouts
 
 - `IdleStateHandler`
@@ -9,8 +33,7 @@
 ## Delimited protocols
 
 Delimited message protocols use defined characters to mark the beginning or end of a
-message or message segment, often called a frame. This is true of many protocols for-
-mally defined by RFC documents, such as SMTP , POP3 , IMAP , and Telnet. 5 And, of
+message or message segment, often called a frame. This is true of many protocols formally defined by RFC documents, such as SMTP , POP3 , IMAP , and Telnet. 5 And, of
 course, private organizations often have their own proprietary formats.
 
 ## Length-based protocols
@@ -38,7 +61,7 @@ it’s also not terribly efficient. In this section we’ll see what Netty has t
 
 ObjectDecoder&ObjectEncoder
 
-Netty `序列化`和`反序列化`java对象的工具类，与`ObjectOutputStream`和`ObjectInputStream`不兼容
+Netty `序列化`和`反序列化`java 对象的工具类，与`ObjectOutputStream`和`ObjectInputStream`不兼容
 
 | ObjectDecoder                                | ObjectEncoder                                |
 | -------------------------------------------- | -------------------------------------------- |

@@ -47,8 +47,7 @@ As we mentioned in chapters 5 and 6, reference counting requires special attenti
 In the case of encoders and decoders, the procedure is quite simple: once a mes-
 sage has been encoded or decoded, it will automatically be released by a call to
 ReferenceCountUtil.release(message) . If you need to keep a reference for later
-use you can call ReferenceCountUtil.retain(message) . This increments the ref-
-erence count, preventing the message from being released.
+use you can call ReferenceCountUtil.retain(message) . This increments the reference count, preventing the message from being released.
 
 ## ReplayingDecoder
 
@@ -61,8 +60,8 @@ More decoders
 
 The following classes handle more complex use cases:
 
-- io.netty.handler.codec.LineBasedFrameDecoder —This class, used internally by Netty, uses end-of-line control characters ( \n or \r\n ) to parse the message data.
-- io.netty.handler.codec.http.HttpObjectDecoder —A decoder for HTTP data.
+- `io.netty.handler.codec.LineBasedFrameDecoder` —This class, used internally by Netty, uses end-of-line control characters ( \n or \r\n ) to parse the message data.
+- `io.netty.handler.codec.http.HttpObjectDecoder` —A decoder for HTTP data.
 
 You’ll find additional encoder and decoder implementations for special use cases in
 the subpackages of io.netty.handler.codec . Please consult the Netty Javadoc for
