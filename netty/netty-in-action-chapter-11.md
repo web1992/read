@@ -32,11 +32,19 @@ This chapter covers
 
 ## Delimited protocols
 
+- `DelimiterBasedFrameDecoder`
+- `LineBasedFrameDecoder`
+
 Delimited message protocols use defined characters to mark the beginning or end of a
 message or message segment, often called a frame. This is true of many protocols formally defined by RFC documents, such as SMTP , POP3 , IMAP , and Telnet. 5 And, of
 course, private organizations often have their own proprietary formats.
 
 ## Length-based protocols
+
+- `FixedLengthFrameDecoder`
+- `LengthFieldBasedFrameDecoder`
+
+## Writing big data
 
 ## Serializing data
 
