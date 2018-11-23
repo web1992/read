@@ -1,8 +1,28 @@
 # CHAPTER 5
 
+This chapter covers
+
+- ByteBuf—Netty’s data container
+- API details
+- Use cases
+- Memory allocation
+
 ## ByteBuf
 
-`ByteBuf`—Netty’s data container
+`ByteBuf` Netty’s data container
+
+Netty’s API for data handling is exposed through two components—abstract class
+ByteBuf and interface ByteBufHolder.
+These are some of the advantages of the ByteBuf API:
+
+- It’s extensible to user-defined buffer types.
+- Transparent zero-copy is achieved by a built-in composite buffer type.
+- Capacity is expanded on demand (as with the JDK StringBuilder).
+- Switching between reader and writer modes doesn’t require calling ByteBuffer’s flip() method.
+- Reading and writing employ distinct indices.
+- Method chaining is supported.
+- Reference counting is supported.
+- Pooling is supported.
 
 ## api
 

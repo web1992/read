@@ -24,7 +24,7 @@
 
 Netty 3 与 Netty 4 的实现是进行过大量修改的
 
-`Netty in action` 每个章节的代码例子：[netty-in-action](https://github.com/normanmaurer/netty-in-action)
+`Netty in action` 英文版随书源码：[netty-in-action](https://github.com/normanmaurer/netty-in-action)
 
 - [Bootstrap](source-code-bootstrap.md)
 - [NioEventLoop](source-code-event-loop.md)
@@ -35,6 +35,6 @@ Netty 3 与 Netty 4 的实现是进行过大量修改的
 - [Channel](source-code-channel.md)
 - [MessageToMessageCodec](source-code-message-to-message-codec.md)
 
-## 实战demo
+## 实战
 
-- [基于Netty的服务器&客户端的序列化demo](https://github.com/web1992/java_note/tree/master/app_tools/src/main/java/cn/web1992/utils/demo/netty/serializable)
+- [基于 Netty 的服务器&客户端的序列化 demo](https://github.com/web1992/java_note/tree/master/app_tools/src/main/java/cn/web1992/utils/demo/netty/serializable)
