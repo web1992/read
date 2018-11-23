@@ -1,5 +1,11 @@
 # CHAPTER 9
 
+This chapter covers
+
+- Unit testing
+- Overview of EmbeddedChannel
+- Testing ChannelHandlers with EmbeddedChannel
+
 ## EmbeddedChannel
 
 ```java
