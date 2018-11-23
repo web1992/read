@@ -67,14 +67,14 @@ extends AbstractBootstrap<ServerBootstrap,ServerChannel>
 
 ## IllegalStateException
 
-More on IllegalStateException When bootstrapping, before you call `bind()` or `connect()` you must call the following
+More on `IllegalStateException` When bootstrapping, before you call `bind()` or `connect()` you must call the following
 methods to set up the required components.
 
 - group()
 - channel() or channnelFactory()
 - handler()
 
-Failure to do so will cause an IllegalStateException. The handler() call is particularly
+Failure to do so will cause an `IllegalStateException`. The handler() call is particularly
 important because it’s needed to configure the ChannelPipeline.
 
 ## Bootstrapping servers
@@ -167,7 +167,7 @@ such cases you’ll need to bootstrap a client Channel from a ServerChannel.
 
 ## handler and childHandler
 
-Sets the ChannelHandler that’s added to the ChannelPipeline of accepted Channel s. The difference between handler() and childHandler() is that the former adds a handler that’s processed by the accepting ServerChannel , whereas childHandler() adds a handler that’s processed by an accepted Channel , which represents a socket bound to a remote peer.
+Sets the `ChannelHandler` that’s added to the `ChannelPipeline` of accepted Channels. The difference between `handler()` and `childHandler()` is that the former adds a handler that’s processed by the accepting `ServerChannel` , whereas `childHandler()` adds a handler that’s processed by an accepted Channel , which represents a socket bound to a remote peer.
 
 ## Shutdown
 
