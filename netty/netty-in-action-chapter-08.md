@@ -169,6 +169,13 @@ such cases you’ll need to bootstrap a client Channel from a ServerChannel.
 
 Sets the `ChannelHandler` that’s added to the `ChannelPipeline` of accepted Channels. The difference between `handler()` and `childHandler()` is that the former adds a handler that’s processed by the accepting `ServerChannel` , whereas `childHandler()` adds a handler that’s processed by an accepted Channel , which represents a socket bound to a remote peer.
 
+## Using Netty ChannelOptions and attributes
+
+```java
+bootstrap.option(ChannelOption.SO_KEEPALIVE,true).option(ChannelOption.CONNECT_TIMEOUT_MILLIS, 5000);
+bootstrap.attr(id, 123456);
+```
+
 ## Shutdown
 
 Above all, you need to shut down the `EventLoopGroup`, which will handle any
