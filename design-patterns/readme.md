@@ -16,7 +16,7 @@
 - Architectural patterns
 - Other patterns
 
-![design pattern](design-pattern.png)
+![design pattern](./images/design-pattern.png)
 
 ## 列表
 
