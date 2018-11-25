@@ -23,7 +23,7 @@
 - [Observer Pattern](observer-pattern.md)
 - [State Pattern](state-pattern.md)
 - [Strategy pattern(Policy Pattern)](strategy-pattern.md)
-- [Reactor Pattern(from wiki)](https://en.wikipedia.org/wiki/Reactor_pattern)
+- [Reactor Pattern](reactor-pattern.md)
 - [Template method pattern](template-method-pattern.md)
 
 ## 模型
