@@ -4,7 +4,7 @@
 2. 理解了每个设计模式的含义和应用场景，是通向架构师的必经之路。
 3. 大多框架都是使用大量的设计模式，对于阅读理解这些代码设计也大有帮助。
 
-- [设计模式](<https://zh.wikipedia.org/wiki/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F_(%E8%AE%A1%E7%AE%97%E6%9C%BA)>)
+- [设计模式](https://en.wikipedia.org/wiki/Software_design_pattern)
 - [Design Patterns](https://en.wikipedia.org/wiki/Design_Patterns)
 
 ## 分类总结
@@ -17,6 +17,12 @@
 - Other patterns
 
 ![design pattern](./images/design-pattern.png)
+
+- Creational patterns
+- Structural patterns
+- Behavioral patterns
+- Concurrency patterns
+- architectural design pattern
 
 ## 列表
 
