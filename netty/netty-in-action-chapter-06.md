@@ -12,13 +12,50 @@ This chapter covers
 
 ## Channel lifecycle
 
-## ChannelHandler lifecycle
+| State               | Description                                                                                       |
+| ------------------- | ------------------------------------------------------------------------------------------------- |
+| ChannelUnregistered | The Channel was created, but isn’t registered to an EventLoop.                                    |
+| ChannelRegistered   | The Channel is registered to an EventLoop.                                                        |
+| ChannelActive       | The Channel is active (connected to its remote peer). It’s now possible to receive and send data. |
+| ChannelInactive     | The Channel isn’t connected to the remote peer.                                                   |
+
+![channel-state](./images/channel-state.png)
+
+## SimpleChannelInboundHandler
+
+```java
+@Sharable
+public class SimpleDiscardHandler
+extends SimpleChannelInboundHandler<Object> {
+@Override
+public void channelRead0(ChannelHandlerContext ctx,
+Object msg) {
+// No need to do anything special
+}
+}
+```
+
+## ChannelOutboundHandler
+
+Because `SimpleChannelInboundHandler` releases resources automatically, you shouldn’t
+store references to any messages for later use, as these will become invalid.
 
 ## ChannelHandler adapters
 
 ![channel-adapter](./images/channel-adapter.png)
 
 ## Resource management
+
+Whenever you act on data by calling ChannelInboundHandler.channelRead() or
+ChannelOutboundHandler.write(), you need to ensure that there are no resource
+leaks. As you may remember from the previous chapter, Netty uses reference counting
+to handle pooled ByteBufs. So it’s important to adjust the reference count after you
+have finished using a ByteBuf.
+
+In sum, it is the responsibility of the user to call ReferenceCountUtil.release() if
+a message is consumed or discarded and not passed to the next ChannelOutbound-
+Handler in the ChannelPipeline. If the message reaches the actual transport layer, it
+will be released automatically when it’s written or the Channel is closed.
 
 ## ChannelPipeline
 
