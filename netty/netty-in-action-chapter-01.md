@@ -54,3 +54,9 @@ ChannelFutureListener CLOSE = new ChannelFutureListener() {
 ## Nettry Events and handlers
 
 ## Putting it all together
+
+Netty’s asynchronous programming model is built on the concepts of Futures and
+callbacks, with the dispatching of events to handler methods happening at a deeper
+level. Taken together, these elements provide a processing environment that allows
+the logic of your application to evolve independently of any concerns with network
+operations. This is a key goal of Netty’s design approach.
