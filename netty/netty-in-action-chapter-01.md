@@ -36,6 +36,21 @@ bound) data. As such, it can be open or closed, connected or disconnected
 
 ## Nettry Futures
 
+A Future provides another way to notify an application when an operation has completed.
+This object acts as a placeholder for the result of an asynchronous operation;
+it will complete at some point in the future and provide access to the result.
+
+`ChannelFutureListener`
+
+```java
+ChannelFutureListener CLOSE = new ChannelFutureListener() {
+        @Override
+        public void operationComplete(ChannelFuture future) {
+            future.channel().close();
+        }
+    };
+```
+
 ## Nettry Events and handlers
 
 ## Putting it all together
