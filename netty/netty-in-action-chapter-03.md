@@ -76,3 +76,19 @@ a `ChannelFutureListener`
 | ------------------------ | ---------------------------------- | --------------------- |
 | Networking function      | Connects to a remote host and port | Binds to a local port |
 | Number of EventLoopGroup | 1                                  | 2                     |
+
+The first difference between the two types of bootstraps has been discussed: a Server-
+Bootstrap binds to a port, because servers must listen for connections, while a Bootstrap
+is used by client applications that want to connect to a remote peer.
+The second difference is perhaps more significant. Bootstrapping a client requires
+only a single EventLoopGroup, but a ServerBootstrap requires two (which can be the
+same instance). Why?
+A server needs two distinct sets of Channels. The first set will contain a single
+ServerChannel representing the server’s own listening socket, bound to a local port.
+The second set will contain all of the Channels that have been created to handle incoming
+client connections—one for each connection the server has accepted.
+
+The EventLoopGroup associated with the ServerChannel assigns an EventLoop
+that is responsible for creating Channels for incoming connection requests. Once a
+connection has been accepted, the second EventLoopGroup assigns an EventLoop to
+its Channel.
