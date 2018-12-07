@@ -65,6 +65,12 @@ a `ChannelFutureListener`
 
 ## Encoders and decoders
 
+When you send or receive a message with Netty, a data conversion takes place. An
+inbound message will be decoded; that is, converted from bytes to another format, typically
+a Java object. If the message is outbound, the reverse will happen: it will be
+encoded to bytes from its current format. The reason for both conversions is simple:
+network data is always a series of bytes.
+
 - `ByteToMessageDecoder`
 - `MessageToByteEncoder`
 
