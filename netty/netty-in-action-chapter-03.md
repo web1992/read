@@ -3,9 +3,17 @@
 - Technical and architectural aspects of Netty
 - `Channel` , `EventLoop` , and `ChannelFuture`
 - `ChannelHandler` and `ChannelPipeline`
-- Bootstrapping
+- `Bootstrapping`
 
-## Channel
+## technical and architectural
+
+First, its asynchronous and event-driven implementation, built on Java NIO, guarantees maximum
+application performance and scalability under heavy load. 
+
+Second, Netty embodies a set of design patterns that decouple application logic from the network layer, simplifying
+development while maximizing the testability, modularity, and reusability of code.
+
+## Component
 
 The following sections will add detail to our discussion of the `Channel` , `EventLoop` ,
 and `ChannelFuture` classes which, taken together, can be thought of as representing
@@ -38,6 +46,11 @@ These relationships are:
 ## ChannelFuture
 
 `ChannelFutureListener`
+
+As we’ve explained, all I/O operations in Netty are asynchronous. Because an operation
+may not return immediately, we need a way to determine its result at a later time.
+For this purpose, Netty provides ChannelFuture, whose addListener() method registers
+a `ChannelFutureListener`
 
 ## ChannelHandler
 
