@@ -14,18 +14,18 @@
 
 下面从这几个方面进行分析：
 
-01. [EventLoop 的初始化](#EventLoop的初始化)
-02. [EventLoop 的定时任务](#EventLoop的定时任务)
-03. [EventLoop 的异步任务](#EventLoop的异步任务)
-04. [EventLoop I/O task and non-I/O tasks](#EventLoop-I/O-task-and-non-I/O-tasks)
-05. [EventLoop 核心方法 run](#EventLoop核心方法run)
-06. [EventLoop 核心方法 processSelectedKeys](#EventLoop核心方法processSelectedKeys)
-07. [EventLoop 核心方法 processSelectedKey](#EventLoop核心方法processSelectedKey)
-08. [EventLoop 核心方法 select](#EventLoop核心方法select)
-09. [EventLoop 核心方法 runAllTasks](#EventLoop核心方法runAllTasks)
+1.  [EventLoop 的初始化](#EventLoop的初始化)
+2.  [EventLoop 的定时任务](#EventLoop的定时任务)
+3.  [EventLoop 的异步任务](#EventLoop的异步任务)
+4.  [EventLoop I/O task and non-I/O tasks](#EventLoop-I/O-task-and-non-I/O-tasks)
+5.  [EventLoop 核心方法 run](#EventLoop核心方法run)
+6.  [EventLoop 核心方法 processSelectedKeys](#EventLoop核心方法processSelectedKeys)
+7.  [EventLoop 核心方法 processSelectedKey](#EventLoop核心方法processSelectedKey)
+8.  [EventLoop 核心方法 select](#EventLoop核心方法select)
+9.  [EventLoop 核心方法 runAllTasks](#EventLoop核心方法runAllTasks)
 10. [EventLoop 与 EventLoopGroup](#NioEventLoopGroup)
 
-### EventLoop的初始化
+### EventLoop 的初始化
 
 `Channel`在进行初始之后，会进行一个注册`register`的操作,这个时候`Channel`与`EventLoop`进行了关联
 
@@ -60,7 +60,7 @@
         }
 ```
 
-### EventLoop的定时任务
+### EventLoop 的定时任务
 
 下面来自 `Netty in action`
 
@@ -72,7 +72,7 @@ know you can close the channel
 个人理解 `EventLoop`提供的定时任务和 jdk 提供的定时任务执行 API 功能相似，但是 netty 的`EventLoop`与
 `Channel`进行了关联，可以定时对`Channel`连接执行一些操作(如心跳检查)
 
-### EventLoop的异步任务
+### EventLoop 的异步任务
 
 下面来自 `Netty in action`
 
@@ -148,7 +148,7 @@ if (ioRatio == 100) {
 }
 ```
 
-### EventLoop核心方法run
+### EventLoop 核心方法 run
 
 [源码链接 NioEventLoop](https://github.com/netty/netty/blob/4.1/transport/src/main/java/io/netty/channel/nio/NioEventLoop.java#L401-L484)
 
@@ -238,7 +238,7 @@ if (ioRatio == 100) {
     }
 ```
 
-### EventLoop核心方法processSelectedKeys
+### EventLoop 核心方法 processSelectedKeys
 
 ```java
     // processSelectedKeys方法实现
@@ -272,7 +272,7 @@ if (ioRatio == 100) {
     }
 ```
 
-### EventLoop核心方法processSelectedKey
+### EventLoop 核心方法 processSelectedKey
 
 这个方法是遍历所有 IO 实践的后续处理,处理读写等事件
 
@@ -339,7 +339,7 @@ if (ioRatio == 100) {
     }
 ```
 
-### EventLoop核心方法select
+### EventLoop 核心方法 select
 
 ```java
 private void select(boolean oldWakenUp) throws IOException {
@@ -440,7 +440,7 @@ private void select(boolean oldWakenUp) throws IOException {
     }
 ```
 
-### EventLoop核心方法runAllTasks
+### EventLoop 核心方法 runAllTasks
 
 `runAllTasks`有两个重载的方法,有 timeoutNanos 参数的方法表示执行一段时间结束执行，进行其他事件的处理
 
@@ -572,7 +572,7 @@ this(nThreads, executor, DefaultEventExecutorChooserFactory.INSTANCE, args);
 
 ![EventExecutorGroup](./images/EventLoop-Channel.png)
 
-客户端的Channel与EventLoop的绑定是在`ServerBootstrapAccepto`r中进行的
+客户端的 Channel 与 EventLoop 的绑定是在`ServerBootstrapAccepto`r 中进行的
 
 链接：[ServerBootstrapAcceptor](source-code-channel.md#serverbootstrapacceptor)
 

@@ -2,7 +2,7 @@
 
 Netty 中负责把字节流转化成一个具体对象的基类
 
-> 来自Netty docs:
+> 来自 Netty docs:
 
 Generally frame detection should be handled earlier in the pipeline by adding a `DelimiterBasedFrameDecoder`, `FixedLengthFrameDecoder`, `LengthFieldBasedFrameDecoder`, or `LineBasedFrameDecoder`.
 
@@ -22,7 +22,7 @@ if ((readyOps & (SelectionKey.OP_READ | SelectionKey.OP_ACCEPT)) != 0 || readyOp
 
 `OP_READ`,`OP_ACCEPT` 的实现原理可以参照这个文章[java nio SelectionKey](https://github.com/web1992/read/blob/master/java/nio-selection-key.md)
 
-以`LengthFieldBasedFrameDecoder`为例，在初始的时候，`LengthFieldBasedFrameDecoder`被添加到pipeline中，当读事件触发时，通过pipeline转发到`LengthFieldBasedFrameDecoder`
+以`LengthFieldBasedFrameDecoder`为例，在初始的时候，`LengthFieldBasedFrameDecoder`被添加到 pipeline 中，当读事件触发时，通过 pipeline 转发到`LengthFieldBasedFrameDecoder`
 而`LengthFieldBasedFrameDecoder`继承了`ByteToMessageDecoder`,读事件先被`ByteToMessageDecoder`处理
 而后子类`LengthFieldBasedFrameDecoder`继续进行处理
 
@@ -207,7 +207,7 @@ ByteToMessageDecoder
 > Netty docs:
 
 A decoder that splits the received `ByteBuf` dynamically by the
-value of the length field in the message.  It is particularly useful when you
+value of the length field in the message. It is particularly useful when you
 decode a binary message which has an integer header field that represents the
 length of the message body or the whole message.
 
@@ -229,7 +229,7 @@ proprietary client-server protocols.
 `ByteToMessageDecoder`提供了`protected abstract void decode(ChannelHandlerContext ctx, ByteBuf in, List<Object> out)`
 方法，提供了一个钩子，方便子类进行不同的实现
 
-### LengthFieldBasedFrameDecoder构造参数
+### LengthFieldBasedFrameDecoder 构造参数
 
 理解了`LengthFieldBasedFrameDecoder`参数的作用，其实就明白了的实现
 
@@ -407,9 +407,9 @@ BEFORE DECODE (16 bytes)                       AFTER DECODE (13 bytes)
     }
 ```
 
-## ObjectDecoder实现
+## ObjectDecoder 实现
 
-`ObjectDecoder` 是netty实现的java序列化，可与`ObjectEncoder`一起使用
+`ObjectDecoder` 是 netty 实现的 java 序列化，可与`ObjectEncoder`一起使用
 
 例子:[demo](https://github.com/web1992/java_note/tree/master/app_tools/src/main/java/cn/web1992/utils/demo/netty/serializable)
 

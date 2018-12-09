@@ -12,9 +12,9 @@
 
 ## 作用
 
-`StringDecoder`,`StringEncoder` 可以再netty中进行基于`String`类型的数据通信
+`StringDecoder`,`StringEncoder` 可以再 netty 中进行基于`String`类型的数据通信
 
-- `StringDecoder` 把`ByteBuf`转化为`String`,把接受到的byte字节，转化为String
+- `StringDecoder` 把`ByteBuf`转化为`String`,把接受到的 byte 字节，转化为 String
 - `StringEncoder` 把`String`转化为`ByteBuf`,把`String`转化为`byte`字节，进行网络的传输
 
 ## demo
@@ -34,4 +34,4 @@ pipeline.addLast("stringEncoder", new StringEncoder(CharsetUtil.UTF_8));
 void channelRead(ChannelHandlerContext ctx, String msg) {
      ch.write("Did you say '" + msg + "'?\n");
 }
- ```
+```

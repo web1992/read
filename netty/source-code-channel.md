@@ -6,10 +6,10 @@
 2. [open ServerSocketChannel](#创建ServerSocketChannel)
 3. [unsafe 和 pipeline 的初始化](#unsafe和pipeline的初始化)
 4. [设置为非阻塞模式](#设置为非阻塞模式)
-5. [NioServerSocketChannel绑定 Selector](#绑定Selector)
-6. [NioServerSocketChannel绑定 Socket](#绑定Socket)
+5. [NioServerSocketChannel 绑定 Selector](#绑定Selector)
+6. [NioServerSocketChannel 绑定 Socket](#绑定Socket)
 7. [NioSocketChannel 与 NioServerSocketChannel](#NioSocketChannel与NioServerSocketChannel)
-8. [NioSocketChannel与Selector绑定](#ServerBootstrapAcceptor)
+8. [NioSocketChannel 与 Selector 绑定](#ServerBootstrapAcceptor)
 
 > 上面的几个步骤在 java Nio 中是`同步`的代码调用，而在 Netty 中，进行了`异步`的处理,把 5,6 步骤放到了 taskQueue,让 NioEventLoop 进行处理
 > 同时也会把注册事件放入到 pipeline 中进行流处理(比如你可以注册一个 ChannelHandler 对注册事件进行特殊的处理)
@@ -29,7 +29,7 @@
     init(channel);
 ```
 
-### 创建ServerSocketChannel
+### 创建 ServerSocketChannel
 
 `NioServerSocketChannel#newSocket`
 
@@ -79,7 +79,7 @@
     }
 ```
 
-## unsafe和pipeline的初始化
+## unsafe 和 pipeline 的初始化
 
 `AbstractChannel#AbstractChannel`
 
@@ -94,7 +94,7 @@
     }
 ```
 
-## 绑定Selector
+## 绑定 Selector
 
 `AbstractNioChannel#doRegister`
 
@@ -150,7 +150,7 @@
     }
 ```
 
-### 绑定Socket
+### 绑定 Socket
 
 `NioServerSocketChannel#doBind`
 
@@ -169,7 +169,7 @@
     }
 ```
 
-### NioSocketChannel与NioServerSocketChannel
+### NioSocketChannel 与 NioServerSocketChannel
 
 | NioSocketChannel                                   | NioServerSocketChannel                                         |
 | -------------------------------------------------- | -------------------------------------------------------------- |
@@ -180,7 +180,7 @@
 NioSocketChannel 继承了 `AbstractNioByteChannel`
 NioServerSocketChannel 继承了 `AbstractNioMessageChannel`
 
-> NioServerSocketChannel 代表服务端，NioSocketChannel代表连接的客户端
+> NioServerSocketChannel 代表服务端，NioSocketChannel 代表连接的客户端
 
 `AbstractNioByteChannel` 与 `AbstractNioMessageChannel` 实现了不同的 `newUnsafe`方法
 
@@ -204,7 +204,7 @@ NioServerSocketChannel 继承了 `AbstractNioMessageChannel`
     }
 ```
 
-在EventLoop中有下面这个代码:
+在 EventLoop 中有下面这个代码:
 
 `unsafe.read();`有两种类型`NioByteUnsafe`&`NioMessageUnsafe`
 
@@ -267,7 +267,7 @@ public void channelRead(ChannelHandlerContext ctx, Object msg) {
 }
 ```
 
-最终EventLoop与Channel关系，如下图：
+最终 EventLoop 与 Channel 关系，如下图：
 
 一个`EventLoop`会关联多个`Channel`
 
