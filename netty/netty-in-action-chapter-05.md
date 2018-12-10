@@ -98,7 +98,7 @@ Note that a specific class can define its release-counting contract in its own u
 way. For example, we can envision a class whose implementation of `release()`always
 sets the reference count to zero whatever its current value, thus invalidating all active
 references at once.
-**WHO IS RESPONSIBLE FOR RELEASE?** In general, the last party to access an
+**WHO IS RESPONSIBLE FOR RELEASE?**` In general, the last party to access an
 object is responsible for releasing it. In chapter 6 we’ll explain the relevance
 of this conept to ChannelHandler and ChannelPipeline.
 
