@@ -1,10 +1,10 @@
 # closure
 
-[closure](http://www.adequatelygood.com/JavaScript-Scoping-and-Hoisting.html)
+[Hoisting](http://www.adequatelygood.com/JavaScript-Scoping-and-Hoisting.html)
 
 This is because JavaScript has function-level scope. This is radically different from the C family. Blocks, such as if statements, do not create a new scope. Only functions create a new scope.
 
-## 定义
+## closure 定义
 
 - [from wikipedia](<https://en.wikipedia.org/wiki/Closure_(computer_programming)>)
 
