@@ -1,6 +1,10 @@
 # prototype
 
-Inheritance and the prototype chain
+## 定义
+
+`Function.prototype`
+
+## Inheritance and the prototype chain
 
 js 中使用 prototype 链实现继承
 
@@ -27,9 +31,13 @@ f.prototype.b = 3;
 f.prototype.c = 4;
 ```
 
-## new
+## new with prototype
 
-new 操作改变了 `function` 的原型链
+当进行 `var foo = new Foo()` 操作的时候，foo 会继承`Foo.prototype`原型链
+
+因此下面的例子中，`doSomeInstancing`的`__proto__` 指向了`doSomething.prototype`
+
+> A new object is created, inheriting from Foo.prototype
 
 ```js
 function doSomething() {}
