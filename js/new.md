@@ -2,17 +2,19 @@
 
 - [new](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/new)
 
-- It creates a brand new object out of thin air.
-- It links `this` object to another object
-- the newly created object from Step 1 gets passed as the `this` context
-- if the function doesn't return it's own object, `this` is returned
+The new operator creates an instance of a user-defined object type or of one of the built-in object types that has a constructor function.The new keyword does the following 4 things
+
+1. It creates a brand new object out of thin air.
+2. It links `this` object to another object
+3. the newly created object from Step 1 gets passed as the `this` context
+4. if the function doesn't return it's own object, `this` is returned
 
 Creating a user-defined object requires two steps:
 
 1. Define the object type by writing a function.
-2. Create an instance of the object with new.
+2. Create an instance of the object with `new`.
 
-When the code new Foo(...) is executed, the following things happen:
+When the code `new Foo(...)` is executed, the following things happen:
 
 - A new object is created, inheriting from Foo.prototype.
 - The constructor function Foo is called with the specified arguments, and with this bound to the newly created object. new Foo is equivalent to new Foo(), i.e. if no argument list is specified, Foo is called without arguments.
