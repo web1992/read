@@ -69,3 +69,14 @@ This results in an output similar to the following:
     }
 }
 ```
+
+## `prototype` vs `__proto__`
+
+`prototype` 是一个函数的属性，而`__proto__`是一个对象的属性
+
+```js
+// fun 必定是一个函数 typeof fun == 'function'
+fun.prototype.foo = "1";
+// obj 必定是一个对象 typeof obj == 'object'
+obj.__proto__;
+```
