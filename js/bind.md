@@ -1,6 +1,7 @@
 # bind
 
 - [bind](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/bind)
+- [bind](https://javascript.info/bind)
 
 ## demo
 
