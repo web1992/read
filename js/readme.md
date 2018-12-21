@@ -24,7 +24,6 @@
 - [new](new.md)
 - [object](object.md)
 - [prototype](prototype.md)
-- [readme](readme.md)
 - [this](this.md)
 - [undefined](undefined.md)
 - [webpack](webpack.md)
