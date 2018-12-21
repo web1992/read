@@ -7,7 +7,7 @@
 
 ## 基础
 
-- [==and===.md](==and===.md)
+- [==and===](==and===.md)
 - [apply](apply.md)
 - [bind](bind.md)
 - [call](call.md)
