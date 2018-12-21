@@ -1,3 +1,3 @@
 # Arrow function
 
-- [function-expressions-arrows](https://javascript.info/function-expressions-arrows)
+- [arrow-functions](https://javascript.info/arrow-functions)

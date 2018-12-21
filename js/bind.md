@@ -1,7 +1,7 @@
 # bind
 
-- [bind](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/bind)
-- [bind](https://javascript.info/bind)
+- [bind mozilla](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/bind)
+- [bind javascript.info](https://javascript.info/bind)
 
 Method `func.bind(context, ...args)` returns a "bound variant" of function func that fixes the context this and first arguments if given.
 
