@@ -16,3 +16,11 @@ Unlike a plain function, a closure allows the function to access those captured 
 ## example
 
 - [from mozilla](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Closures)
+
+There is a general programming term “closure”, that developers generally should know.
+
+A closure is a function that remembers its outer variables and can access them. In some languages, that’s not possible, or a function should be written in a special way to make it happen. But as explained above, in JavaScript, all functions are naturally closures (there is only one exclusion, to be covered in The "new Function" syntax).
+
+That is: they automatically remember where they were created using a hidden [[Environment]] property, and all of them can access outer variables.
+
+When on an interview, a frontend developer gets a question about “what’s a closure?”, a valid answer would be a definition of the closure and an explanation that all functions in JavaScript are closures, and maybe few more words about technical details: the [[Environment]] property and how Lexical Environments work.
