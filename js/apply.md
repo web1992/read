@@ -1,6 +1,7 @@
 # apply
 
-- [apply](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/apply)
+- [apply mozilla](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/apply)
+- [call apply javascript.info](https://javascript.info/call-apply-decorators)
 
 The `apply()` method calls a function with a given this value, and arguments provided as an array (or an array-like object).
 
