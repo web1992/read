@@ -1,20 +1,20 @@
 # introduction
 
-some summary of [introduction to javascript](https://developer.mozilla.org/en-US/docs/Web/JavaScript/A_re-introduction_to_JavaScript)
+-[introduction to javascript](https://developer.mozilla.org/en-US/docs/Web/JavaScript/A_re-introduction_to_JavaScript)
 
 ## data type
 
-* Number
-* String
-* Boolean
-* Symbol (new in ES2015)
-* Object
-  * Function
-  * Array
-  * Date
-  * RegExp
-* null
-* undefined
+- Number
+- String
+- Boolean
+- Symbol (new in ES2015)
+- Object
+  - Function
+  - Array
+  - Date
+  - RegExp
+- null
+- undefined
 
 And there are some built-in [Error](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Error) types as well. Things are a lot easier if we stick with the first diagram, however, so we'll discuss the types listed there for now.
 

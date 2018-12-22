@@ -2,7 +2,8 @@
 
 闭包的作用：可以访问到一个不是在当前`范围`内的变量
 
-[Hoisting](http://www.adequatelygood.com/JavaScript-Scoping-and-Hoisting.html)
+- [closure javascript.info](https://javascript.info/closure)
+- [Hoisting](http://www.adequatelygood.com/JavaScript-Scoping-and-Hoisting.html)
 
 This is because JavaScript has function-level scope. This is radically different from the C family. Blocks, such as if statements, do not create a new scope. Only functions create a new scope.
 
@@ -14,4 +15,4 @@ Unlike a plain function, a closure allows the function to access those captured 
 
 ## example
 
--[from mozilla](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Closures)
+- [from mozilla](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Closures)
