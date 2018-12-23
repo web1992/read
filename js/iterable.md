@@ -1,6 +1,7 @@
 # iterable
 
 - [iterable](https://javascript.info/iterable)
+- [array](https://javascript.info/array)
 
 ## Iterables and array-likes
 
