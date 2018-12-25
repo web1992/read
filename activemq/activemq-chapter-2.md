@@ -20,6 +20,8 @@ databases.
 
 ## JMS API
 
+![jms-api](./images/active-jms-api.png)
+
 In standardizing the API, JMS formally defined many concepts and artifacts from
 the world of messaging:
 
