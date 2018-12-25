@@ -1,6 +1,6 @@
 # ActiveMQ in action
 
-`ActiveMQ in action` 阅读笔记
+`ActiveMQ in action` 阅读笔记 [pdf](https://github.com/web1992/books/tree/master/activemq)
 
 - Message-oriented middleware (`MOM`)
 - Java Message Service (`JMS`) 1.1–compliant
