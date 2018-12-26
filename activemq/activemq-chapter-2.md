@@ -35,3 +35,13 @@ the world of messaging:
 - Administered objects —Preconfigured JMS objects that contain provider-specific configuration data for use by clients. These objects are typically accessible by clients via JNDI.
 - Connection factory—Clients use a connection factory to create connections to the JMS provider.
 - Destination—An object to which messages are addressed and sent and from which messages are received.
+
+- `MessageProducer`
+- `MessageConsumer`
+
+A JMS message allows anything to be sent as part of
+the message, including `text` and `binary` data as well as information in the headers.
+
+![headers-payload](./images/jms-headers-payload.png)
+
+## JMS domains
