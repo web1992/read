@@ -13,3 +13,4 @@
 
 - [chapter 1](activemq-chapter-1.md)
 - [chapter 2](activemq-chapter-2.md)
+- [chapter 3](activemq-chapter-3.md)
