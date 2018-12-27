@@ -36,8 +36,13 @@ the world of messaging:
 - Connection factory—Clients use a connection factory to create connections to the JMS provider.
 - Destination—An object to which messages are addressed and sent and from which messages are received.
 
-- `MessageProducer`
-- `MessageConsumer`
+## JMS clients
+
+JMS clients utilize the `MessageProducer` and `MessageConsumer` interfaces in some
+way. It’s the responsibility of the JMS provider to furnish an implementation of each of
+these interfaces. A JMS client that sends messages is known as a producer and a JMS client
+that receives messages is known as a consumer. It’s possible for a JMS client to handle
+both the sending and receiving of messages
 
 A JMS message allows anything to be sent as part of
 the message, including `text` and `binary` data as well as information in the headers.
