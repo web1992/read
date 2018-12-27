@@ -141,3 +141,20 @@ A simple JMS application will utilize the following steps:
   - b Optionally register a JMS message listener
 - 8 Send or receive JMS message(s)
 - 9 Close all JMS resources (connection, session, producer, consumer, and so forth)
+
+> A note on multithreading in JMS applications
+
+The JMS spec specifically defines concurrency for various objects in the JMS API and
+requires that only a few objects support concurrent access. The `ConnectionFactory`,
+`Connection`, and `Destination` objects are required to support concurrent access,
+whereas the `Session`, `MessageProducer`, and `MessageConsumer` objects don’t support
+concurrent access. The point is that the `Session`, `MessageProducer`, and
+`MessageConsumer` objects shouldn’t be shared across threads in a Java application.
+
+## Message-driven beans
+
+Message-driven beans (MDBs) were born out of the EJB 2.0 spec. The motivation was to
+allow simple JMS integration into EJBs, making asynchronous message consumption
+by EJBs almost as easy as using the standard JMS APIs. Through the use of a JMS
+MessageListener interface, the EJB automatically receives messages from the JMS provider
+in a push style. An example of a simple MDB is shown here.
