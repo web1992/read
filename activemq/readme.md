@@ -11,6 +11,12 @@
 
 ## Chapter list
 
-- [chapter 1](activemq-chapter-1.md)
-- [chapter 2](activemq-chapter-2.md)
-- [chapter 3](activemq-chapter-3.md)
+### Part 1
+
+- [chapter 1](activemq-chapter-01.md)
+- [chapter 2](activemq-chapter-02.md)
+- [chapter 3](activemq-chapter-03.md)
+
+### Part 2
+
+- [chapter 4](activemq-chapter-04.md)
