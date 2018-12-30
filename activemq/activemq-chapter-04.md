@@ -229,7 +229,7 @@ network of brokers.
 
 ### Static networks
 
-![network-connectors](./iamges/network-connectors.png)
+![network-connectors](./images/network-connectors.png)
 
 ```xml
 <networkConnectors>
