@@ -18,8 +18,7 @@ This chapter covers
 
 `tcp://localhost:61616`
 
-This is a typical hierarchical URI used in ActiveMQ, which translates to “create a TCP
-connection to the localhost on port 61616.”
+This is a typical hierarchical URI used in ActiveMQ, which translates to `create a TCP connection to the localhost on port 61616.`
 
 ## Transport connectors
 
@@ -50,18 +49,7 @@ Session session =
 connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
 ```
 
-## Summary of network protocols used for client-broker communication
-
-| Protocol | Description                                                                                                                                                                   |
-| -------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| TCP      | Default network protocol for most use cases.                                                                                                                                  |
-| NIO      | Consider NIO protocol if you need to provide better scalability for connections from producers and consumers to the broker.                                                   |
-| UDP      | Consider UDP protocol when you need to deal with the firewall between clients and the broker.                                                                                 |
-| SSL      | Consider SSL when you want to secure communication between clients and the broker.                                                                                            |
-| HTTP(S)  | Consider HTTP(S) when you need to deal with the firewall between clients and the broker.                                                                                      |
-| VM       | Although not a network protocol per se, consider VM protocol when your broker and clients scommunicate with a broker that is embedded in the same Java Virtual Machine (JVM). |
-
-## Transmission Control Protocol (TCP)
+### Transmission Control Protocol (TCP)
 
 Before exchanging messages over the network, we need to serialize them to a suitable
 form. Messages must be serialized in and out of a byte sequence to be sent over
@@ -90,7 +78,7 @@ Some of the benefits of the TCP transport connector include the following:
   platform of choice.
 - Reliability—The TCP protocol ensures that
 
-## New I/O API protocol (NIO)
+### New I/O API protocol (NIO)
 
 This makes the NIO transport connector more suitable
 in situations where
@@ -118,7 +106,7 @@ uri="nio:localhost:61618?trace=true" />
 
 ![active-nio](./images/active-nio.png)
 
-## User Datagram Protocol (UDP)
+### User Datagram Protocol (UDP)
 
 User Datagram Protocol (UDP) along with TCP make up the core of internet protocols.
 The purpose of these two protocols is identical—to send and receive data packets
@@ -163,7 +151,7 @@ uri="udp://localhost:61618?trace=true" />
 </transportConnectors>
 ```
 
-## Secure Sockets Layer Protocol (SSL)
+### Secure Sockets Layer Protocol (SSL)
 
 ```xml
 <transportConnectors>
@@ -187,9 +175,9 @@ uri="ssl://localhost:61617?transport.enabledCipherSuites=SSL_RSA_WITH_RC4_128_SH
 </transportConnectors>
 ```
 
-## Hypertext Transfer Protocol (HTTP/HTTPS)
+### Hypertext Transfer Protocol (HTTP/HTTPS)
 
-config
+> config
 
 ```xml
 <transportConnectors>
@@ -198,7 +186,7 @@ config
 </transportConnectors>
 ```
 
-pom
+> pom
 
 ```xml
 <dependency>
@@ -208,13 +196,13 @@ pom
 </dependency>
 ```
 
-## Connecting to ActiveMQ inside the virtual machine (VM connector)
+### Connecting to ActiveMQ inside the virtual machine (VM connector)
 
 `vm://brokerName?key=value`
 
 ## Network connectors
 
-Table 4.2 Summary of protocols used to network brokers
+Summary of protocols used to network brokers
 
 | Protocol  | Description                                                                                 |
 | --------- | ------------------------------------------------------------------------------------------- |
@@ -263,30 +251,6 @@ it’ll allow the client applications in the remote offices to operate more effi
 removal of the `long haul connection`(长连接) over the wide area network means less latency（低延迟）
 and therefore less waiting for the client application.
 
-### FAILOVER PROTOCOL
-
-```config
-failover:(uri1,...,uriN)?key=value
-
-failover:uri1,...,uriN
-```
-
-A default configuration also
-implements `reconnection delay logic`, _meaning that the transport will start with a 10ms
-delay for the first reconnection attempt and double this time for any subsequent
-attempt up to 30000ms._ Also, the reconnection logic will try to reconnect indefinitely.
-Of course, all reconnection parameters can be reconfigured according to your needs
-using the appropriate transport options.
-
-```config
-    failover:(tcp://localhost:61616)
-```
-
-_The advantage of this is that clients don’t need to be manually restarted in the case of
-a broker failure (or maintenance, and so forth)_. As soon as the broker becomes
-available again the client will automatically reconnect. This means far more robustness
-for your applications by simply utilizing a feature of ActiveMQ.
-
 ### Dynamic networks
 
 ### MULTICAST CONNECTOR
@@ -324,6 +288,42 @@ protocol is that it can be excessively chatty on the network. For this reason, m
 administrators won’t allow its use. Please check with your network administrator
 before taking the time to configure a network using the multicast protocol.
 
+- FAILOVER PROTOCOL
 - DISCOVERY PROTOCOL
 - PEER PROTOCOL
 - FANOUT CONNECTOR
+
+## FAILOVER PROTOCOL
+
+```config
+failover:(uri1,...,uriN)?key=value
+
+failover:uri1,...,uriN
+```
+
+A default configuration also
+implements `reconnection delay logic`, _meaning that the transport will start with a 10ms
+delay for the first reconnection attempt and double this time for any subsequent
+attempt up to 30000ms._ Also, the reconnection logic will try to reconnect indefinitely.
+Of course, all reconnection parameters can be reconfigured according to your needs
+using the appropriate transport options.
+
+```config
+    failover:(tcp://localhost:61616)
+```
+
+_The advantage of this is that clients don’t need to be manually restarted in the case of
+a broker failure (or maintenance, and so forth)_. As soon as the broker becomes
+available again the client will automatically reconnect. This means far more robustness
+for your applications by simply utilizing a feature of ActiveMQ.
+
+## Summary of network protocols used for client-broker communication
+
+| Protocol | Description                                                                                                                                                                   |
+| -------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| TCP      | Default network protocol for most use cases.                                                                                                                                  |
+| NIO      | Consider NIO protocol if you need to provide better scalability for connections from producers and consumers to the broker.                                                   |
+| UDP      | Consider UDP protocol when you need to deal with the firewall between clients and the broker.                                                                                 |
+| SSL      | Consider SSL when you want to secure communication between clients and the broker.                                                                                            |
+| HTTP(S)  | Consider HTTP(S) when you need to deal with the firewall between clients and the broker.                                                                                      |
+| VM       | Although not a network protocol per se, consider VM protocol when your broker and clients scommunicate with a broker that is embedded in the same Java Virtual Machine (JVM). |
