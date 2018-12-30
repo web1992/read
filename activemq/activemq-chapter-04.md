@@ -214,6 +214,17 @@ pom
 
 ## Network connectors
 
+Table 4.2 Summary of protocols used to network brokers
+
+| Protocol  | Description                                                                                 |
+| --------- | ------------------------------------------------------------------------------------------- |
+| Static    | Used for defining networks of brokers with known addresses                                  |
+| Failover  | Used to provide reconnection logic for clients to the network of brokers or a single broker |
+| Multicast | Used for defining dynamic networks of brokers (broker addresses are not statically defined) |
+| Discovery | Used by clients to connect to dynamic network of brokers                                    |
+| Peer      | Used to easily connect multiple embedded brokers                                            |
+| Fanout    | Used to produce messages to multiple unconnected brokers                                    |
+
 ```xml
 <networkConnectors>
 <networkConnector name="default-nc" uri="multicast://default"/>
@@ -271,9 +282,48 @@ using the appropriate transport options.
     failover:(tcp://localhost:61616)
 ```
 
-The advantage of this is that clients don’t need to be manually restarted in the case of
-a broker failure (or maintenance, and so forth). As soon as the broker becomes
+_The advantage of this is that clients don’t need to be manually restarted in the case of
+a broker failure (or maintenance, and so forth)_. As soon as the broker becomes
 available again the client will automatically reconnect. This means far more robustness
 for your applications by simply utilizing a feature of ActiveMQ.
 
-##@ Dynamic networks
+### Dynamic networks
+
+### MULTICAST CONNECTOR
+
+`IP multicast` is a network technique used for easy transmission of data from one source
+to a group of interested receivers (one-to-many communications) over an IP network.
+One of the fundamental concepts of IP multicast is the so-called group address. The
+group address is an IP address in the range of `224.0.0.0` to `239.255.255.255` used by
+both sources and receivers. Sources use this address as a destination for their data,
+whereas receivers use it to express their interest in data from that group.
+
+```config
+multicast://ipadaddress:port?key=value
+```
+
+```xml
+<broker xmlns="http://activemq.apache.org/schema/
+core" brokerName="multicast"
+dataDirectory="${activemq.base}/data">
+<networkConnectors>
+<networkConnector name="default-nc" uri="multicast://default"/>
+</networkConnectors>
+<transportConnectors>
+<transportConnector name="openwire" uri="tcp://localhost:61616" discoveryUri="multicast://default"/>
+</transportConnectors>
+</broker>
+```
+
+One disadvantage to using the multicast protocol is that discovery is automatic. If
+there are brokers that you don’t want to be automatically added to a given group, you
+must be careful in setting up the initial configuration of the broker network. Careful
+segmentation of broker networks is important, as you don’t want messages to wind up
+in a broker network where they don’t belong. Another disadvantage of the multicast
+protocol is that it can be excessively chatty on the network. For this reason, many network
+administrators won’t allow its use. Please check with your network administrator
+before taking the time to configure a network using the multicast protocol.
+
+- DISCOVERY PROTOCOL
+- PEER PROTOCOL
+- FANOUT CONNECTOR
