@@ -213,18 +213,10 @@ Summary of protocols used to network brokers
 | Peer      | Used to easily connect multiple embedded brokers                                            |
 | Fanout    | Used to produce messages to multiple unconnected brokers                                    |
 
-```xml
-<networkConnectors>
-<networkConnector name="default-nc" uri="multicast://default"/>
-</networkConnectors>
-```
-
 We should explain known as discovery. In general, discovery is a process of detecting
 remote broker services. Clients usually want to discover all available brokers. Brokers,
 on the other hand, usually want to find other available brokers so they can establish a
 network of brokers.
-
-- IP multicast
 
 ### Static networks
 
@@ -253,7 +245,15 @@ and therefore less waiting for the client application.
 
 ### Dynamic networks
 
-### MULTICAST CONNECTOR
+> MULTICAST CONNECTOR
+
+- IP multicast
+
+```xml
+<networkConnectors>
+<networkConnector name="default-nc" uri="multicast://default"/>
+</networkConnectors>
+```
 
 `IP multicast` is a network technique used for easy transmission of data from one source
 to a group of interested receivers (one-to-many communications) over an IP network.
@@ -267,15 +267,14 @@ multicast://ipadaddress:port?key=value
 ```
 
 ```xml
-<broker xmlns="http://activemq.apache.org/schema/
-core" brokerName="multicast"
-dataDirectory="${activemq.base}/data">
-<networkConnectors>
-<networkConnector name="default-nc" uri="multicast://default"/>
-</networkConnectors>
-<transportConnectors>
-<transportConnector name="openwire" uri="tcp://localhost:61616" discoveryUri="multicast://default"/>
-</transportConnectors>
+<broker xmlns="http://activemq.apache.org/schema/core" brokerName="multicast"
+        dataDirectory="${activemq.base}/data">
+    <networkConnectors>
+        <networkConnector name="default-nc" uri="multicast://default"/>
+        </networkConnectors>
+    <transportConnectors>
+        <transportConnector name="openwire" uri="tcp://localhost:61616" discoveryUri="multicast://default"/>
+    </transportConnectors>
 </broker>
 ```
 
