@@ -176,3 +176,104 @@ This is accomplished using the following system properties:
 - javax.net.ssl.keyStore—Defines which keystore the client should use
 - javax.net.ssl.keyStorePassword—Defines an appropriate password for the keystore
 - javax.net.ssl.trustStore—Defines an appropriate truststore the client should use
+
+### ENABLING AND DISABLING SSL CIPHERS
+
+```xml
+<transportConnectors>
+<transportConnector
+name="ssl"
+uri="ssl://localhost:61617?transport.enabledCipherSuites=SSL_RSA_WITH_RC4_128_SHA" />
+</transportConnectors>
+```
+
+## Hypertext Transfer Protocol (HTTP/HTTPS)
+
+config
+
+```xml
+<transportConnectors>
+<transportConnector name="tcp" uri="tcp://localhost:61616?trace=true"/>
+<transportConnector name="http" uri="http://localhost:8080?trace=true" />
+</transportConnectors>
+```
+
+pom
+
+```xml
+<dependency>
+<groupId>org.apache.activemq</groupId>
+<artifactId>activemq-optional</artifactId>
+<version>5.4.1</version>
+</dependency>
+```
+
+## Connecting to ActiveMQ inside the virtual machine (VM connector)
+
+`vm://brokerName?key=value`
+
+## Network connectors
+
+```xml
+<networkConnectors>
+<networkConnector name="default-nc" uri="multicast://default"/>
+</networkConnectors>
+```
+
+We should explain known as discovery. In general, discovery is a process of detecting
+remote broker services. Clients usually want to discover all available brokers. Brokers,
+on the other hand, usually want to find other available brokers so they can establish a
+network of brokers.
+
+- IP multicast
+
+### Static networks
+
+![network-connectors](./iamges/network-connectors.png)
+
+```xml
+<networkConnectors>
+<networkConnector name="local network"
+uri="static://(tcp://remotehost1:61616,tcp://remotehost2:61616)"/>
+</networkConnectors>
+```
+
+Configuring broker networks can be difficult depending on the situation. Use of the
+static protocol allows for an explicit notation that a network should exist.
+
+Consider a situation where clients in remote offices are connecting to a broker in the home
+office. Depending on the number of clients in each remote office, you may wind up
+with far too many wide area network connections into the home office. This can cause
+an unnecessary burden(负担) on the network. To minimize connections, you may want to
+place a broker in each remote office and allow a static network connection between
+the remote office broker and the home office broker. Not only will this minimize the
+number of network connections between the remote offices and the home office, but
+it’ll allow the client applications in the remote offices to operate more efficiently. The
+removal of the `long haul connection`(长连接) over the wide area network means less latency（低延迟）
+and therefore less waiting for the client application.
+
+### FAILOVER PROTOCOL
+
+```config
+failover:(uri1,...,uriN)?key=value
+
+failover:uri1,...,uriN
+```
+
+A default configuration also
+implements `reconnection delay logic`, _meaning that the transport will start with a 10ms
+delay for the first reconnection attempt and double this time for any subsequent
+attempt up to 30000ms._ Also, the reconnection logic will try to reconnect indefinitely.
+Of course, all reconnection parameters can be reconfigured according to your needs
+using the appropriate transport options.
+
+```config
+    failover:(tcp://localhost:61616)
+```
+
+The advantage of this is that clients don’t need to be manually restarted in the case of
+a broker failure (or maintenance, and so forth). As soon as the broker becomes
+available again the client will automatically reconnect. This means far more robustness
+for your applications by simply utilizing a feature of ActiveMQ.
+
+##@ Dynamic networks
