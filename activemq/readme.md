@@ -20,3 +20,4 @@
 ### Part 2
 
 - [chapter 4](activemq-chapter-04.md)
+- [chapter 5](activemq-chapter-05.md)
