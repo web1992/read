@@ -98,7 +98,7 @@ Some of the benefits of the TCP transport connector include the following:
   platform of choice.
 - Reliability—The TCP protocol ensures that
 
-### New I/O API protocol (NIO)
+### New IO API protocol (NIO)
 
 This makes the NIO transport connector more suitable
 in situations where
@@ -195,7 +195,7 @@ uri="ssl://localhost:61617?transport.enabledCipherSuites=SSL_RSA_WITH_RC4_128_SH
 </transportConnectors>
 ```
 
-### Hypertext Transfer Protocol (HTTP/HTTPS)
+### Hypertext Transfer Protocol (HTTPHTTPS)
 
 > config
 
