@@ -44,6 +44,14 @@ for reliable message storage and recovery, with good performance and scalability
 
 ## The JDBC message store
 
+But the use of a shared database is particularly useful for making a redundant master/
+slave topology out of multiple brokers. When a group of ActiveMQ brokers is configured
+to use a shared database, they’ll all try to connect and grab a lock in the lock
+table, but only one will succeed and become the master. The remaining brokers will
+be slaves, and will be in a wait state, not accepting client connections until the master
+fails. This is a common deployment scenario for ActiveMQ, which will be covered in
+more detail in chapter 10.
+
 - Apache Derby
 - MySQL
 - PostgreSQL
@@ -53,16 +61,18 @@ for reliable message storage and recovery, with good performance and scalability
 - Informix
 - MaxDB
 
+## The JDBC message store schema
+
 The JDBC message store uses a schema consisting of `three` tables. Two of the tables are
-used to hold messages, and the third is used as a lock table to ensure that only one
+used to hold messages, and the third is used as a `lock table` to ensure that only one
 ActiveMQ broker can access the database at one time. Here’s a detailed breakdown of
 these tables.
 
-- ACTIVEMQ_MSGS
-- ACTIVEMQ_ACKS
-- CTIVEMQ_LOCK
+- `ACTIVEMQ_MSGS`
+- `ACTIVEMQ_ACKS`
+- `CTIVEMQ_LOCK`
 
-The message table.Messages are broken down and stored into the ACTIVEMQ_MSGS table for both
+The message table.Messages are broken down and stored into the `ACTIVEMQ_MSGS` table for both
 queues and topics.
 
 The columns of the `ACTIVEMQ_MSGS` SQL table
@@ -90,11 +100,11 @@ The columns of the `ACTIVEMQ_ACKS` SQL table
 | SELECTOR      | VARCHAR(250) | The selector of the durable subscriber                                                             |
 | LAST_ACKED_ID | Integer      | The sequence ID of last message received by this subscriber                                        |
 
-For durable subscribers, the LAST_ACKED_ID sequence is used as a simple pointer into
-the ACTIVEMQ_MSGS and enables messages for a particular durable subscriber to be
-easily selected from the ACTIVEMQ_MSGS table.
+For durable subscribers, the `LAST_ACKED_ID` sequence is used as a simple pointer into
+the `ACTIVEMQ_MSGS` and enables messages for a particular durable subscriber to be
+easily selected from the `ACTIVEMQ_MSGS` table.
 
-The lock table, called ACTIVEMQ_LOCK, is used to ensure that only one ActiveMQ
+The lock table, called `ACTIVEMQ_LOCK`, is used to ensure that only one ActiveMQ
 broker instance can access the database at one time. If an ActiveMQ broker can’t grab
 the database lock, that broker won’t initialize fully, and will wait until the lock
 becomes free, or it’s shut down.
@@ -106,7 +116,7 @@ The columns of the `ACTIVEMQ_LOCK` SQL table
 | ID     | INTEGER | A unique ID for the lock                                       |
 | Broker | Name    | VARCHAR(250) The name of the ActiveMQ broker that has the lock |
 
-> config mysql
+## Configuring the JDBC message store
 
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
@@ -126,4 +136,59 @@ The columns of the `ACTIVEMQ_LOCK` SQL table
     <property name="poolPreparedStatements" value="true"/>
     </bean>
 </beans>
+```
+
+## Using the JDBC message store with the ActiveMQ journal
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<beans>
+<broker brokerName="test-broker"
+xmlns="http://activemq.apache.org/schema/core">
+<persistenceFactory>
+<journalPersistenceAdapterFactory
+journalLogFiles="4"
+journalLogFileSize="32768"
+useJournal="true"
+useQuickJournal="true"
+dataSource="#derby-ds"
+dataDirectory="activemq-data" />
+</persistenceFactory>
+</broker>
+<bean id="derby-ds" class="org.apache.derby.jdbc.EmbeddedDataSource">
+<property name="databaseName" value="derbydb"/>
+<property name="createDatabase" value="create"/>
+</bean>
+</beans>
+```
+
+## The memory message store
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<beans>
+<broker brokerName="test-broker"
+persistent="false"
+xmlns="http://activemq.apache.org/schema/core">
+<transportConnectors>
+<transportConnector uri="tcp://localhost:61635"/>
+</transportConnectors>
+</broker>
+</beans>
+```
+
+Embedding an ActiveMQ broker with the memory store is easy. The following
+example starts a broker with the memory store:
+
+```java
+import org.apache.activemq.broker.BrokerService;
+public void createEmbeddedBroker() throws Exception {
+    BrokerService broker = new BrokerService();
+    //configure the broker to use the Memory Store
+    broker.setPersistent(false);
+    //Add a transport connector
+    broker.addConnector("tcp://localhost:61616");
+    //now start the broker
+    broker.start();
+}
 ```
