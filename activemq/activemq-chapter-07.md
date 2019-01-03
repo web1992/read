@@ -8,3 +8,5 @@ This chapter covers
 - Embedding ActiveMQ using Spring
 - Creating request/reply applications
 - Writing JMS clients using Spring
+
+## Embedding ActiveMQ using the BrokerService
