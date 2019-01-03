@@ -19,6 +19,12 @@
 
 ### Part 2
 
-- [chapter 4](activemq-chapter-04.md)
+- [chapter 5](activemq-chapter-04.md)
 - [chapter 5](activemq-chapter-05.md)
 - [chapter 6](activemq-chapter-06.md)
+
+## Part 3
+
+Using ActiveMQ to build messaging applications
+
+- [chapter 7](activemq-chapter-07.md)
