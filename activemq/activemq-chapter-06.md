@@ -88,3 +88,32 @@ be translated as follows:
 - Users from the admins group have full access to all topics
 - Consumers can consume and publishers can publish to the destinations in the `STOCKS` path
 - Guests can only consume from the `STOCKS.ORCL` topic
+
+## Message-level authorization
+
+`MessageAuthorizationPolicy`
+
+```java
+public class AuthorizationPolicy implements MessageAuthorizationPolicy {
+    private static final Log LOG = LogFactory.getLog(AuthorizationPolicy.class);
+    public boolean isAllowedToConsume(ConnectionContext context,Message message) {
+            LOG.info(context.getConnection().getRemoteAddress());
+            String remoteAddress = context.getConnection().getRemoteAddress();
+        if (remoteAddress.startsWith("/127.0.0.1")) {
+            LOG.info("Permission to consume granted");
+            return true;
+        } else {
+            LOG.info("Permission to consume denied");
+            return false;
+        }
+    }
+}
+```
+
+Message-level authorization provides some powerful functionality with endless possibilities.
+Although a simple example was used here, you can adapt it to any security
+mechanism used in your project. Just bear in mind that a message authorization policy
+is executed for `every message` that flows through the broker. So be careful not to
+add functionality that could possibly `slow down` the flow of messages.
+
+## Building a custom security plug-in
