@@ -13,11 +13,15 @@
 
 ### Part 1
 
+An introduction to messaging and ActiveMQ
+
 - [chapter 1](activemq-chapter-01.md)
 - [chapter 2](activemq-chapter-02.md)
 - [chapter 3](activemq-chapter-03.md)
 
 ### Part 2
+
+Configuring standard ActiveMQ components
 
 - [chapter 5](activemq-chapter-04.md)
 - [chapter 5](activemq-chapter-05.md)
@@ -29,3 +33,8 @@ Using ActiveMQ to build messaging applications
 
 - [chapter 7](activemq-chapter-07.md)
 - [chapter 8](activemq-chapter-08.md)
+- [chapter 9](activemq-chapter-09.md)
+
+## Part 4
+
+Advanced features in ActiveMQ
