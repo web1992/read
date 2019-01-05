@@ -15,6 +15,8 @@
 
 An introduction to messaging and ActiveMQ
 
+MQ 使用的优点 ，jms 的概念，demo
+
 - [chapter 1](activemq-chapter-01.md)
 - [chapter 2](activemq-chapter-02.md)
 - [chapter 3](activemq-chapter-03.md)
@@ -22,6 +24,8 @@ An introduction to messaging and ActiveMQ
 ### Part 2
 
 Configuring standard ActiveMQ components
+
+一些配置和概念，了解即可
 
 - [chapter 5](activemq-chapter-04.md)
 - [chapter 5](activemq-chapter-05.md)
@@ -31,6 +35,8 @@ Configuring standard ActiveMQ components
 
 Using ActiveMQ to build messaging applications
 
+第 7 章可以细读下，8，9 章可以跳过。
+
 - [chapter 7](activemq-chapter-07.md)
 - [chapter 8](activemq-chapter-08.md)
 - [chapter 9](activemq-chapter-09.md)
@@ -38,3 +44,5 @@ Using ActiveMQ to build messaging applications
 ## Part 4
 
 Advanced features in ActiveMQ
+
+- [chapter 10](activemq-chapter-10.md)
