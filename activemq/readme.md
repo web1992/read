@@ -28,3 +28,4 @@
 Using ActiveMQ to build messaging applications
 
 - [chapter 7](activemq-chapter-07.md)
+- [chapter 8](activemq-chapter-08.md)
