@@ -334,7 +334,6 @@ public class StockMessageCreator implements MessageCreator {
   private int count = 10;
   private int total;
   private Destination[] destinations;
-  Listing 7.24 JMS publisher implementation in Spring
   private HashMap<Destination,StockMessageCreator> creators = new HashMap<Destination,StockMessageCreator>();
   public void start() {
     while (total < 1000) {
@@ -342,8 +341,7 @@ public class StockMessageCreator implements MessageCreator {
       sendMessage();
     }
     total += count;
-    System.out.println("Published '" + count + "' of '"
-    + total + "' price messages");
+    System.out.println("Published '" + count + "' of '" + total + "' price messages");
     try {
         Thread.sleep(1000);
       } catch (InterruptedException x) {
@@ -380,16 +378,15 @@ config
 ```xml
 <!-- Spring JMS Template -->
 <bean id="jmsTemplate" class="org.springframework.jms.core.JmsTemplate">
-<property name="connectionFactory" ref="pooledJmsConnectionFactory" />
+  <property name="connectionFactory" ref="pooledJmsConnectionFactory" />
 </bean>
-<bean id="stockPublisher"
-class="org.apache.activemq.book.ch7.spring.SpringPublisher">
+<bean id="stockPublisher" class="org.apache.activemq.book.ch7.spring.SpringPublisher">
 <property name="template" ref="jmsTemplate" />
 <property name="destinations">
-<list>
-<ref local="cscoDest" />
-<ref local="orclDest" />
-</list>
+  <list>
+  <ref local="cscoDest" />
+  <ref local="orclDest" />
+  </list>
 </property>
 </bean>
 ```
