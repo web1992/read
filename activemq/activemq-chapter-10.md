@@ -124,4 +124,9 @@ WHEN TO USE SHARED FILE SYSTEM MASTER/SLAVE
 
 ![active-broker-to-broker](./images/active-broker-to-broker.png)
 
+## Network discovery
+
+1. Dynamic—Searches for brokers using multicast or rendezvous
+2. Static—Configured with list of broker URLs with which to establish a connection
+
 ## Network configuration
