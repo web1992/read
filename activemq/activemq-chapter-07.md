@@ -384,8 +384,8 @@ config
 <property name="template" ref="jmsTemplate" />
 <property name="destinations">
   <list>
-  <ref local="cscoDest" />
-  <ref local="orclDest" />
+    <ref local="cscoDest" />
+    <ref local="orclDest" />
   </list>
 </property>
 </bean>
