@@ -37,4 +37,4 @@ Netty 3 与 Netty 4 的实现是进行过大量修改的
 
 ## 实战
 
-- [基于 Netty 的服务器&客户端的序列化 demo](https://github.com/web1992/java_note/tree/master/app_tools/src/main/java/cn/web1992/utils/demo/netty/serializable)
+- [基于 Netty 的服务器&客户端的序列化 demo](https://github.com/web1992/javas/tree/master/tools/src/main/java/cn/web1992/utils/demo/netty/serializable)
