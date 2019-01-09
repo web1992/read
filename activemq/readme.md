@@ -46,3 +46,4 @@ Using ActiveMQ to build messaging applications
 Advanced features in ActiveMQ
 
 - [chapter 10](activemq-chapter-10.md)
+- [chapter 11](activemq-chapter-11.md)
