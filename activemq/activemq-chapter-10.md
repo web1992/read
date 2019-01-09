@@ -130,3 +130,109 @@ WHEN TO USE SHARED FILE SYSTEM MASTER/SLAVE
 2. Static—Configured with list of broker URLs with which to establish a connection
 
 ## Network configuration
+
+## Deploying ActiveMQ for large numbers of concurrent applications
+
+### Vertical scaling
+
+Configure the NIO transport connector
+By default, ActiveMQ will use blocking I/O to handle transport connections.
+
+> nio
+
+```java
+<broker>
+    <transportConnectors>
+    <transportConnector name="nio" uri="nio://localhost:61616"/>
+</<transportConnectors>
+</broker>
+```
+
+> thread pool
+
+```opts
+    ACTIVEMQ_OPTS="-Dorg.apache.activemq.UseDedicatedTaskRunner=false"
+    ACTIVEMQ_OPTS="-Xmx1024M -Dorg.apache.activemq.UseDedicatedTaskRunner=false"
+```
+
+> Setting the memory limit for the ActiveMQ broker
+
+```xml
+<systemUsage>
+<systemUsage>
+<memoryUsage>
+<memoryUsage limit="512 mb"/>
+</memoryUsage>
+<storeUsage>
+<storeUsage limit="10 gb" name="foo"/>
+</storeUsage>
+<tempUsage>
+<tempUsage limit="1 gb"/>
+</tempUsage>
+</systemUsage>
+</systemUsage>
+```
+
+> messages dispatch
+
+The default queue configuration uses a separate thread for paging messages from
+the message store into the queue to be dispatched to interested message consumers.
+
+```xml
+<destinationPolicy>
+<policyMap>
+<policyEntries>
+<policyEntry queue=">" optimizedDispatch="true"/>
+</policyEntries>
+</policyMap>
+</destinationPolicy>
+```
+
+> Configuration for scaling
+
+```xml
+<broker xmlns="http://activemq.apache.org/schema/core" brokerName="amq-broker" dataDirectory="${activemq.base}/data">
+<persistenceAdapter>
+    <kahaDB directory="${activemq.base}/data" journalMaxFileLength="32mb"/>
+</persistenceAdapter>
+<destinationPolicy>
+    <policyMap>
+        <policyEntries>
+            <policyEntry queue="&gt;" optimizedDispatch="true"/>
+        </policyEntries>
+    </policyMap>
+</destinationPolicy>
+<systemUsage>
+    <systemUsage>
+    <memoryUsage>
+        <memoryUsage limit="512 mb"/>
+    </memoryUsage>
+    <storeUsage>
+        <storeUsage limit="10 gb" name="foo"/>
+    </storeUsage>
+    <tempUsage>
+        <tempUsage limit="1 gb"/>
+    </tempUsage>
+    </systemUsage>
+</systemUsage>
+<transportConnectors>
+    <transportConnector name="openwire" uri="nio://localhost:61616"/>
+    </transportConnectors>
+</broker>
+```
+
+### Horizontal scaling
+
+> a cluster of brokers,
+
+```uri
+failover://(tcp://broker1:61616,tcp://broker2:61616)?randomize=true
+```
+
+```xml
+<networkConnector uri="static://(tcp://remotehost:61617)" name="bridge" dynamicOnly="true" prefetchSize="1"
+```
+
+> Traffic partitioning
+
+![active-traffic-master-slave](./images/active-traffic-master-slave.png)
