@@ -159,17 +159,17 @@ By default, ActiveMQ will use blocking I/O to handle transport connections.
 
 ```xml
 <systemUsage>
-<systemUsage>
-<memoryUsage>
-<memoryUsage limit="512 mb"/>
-</memoryUsage>
-<storeUsage>
-<storeUsage limit="10 gb" name="foo"/>
-</storeUsage>
-<tempUsage>
-<tempUsage limit="1 gb"/>
-</tempUsage>
-</systemUsage>
+    <systemUsage>
+    <memoryUsage>
+        <memoryUsage limit="512 mb"/>
+    </memoryUsage>
+    <storeUsage>
+        <storeUsage limit="10 gb" name="foo"/>
+    </storeUsage>
+    <tempUsage>
+        <tempUsage limit="1 gb"/>
+    </tempUsage>
+    </systemUsage>
 </systemUsage>
 ```
 
@@ -180,11 +180,11 @@ the message store into the queue to be dispatched to interested message consumer
 
 ```xml
 <destinationPolicy>
-<policyMap>
-<policyEntries>
-<policyEntry queue=">" optimizedDispatch="true"/>
-</policyEntries>
-</policyMap>
+    <policyMap>
+        <policyEntries>
+            <policyEntry queue=">" optimizedDispatch="true"/>
+        </policyEntries>
+    </policyMap>
 </destinationPolicy>
 ```
 
