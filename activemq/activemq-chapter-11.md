@@ -154,3 +154,188 @@ receive messages from a normal JMS queue. So consumers subscribe to a
 queue to receive messages that were published to a topic.
 
 ## Retroactive consumers
+
+There’s a downside to consuming `nonpersistent` messages, in that you’ll only be
+able to consume messages from the point when your message consumer starts. You
+can miss messages if your message consumer starts behind the message producer, or
+there’s a network glitch and your message consumer needs to reconnect to the broker
+(or another one in a network).
+
+> config consumer
+
+```java
+String brokerURI = ActiveMQConnectionFactory.DEFAULT_BROKER_URL;
+ConnectionFactory connectionFactory =
+new ActiveMQConnectionFactory(brokerURI);
+Connection connection = connectionFactory.createConnection();
+connection.start();
+Session session =
+connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
+Topic topic =
+session.createTopic("soccer.division1.leeds?consumer.retroactive=true");
+MessageConsumer consumer = session.createConsumer(topic);
+Message result = consumer.receive();
+```
+
+> config broker
+
+```xml
+<destinationPolicy>
+    <policyMap>
+        <policyEntries>
+            <policyEntry topic=">">
+            <subscriptionRecoveryPolicy>
+                <fixedSizedSubscriptionRecoveryPolicy maximumSize="8mb"/>
+            </subscriptionRecoveryPolicy>
+            </policyEntry>
+        </policyEntries>
+    </policyMap>
+</destinationPolicy>
+```
+
+## Message redelivery and dead-letter queues
+
+When messages expire on the ActiveMQ broker (they exceed their time-to-live, if set)
+or can’t be redelivered, they’re moved to a `dead-letter queue`, so they can be consumed
+or browsed by an administrator at a later point.
+
+Messages are normally redelivered to a client in the following scenarios:
+
+- A client is using transactions and calls rollback() on the session.
+- A client is using transactions and closes before calling commit.
+- A client is using CLIENT_ACKNOWLEDGE on a session and calls recover() on that session.
+
+> AcitveMQ.DLQ
+
+```xml
+<destinationPolicy>
+    <policyMap>
+        <policyEntries>
+            <policyEntry queue=">">
+                <deadLetterStrategy>
+                <individualDeadLetterStrategy
+                queuePrefix="DLQ."
+                useQueueForQueueMessages="true"
+                processExpired="false"
+                processNonPersistent="false"/>
+                </deadLetterStrategy>
+            </policyEntry>
+        </policyEntries>
+    </policyMap>
+</destinationPolicy>
+```
+
+When a message is sent to a dead-letter queue, an advisory message is generated
+for it. You can listen for dead-letter queue advisory messages on the topic
+`ActiveMQ.Advisory.MessageDLQd.*`.
+
+## Extending functionality with interceptor plug-ins
+
+### Visualization
+
+- connectionDotFilePlugin
+- destinationDotFilePlugin
+
+### Enhanced logging
+
+- loggingInterceptor
+
+## Central timestamp messages with the timestamp interceptor plug-in
+
+- timestampingBrokerPlugin
+
+## Statistics
+
+- statisticsBrokerPlugin
+- ActiveMQ.Statistics.Broker
+- ActiveMQ.Statistics.Destination
+
+## Configuring plugins for the broker
+
+```xml
+<broker useJmx="false" persistent="false">
+    <plugins>
+    <loggingBrokerPlugin logAll="true" logConnectionEvents="false"/>
+    <timeStampingBrokerPlugin zeroExpirationOverride="1000" ttlCeiling="60000" futureOnly="true"/>
+    <statisticsBrokerPlugin/>
+    </plugins>
+</broker>
+```
+
+## Routing engine with Apache Camel framework
+
+At the core of the `Camel framework` is a routing engine builder
+
+It allows you to
+define your own routing rules, the sources from which to accept messages, and how to
+process and send them to other destinations. Camel defines an integration language
+that allows you to define routing rules, akin to business processes
+
+```xml
+<beans>
+<broker brokerName="testBroker">
+<transportConnectors>
+<transportConnector uri="tcp://localhost:61616"/>
+</transportConnectors>
+</broker>
+<import resource="camel.xml"/>
+</beans>
+
+<bean id="activemq"
+class="org.apache.activemq.camel.component.ActiveMQComponent">
+<property name="connectionFactory">
+<bean class="org.apache.activemq.ActiveMQConnectionFactory">
+<property name="brokerURL"
+value="vm://testBroker?create=false&amp;waitForStart=1000"/>
+<property name="userName" value="DEFAULT_VALUE"/>
+<property name="password" value="DEFAULT_VALUE"/>
+</bean>
+</property
+```
+
+
+```xml
+<route>
+<from uri="activemq:topic:Test.Topic"/>
+<to uri="activemq:queue:Test.Queue"/>
+</route>
+```
+
+This route will consume messages on the topic `Test.Topic` and route them to the
+queue `Test.Queue`. Simple, but useful stuff.
+
+
+
+Let’s demonstrate something more complex. The statistics broker plug-in
+(statisticsBrokerPlugin) will only publish a statistic message when requested. So it’d be
+useful to broadcast a message with statistical information periodically, and we can use
+Apache Camel to do that.
+First, we need to ensure that the statisticsBrokerPlugin is enabled, as in the following
+example configuration:
+
+```xml
+<beans>
+    <broker useJmx="false" persistent="false">
+        <plugins>
+            <statisticsBrokerPlugin/>
+        </plugins>
+    </broker>
+<import resource="camel.xml"/>
+</beans>
+```
+
+Then, with Apache Camel, we’ll do the following:
+
+- Use the timer component to initiate the name of the route to poll.
+- Communicate with the statistics plug-in using a request/reply pattern. In Apache Camel, a request/reply exchange is called InOut—we’ll poll the queue named `Test.Queue`.
+- Broadcast the result on a topic called `Statistics.Topic`.
+
+The complete Apache Camel route is only three lines of code, as shown:
+
+```xml
+<route>
+<from uri="timer://foo?fixedRate=true&amp;period=1000"/>
+<inOut uri="activemq:queue:ActiveMQ.Statistics.DestinationTest.Queue"/>
+<to uri="activemq:topic:Statistics.Topic"/>
+</route>
+```
