@@ -304,8 +304,6 @@ value="vm://testBroker?create=false&amp;waitForStart=1000"/>
 This route will consume messages on the topic `Test.Topic` and route them to the
 queue `Test.Queue`. Simple, but useful stuff.
 
-
-
 Let’s demonstrate something more complex. The statistics broker plug-in
 (statisticsBrokerPlugin) will only publish a statistic message when requested. So it’d be
 useful to broadcast a message with statistical information periodically, and we can use
