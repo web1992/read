@@ -14,6 +14,11 @@ This chapter covers
 
 ## Consume from multiple destinations using wildcards
 
+In this section we’ll look at two useful features of ActiveMQ: subscribing to multiple
+destinations using wildcards, and publishing to multiple destinations using composite
+destinations. ActiveMQ uses a special notation to denote a wildcard subscription; we’ll
+describe that in the next section.
+
 Three special characters are reserved for destination names:
 
 - `.` A dot, used to separate elements in the destination name
@@ -117,8 +122,8 @@ Properties from the list of 12 ActiveMQ advisory topics
 | 5   | Expired messages on a queue                                |            |                |                      |                       |
 | 6   | Slow queue consumer                                        |            |                |                      |                       |
 | 7   | Fast queue producer                                        |            |                |                      |                       |
-| 8   | Message delivered  to the broker                           |            |                |                      |                       |
-| 9   | Message consumed  by a client                              |            |                |                      |                       |
+| 8   | Message delivered to the broker                            |            |                |                      |                       |
+| 9   | Message consumed by a client                               |            |                |                      |                       |
 | 10  | A usage resource is at its limit                           |            |                |                      |                       |
 | 11  | A broker is now the master in a master/slave configuration |            |                |                      |                       |
 | 12  | Message sent to a dead letter queue                        |            |                |                      |                       |
@@ -292,7 +297,6 @@ value="vm://testBroker?create=false&amp;waitForStart=1000"/>
 </bean>
 </property
 ```
-
 
 ```xml
 <route>
