@@ -173,3 +173,23 @@ cf.setUseAsyncSend(true);
 ```
 
 ## Producer flow control
+
+`Producer flow control` allows the message broker to slow the rate of messages that are
+passed through it when resources are running low. This typically happens when consumers
+are slower than the producers, and messages are using memory in the broker
+awaiting dispatch.
+
+Producer flow control is enabled by default for persistent messages but must be
+explicitly enabled for asynchronous publishing (persistent messages, or for connections
+configured to always send asynchronously). You can enable flow control for asynchronous
+publishing by setting the producerWindowSize property on the connection
+factory.
+
+![active-producer-flow-control](./imgaes/active-producer-flow-control.png)
+
+```java
+ActiveMQConnectionFactory cf = new ActiveMQConnectionFactory();
+cf.setProducerWindowSize(1024000);
+```
+
+## Optimizing message consumers
