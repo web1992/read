@@ -27,7 +27,7 @@ Configuring standard ActiveMQ components
 
 一些配置和概念，了解即可
 
-- [chapter 5](activemq-chapter-04.md)
+- [chapter 4](activemq-chapter-04.md)
 - [chapter 5](activemq-chapter-05.md)
 - [chapter 6](activemq-chapter-06.md)
 
