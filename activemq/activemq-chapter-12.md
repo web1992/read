@@ -236,3 +236,13 @@ the machine `tokyo` should fail, the client would automatically fail over to eit
 or `london`.
 
 ## Scheduling messages to be delivered by ActiveMQ in the future
+
+```cron
+.---------------- minute (0 - 59)
+| .------------- hour (0 - 23)
+| | .---------- day of month (1 - 31)
+| | | .------- month (1 - 12) - 1 = January
+| | | | .---- day of week (0 - 7) (Sunday=0 or 7
+| | | | |
+* * * * *
+```
