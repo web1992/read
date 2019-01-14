@@ -48,3 +48,4 @@ Advanced features in ActiveMQ
 - [chapter 10](activemq-chapter-10.md)
 - [chapter 11](activemq-chapter-11.md)
 - [chapter 12](activemq-chapter-12.md)
+- [chapter 13](activemq-chapter-13.md)
