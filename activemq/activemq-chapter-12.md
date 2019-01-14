@@ -74,14 +74,165 @@ producer.send(message);
 
 ```xml
 <destinationPolicy>
-<policyMap>
-<policyEntries>
-<policyEntry queue=">"
-consumersBeforeDispatchStarts="2"
-timeBeforeDispatchStarts="5000"/>
-</policyEntries>
-</policyMap>
+    <policyMap>
+        <policyEntries>
+            <policyEntry queue=">"
+            consumersBeforeDispatchStarts="2"
+            timeBeforeDispatchStarts="5000"/>
+        </policyEntries>
+    </policyMap>
 </destinationPolicy>
 ```
 
 ## ActiveMQ streams
+
+![active-stream](./images/active-stream.png)
+
+> OutputStream
+
+```java
+//source of our large data
+FileInputStream in = new FileInputStream("largetextfile.txt");
+String brokerURI = ActiveMQConnectionFactory.DEFAULT_BROKER_URL;
+ConnectionFactory connectionFactory = new ActiveMQConnectionFactory(brokerURI);
+Connection connection = (ActiveMQConnection)
+connectionFactory.createConnection();
+connection.start();
+Session session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
+Queue destination = session.createQueue(QUEUE_NAME);
+OutputStream out = connection.createOutputStream(destination);
+//now write the file on to ActiveMQ
+byte[] buffer = new byte[1024];
+while(true){
+    int bytesRead = in.read(buffer);
+    if (bytesRead==-1){
+    break;
+}
+out.write(buffer,0,bytesRead);
+}
+//close the stream so the receiving side knows the steam is finished
+out.close();
+```
+
+> InputStream
+
+```java
+//destination of our large data
+FileOutputStream out = new FileOutputStream("copied.txt");
+String brokerURI = ActiveMQConnectionFactory.DEFAULT_BROKER_URL;
+ConnectionFactory connectionFactory =
+new ActiveMQConnectionFactory(brokerURI);
+Connection connection = (ActiveMQConnection)
+connectionFactory.createConnection();
+connection.start();
+Session session =
+connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
+//we want to be an exclusive consumer
+String exclusiveQueueName= QUEUE_NAME + "?consumer.exclusive=true";
+Queue destination = session.createQueue(exclusiveQueueName);
+InputStream in = connection.createInputStream(destination);
+//now write the file from ActiveMQ
+byte[] buffer = new byte[1024];
+while(true){
+int bytesRead = in.read(buffer);
+if (bytesRead==-1){
+break;
+}
+out.write(buffer,0,bytesRead);
+}
+out.close();
+```
+
+## Blob messages
+
+```java
+import org.apache.activemq.BlobMessage;
+String brokerURI = ActiveMQConnectionFactory.DEFAULT_BROKER_URL;
+ConnectionFactory connectionFactory =
+new ActiveMQConnectionFactory(brokerURI);
+Connection connection = connectionFactory.createConnection();
+connection.start();
+ActiveMQSession session = (ActiveMQSession)
+connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
+Queue destination = session.createQueue(QUEUE_NAME);
+MessageProducer producer = session.createProducer(destination);
+BlobMessage message =
+session.createBlobMessage(new URL("http://example.com/bigfile.dat"));
+producer.send(message);
+```
+
+```java
+import org.apache.activemq.BlobMessage;
+// destination of our Blob data
+FileOutputStream out = new FileOutputStream("blob.dat");
+String brokerURI = ActiveMQConnectionFactory.DEFAULT_BROKER_URL;
+ConnectionFactory connectionFactory =
+new ActiveMQConnectionFactory(brokerURI);
+Connection connection = (ActiveMQConnection)
+connectionFactory.createConnection();
+connection.start();
+Session session =
+connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
+Queue destination = session.createQueue(QUEUE_NAME);
+MessageConsumer consumer = session.createConsumer(destination);
+BlobMessage blobMessage = (BlobMessage) consumer.receive();
+InputStream in = blobMessage.getInputStream();
+// now write the file from ActiveMQ
+byte[] buffer = new byte[1024];
+while (true) {
+    int bytesRead = in.read(buffer);
+    if (bytesRead == -1) {
+    break;
+}
+out.write(buffer, 0, bytesRead);
+}
+out.close();
+```
+
+## Surviving network or broker failure with the failover protocol
+
+```config
+failover:(tcp://host1:61616,tcp://host2:61616,ssl://host2:61616)
+
+failover:(tcp://master:61616,tcp://slave:61616)?randomize=false
+
+failover:(tcp://master:61616,tcp://slave:61616)?\
+backOffMultiplier=1.5,initialReconnectDelay=1000
+
+failover:(tcp://host1:61616?wireFormat.maxInactivityDuration=1000,\
+tcp://host2:61616?wireFormat.maxInactivityDuration=1000)
+
+failover:(tcp://host1:61616,tcp://host2:61616)?\
+trackMessages=true,maxCacheSize=256000
+
+failover:(tcp://host1:61616,tcp://host2:61616,\
+tcp://host3:61616)?backup=true,backupPoolSize=2
+```
+
+> TransportConnector properties for updating clients of cluster changes
+
+| Property                     | Default value | Description                                                                                                                                                                              |
+| ---------------------------- | ------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| updateClusterClients         | false         | If true, pass information to connected clientsabout changes in the topology of the broker cluster.                                                                                       |
+| rebalanceClusterClients      | false         | If true, connected clients will be asked to rebalance across a cluster of brokers when a new broker joins the network of brokers.                                                        |
+| updateClusterClientsOnRemove | false         | If true, will update clients when a cluster is removed from the network. Having this as separate option enables clients to be updated when new brokers join, but not when brokers leave. |
+| updateClusterFilter          | null          | Comma-separated list of regular expression filters used to match broker names of brokers to designate as being part of the failover cluster for the clients.                             |
+
+```xml
+<broker>
+    <transportConnectors>
+        <transportConnector name="clustered" uri="tcp://0.0.0.0:61616" updateClusterClients="true" updateClusterFilter="*newyork*,*london*" />
+    </<transportConnectors>
+</broker>
+```
+
+This configuration will update any clients that are using the failover transport protocol
+with the locations of any brokers joining that have newyork or london in their broker
+names. With `updateClusterClients` enabled, you only need to configure the failover
+protocol with one broker in the cluster, for example:
+`failover:(tcp://tokyo:61616)`
+As the client will be updated automatically as new brokers join and leave the cluster, if
+the machine `tokyo` should fail, the client would automatically fail over to either `newyork`
+or `london`.
+
+## Scheduling messages to be delivered by ActiveMQ in the future
