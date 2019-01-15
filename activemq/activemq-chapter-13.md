@@ -193,3 +193,5 @@ cf.setProducerWindowSize(1024000);
 ```
 
 ## Optimizing message consumers
+
+> Prefetch limit
