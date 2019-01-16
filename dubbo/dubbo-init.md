@@ -81,7 +81,7 @@ public class DubboNamespaceHandler extends NamespaceHandlerSupport {
 
 这个方法返回一个`BeanDefinition`,本质就是根据xml中的配置信息，生成一个`BeanDefinition`实例交给spring容器。
 
-## ServiceBean
+### ServiceBean
 
 `<dubbo:service />`标签对应的解析类是`ServiceBean`
 
@@ -110,6 +110,12 @@ public class DubboNamespaceHandler extends NamespaceHandlerSupport {
 > 这里思考下，为什么在`ContextRefreshedEvent`事件中进行服务的初始化？
 
 `ServiceBean`中会根据配置，来初始化服务，如使用`netty`启动本地服务，注册服务到`zookeeper`等
+
+### export
+
+### registry
+
+### invoker
 
 ```java
 ServiceBean
