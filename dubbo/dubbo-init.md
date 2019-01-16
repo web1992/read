@@ -39,7 +39,7 @@
 
 源码`org.apache.dubbo.config.spring.schema.DubboNamespaceHandler`
 
-可以参照这个例子 [spring-reference-042](https://github.com/web1992/read/blob/master/spring/spring-reference-042.md)
+`spring`扩展点的相关配置，可以参照这个例子 [spring-reference-042](https://github.com/web1992/read/blob/master/spring/spring-reference-042.md)
 
 下面是`DubboNamespaceHandler`源码：
 
@@ -71,7 +71,9 @@ public class DubboNamespaceHandler extends NamespaceHandlerSupport {
 
 从上面的代码可以看到熟悉的字样`application`，`service`，`reference`，`registry`等等
 
-一个例子`<dubbo:service />` 这个可以看做是一个spring `<bean />`,bean标签需要Spring容器进行解析，
+一个例子:
+
+`<dubbo:service />` 这个可以看做是一个spring `<bean />`,bean标签需要Spring容器进行解析，
 而`<dubbo:service />`是我们自定义的格式需要我们自己进行相关的`解析`，`初始化`等操作，而`DubboNamespaceHandler`
 中包含了这些解析自定义标签相关的实现类。
 
@@ -81,9 +83,9 @@ public class DubboNamespaceHandler extends NamespaceHandlerSupport {
 
 ## ServiceBean
 
-`<dubbo:service />`标签的解析类是`ServiceBean`
+`<dubbo:service />`标签对应的解析类是`ServiceBean`
 
-> 类图：
+> `ServiceBean`类图：
 
 ![dubbo-ServiceBean](./images/dubbo-ServiceBean.png)
 
@@ -104,6 +106,8 @@ public class DubboNamespaceHandler extends NamespaceHandlerSupport {
         }
     }
 ```
+
+> 这里思考下，为什么在`ContextRefreshedEvent`事件中进行服务的初始化？
 
 `ServiceBean`中会根据配置，来初始化服务，如使用`netty`启动本地服务，注册服务到`zookeeper`等
 
