@@ -45,7 +45,10 @@ Using ActiveMQ to build messaging applications
 
 Advanced features in ActiveMQ
 
+13 章，关于客户端的优化
+
 - [chapter 10](activemq-chapter-10.md)
 - [chapter 11](activemq-chapter-11.md)
 - [chapter 12](activemq-chapter-12.md)
 - [chapter 13](activemq-chapter-13.md)
+- [chapter 14](activemq-chapter-14.md)

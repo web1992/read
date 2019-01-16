@@ -325,12 +325,14 @@ consumer has to work twice as hard as the message producer, so optimizing delive
 with a MessageListener and using straight-through message processing together
 with an acknowledgment mode or transactions that allow acknowledgments to be
 batched can reduce this load.
+
 In this chapter you learned about some general principles for improving performance
 with any JMS-based application. We also dove into some of the internals of
 ActiveMQ and how changes to the configuration can increase performance. We
 learned when and when not to use those options, and their side effects. We also
 brought the different aspects of performance tuning together in an example real-time
 data feed application.
+
 You should now have a better understanding of where the performance bottlenecks
 may occur when using ActiveMQ, and when and why to alleviate them. We’ve
 shown how to tune your message producers and message consumers, as well as the
