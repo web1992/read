@@ -79,7 +79,7 @@ public class DubboNamespaceHandler extends NamespaceHandlerSupport {
 
 `DubboBeanDefinitionParser`实现了`BeanDefinitionParser`中的`BeanDefinition parse(Element element, ParserContext parserContext)`方法
 
-这个方法返回一个`BeanDefinition`,本质就是根据xml中的配置信息，生成一个`BeanDefinition`实例交给给spring容器。
+这个方法返回一个`BeanDefinition`,本质就是根据xml中的配置信息，生成一个`BeanDefinition`实例交给spring容器。
 
 ## ServiceBean
 
