@@ -39,7 +39,7 @@
 
 源码`org.apache.dubbo.config.spring.schema.DubboNamespaceHandler`
 
-`spring`扩展点的相关配置，可以参照这个例子 [spring-reference-042](https://github.com/web1992/read/blob/master/spring/spring-reference-042.md)
+`spring`扩展点的相关配置，可以参照这个例子 [spring-extensible-xml](https://github.com/web1992/springs/tree/master/spring-extensible-xml)
 
 下面是`DubboNamespaceHandler`源码：
 
