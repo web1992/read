@@ -32,8 +32,8 @@ private static final Protocol protocol = ExtensionLoader.getExtensionLoader(Prot
  Exporter<?> exporter = protocol.export(wrapperInvoker);
 ```
 
-一个例子：如果 URL 中参数是`registry`的时候，调用的实现就是`RegistryProtocol`
-如果 URL 中参数是`dubbo`的时候，调用的实现就是`DubboProtocol`
+一个例子：如果 URL 中参数是`registry`的时候，调用的实现就是`RegistryProtocol`的`export`
+如果 URL 中参数是`dubbo`的时候，调用的实现就是`DubboProtocol`的`export`
 
 ## Protocol\$Adaptive
 
