@@ -1,12 +1,14 @@
 # dubbo init
 
-一个简单的dubbo例子
+一个简单的 dubbo 例子
 
 - [demo of dubbo](https://github.com/web1992/dubbos)
 
 ## provider init
 
-初始化过程，以下面的这个简单的xml配置为例子
+初始化过程，以下面的这个简单的 xml 配置为例子
+
+provider 的初始化，其实是类 `ServiceBean`的初始化过程,具体的实现在 `ServiceConfig`类中
 
 > dubbo-provider.xml
 
@@ -35,7 +37,7 @@
 </beans>
 ```
 
-`dubbo`的初始化是以spring的扩展点为基础，进行配置，实现初始化的。
+`dubbo`的初始化是以 spring 的扩展点为基础，进行配置，实现初始化的。
 
 源码`org.apache.dubbo.config.spring.schema.DubboNamespaceHandler`
 
@@ -73,13 +75,13 @@ public class DubboNamespaceHandler extends NamespaceHandlerSupport {
 
 一个例子:
 
-`<dubbo:service />` 这个可以看做是一个spring `<bean />`,bean标签需要Spring容器进行解析，
+`<dubbo:service />` 这个可以看做是一个 spring `<bean />`,bean 标签需要 Spring 容器进行解析，
 而`<dubbo:service />`是我们自定义的格式需要我们自己进行相关的`解析`，`初始化`等操作，而`DubboNamespaceHandler`
 中包含了这些解析自定义标签相关的实现类。
 
 `DubboBeanDefinitionParser`实现了`BeanDefinitionParser`中的`BeanDefinition parse(Element element, ParserContext parserContext)`方法
 
-这个方法返回一个`BeanDefinition`,本质就是根据xml中的配置信息，生成一个`BeanDefinition`实例交给spring容器。
+这个方法返回一个`BeanDefinition`,本质就是根据 xml 中的配置信息，生成一个`BeanDefinition`实例交给 spring 容器。
 
 ### ServiceBean
 
@@ -89,9 +91,9 @@ public class DubboNamespaceHandler extends NamespaceHandlerSupport {
 
 ![dubbo-ServiceBean](./images/dubbo-ServiceBean.png)
 
-从类图中可以看到，`ServiceBean`实现了Spring相关类的很多接口，如`InitializingBean`,`ApplicationListener`
+从类图中可以看到，`ServiceBean`实现了 Spring 相关类的很多接口，如`InitializingBean`,`ApplicationListener`
 
-而dubbo相关初始是在`ApplicationListener`的实现方法中触发的，代码如下：
+而 dubbo 相关初始是在`ApplicationListener`的实现方法中触发的，代码如下：
 
 `export()`方法是入口
 

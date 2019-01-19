@@ -1,9 +1,16 @@
 # ExtensionLoader
 
 1. 分析 `ExtensionLoader` 的实现
-2. 通过`ServiceBean`中的`protocol.export`加载过程，分析 `dubbo` 自适应的实现方式
+2. 通过`ServiceConfig`中的`protocol.export`加载过程，分析 `dubbo` 自适应的实现方式
 
-来自 `org.apache.dubbo.config.ServiceConfig`  中的源码注释
+- `ServiceConfig`中`protocol.export`这个方法的主要二个作用：
+
+  - 启动一个本地的 TCP 服务（如：NettyServer 服务）
+  - 把本地启动的 TCP 服务注册到注册中心，如:`zookeeper`
+
+`ServiceConfig` 的初始化过程可以看这篇文章[dubbo provider init](dubbo-init.md#provider-init)
+
+看一段来自 `org.apache.dubbo.config.ServiceConfig`  中的源码注释
 
 ```java
 
