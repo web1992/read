@@ -6,7 +6,7 @@
 - `ServiceConfig`中`protocol.export`这个方法的主要二个作用：
 
   - 启动一个本地的 TCP 服务（如：NettyServer 服务）
-  - 把本地启动的 TCP 服务注册到注册中心，如:`zookeeper`
+  - 把本地启动的 TCP 服务注册到注册中心 (如:`zookeeper`)
 
 `ServiceConfig` 的初始化过程可以看这篇文章[dubbo provider init](dubbo-init.md#provider-init)
 
