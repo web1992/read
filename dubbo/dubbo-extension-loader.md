@@ -48,6 +48,8 @@ Node 类中有`URL getUrl();` 这个方法可以返回 URL 对象.
 
 其它`自适应`类的实现可以在这里预览下:[dubbo adaptive class](https://github.com/web1992/dubbos/tree/master/dubbo-source-code/src/main/java/cn/web1992)
 
+dubbo 中实现了自适应类的接口：
+
 - Cluster\$Adaptive
 - Dispatcher\$Adaptive
 - Protocol\$Adaptive
@@ -104,4 +106,4 @@ public class Protocol$Adaptive implements org.apache.dubbo.rpc.Protocol {
 
 可以看到`export`这个方法有一个参数`org.apache.dubbo.rpc.Invoker`，从`getUrl()`获取一个`org.apache.dubbo.common.URL`对象
 
-然后获取`protocol`，如果为空，默认是`dubbo`，然后通过 `ExtensionLoader.getExtensionLoader` 去加载具体的实现类
+然后获取`protocol`，如果为空，默认是`dubbo`，然后通过 `ExtensionLoader.getExtensionLoader.getExtension` 去加载具体的实现类
