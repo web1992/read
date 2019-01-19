@@ -32,6 +32,9 @@ private static final Protocol protocol = ExtensionLoader.getExtensionLoader(Prot
  Exporter<?> exporter = protocol.export(wrapperInvoker);
 ```
 
+`wrapperInvoker`是一个`org.apache.dubbo.rpc.Invoker`对象，Invoker 继承了 `org.apache.dubbo.common.Node`类
+Node 类中有`URL getUrl();` 这个方法可以返回 URL 对象.
+
 一个例子：如果 URL 中参数是`registry`的时候，调用的实现就是`RegistryProtocol`的`export`
 如果 URL 中参数是`dubbo`的时候，调用的实现就是`DubboProtocol`的`export`
 
@@ -43,7 +46,16 @@ private static final Protocol protocol = ExtensionLoader.getExtensionLoader(Prot
 
 下面的代码是通过`ExtensionLoader#createAdaptiveExtensionClassCode`这个方法拼接而成的一个类，而后通过编译这个类，生成`Protocol$Adaptive`
 
-其它`自适应`类的实现可以在这里预览下:[dubbo adaptive clas](https://github.com/web1992/dubbos/tree/master/dubbo-source-code/src/main/java/cn/web1992)
+其它`自适应`类的实现可以在这里预览下:[dubbo adaptive class](https://github.com/web1992/dubbos/tree/master/dubbo-source-code/src/main/java/cn/web1992)
+
+- Cluster\$Adaptive
+- Dispatcher\$Adaptive
+- Protocol\$Adaptive
+- ProxyFactory\$Adaptive
+- RegistryFactory\$Adaptive
+- ThreadPool\$Adaptive
+- Transporter\$Adaptive
+- Validation\$Adaptive
 
 ```java
 package cn.web1992;
