@@ -150,7 +150,54 @@ export 过程会把 `DemoService`这个接口中的所有的方法进行解析�
 Invoker<?> invoker = proxyFactory.getInvoker(ref, (Class) interfaceClass, registryURL.addParameterAndEncoded(Constants.EXPORT_KEY, url.toFullString()));
 DelegateProviderMetaDataInvoker wrapperInvoker = new DelegateProviderMetaDataInvoker(invoker, this);
 // export 方法也是通过 SPI 机制调用具体的实现类的
+// 这里protocol.export的实现类是 RegistryProtocol
 Exporter<?> exporter = protocol.export(wrapperInvoker);
+```
+
+`RegistryProtocol` 的`export`方法
+
+```java
+  @Override
+    public <T> Exporter<T> export(final Invoker<T> originInvoker) throws RpcException {
+        URL registryUrl = getRegistryUrl(originInvoker);
+        // url to export locally
+        URL providerUrl = getProviderUrl(originInvoker);
+
+        // Subscribe the override data
+        // FIXME When the provider subscribes, it will affect the scene : a certain JVM exposes the service and call
+        //  the same service. Because the subscribed is cached key with the name of the service, it causes the
+        //  subscription information to cover.
+        final URL overrideSubscribeUrl = getSubscribedOverrideUrl(providerUrl);
+        final OverrideListener overrideSubscribeListener = new OverrideListener(overrideSubscribeUrl, originInvoker);
+        overrideListeners.put(overrideSubscribeUrl, overrideSubscribeListener);
+
+        providerUrl = overrideUrlWithConfig(providerUrl, overrideSubscribeListener);
+        //export invoker
+        // 进行服务的暴露
+        // 这里是使用 DubboProtocol 进行服务的暴露
+        final ExporterChangeableWrapper<T> exporter = doLocalExport(originInvoker, providerUrl);
+
+        // url to registry
+        final Registry registry = getRegistry(originInvoker);
+        final URL registeredProviderUrl = getRegisteredProviderUrl(providerUrl, registryUrl);
+        ProviderInvokerWrapper<T> providerInvokerWrapper = ProviderConsumerRegTable.registerProvider(originInvoker,
+                registryUrl, registeredProviderUrl);
+        //to judge if we need to delay publish
+        boolean register = registeredProviderUrl.getParameter("register", true);
+        if (register) {
+            // 这里进行服务的注册
+            register(registryUrl, registeredProviderUrl);
+            providerInvokerWrapper.setReg(true);
+        }
+
+        // Deprecated! Subscribe to override rules in 2.6.x or before.
+        registry.subscribe(overrideSubscribeUrl, overrideSubscribeListener);
+
+        exporter.setRegisterUrl(registeredProviderUrl);
+        exporter.setSubscribeUrl(overrideSubscribeUrl);
+        //Ensure that a new exporter instance is returned every time export
+        return new DestroyableExporter<>(exporter);
+    }
 ```
 
 `DubboProtocol`的代码片段：
