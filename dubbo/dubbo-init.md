@@ -282,6 +282,29 @@ public class NettyTransporter implements Transporter {
 
 `registry`的主要作用是把本地启动的服务信息， 如：ip+端口+ 接口+方法等信息，注册到服务中心（如：zookeeper）
 
+registry 是在`RegistryProtocol` 的`export`方法中触发的
+
+代码片段：
+
+```java
+        // url to registry
+        // 获取注册实现类，通过 SPI 获取
+        final Registry registry = getRegistry(originInvoker);
+        final URL registeredProviderUrl = getRegisteredProviderUrl(providerUrl, registryUrl);
+        ProviderInvokerWrapper<T> providerInvokerWrapper = ProviderConsumerRegTable.registerProvider(originInvoker,
+                registryUrl, registeredProviderUrl);
+        //to judge if we need to delay publish
+        boolean register = registeredProviderUrl.getParameter("register", true);
+        if (register) {
+            // 开始注册
+            register(registryUrl, registeredProviderUrl);
+            providerInvokerWrapper.setReg(true);
+        }
+
+        // Deprecated! Subscribe to override rules in 2.6.x or before.
+        registry.subscribe(overrideSubscribeUrl, overrideSubscribeListener);
+```
+
 ### invoker
 
 ```java
