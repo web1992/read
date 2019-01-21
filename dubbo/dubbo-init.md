@@ -305,19 +305,8 @@ registry 是在`RegistryProtocol` 的`export`方法中触发的
         registry.subscribe(overrideSubscribeUrl, overrideSubscribeListener);
 ```
 
+### subscribe
+
 ### invoker
-
-```java
-ServiceBean
-        -> Protocol
-        -> ExchangeServer
-        -> Transporter
-        -> Server
-```
-
-```java
-exportLocal(url);
-
-```
 
 ## consumer init
