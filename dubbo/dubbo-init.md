@@ -280,7 +280,7 @@ public class NettyTransporter implements Transporter {
 
 ### registry
 
-`registry`的主要作用是把本地启动的服务信息， 如：ip+端口+ 接口+方法等信息，注册到服务中心（如：zookeeper）
+`registry`的主要作用是把本地启动的服务信息,如: ip + 端口 + 接口 + 方法等信息，注册到服务中心（如：zookeeper）
 
 registry 是在`RegistryProtocol` 的`export`方法中触发的
 
