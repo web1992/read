@@ -310,3 +310,39 @@ registry 是在`RegistryProtocol` 的`export`方法中触发的
 ### invoker
 
 ## consumer init
+
+通过下面的配置，来分析 `consumer` 的初始化过程
+
+> dubbo-consumer.xml
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:dubbo="http://dubbo.apache.org/schema/dubbo"
+       xmlns="http://www.springframework.org/schema/beans"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.3.xsd
+       http://dubbo.apache.org/schema/dubbo http://dubbo.apache.org/schema/dubbo/dubbo.xsd">
+
+    <dubbo:application name="demo-consumer"/>
+
+    <dubbo:registry address="multicast://224.5.6.7:1234"/>
+
+    <!-- generate proxy for the remote service, then demoService can be used in the same way as the
+    local regular interface -->
+    <dubbo:reference id="demoService" check="false" interface="cn.web1992.dubbo.demo.DemoService"/>
+
+</beans>
+
+```
+
+`<dubbo:reference` 对应的解析类是 `ReferenceBean`
+
+类的定义如下：
+
+```java
+public class ReferenceBean<T> extends ReferenceConfig<T> implements FactoryBean, ApplicationContextAware, InitializingBean, DisposableBean
+```
+
+`ReferenceBean` 的类图：
+
+![ReferenceBean](./images/dubbo-ReferenceBean.png)
