@@ -311,7 +311,7 @@ registry 是在`RegistryProtocol` 的`export`方法中触发的
 
 ## consumer init
 
-通过下面的配置，来分析 `consumer` 的初始化过程
+通过下面的配置，来分析 `consumer` 的初始化过程
 
 > dubbo-consumer.xml
 
