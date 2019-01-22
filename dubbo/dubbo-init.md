@@ -398,7 +398,5 @@ System.out.println("result: " + hello);
 > 说明：
 
 我们为了调用`DemoService`的`sayHello`方法，但是我们客户端只有一个`接口类`，没有`实现类`，那怎么办呢？为了调用远程的方法
-
 我们为`DemoService`生成一个代理类(`Proxy`), 并且宣称我实现了`DemoService`中的所有方法.当我们调用`sayHello`方法
-
 的时候，我们其实是调用代理类，代理类通过`TCP`发送请求，处理响应，然后返回结果。
