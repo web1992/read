@@ -3,9 +3,12 @@
 从以下这个几个方面分析 `dubbo` 初始化：
 
 - provider init（服务提供者初始化）
-  - export(服务的暴露)
-  - registry(服务的注册)
+  - [ServiceBean](#ServiceBean)
+  - [export(服务的暴露)](#export)
+  - [registry(服务的注册)](#registry)
 - consumer init
+  - [ReferenceBean](#ReferenceBean)
+  - [invoker&proxy](#invoker&proxy-init)
 
 一个简单的 dubbo 例子
 
@@ -335,6 +338,8 @@ registry 是在`RegistryProtocol` 的`export`方法中触发的
 
 ```
 
+### ReferenceBean
+
 `<dubbo:reference` 对应的解析类是 `ReferenceBean`
 
 类的定义如下：
@@ -348,6 +353,8 @@ public class ReferenceBean<T> extends ReferenceConfig<T> implements FactoryBean,
 ![ReferenceBean](./images/dubbo-ReferenceBean.png)
 
 `ReferenceBean` 实现了 `FactoryBean` 接口,通过`getObject`来进行客户端的初始化
+
+### invoker&proxy init
 
 ```java
     @Override
