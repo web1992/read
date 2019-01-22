@@ -346,3 +346,49 @@ public class ReferenceBean<T> extends ReferenceConfig<T> implements FactoryBean,
 `ReferenceBean` 的类图：
 
 ![ReferenceBean](./images/dubbo-ReferenceBean.png)
+
+`ReferenceBean` 实现了 `FactoryBean` 接口,通过`getObject`来进行客户端的初始化
+
+```java
+    @Override
+    public Object getObject() {
+        // get 会调用 init 方法
+        return get();
+    }
+```
+
+`init`方法
+
+```java
+    private void init() {
+        if (initialized) {
+            return;
+        }
+        initialized = true;
+        // 省略其它代码
+        // map 当前客户端的一些配置信息，如:接口类，版本，等
+        // 创建客户端代理
+        ref = createProxy(map);
+
+        ConsumerModel consumerModel = new ConsumerModel(getUniqueServiceName(), interfaceClass, ref, interfaceClass.getMethods(), attributes);
+        ApplicationModel.initConsumerModel(getUniqueServiceName(), consumerModel);
+    }
+
+```
+
+`createProxy` 方法
+
+```java
+
+//`createProxy` 方法主要有两个操作，创建`invoker`和生成`proxy`
+
+// 通过 SPI 创建 invoker
+invoker = refprotocol.refer(interfaceClass, urls.get(0));
+// 通过 SPI 创建 proxy 并返回
+return (T) proxyFactory.getProxy(invoker);
+```
+
+```java
+// 这里的 demoService 其实就是 createProxy 方法中 proxyFactory.getProxy(invoker) 返回的 proxy 对象
+DemoService demoService = context.getBean("demoService", DemoService.class);
+```
