@@ -2,13 +2,16 @@
 
 从以下这个几个方面分析 `dubbo` 初始化：
 
-- provider init（服务提供者初始化）
-  - [ServiceBean](#ServiceBean)
-  - [export(服务的暴露)](#export)
-  - [registry(服务的注册)](#registry)
-- consumer init
-  - [ReferenceBean](#ReferenceBean)
-  - [invoker&proxy](#invoker&proxy-init)
+- [dubbo init](#dubbo-init)
+  - [provider init](#provider-init)
+    - [ServiceBean](#servicebean)
+    - [export](#export)
+    - [registry](#registry)
+    - [subscribe](#subscribe)
+    - [invoker](#invoker)
+  - [consumer init](#consumer-init)
+    - [ReferenceBean](#referencebean)
+    - [invoker&proxy init](#invokerproxy-init)
 
 一个简单的 dubbo 例子
 
