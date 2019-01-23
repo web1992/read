@@ -7,11 +7,13 @@
     - [ServiceBean](#servicebean)
     - [export](#export)
     - [registry](#registry)
-    - [subscribe](#subscribe)
-    - [invoker](#invoker)
+    - [provider subscribe](#provider-subscribe)
+    - [provider invoker](#provider-invoker)
   - [consumer init](#consumer-init)
     - [ReferenceBean](#referencebean)
     - [invoker&proxy init](#invokerproxy-init)
+    - [customer invoker](#customer-invoker)
+    - [customer subscribe](#customer-subscribe)
 
 一个简单的 dubbo 例子
 
@@ -311,9 +313,9 @@ registry 是在`RegistryProtocol` 的`export`方法中触发的
         registry.subscribe(overrideSubscribeUrl, overrideSubscribeListener);
 ```
 
-### subscribe
+### provider subscribe
 
-### invoker
+### provider invoker
 
 ## consumer init
 
@@ -389,11 +391,11 @@ public class ReferenceBean<T> extends ReferenceConfig<T> implements FactoryBean,
 `createProxy` 方法
 
 ```java
-
-//`createProxy` 方法主要有两个操作，创建`invoker`和生成`proxy`
+// createProxy 方法主要有两个操作，创建invoker和生成proxy
 
 // 通过 SPI 创建 invoker
 invoker = refprotocol.refer(interfaceClass, urls.get(0));
+
 // 通过 SPI 创建 proxy 并返回
 return (T) proxyFactory.getProxy(invoker);
 ```
@@ -410,3 +412,39 @@ System.out.println("result: " + hello);
 我们为了调用`DemoService`的`sayHello`方法，但是我们客户端只有一个`接口类`，没有`实现类`，那怎么办呢？为了调用远程的方法
 我们为`DemoService`生成一个代理类(`Proxy`), 并且宣称我实现了`DemoService`中的所有方法.当我们调用`sayHello`方法
 的时候，我们其实是调用代理类，代理类通过`TCP`发送请求，处理响应，然后返回结果。
+
+`dubbo` 使用 `JavassistProxyFactory` 来进行生产代理类，当执行 `sayHello` 方法时，实际执行的是 `InvokerInvocationHandler` 中的 `invoke` 方法
+
+`InvokerInvocationHandler` 的 `invoke` 方法:
+
+```java
+    @Override
+    public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
+        String methodName = method.getName();
+        Class<?>[] parameterTypes = method.getParameterTypes();
+        if (method.getDeclaringClass() == Object.class) {
+            return method.invoke(invoker, args);
+        }
+        if ("toString".equals(methodName) && parameterTypes.length == 0) {
+            return invoker.toString();
+        }
+        if ("hashCode".equals(methodName) && parameterTypes.length == 0) {
+            return invoker.hashCode();
+        }
+        if ("equals".equals(methodName) && parameterTypes.length == 1) {
+            return invoker.equals(args[0]);
+        }
+
+        return invoker.invoke(createInvocation(method, args)).recreate();
+    }
+```
+
+### customer invoker
+
+这里说明下为什么要了解一下`invoker`,`dubbo` 对 `invoker`进行了包装，来实现如`mock`服务的功能
+
+看一个`invoker`的结构,可以看到`invoker`包装了很多层
+
+![invoker](./images/dubbo-customer-invoker.png)
+
+### customer subscribe
