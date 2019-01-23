@@ -14,6 +14,7 @@
     - [invoker&proxy init](#invokerproxy-init)
     - [customer invoker](#customer-invoker)
     - [customer subscribe](#customer-subscribe)
+    - [customer client](#customer-client)
 
 一个简单的 dubbo 例子
 
@@ -448,3 +449,5 @@ System.out.println("result: " + hello);
 ![invoker](./images/dubbo-customer-invoker.png)
 
 ### customer subscribe
+
+### customer client
