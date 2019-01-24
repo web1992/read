@@ -3,6 +3,20 @@
 1. 分析 `ExtensionLoader` 的实现
 2. 通过`ServiceConfig`中的`protocol.export`加载过程，分析 `dubbo` 自适应的实现方式
 
+- [ExtensionLoader](#extensionloader)
+  - [ServiceConfig](#serviceconfig)
+  - [Protocol\$Adaptive](#protocoladaptive)
+  - [ExtensionLoader methods](#extensionloader-methods)
+    - [getExtensionLoader](#getextensionloader)
+    - [getExtension](#getextension)
+    - [createExtension](#createextension)
+    - [injectExtension](#injectextension)
+    - [loadExtensionClasses](#loadextensionclasses)
+    - [getAdaptiveExtension](#getadaptiveextension)
+    - [createAdaptiveExtensionClassCode](#createadaptiveextensionclasscode)
+
+## ServiceConfig
+
 - `ServiceConfig`中`protocol.export`这个方法的主要二个作用：
 
   - 启动一个本地的 TCP 服务（如：NettyServer 服务）
@@ -114,3 +128,240 @@ public class Protocol$Adaptive implements org.apache.dubbo.rpc.Protocol {
 可以看到`export`这个方法有一个参数`org.apache.dubbo.rpc.Invoker`，从`getUrl()`获取一个`org.apache.dubbo.common.URL`对象
 
 然后获取`protocol`，如果为空，默认是`dubbo`，然后通过 `ExtensionLoader.getExtensionLoader.getExtension` 去加载具体的实现类
+
+## ExtensionLoader methods
+
+下面通过`ExtensionLoader`中的方法来分析 `ExtensionLoader` 的实现
+
+### getExtensionLoader
+
+```java
+    /**
+    getExtensionLoader 是一个静态方法，参数是 type（比如：Protocol）
+    每种类，都对应有自己的扩展点
+    还有自己的成员变量，比如 cachedWrapperClasses，这会导致生成的 Protocol 实例会进行包装，提供额外的扩展功能
+    **/
+    public static <T> ExtensionLoader<T> getExtensionLoader(Class<T> type) {
+        if (type == null) {
+            throw new IllegalArgumentException("Extension type == null");
+        }
+        if (!type.isInterface()) {
+            throw new IllegalArgumentException("Extension type(" + type + ") is not interface!");
+        }
+        // 检查是否有 SPI 这个注解
+        if (!withExtensionAnnotation(type)) {
+            throw new IllegalArgumentException("Extension type(" + type +
+                    ") is not extension, because WITHOUT @" + SPI.class.getSimpleName() + " Annotation!");
+        }
+        // 从 EXTENSION_LOADERS（ConcurrentMap）中获取，这个类对应的 ExtensionLoader 
+        // 如果存在就返回,不存在就new 一个
+        // getExtensionLoader 是一个静态方法，同时共享了 EXTENSION_LOADERS 静态变量
+        // 因此使用并发的 ConcurrentMap 的putIfAbsent 方法来避免并发问题
+
+        // 一种扩展点对应一个新的 ExtensionLoader 实例
+        // 因此每一个扩展点的cachedAdaptiveClass，cachedWrapperClasses 都是不一样的
+        ExtensionLoader<T> loader = (ExtensionLoader<T>) EXTENSION_LOADERS.get(type);
+        if (loader == null) {
+            EXTENSION_LOADERS.putIfAbsent(type, new ExtensionLoader<T>(type));
+            loader = (ExtensionLoader<T>) EXTENSION_LOADERS.get(type);
+        }
+        return loader;
+    }
+```
+
+### getExtension
+
+```java
+    /**
+     * 这个方法根据 name 从缓存中 cachedInstances 拿对应的扩展点
+     * 如果为空，就创建一个，重点在 createExtension 方法中
+     *
+     */
+    @SuppressWarnings("unchecked")
+    public T getExtension(String name) {
+        if (name == null || name.length() == 0) {
+            throw new IllegalArgumentException("Extension name == null");
+        }
+        if ("true".equals(name)) {
+            return getDefaultExtension();
+        }
+        Holder<Object> holder = cachedInstances.get(name);
+        if (holder == null) {
+            cachedInstances.putIfAbsent(name, new Holder<Object>());
+            holder = cachedInstances.get(name);
+        }
+        Object instance = holder.get();
+        if (instance == null) {
+            synchronized (holder) {
+                instance = holder.get();
+                if (instance == null) {
+                    instance = createExtension(name);
+                    holder.set(instance);
+                }
+            }
+        }
+        return (T) instance;
+    }
+```
+
+### createExtension
+
+```java
+    // getExtensionClasses 会从 cachedClasses 缓存中那对象
+    // 如果存在直接返回，不存在就进行读取配置文件，进行类加载的操作
+    // 具体的实现在 loadExtensionClasses 中
+    @SuppressWarnings("unchecked")
+    private T createExtension(String name) {
+        Class<?> clazz = getExtensionClasses().get(name);
+        if (clazz == null) {
+            throw findException(name);
+        }
+        try {
+            // 这里依然是缓存检查
+            T instance = (T) EXTENSION_INSTANCES.get(clazz);
+            if (instance == null) {
+                EXTENSION_INSTANCES.putIfAbsent(clazz, clazz.newInstance());
+                instance = (T) EXTENSION_INSTANCES.get(clazz);
+            }
+            // injectExtension 方法主要是对，生成的扩展点进行属性的注入
+            // 如 RegistryProtocol 会在 injectExtension 时，对 cluster 属性进行赋值
+            injectExtension(instance);
+
+            // 这里使用 cachedWrapperClasses 包装类，对生成的实例进行包装
+            // 比如 ReferenceConfig 中的代码 invoker = refprotocol.refer(interfaceClass, urls.get(0));
+            // 这里 refer 方法生成的 invoker 实例是被包装之后的类，从而在客户卡调用的时候
+            // 可以实现 mock，filter，cluster(集群)等功能
+            Set<Class<?>> wrapperClasses = cachedWrapperClasses;
+            if (wrapperClasses != null && !wrapperClasses.isEmpty()) {
+                for (Class<?> wrapperClass : wrapperClasses) {
+                    // 循环包装类，进行包装
+                    instance = injectExtension((T) wrapperClass.getConstructor(type).newInstance(instance));
+                }
+            }
+            return instance;
+        } catch (Throwable t) {
+            throw new IllegalStateException("Extension instance(name: " + name + ", class: " +
+                    type + ")  could not be instantiated: " + t.getMessage(), t);
+        }
+    }
+```
+
+这里说明下`wrapperClasses`也是从`loadExtensionClasses`方法从`META-INF`读取配置文件而来
+
+如可以再`META-INF/dubbo/internal/org.apache.dubbo.rpc.Protocol`文件中看到下面的配置：
+
+```properties
+filter=org.apache.dubbo.rpc.protocol.ProtocolFilterWrapper
+listener=org.apache.dubbo.rpc.protocol.ProtocolListenerWrapper
+mock=org.apache.dubbo.rpc.support.MockProtocol
+```
+
+看下判断是否是包装类的方法:
+
+```java
+    private boolean isWrapperClass(Class<?> clazz) {
+        try {
+            clazz.getConstructor(type);
+            return true;
+        } catch (NoSuchMethodException e) {
+            return false;
+        }
+    }
+
+    // 上面代码的含义，只要提供了包含 SPI clazz (如:protocol) 这个参数的构造方法
+    // dubbo 就认为它是一个包装类
+    // 如 ProtocolFilterWrapper 的构造方法如下
+    public ProtocolFilterWrapper(Protocol protocol) {
+        if (protocol == null) {
+            throw new IllegalArgumentException("protocol == null");
+        }
+        this.protocol = protocol;
+    }
+
+```
+
+### injectExtension
+
+```java
+    private T injectExtension(T instance) {
+        try {
+            if (objectFactory != null) {
+                for (Method method : instance.getClass().getMethods()) {
+                    if (method.getName().startsWith("set")
+                            && method.getParameterTypes().length == 1
+                            && Modifier.isPublic(method.getModifiers())) {
+                        /**
+                         * Check {@link DisableInject} to see if we need auto injection for this property
+                         */
+                        if (method.getAnnotation(DisableInject.class) != null) {
+                            continue;
+                        }
+                        Class<?> pt = method.getParameterTypes()[0];
+                        if (ReflectUtils.isPrimitives(pt)) {
+                            continue;
+                        }
+                        try {
+                            String property = method.getName().length() > 3 ? method.getName().substring(3, 4).toLowerCase() + method.getName().substring(4) : "";
+                            Object object = objectFactory.getExtension(pt, property);
+                            if (object != null) {
+                                method.invoke(instance, object);
+                            }
+                        } catch (Exception e) {
+                            logger.error("fail to inject via method " + method.getName()
+                                    + " of interface " + type.getName() + ": " + e.getMessage(), e);
+                        }
+                    }
+                }
+            }
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+        }
+        return instance;
+    }
+```
+
+### loadExtensionClasses
+
+```java
+
+    private static final String SERVICES_DIRECTORY = "META-INF/services/";
+    private static final String DUBBO_DIRECTORY = "META-INF/dubbo/";
+    private static final String DUBBO_INTERNAL_DIRECTORY = DUBBO_DIRECTORY + "internal/";
+
+
+    // synchronized in getExtensionClasses
+    private Map<String, Class<?>> loadExtensionClasses() {
+        // 这里对扩展类上面的注解进行解析
+        // 并赋值到 cachedDefaultName 上
+        // 如果是 Protocol 那么cachedDefaultName=dubbo
+        final SPI defaultAnnotation = type.getAnnotation(SPI.class);
+        if (defaultAnnotation != null) {
+            String value = defaultAnnotation.value();
+            if ((value = value.trim()).length() > 0) {
+                String[] names = NAME_SEPARATOR.split(value);
+                if (names.length > 1) {
+                    throw new IllegalStateException("more than 1 default extension name on extension " + type.getName()
+                            + ": " + Arrays.toString(names));
+                }
+                if (names.length == 1) {
+                    cachedDefaultName = names[0];
+                }
+            }
+        }
+        // 下面的几个方法，从 META-INF/services/ META-INF/dubbo/ META-INF/dubbo/internal/
+        // 这三个目录下面去获取配置文件,进行解析
+        // 把 org.apache 替换成 com.alibaba 是因为 dubbo 在apache 进行孵化
+        Map<String, Class<?>> extensionClasses = new HashMap<String, Class<?>>();
+        loadDirectory(extensionClasses, DUBBO_INTERNAL_DIRECTORY, type.getName());
+        loadDirectory(extensionClasses, DUBBO_INTERNAL_DIRECTORY, type.getName().replace("org.apache", "com.alibaba"));
+        loadDirectory(extensionClasses, DUBBO_DIRECTORY, type.getName());
+        loadDirectory(extensionClasses, DUBBO_DIRECTORY, type.getName().replace("org.apache", "com.alibaba"));
+        loadDirectory(extensionClasses, SERVICES_DIRECTORY, type.getName());
+        loadDirectory(extensionClasses, SERVICES_DIRECTORY, type.getName().replace("org.apache", "com.alibaba"));
+        return extensionClasses;
+    }
+```
+
+### getAdaptiveExtension
+
+### createAdaptiveExtensionClassCode
