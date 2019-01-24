@@ -1,7 +1,10 @@
 # ExtensionLoader
 
+这里包含下面几个部分：
+
 1. 分析 `ExtensionLoader` 的实现
 2. 通过`ServiceConfig`中的`protocol.export`加载过程，分析 `dubbo` 自适应的实现方式
+3. 分析`ExtensionLoader`中的一些方法实现逻辑
 
 - [ExtensionLoader](#extensionloader)
   - [ServiceConfig](#serviceconfig)
@@ -81,7 +84,6 @@ dubbo 中实现了自适应类的接口：
 - Validation\$Adaptive
 
 ```java
-package cn.web1992;
 
 import org.apache.dubbo.common.extension.ExtensionLoader;
 
@@ -136,11 +138,10 @@ public class Protocol$Adaptive implements org.apache.dubbo.rpc.Protocol {
 ### getExtensionLoader
 
 ```java
-    /**
-    getExtensionLoader 是一个静态方法，参数是 type（比如：Protocol）
-    每种类，都对应有自己的扩展点
-    还有自己的成员变量，比如 cachedWrapperClasses，这会导致生成的 Protocol 实例会进行包装，提供额外的扩展功能
-    **/
+    // getExtensionLoader 是一个静态方法，参数是 type（比如：Protocol）
+    // 每一个类，都对应有自己的一个 ExtensionLoader 扩展点
+    // 还有自己的成员变量，比如 cachedWrapperClasses，这会导致生成的 Protocol 实例会进行包装，提供额外的扩展功能
+    // 后面会再次提到包装类
     public static <T> ExtensionLoader<T> getExtensionLoader(Class<T> type) {
         if (type == null) {
             throw new IllegalArgumentException("Extension type == null");
@@ -153,13 +154,13 @@ public class Protocol$Adaptive implements org.apache.dubbo.rpc.Protocol {
             throw new IllegalArgumentException("Extension type(" + type +
                     ") is not extension, because WITHOUT @" + SPI.class.getSimpleName() + " Annotation!");
         }
-        // 从 EXTENSION_LOADERS（ConcurrentMap）中获取，这个类对应的 ExtensionLoader 
+        // 从 EXTENSION_LOADERS（ConcurrentMap）中获取，这个类对应的 ExtensionLoader
         // 如果存在就返回,不存在就new 一个
         // getExtensionLoader 是一个静态方法，同时共享了 EXTENSION_LOADERS 静态变量
-        // 因此使用并发的 ConcurrentMap 的putIfAbsent 方法来避免并发问题
+        // 因此使用并发的 ConcurrentMap 的 putIfAbsent 方法来避免并发问题
 
         // 一种扩展点对应一个新的 ExtensionLoader 实例
-        // 因此每一个扩展点的cachedAdaptiveClass，cachedWrapperClasses 都是不一样的
+        // 因此每一个扩展点的 cachedAdaptiveClass，cachedWrapperClasses 都是不一样的
         ExtensionLoader<T> loader = (ExtensionLoader<T>) EXTENSION_LOADERS.get(type);
         if (loader == null) {
             EXTENSION_LOADERS.putIfAbsent(type, new ExtensionLoader<T>(type));
@@ -174,7 +175,7 @@ public class Protocol$Adaptive implements org.apache.dubbo.rpc.Protocol {
 ```java
     /**
      * 这个方法根据 name 从缓存中 cachedInstances 拿对应的扩展点
-     * 如果为空，就创建一个，重点在 createExtension 方法中
+     * 如果为空，就创建一个，具体的实现在 createExtension 方法中
      *
      */
     @SuppressWarnings("unchecked")
@@ -230,7 +231,7 @@ public class Protocol$Adaptive implements org.apache.dubbo.rpc.Protocol {
             // 这里使用 cachedWrapperClasses 包装类，对生成的实例进行包装
             // 比如 ReferenceConfig 中的代码 invoker = refprotocol.refer(interfaceClass, urls.get(0));
             // 这里 refer 方法生成的 invoker 实例是被包装之后的类，从而在客户卡调用的时候
-            // 可以实现 mock，filter，cluster(集群)等功能
+            // 可以实现 mock，filter 等功能
             Set<Class<?>> wrapperClasses = cachedWrapperClasses;
             if (wrapperClasses != null && !wrapperClasses.isEmpty()) {
                 for (Class<?> wrapperClass : wrapperClasses) {
@@ -248,7 +249,7 @@ public class Protocol$Adaptive implements org.apache.dubbo.rpc.Protocol {
 
 这里说明下`wrapperClasses`也是从`loadExtensionClasses`方法从`META-INF`读取配置文件而来
 
-如可以再`META-INF/dubbo/internal/org.apache.dubbo.rpc.Protocol`文件中看到下面的配置：
+可以在 `META-INF/dubbo/internal/org.apache.dubbo.rpc.Protocol` 文件中看到下面的配置：
 
 ```properties
 filter=org.apache.dubbo.rpc.protocol.ProtocolFilterWrapper
@@ -271,6 +272,8 @@ mock=org.apache.dubbo.rpc.support.MockProtocol
     // 上面代码的含义，只要提供了包含 SPI clazz (如:protocol) 这个参数的构造方法
     // dubbo 就认为它是一个包装类
     // 如 ProtocolFilterWrapper 的构造方法如下
+    // ProtocolFilterWrapper 就会当做包装类对 DubboProtocol 等进行包装
+    // 返回 ProtocolFilterWrapper 对象,而ProtocolFilterWrapper 的属性 protocol 是 DubboProtocol
     public ProtocolFilterWrapper(Protocol protocol) {
         if (protocol == null) {
             throw new IllegalArgumentException("protocol == null");
@@ -350,7 +353,7 @@ mock=org.apache.dubbo.rpc.support.MockProtocol
         }
         // 下面的几个方法，从 META-INF/services/ META-INF/dubbo/ META-INF/dubbo/internal/
         // 这三个目录下面去获取配置文件,进行解析
-        // 把 org.apache 替换成 com.alibaba 是因为 dubbo 在apache 进行孵化
+        // 把 org.apache 替换成 com.alibaba 是因为 dubbo 在apache 进行孵化，修改过包名
         Map<String, Class<?>> extensionClasses = new HashMap<String, Class<?>>();
         loadDirectory(extensionClasses, DUBBO_INTERNAL_DIRECTORY, type.getName());
         loadDirectory(extensionClasses, DUBBO_INTERNAL_DIRECTORY, type.getName().replace("org.apache", "com.alibaba"));
