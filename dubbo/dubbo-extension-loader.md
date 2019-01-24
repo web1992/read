@@ -367,4 +367,76 @@ mock=org.apache.dubbo.rpc.support.MockProtocol
 
 ### getAdaptiveExtension
 
+`getAdaptiveExtension()` 与 `getExtension(String name)` 执行逻辑类似,
+不同的地方是`getAdaptiveExtension`返回的是`***$Adaptive`(如：`Protocol$Adaptive`)
+而`Adaptive`负责调用`getExtension`,通过 name 获取具体的实现类。
+
+而`getAdaptiveExtension` 中使用 `createAdaptiveExtensionClassCode`,生成一个`Adaptive`类
+
+例子：
+
+```java
+private static final Protocol refprotocol = ExtensionLoader.getExtensionLoader(Protocol.class).getAdaptiveExtension();
+```
+
+上面的方法会最终返回下面的这个类`Protocol$Adaptive`,这个类是通过动态拼接而成的。
+
+```java
+public class Protocol$Adaptive implements org.apache.dubbo.rpc.Protocol {
+    public void destroy() {
+        throw new UnsupportedOperationException("method public abstract void org.apache.dubbo.rpc.Protocol.destroy() of interface org.apache.dubbo.rpc.Protocol is not adaptive method!");
+    }
+
+    public int getDefaultPort() {
+        throw new UnsupportedOperationException("method public abstract int org.apache.dubbo.rpc.Protocol.getDefaultPort() of interface org.apache.dubbo.rpc.Protocol is not adaptive method!");
+    }
+
+    public org.apache.dubbo.rpc.Exporter export(org.apache.dubbo.rpc.Invoker arg0) throws org.apache.dubbo.rpc.RpcException {
+        if (arg0 == null) {
+            throw new IllegalArgumentException("org.apache.dubbo.rpc.Invoker argument == null");
+        }
+        if (arg0.getUrl() == null) {
+            throw new IllegalArgumentException("org.apache.dubbo.rpc.Invoker argument getUrl() == null");
+        }
+        org.apache.dubbo.common.URL url = arg0.getUrl();
+        String extName = (url.getProtocol() == null ? "dubbo" : url.getProtocol());
+        if (extName == null) {
+            throw new IllegalStateException("Fail to get extension(org.apache.dubbo.rpc.Protocol) name from url(" + url.toString() + ") use keys([protocol])");
+        }
+        org.apache.dubbo.rpc.Protocol extension = (org.apache.dubbo.rpc.Protocol) ExtensionLoader.getExtensionLoader(org.apache.dubbo.rpc.Protocol.class).getExtension(extName);
+        return extension.export(arg0);
+    }
+
+    public org.apache.dubbo.rpc.Invoker refer(java.lang.Class arg0, org.apache.dubbo.common.URL arg1) throws org.apache.dubbo.rpc.RpcException {
+        if (arg1 == null) {
+            throw new IllegalArgumentException("url == null");
+        }
+        org.apache.dubbo.common.URL url = arg1;
+        String extName = (url.getProtocol() == null ? "dubbo" : url.getProtocol());
+        if (extName == null) {
+            throw new IllegalStateException("Fail to get extension(org.apache.dubbo.rpc.Protocol) name from url(" + url.toString() + ") use keys([protocol])");
+        }
+        org.apache.dubbo.rpc.Protocol extension = (org.apache.dubbo.rpc.Protocol) ExtensionLoader.getExtensionLoader(org.apache.dubbo.rpc.Protocol.class).getExtension(extName);
+        return extension.refer(arg0, arg1);
+    }
+}
+```
+
 ### createAdaptiveExtensionClassCode
+
+`createAdaptiveExtensionClassCode` 这个方法负责生成具体的`$Adaptive`实例，如:`Protocol$Adaptive`
+
+这里的代码逻辑就是对`org.apache.dubbo.rpc.Protocol`中所有方法进行解析，并生成实现方法
+
+类似的类还有:
+
+- Cluster\$Adaptive
+- Dispatcher\$Adaptive
+- Protocol\$Adaptive
+- ProxyFactory\$Adaptive
+- RegistryFactory\$Adaptive
+- ThreadPool\$Adaptive
+- Transporter\$Adaptive
+- Validation\$Adaptive
+  
+等等，可以参考这里 [dubbo adaptive class](https://github.com/web1992/dubbos/tree/master/dubbo-source-code/src/main/java/cn/web1992)
