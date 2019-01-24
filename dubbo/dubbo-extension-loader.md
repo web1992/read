@@ -3,7 +3,7 @@
 这里主要包含下面几个部分的分析：
 
 1. 分析`ExtensionLoader`中的一些方法实现逻辑
-2. 通过`ServiceConfig`中的`protocol.export`加载过程，分析 `dubbo` 自适应的实现方式
+2. 通过`ServiceConfig`中的`protocol.export`方法，分析 `dubbo` 自适应的实现方式
 
 - [ExtensionLoader](#extensionloader)
   - [ExtensionLoader methods](#extensionloader-methods)
@@ -169,6 +169,8 @@ mock=org.apache.dubbo.rpc.support.MockProtocol
 ### injectExtension
 
 ```java
+    // injectExtension 负责解析当前类的所有set 方法
+    // 并从 objectFactory 中获取对象，进行属性的注入
     private T injectExtension(T instance) {
         try {
             if (objectFactory != null) {
