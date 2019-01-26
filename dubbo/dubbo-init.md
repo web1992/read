@@ -444,7 +444,7 @@ System.out.println("result: " + hello);
 
 这里说明下为什么要了解一下`invoker`,`dubbo` 对 `invoker`进行了包装，来实现如`mock`服务的功能
 
-看一个`invoker`的结构,可以看到`invoker`包装了很多层
+看一个`invoker`的结构,可以看到`invoker`包装了很多层,从而实现 mock,filter 等功能
 
 ![invoker](./images/dubbo-customer-invoker.png)
 
