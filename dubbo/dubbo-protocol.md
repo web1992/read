@@ -4,9 +4,7 @@
 
 `Protocol`的两个主要的实现类是`DubboProtocol`和`RegistryProtocol`
 
-> `Protocol` 源码链接
-
-[Protocol.java](https://github.com/apache/incubator-dubbo/blob/master/dubbo-rpc/dubbo-rpc-api/src/main/java/org/apache/dubbo/rpc/Protocol.java)
+`Protocol` 源码链接 [Protocol.java](https://github.com/apache/incubator-dubbo/blob/master/dubbo-rpc/dubbo-rpc-api/src/main/java/org/apache/dubbo/rpc/Protocol.java)
 
 ```java
 
@@ -15,8 +13,10 @@
 // 通过 refer 方法，发现，订阅服务
 // expor 主要是服务器相关的业务，如启用一个 Netty 服务，并暴露服务
 // refer 主要是客户端相关的业务，如注册，订阅一个服务
-// destroy 负责服务的取消注册
+// destroy 负责服务的关闭，取消注册，取消订阅
 // 如果要完全理解 Protocol 的功能，理解`RegistryProtocol` 和 `DubboProtocol` 的实现就可以
+// export 返回的Exporter实例，refer 返回的Invoker 实例都是经过层层包装的包装类，从而实现 Filter 等功能
+// 包装类的生成有些是在代码中写死的，而有些是通过 SPI 机制生成的包装对象
 @SPI("dubbo")
 public interface Protocol {
 
