@@ -117,7 +117,7 @@ timeout=org.apache.dubbo.rpc.filter.TimeoutFilter
 > 实现 `org.apache.dubbo.rpc.Filter` 接口
 
 ```java
-// group = "consumer" 是必须执行的，这个用来表示，这个 Filter 对客户端的请求进行过滤
+// group = "consumer" 是必须的，否则就不会被加载，这个用来表示，这个 Filter 对客户端的请求进行过滤
 // 如果 group = "provider"，这个 Filter 只有在服务端才会被使用
 @Activate(group = "consumer")
 public class DemoFilter implements Filter {
