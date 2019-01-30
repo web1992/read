@@ -1,5 +1,12 @@
 # Filter
 
+- [Filter](#filter)
+  - [config](#config)
+  - [ProtocolFilterWrapper](#protocolfilterwrapper)
+  - [consumer filter](#consumer-filter)
+  - [provider filter](#provider-filter)
+  - [customer filter](#customer-filter)
+
 `dubbo`中可以通过自定义`Filter`进行执行结果的监控等
 
 ## config
@@ -102,3 +109,56 @@ timeout=org.apache.dubbo.rpc.filter.TimeoutFilter
 - TimeoutFilte
 - MonitorFilter
 - ExceptionFilter
+
+## customer filter
+
+自定义的 Filter 实现
+
+> 实现 `org.apache.dubbo.rpc.Filter` 接口
+
+```java
+// group = "consumer" 是必须执行的，这个用来表示，这个 Filter 对客户端的请求进行过滤
+// 如果 group = "provider"，这个 Filter 只有在服务端才会被使用
+@Activate(group = "consumer")
+public class DemoFilter implements Filter {
+
+    private static final Logger logger = LoggerFactory.getLogger(DemoFilter.class);
+
+    @Override
+    public Result invoke(Invoker<?> invoker, Invocation invocation) throws RpcException {
+        logger.info("DemoFilter#invoke before filter ...");
+        Result result = invoker.invoke(invocation);
+        logger.info("DemoFilter#invoke after filter ...");
+        return result;
+    }
+}
+```
+
+如果是maven项目，放在 `/resources/META-INF/dubbo/` 目录下面,或者 `/resources/META-INF/services/` 目录下面都是可以的
+
+`META-INF/dubbo/org.apache.dubbo.rpc.Filter`
+
+```config
+demoFilter=cn.web1992.dubbo.demo.filter.DemoFilter
+```
+
+在执行方法的时候就会打印下面的日志：
+
+```log
+[30/01/19 18:08:12:846 CST] main  INFO filter.DemoFilter:  [DUBBO] DemoFilter#invoke before filter ..., dubbo version: 2.7.0-SNAPSHOT, current host: 10.108.3.14
+[30/01/19 18:08:12:970 CST] main  INFO filter.DemoFilter:  [DUBBO] DemoFilter#invoke after filter ..., dubbo version: 2.7.0-SNAPSHOT, current host: 10.108.3.14
+```
+
+> demo:
+
+[DemoFilter.java java代码](https://github.com/web1992/dubbos/tree/master/dubbo-demo-xml/dubbo-demo-xml-consumer/src/main/java/cn/web1992/dubbo/demo/filter)
+[org.apache.dubbo.rpc.Filter 配置](https://github.com/web1992/dubbos/tree/master/dubbo-demo-xml/dubbo-demo-xml-consumer/src/main/resources/META-INF/services)
+
+> 技巧：
+
+如果自定义的 `Filter` 没有被加载可以在 `ProtocolFilterWrapper#buildInvokerChain` 中进行断点调试，查看具体原因.
+
+```java
+// 这里 group=consumer
+List<Filter> filters = ExtensionLoader.getExtensionLoader(Filter.class).getActivateExtension(invoker.getUrl(), key, group);
+```
