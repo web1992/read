@@ -151,8 +151,8 @@ demoFilter=cn.web1992.dubbo.demo.filter.DemoFilter
 
 > demo:
 
-[DemoFilter.java java代码](https://github.com/web1992/dubbos/tree/master/dubbo-demo-xml/dubbo-demo-xml-consumer/src/main/java/cn/web1992/dubbo/demo/filter)
-[org.apache.dubbo.rpc.Filter 配置](https://github.com/web1992/dubbos/tree/master/dubbo-demo-xml/dubbo-demo-xml-consumer/src/main/resources/META-INF/services)
+- [DemoFilter.java java代码](https://github.com/web1992/dubbos/tree/master/dubbo-demo-xml/dubbo-demo-xml-consumer/src/main/java/cn/web1992/dubbo/demo/filter)
+- [org.apache.dubbo.rpc.Filter 配置](https://github.com/web1992/dubbos/tree/master/dubbo-demo-xml/dubbo-demo-xml-consumer/src/main/resources/META-INF/services)
 
 > 技巧：
 
