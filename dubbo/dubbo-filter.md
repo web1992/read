@@ -44,7 +44,7 @@ timeout=org.apache.dubbo.rpc.filter.TimeoutFilter
 
 ## consumer filter
 
-`dubbo` 中已经实现的服务调用方的 `Filter`
+`dubbo` 中已经实现的服务调用方的 `Filter`，这些 `Filter` 只会被服务调用者加载
 
 - ConsumerContextFilter
 - FutureFilter
@@ -52,7 +52,9 @@ timeout=org.apache.dubbo.rpc.filter.TimeoutFilter
 
 ## provider filter
 
-`dubbo` 中已经实现的服务提供方的 `Filter`
+`dubbo` 中已经实现的服务提供方的 `Filter`，这些 `Filter` 只会被服务提供者加载
+
+`dubbo` 中已经实现了 `MonitorFilter` 用于监控
 
 - EchoFilter
 - ClassLoaderFilter
