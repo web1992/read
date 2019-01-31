@@ -8,14 +8,20 @@
 
 可通过 `@Activate(group = "consumer")` or `@Activate(group = "provider")` `注解`来进行区分
 
+`dubbo` 中的 `Filter` 是通过 `dubbo` 自己实现的 `SPI` 机制进行加载的,具体的加载实现类是 `ProtocolFilterWrapper`
+
+关于 `SPI` 可参考这篇文章 [dubbbo SPI](dubbo-extension-loader.md)
+
+> 目录
+
 - [Filter](#filter)
-  - [config](#config)
+  - [dubbo filter](#dubbo-filter)
   - [consumer filter](#consumer-filter)
   - [provider filter](#provider-filter)
   - [ProtocolFilterWrapper](#protocolfilterwrapper)
-  - [customer filter](#customer-filter)
+  - [demo filter](#demo-filter)
 
-## config
+## dubbo filter
 
 `dubbo` 自定义的 `Filter` 配置文件中 `org.apache.dubbo.rpc.Filter` 如下:
 
@@ -116,7 +122,7 @@ timeout=org.apache.dubbo.rpc.filter.TimeoutFilter
     }
 ```
 
-## customer filter
+## demo filter
 
 自定义的 `Filter` 实现
 
