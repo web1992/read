@@ -1,17 +1,23 @@
 # Filter
 
+`dubbo`中的 `Filter` 可以对请求进行拦截，过滤，实现监控等功能
+
+`Filter` 可以分为两类，`cunsumer Filter` 和 `provider Filter`
+
+`cunsumer Filter` 只会被服务调用者加载，`provider Filter` 只会被服务提供者加载
+
+可通过 `@Activate(group = "consumer")` or `@Activate(group = "provider")` `注解`来进行区分
+
 - [Filter](#filter)
   - [config](#config)
-  - [ProtocolFilterWrapper](#protocolfilterwrapper)
   - [consumer filter](#consumer-filter)
   - [provider filter](#provider-filter)
+  - [ProtocolFilterWrapper](#protocolfilterwrapper)
   - [customer filter](#customer-filter)
-
-`dubbo`中可以通过自定义`Filter`进行执行结果的监控等
 
 ## config
 
-配置文件中`org.apache.dubbo.rpc.Filter`与如下的`Filter`:
+`dubbo` 自定义的 `Filter` 配置文件中 `org.apache.dubbo.rpc.Filter` 如下:
 
 ```config
 echo=org.apache.dubbo.rpc.filter.EchoFilter
@@ -30,13 +36,30 @@ compatible=org.apache.dubbo.rpc.filter.CompatibleFilter
 timeout=org.apache.dubbo.rpc.filter.TimeoutFilter
 ```
 
-上面的这些都是 `dubbo`自定义的`Filter`,而`Filter`可以分为两类，一个是`consumer`另一个是`provider`
+## consumer filter
 
-`consumer`对服务调用着拦截，`provider`对服务提供着拦截
+`dubbo` 中已经实现的服务调用方的 `Filter`
+
+- ConsumerContextFilter
+- FutureFilter
+- MonitorFilter
+
+## provider filter
+
+`dubbo` 中已经实现的服务提供方的 `Filter`
+
+- EchoFilter
+- ClassLoaderFilter
+- GenericFilte
+- ContextFilter
+- TraceFilter
+- TimeoutFilte
+- MonitorFilter
+- ExceptionFilter
 
 ## ProtocolFilterWrapper
 
-`ProtocolFilterWrapper`负责对`Filter`进行链接，形成`Filter`链
+`ProtocolFilterWrapper`负责对`Filter`进行链接，形成`Filter`链,`ProtocolFilterWrapper` 是 `Protocol` 的实现类
 
 ```java
     private static <T> Invoker<T> buildInvokerChain(final Invoker<T> invoker, String key, String group) {
@@ -93,26 +116,9 @@ timeout=org.apache.dubbo.rpc.filter.TimeoutFilter
     }
 ```
 
-## consumer filter
-
-- ConsumerContextFilter
-- FutureFilter
-- MonitorFilter
-
-## provider filter
-
-- EchoFilter
-- ClassLoaderFilter
-- GenericFilte
-- ContextFilter
-- TraceFilter
-- TimeoutFilte
-- MonitorFilter
-- ExceptionFilter
-
 ## customer filter
 
-自定义的 Filter 实现
+自定义的 `Filter` 实现
 
 > 实现 `org.apache.dubbo.rpc.Filter` 接口
 
@@ -134,7 +140,9 @@ public class DemoFilter implements Filter {
 }
 ```
 
-如果是maven项目，放在 `/resources/META-INF/dubbo/` 目录下面,或者 `/resources/META-INF/services/` 目录下面都是可以的
+> 配置`Filter`
+
+如果是 maven 项目，放在 `/resources/META-INF/dubbo/` 目录下面,或者 `/resources/META-INF/services/` 目录下面都是可以的
 
 `META-INF/dubbo/org.apache.dubbo.rpc.Filter`
 
@@ -149,7 +157,7 @@ demoFilter=cn.web1992.dubbo.demo.filter.DemoFilter
 [30/01/19 18:08:12:970 CST] main  INFO filter.DemoFilter:  [DUBBO] DemoFilter#invoke after filter ..., dubbo version: 2.7.0-SNAPSHOT, current host: 10.108.3.14
 ```
 
-> demo:
+> demo 源码:
 
 - [DemoFilter.java java代码](https://github.com/web1992/dubbos/tree/master/dubbo-demo-xml/dubbo-demo-xml-consumer/src/main/java/cn/web1992/dubbo/demo/filter)
 - [org.apache.dubbo.rpc.Filter 配置](https://github.com/web1992/dubbos/tree/master/dubbo-demo-xml/dubbo-demo-xml-consumer/src/main/resources/META-INF/services)
