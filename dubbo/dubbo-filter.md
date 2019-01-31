@@ -8,6 +8,8 @@
 
 可通过 `@Activate(group = "consumer")` or `@Activate(group = "provider")` `注解`来进行区分
 
+除了通过注解配置，也可以再 `xml` 文件中进行配置，参照：[xml config filter](#xml-config-filter)
+
 `dubbo` 中的 `Filter` 是通过 `dubbo` 自己实现的 `SPI` 机制进行加载的,具体的加载实现类是 `ProtocolFilterWrapper`
 
 关于 `SPI` 可参考这篇文章 [dubbbo SPI](dubbo-extension-loader.md)
@@ -20,6 +22,7 @@
   - [provider filter](#provider-filter)
   - [ProtocolFilterWrapper](#protocolfilterwrapper)
   - [demo filter](#demo-filter)
+    - [xml config filter](#xml-config-filter)
 
 ## dubbo filter
 
@@ -131,7 +134,7 @@ timeout=org.apache.dubbo.rpc.filter.TimeoutFilter
 > 实现 `org.apache.dubbo.rpc.Filter` 接口
 
 ```java
-// group = "consumer" 是必须的，否则就不会被加载，这个用来表示，这个 Filter 对客户端的请求进行过滤
+// group = "consumer" 这个用来表示，这个 Filter 对客户端的请求进行过滤
 // 如果 group = "provider"，这个 Filter 只有在服务端才会被使用
 @Activate(group = "consumer")
 public class DemoFilter implements Filter {
@@ -146,6 +149,21 @@ public class DemoFilter implements Filter {
         return result;
     }
 }
+```
+
+### xml config filter
+
+如果没有使用`注解`，可以使用 `xml` 进行配置
+
+```xml
+<!-- 消费方调用过程拦截 -->
+<dubbo:reference filter="demoFilter" />
+<!-- 消费方调用过程缺省拦截器，将拦截所有reference -->
+<dubbo:consumer filter="demoFilter"/>
+<!-- 提供方调用过程拦截 -->
+<dubbo:service filter="demoFilter" />
+<!-- 提供方调用过程缺省拦截器，将拦截所有service -->
+<dubbo:provider filter="demoFilter"/>
 ```
 
 > 配置`Filter`
