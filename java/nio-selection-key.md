@@ -2,15 +2,16 @@
 
 - [SelectionKey](#selectionkey)
   - [代码](#%E4%BB%A3%E7%A0%81)
+  - [位运算](#%E4%BD%8D%E8%BF%90%E7%AE%97)
   - [解读](#%E8%A7%A3%E8%AF%BB)
   - [更进一步](#%E6%9B%B4%E8%BF%9B%E4%B8%80%E6%AD%A5)
   - [参考文章](#%E5%8F%82%E8%80%83%E6%96%87%E7%AB%A0)
 
 `java.nio.channels.SelectionKey`
 
-java 的 nio 中，`SelectionKey`用四个标识来表示可进行`某一事件`
+java 的 nio 中，`SelectionKey`用四个标识来表示可进行`某一事件`(某个事件易已经发生)
 
-下面通过源码理解它的实现原理
+下面通过源码理解它的实现技巧
 
 ## 代码
 
@@ -52,9 +53,11 @@ java 的 nio 中，`SelectionKey`用四个标识来表示可进行`某一事件`
 
 那么这个是怎么实现的呢？思考为什么`(readyOps() & OP_READ) != 0`就表示可以进行读事件了？
 
+## 位运算
+
 首先要知道 `&` 是 java 的二进制位运算，只有二进制每一位的值都是 1 时，结果才是 1。（java 还支持其它位操作，可自己 Google）
 
-即:
+即(二进制):
 
 - 1 & 1 = 1
 - 0 & 1 = 0
