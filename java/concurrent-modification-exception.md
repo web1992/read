@@ -11,8 +11,8 @@
   - [Iterator](#iterator)
   - [好文链接](#%E5%A5%BD%E6%96%87%E9%93%BE%E6%8E%A5)
 
-`ConcurrentModificationException` 如果按照名字来翻译,应该是`并发修改异常`，比如我们常用的`ArrayList`是非线程安全的，如果存在多线程
-修改`ArrayList`中的元素，那么在遍历集合时，会抛出异常，而不是一直的错下去，通常这个异常用来追踪Bug.（文章结尾有oracle的官方文档说明）
+`ConcurrentModificationException` 如果按照名字来翻译,应该是`并发修改异常`，比如我们常用的`ArrayList`是非线程安全的，如果存在多线程同时
+修改`ArrayList`中的元素，那么在遍历集合时，会抛出异常，而不是一直的错下去，通常这个异常用来追踪`Bug`.（文章结尾有`oracle`的官方文档说明）
 
 ## 设计目的
 
@@ -186,7 +186,7 @@ Exception in thread "Thread-0" java.util.ConcurrentModificationException
 - [fail-fast (from wiki)](https://en.wikipedia.org/wiki/Fail-fast)
 - [ArrayList.html#fail-fast](https://docs.oracle.com/javase/8/docs/api/java/util/ArrayList.html#fail-fast)
 
-The iterators returned by this class's iterator and listIterator methods are fail-fast: if the list is structurally modified at any time after the iterator is created, in any way except through the iterator's own remove or add methods, the iterator will throw a ConcurrentModificationException. Thus, in the face of concurrent modification, the iterator fails quickly and cleanly, rather than risking arbitrary, non-deterministic behavior at an undetermined time in the future.
+The iterators returned by this class's iterator and listIterator methods are fail-fast: if the list is structurally modified at any time after the iterator is created, in any way except through the iterator's own remove or add methods, the iterator will throw a `ConcurrentModificationException`. Thus, in the face of concurrent modification, the iterator fails quickly and cleanly, rather than risking arbitrary, non-deterministic behavior at an undetermined time in the future.
 
 ## Iterator
 
