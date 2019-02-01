@@ -1,5 +1,16 @@
 # ConcurrentModificationException
 
+- [ConcurrentModificationException](#concurrentmodificationexception)
+  - [设计目的](#%E8%AE%BE%E8%AE%A1%E7%9B%AE%E7%9A%84)
+  - [设计原理](#%E8%AE%BE%E8%AE%A1%E5%8E%9F%E7%90%86)
+  - [什么时候产生](#%E4%BB%80%E4%B9%88%E6%97%B6%E5%80%99%E4%BA%A7%E7%94%9F)
+    - [单线程例子](#%E5%8D%95%E7%BA%BF%E7%A8%8B%E4%BE%8B%E5%AD%90)
+    - [多线程例子](#%E5%A4%9A%E7%BA%BF%E7%A8%8B%E4%BE%8B%E5%AD%90)
+  - [思考](#%E6%80%9D%E8%80%83)
+  - [fail-fast](#fail-fast)
+  - [Iterator](#iterator)
+  - [好文链接](#%E5%A5%BD%E6%96%87%E9%93%BE%E6%8E%A5)
+
 `ConcurrentModificationException` 如果按照名字来翻译,应该是`并发修改异常`，比如我们常用的`ArrayList`是非线程安全的，如果存在多线程
 修改`ArrayList`中的元素，那么在遍历集合时，会抛出异常，而不是一直的错下去，通常这个异常用来追踪Bug.（文章结尾有oracle的官方文档说明）
 

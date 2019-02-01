@@ -3,6 +3,21 @@
 - [draw.io file](./draw.io/ThreadPoolExecutor.xml)
 - [from oracle](https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/ThreadPoolExecutor.html)
 
+- [ThreadPoolExecutor](#threadpoolexecutor)
+  - [类图](#%E7%B1%BB%E5%9B%BE)
+  - [设计目的](#%E8%AE%BE%E8%AE%A1%E7%9B%AE%E7%9A%84)
+  - [Core and maximum pool sizes](#core-and-maximum-pool-sizes)
+  - [On-demand construction](#on-demand-construction)
+  - [Creating new threads](#creating-new-threads)
+  - [Keep-alive times](#keep-alive-times)
+  - [Queuing](#queuing)
+  - [Rejected tasks](#rejected-tasks)
+  - [Hook methods](#hook-methods)
+  - [Queue maintenance](#queue-maintenance)
+  - [Finalization](#finalization)
+  - [Executors](#executors)
+  - [参考](#%E5%8F%82%E8%80%83)
+
 ## 类图
 
 ![ThreadPoolExecutor](./images/ThreadPoolExecutor.png)

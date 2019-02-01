@@ -1,5 +1,11 @@
 # SelectionKey
 
+- [SelectionKey](#selectionkey)
+  - [代码](#%E4%BB%A3%E7%A0%81)
+  - [解读](#%E8%A7%A3%E8%AF%BB)
+  - [更进一步](#%E6%9B%B4%E8%BF%9B%E4%B8%80%E6%AD%A5)
+  - [参考文章](#%E5%8F%82%E8%80%83%E6%96%87%E7%AB%A0)
+
 `java.nio.channels.SelectionKey`
 
 java 的 nio 中，`SelectionKey`用四个标识来表示可进行`某一事件`

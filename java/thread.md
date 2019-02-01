@@ -1,5 +1,17 @@
 # thread
 
+- [thread](#thread)
+  - [ThreadFactory](#threadfactory)
+  - [ThreadGroup](#threadgroup)
+  - [start](#start)
+  - [run](#run)
+  - [interrupt](#interrupt)
+  - [join](#join)
+  - [yield](#yield)
+  - [sleep](#sleep)
+  - [InterruptedException](#interruptedexception)
+  - [stop](#stop)
+
 ## ThreadFactory
 
 可以方便的定义thread name，daemon status，priority, thread Group

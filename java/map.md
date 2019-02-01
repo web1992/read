@@ -2,6 +2,18 @@
 
 - [map (oracle doc)](https://docs.oracle.com/javase/tutorial/collections/implementations/map.html)
 
+- [map](#map)
+  - [概要](#%E6%A6%82%E8%A6%81)
+  - [问题思考](#%E9%97%AE%E9%A2%98%E6%80%9D%E8%80%83)
+  - [HashMap](#hashmap)
+  - [LinkedHashMap](#linkedhashmap)
+    - [插入顺序的实现](#%E6%8F%92%E5%85%A5%E9%A1%BA%E5%BA%8F%E7%9A%84%E5%AE%9E%E7%8E%B0)
+    - [源码分析](#%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90)
+    - [访问顺序的实现](#%E8%AE%BF%E9%97%AE%E9%A1%BA%E5%BA%8F%E7%9A%84%E5%AE%9E%E7%8E%B0)
+  - [TreeMap](#treemap)
+  - [ConcurrentHashMap](#concurrenthashmap)
+  - [好文链接](#%E5%A5%BD%E6%96%87%E9%93%BE%E6%8E%A5)
+
 ![Map](images/map.png)
 
 ## 概要
