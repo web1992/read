@@ -1,5 +1,18 @@
 # concurrency
 
+- [concurrency](#concurrency)
+  - [Link](#link)
+  - [Increased reliability](#increased-reliability)
+  - [Task scheduling framework](#task-scheduling-framework)
+  - [Fork/join framework](#forkjoin-framework)
+  - [Concurrent collections](#concurrent-collections)
+  - [Atomic variables](#atomic-variables)
+  - [Synchronizers](#synchronizers)
+  - [Locks](#locks)
+  - [Nanosecond-granularity timing](#nanosecond-granularity-timing)
+
+## Link
+
 - [concurrency (from oracle for java8)](https://docs.oracle.com/javase/8/docs/technotes/guides/concurrency/index.html)
 - [concurrency (from oracle)](https://docs.oracle.com/javase/tutorial/essential/concurrency/index.html)
 - [concurrency (Overview)](https://docs.oracle.com/javase/8/docs/technotes/guides/concurrency/index.html)
@@ -26,7 +39,7 @@ Developing concurrent classes is difficult -- the low-level concurrency primitiv
 
 ## Synchronizers
 
- General purpose synchronization classes, including `semaphores`, `barriers`, `latches`, `phasers`, and `exchangers`, **facilitate coordination between threads.**
+General purpose synchronization classes, including `semaphores`, `barriers`, `latches`, `phasers`, and `exchangers`, **facilitate coordination between threads.**
 
 - [CountDownLatch](count-down-latch.md)
 - [CyclicBarrier](cyclic-barrier.md)

@@ -2,6 +2,11 @@
 
 - [@see Condition](condition.md)
 
+- [ReentrantLock](#reentrantlock)
+  - [特点](#%E7%89%B9%E7%82%B9)
+  - [demo](#demo)
+  - [Link](#link)
+
 ## 特点
 
 可重入的锁
@@ -101,3 +106,7 @@ class BlockArray<E> {
     }
 
 ```
+
+## Link
+
+- [java lock](https://tech.meituan.com/2018/11/15/java-lock.html)
