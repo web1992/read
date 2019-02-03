@@ -1,6 +1,12 @@
 # CountDownLatch
 
-`CountDownLatch` 可以用来处理几个线程之间的协作，如 A 线程等待 B,C,D 任务完成之后，再执行 A 自己的任务。
+- [CountDownLatch](#countdownlatch)
+  - [docs](#docs)
+  - [example1](#example1)
+  - [example2](#example2)
+  - [example3](#example3)
+
+`CountDownLatch` 可以用来处理几个线程之间的协作，如 A 线程等待 B,C,D 线程任务完成之后，再执行 A 自己的任务。
 
 - [CountDownLatch](https://www.cnblogs.com/shiyanch/archive/2011/04/04/2005233.html)
 - [CountDownLatch from oracle docs](https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/CountDownLatch.html)
@@ -97,7 +103,7 @@ class Driver2 {
 
 `CountDownLatch`A 线程等待 B,C,D,E 线程等完成之后，A 线程继续执行，实现了 N 个线程之间的协作机制
 
-demo
+## example3
 
 ```java
     /**
