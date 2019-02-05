@@ -1,5 +1,21 @@
 # EventLoop
 
+- [EventLoop](#eventloop)
+  - [1. NioEventLoop](#1-nioeventloop)
+    - [EventLoop 的初始化](#eventloop-%E7%9A%84%E5%88%9D%E5%A7%8B%E5%8C%96)
+    - [EventLoop 的定时任务](#eventloop-%E7%9A%84%E5%AE%9A%E6%97%B6%E4%BB%BB%E5%8A%A1)
+    - [EventLoop 的异步任务](#eventloop-%E7%9A%84%E5%BC%82%E6%AD%A5%E4%BB%BB%E5%8A%A1)
+    - [EventLoop I/O task and non-I/O tasks](#eventloop-io-task-and-non-io-tasks)
+    - [EventLoop 核心方法 run](#eventloop-%E6%A0%B8%E5%BF%83%E6%96%B9%E6%B3%95-run)
+    - [EventLoop 核心方法 processSelectedKeys](#eventloop-%E6%A0%B8%E5%BF%83%E6%96%B9%E6%B3%95-processselectedkeys)
+    - [EventLoop 核心方法 processSelectedKey](#eventloop-%E6%A0%B8%E5%BF%83%E6%96%B9%E6%B3%95-processselectedkey)
+    - [EventLoop 核心方法 select](#eventloop-%E6%A0%B8%E5%BF%83%E6%96%B9%E6%B3%95-select)
+    - [EventLoop 核心方法 runAllTasks](#eventloop-%E6%A0%B8%E5%BF%83%E6%96%B9%E6%B3%95-runalltasks)
+  - [NioEventLoopGroup](#nioeventloopgroup)
+    - [`EventExecutorGroup`的作用](#eventexecutorgroup%E7%9A%84%E4%BD%9C%E7%94%A8)
+    - [`EventExecutorGroup`的初始化](#eventexecutorgroup%E7%9A%84%E5%88%9D%E5%A7%8B%E5%8C%96)
+  - [参考资料](#%E5%8F%82%E8%80%83%E8%B5%84%E6%96%99)
+
 ## 1. NioEventLoop
 
 类图继承关系：

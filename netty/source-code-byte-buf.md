@@ -57,7 +57,6 @@ readerIndex (0) <= writerIndex (decreased)        <=        capacity
 ## Clearing the buffer indexes
 
 ```pre
-<pre>
  BEFORE clear()
 
      +-------------------+------------------+------------------+
@@ -74,7 +73,6 @@ readerIndex (0) <= writerIndex (decreased)        <=        capacity
      +---------------------------------------------------------+
      |                                                         |
      0 = readerIndex = writerIndex            <=            capacity
-</pre>
 ```
 
 ## Search operations

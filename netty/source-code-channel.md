@@ -2,14 +2,16 @@
 
 从下面几点了解`NioServerSocketChannel`与`NioSocketChannel`
 
-1. [创建实例](#创建实例)
-2. [open ServerSocketChannel](#创建ServerSocketChannel)
-3. [unsafe 和 pipeline 的初始化](#unsafe和pipeline的初始化)
-4. [设置为非阻塞模式](#设置为非阻塞模式)
-5. [NioServerSocketChannel 绑定 Selector](#绑定Selector)
-6. [NioServerSocketChannel 绑定 Socket](#绑定Socket)
-7. [NioSocketChannel 与 NioServerSocketChannel](#NioSocketChannel与NioServerSocketChannel)
-8. [NioSocketChannel 与 Selector 绑定](#ServerBootstrapAcceptor)
+- [Channel](#channel)
+  - [NioServerSocketChannel](#nioserversocketchannel)
+    - [创建实例](#%E5%88%9B%E5%BB%BA%E5%AE%9E%E4%BE%8B)
+    - [创建 ServerSocketChannel](#%E5%88%9B%E5%BB%BA-serversocketchannel)
+  - [设置为非阻塞模式](#%E8%AE%BE%E7%BD%AE%E4%B8%BA%E9%9D%9E%E9%98%BB%E5%A1%9E%E6%A8%A1%E5%BC%8F)
+  - [unsafe 和 pipeline 的初始化](#unsafe-%E5%92%8C-pipeline-%E7%9A%84%E5%88%9D%E5%A7%8B%E5%8C%96)
+  - [绑定 Selector](#%E7%BB%91%E5%AE%9A-selector)
+    - [绑定 Socket](#%E7%BB%91%E5%AE%9A-socket)
+    - [NioSocketChannel 与 NioServerSocketChannel](#niosocketchannel-%E4%B8%8E-nioserversocketchannel)
+  - [ServerBootstrapAcceptor](#serverbootstrapacceptor)
 
 > 上面的几个步骤在 java Nio 中是`同步`的代码调用，而在 Netty 中，进行了`异步`的处理,把 5,6 步骤放到了 taskQueue,让 NioEventLoop 进行处理
 > 同时也会把注册事件放入到 pipeline 中进行流处理(比如你可以注册一个 ChannelHandler 对注册事件进行特殊的处理)

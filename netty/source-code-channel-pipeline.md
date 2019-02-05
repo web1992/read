@@ -5,6 +5,10 @@
 1. `ChannelPipeline` 什么时候初始化
 2. 如何进行进行`流处理`
 
+- [ChannelPipeline](#channelpipeline)
+  - [预处理](#%E9%A2%84%E5%A4%84%E7%90%86)
+  - [源码分析](#%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90)
+
 ## 预处理
 
 读事件的流程触发点

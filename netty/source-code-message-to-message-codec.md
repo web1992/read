@@ -1,5 +1,10 @@
 # MessageToMessageCodec
 
+- [MessageToMessageCodec](#messagetomessagecodec)
+  - [Decoder&Encoder](#decoderencoder)
+  - [作用](#%E4%BD%9C%E7%94%A8)
+  - [demo](#demo)
+
 ## Decoder&Encoder
 
 - `MessageToMessageDecoder`

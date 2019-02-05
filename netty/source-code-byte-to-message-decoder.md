@@ -1,5 +1,16 @@
 # ByteToMessageDecoder
 
+- [ByteToMessageDecoder](#bytetomessagedecoder)
+  - [读事件流程](#%E8%AF%BB%E4%BA%8B%E4%BB%B6%E6%B5%81%E7%A8%8B)
+  - [channelRead](#channelread)
+  - [callDecode](#calldecode)
+  - [LengthFieldBasedFrameDecoder](#lengthfieldbasedframedecoder)
+  - [继承关系图](#%E7%BB%A7%E6%89%BF%E5%85%B3%E7%B3%BB%E5%9B%BE)
+    - [LengthFieldBasedFrameDecoder 构造参数](#lengthfieldbasedframedecoder-%E6%9E%84%E9%80%A0%E5%8F%82%E6%95%B0)
+    - [demo](#demo)
+    - [LengthFieldBasedFrameDecoder#decode](#lengthfieldbasedframedecoderdecode)
+  - [ObjectDecoder 实现](#objectdecoder-%E5%AE%9E%E7%8E%B0)
+
 Netty 中负责把字节流转化成一个具体对象的基类
 
 > 来自 Netty docs:

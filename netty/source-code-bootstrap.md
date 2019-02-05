@@ -1,5 +1,19 @@
 # Bootstrap and ServerBootstrap
 
+- [Bootstrap and ServerBootstrap](#bootstrap-and-serverbootstrap)
+  - [ServerBootstrap](#serverbootstrap)
+    - [初始化-group](#%E5%88%9D%E5%A7%8B%E5%8C%96-group)
+    - [channelFactory](#channelfactory)
+    - [init](#init)
+  - [bind](#bind)
+  - [childHandler](#childhandler)
+  - [Bootstrap](#bootstrap)
+  - [group](#group)
+  - [channel](#channel)
+  - [handler](#handler)
+  - [connect](#connect)
+  - [Resolve](#resolve)
+
 ## ServerBootstrap
 
 服务器`ServerBootstrap`初始化过程
