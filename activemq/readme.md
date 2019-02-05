@@ -9,6 +9,13 @@
 - reliability (可靠性)
 - security
 
+- [ActiveMQ in action](#activemq-in-action)
+  - [Chapter list](#chapter-list)
+    - [Part 1](#part-1)
+    - [Part 2](#part-2)
+    - [Part 3](#part-3)
+    - [Part 4](#part-4)
+
 ## Chapter list
 
 ### Part 1
@@ -31,7 +38,7 @@ Configuring standard ActiveMQ components
 - [chapter 5](activemq-chapter-05.md)
 - [chapter 6](activemq-chapter-06.md)
 
-## Part 3
+### Part 3
 
 Using ActiveMQ to build messaging applications
 
@@ -41,7 +48,7 @@ Using ActiveMQ to build messaging applications
 - [chapter 8](activemq-chapter-08.md)
 - [chapter 9](activemq-chapter-09.md)
 
-## Part 4
+### Part 4
 
 Advanced features in ActiveMQ
 

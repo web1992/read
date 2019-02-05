@@ -1,5 +1,11 @@
 # Chapter List
 
+- [Chapter List](#chapter-list)
+  - [Part 1 Netty concepts and architecture](#part-1-netty-concepts-and-architecture)
+  - [Part 2 codec](#part-2-codec)
+  - [Part 3 Network protocols](#part-3-network-protocols)
+  - [Summary](#summary)
+
 ## Part 1 Netty concepts and architecture
 
 - [Chapter 1](netty-in-action-chapter-01.md)
