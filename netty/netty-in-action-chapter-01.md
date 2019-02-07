@@ -8,7 +8,7 @@ This chapter covers
 
 ## java nio
 
-- Using `setsockopt()` you can configure socket s so that read/write calls will return immediately if there is no data; that is, if a blocking call would haveblocked.
+- Using `setsockopt()` you can configure sockets so that read/write calls will return immediately if there is no data; that is, if a blocking call would haveblocked.
 - You can register a set of non-blocking sockets using the system’s event notification API 2 to determine whether any of them have data ready for reading or writing.
 
 ## java nio selectors
