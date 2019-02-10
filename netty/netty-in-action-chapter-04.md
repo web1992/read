@@ -2,10 +2,10 @@
 
 This chapter covers
 
-- OIO—blocking transport
-- NIO—asynchronous transport
-- Local transport—asynchronous communications within a JVM
-- Embedded transport—testing your ChannelHandlers
+- OIO blocking transport
+- NIO asynchronous transport
+- Local transport asynchronous communications within a JVM
+- Embedded transport testing your ChannelHandlers
 
 - [CHAPTER 4](#chapter-4)
   - [ChannelHandlers](#channelhandlers)

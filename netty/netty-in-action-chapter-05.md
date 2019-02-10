@@ -2,7 +2,7 @@
 
 This chapter covers
 
-- ByteBuf—Netty’s data container
+- ByteBuf Netty’s data container
 - API details
 - Use cases
 - Memory allocation
@@ -19,7 +19,6 @@ This chapter covers
   - [ReferenceCounted](#referencecounted)
   - [Summary](#summary)
 
-
 ## api
 
 - `ByteBuf` abstract class
@@ -29,8 +28,9 @@ This chapter covers
 
 `ByteBuf` Netty’s data container
 
-Netty’s API for data handling is exposed through two components—abstract class
+Netty’s API for data handling is exposed through two components abstract class
 ByteBuf and interface ByteBufHolder.
+
 These are some of the advantages of the ByteBuf API:
 
 - It’s extensible to user-defined buffer types.

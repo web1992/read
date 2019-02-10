@@ -19,7 +19,7 @@
 ## technical and architectural
 
 First, its asynchronous and event-driven implementation, built on Java NIO, guarantees maximum
-application performance and scalability under heavy load. 
+application performance and scalability under heavy load.
 
 Second, Netty embodies a set of design patterns that decouple application logic from the network layer, simplifying
 development while maximizing the testability, modularity, and reusability of code.
@@ -94,12 +94,14 @@ network data is always a series of bytes.
 | Networking function      | Connects to a remote host and port | Binds to a local port |
 | Number of EventLoopGroup | 1                                  | 2                     |
 
-The first difference between the two types of bootstraps has been discussed: a Server-
-Bootstrap binds to a port, because servers must listen for connections, while a Bootstrap
+The first difference between the two types of bootstraps has been discussed: a `ServerBootstrap`
+binds to a port, because servers must listen for connections, while a `Bootstrap`
 is used by client applications that want to connect to a remote peer.
+
 The second difference is perhaps more significant. Bootstrapping a client requires
-only a single EventLoopGroup, but a ServerBootstrap requires two (which can be the
+only a single EventLoopGroup, but a `ServerBootstrap` requires two (which can be the
 same instance). Why?
+
 A server needs two distinct sets of Channels. The first set will contain a single
 ServerChannel representing the server’s own listening socket, bound to a local port.
 The second set will contain all of the Channels that have been created to handle incoming
