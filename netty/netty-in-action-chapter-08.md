@@ -7,6 +7,16 @@ This chapter covers
 - Adding ChannelHandlers
 - Using ChannelOptions and attributes
 
+- [CHAPTER 8](#chapter-8)
+  - [Bootstrap class](#bootstrap-class)
+  - [Bootstrapping a client](#bootstrapping-a-client)
+  - [IllegalStateException](#illegalstateexception)
+  - [Bootstrapping servers](#bootstrapping-servers)
+  - [Bootstrapping clients from a Channel](#bootstrapping-clients-from-a-channel)
+  - [handler and childHandler](#handler-and-childhandler)
+  - [Using Netty ChannelOptions and attributes](#using-netty-channeloptions-and-attributes)
+  - [Shutdown](#shutdown)
+
 ![Bootstrap](./images/Bootstrap.png)
 
 ## Bootstrap class

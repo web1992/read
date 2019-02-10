@@ -7,6 +7,14 @@ This chapter covers
 - Local transport—asynchronous communications within a JVM
 - Embedded transport—testing your ChannelHandlers
 
+- [CHAPTER 4](#chapter-4)
+  - [ChannelHandlers](#channelhandlers)
+  - [Channel methods](#channel-methods)
+  - [Netty-provided transports](#netty-provided-transports)
+  - [Optimal transport for an application](#optimal-transport-for-an-application)
+  - [NIO—non-blocking I/O](#nionon-blocking-io)
+  - [Selection operation bit-set](#selection-operation-bit-set)
+
 ## ChannelHandlers
 
 Typical uses for ChannelHandlers include:
@@ -19,22 +27,22 @@ Typical uses for ChannelHandlers include:
 
 ## Channel methods
 
-| Method        | name Description                                                                                                                                                                                                                               |
-| ------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| eventLoop     | Returns the EventLoop that is assigned to the Channel.                                                                                                                                                                                         |
-| pipeline      | Returns the ChannelPipeline that is assigned to the Channel.                                                                                                                                                                                   |
+| Method        | name Description                                                                                                                                                                                                                                |
+| ------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| eventLoop     | Returns the EventLoop that is assigned to the Channel.                                                                                                                                                                                          |
+| pipeline      | Returns the ChannelPipeline that is assigned to the Channel.                                                                                                                                                                                    |
 | isActive      | Returns true if the Channel is active. The meaning of active may depend on the underlying transport. For example, a Socket transport is active once connected to the remote peer, whereas a Datagram transport would be active once it’s open. |
-| localAddress  | Returns the local SocketAddress.                                                                                                                                                                                                               |
-| remoteAddress | Returns the remote SocketAddress.                                                                                                                                                                                                              |
+| localAddress  | Returns the local SocketAddress.                                                                                                                                                                                                                |
+| remoteAddress | Returns the remote SocketAddress.                                                                                                                                                                                                               |
 | write         | Writes data to the remote peer. This data is passed to the ChannelPipeline and queued until it’s flushed.                                                                                                                                      |
-| flush         | Flushes the previously written data to the underlying transport, such as a Socket.                                                                                                                                                             |
-| writeAndFlush | A convenience method for calling write() followed by flush().                                                                                                                                                                                  |
+| flush         | Flushes the previously written data to the underlying transport, such as a Socket.                                                                                                                                                              |
+| writeAndFlush | A convenience method for calling write() followed by flush().                                                                                                                                                                                   |
 
 ## Netty-provided transports
 
 | Name     | Package                     | Description                                                                                                                                                                                  |
 | -------- | --------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| NIO      | io.netty.channel.socket.nio | Uses the java.nio.channels package as a foundation—a selector-based approach.                                                                                                                |
+| NIO      | io.netty.channel.socket.nio | Uses the java.nio.channels package as a foundation—a selector-based approach.                                                                                                               |
 | Epoll    | io.netty.channel.epoll      | Uses JNI for epoll() and non-blocking IO.This transport supports features available only on Linux, such as SO_REUSEPORT, and is faster than the NIO transport as well as fully non-blocking. |
 | OIO      | io.netty.channel.socket.oio | Uses the java.net package as a foundationuses blocking streams.                                                                                                                              |
 | Local    | io.netty.channel.local      | A local transport that can be used to communicate in the VM via pipes.                                                                                                                       |

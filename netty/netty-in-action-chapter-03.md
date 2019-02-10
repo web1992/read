@@ -5,6 +5,17 @@
 - `ChannelHandler` and `ChannelPipeline`
 - `Bootstrapping`
 
+- [CHAPTER 3](#chapter-3)
+  - [technical and architectural](#technical-and-architectural)
+  - [Component](#component)
+  - [EventLoop](#eventloop)
+  - [ChannelFuture](#channelfuture)
+  - [ChannelHandler](#channelhandler)
+  - [ChannelPipeline](#channelpipeline)
+  - [Encoders and decoders](#encoders-and-decoders)
+  - [SimpleChannelInboundHandler](#simplechannelinboundhandler)
+  - [Bootstrapping](#bootstrapping)
+
 ## technical and architectural
 
 First, its asynchronous and event-driven implementation, built on Java NIO, guarantees maximum

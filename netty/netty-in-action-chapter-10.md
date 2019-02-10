@@ -3,6 +3,20 @@
 - An overview of decoders, encoders and codecs
 - Netty’s codec classes
 
+- [CHAPTER 10](#chapter-10)
+  - [codec](#codec)
+  - [Decoders](#decoders)
+  - [ByteToMessageDecoder](#bytetomessagedecoder)
+  - [ReplayingDecoder](#replayingdecoder)
+  - [MessageToMessageDecoder](#messagetomessagedecoder)
+  - [TooLongFrameException](#toolongframeexception)
+  - [Encoders](#encoders)
+  - [MessageToByteEncoder](#messagetobyteencoder)
+  - [MessageToMessageEncoder](#messagetomessageencoder)
+  - [ByteToMessageCodec](#bytetomessagecodec)
+  - [MessageToMessageCodec](#messagetomessagecodec)
+  - [CombinedChannelDuplexHandler](#combinedchannelduplexhandler)
+
 ## codec
 
 Think of a message as a structured sequence of bytes having meaning for a specific

@@ -6,16 +6,27 @@ This chapter covers
 - Detecting resource leaks
 - Exception handling
 
+- [CHAPTER 6](#chapter-6)
+  - [Channel lifecycle](#channel-lifecycle)
+  - [SimpleChannelInboundHandler](#simplechannelinboundhandler)
+  - [ChannelOutboundHandler](#channeloutboundhandler)
+  - [ChannelHandler adapters](#channelhandler-adapters)
+  - [Resource management](#resource-management)
+  - [ChannelPipeline](#channelpipeline)
+  - [ChannelHandlerContext](#channelhandlercontext)
+  - [Handling inbound exceptions](#handling-inbound-exceptions)
+  - [Handling outbound exceptions](#handling-outbound-exceptions)
+
 - ChannelHandlers
 - ChannelPipeline
 - ChannelHandlerContext
 
 ## Channel lifecycle
 
-| State               | Description                                                                                       |
-| ------------------- | ------------------------------------------------------------------------------------------------- |
+| State               | Description                                                                                        |
+| ------------------- | -------------------------------------------------------------------------------------------------- |
 | ChannelUnregistered | The Channel was created, but isn’t registered to an EventLoop.                                    |
-| ChannelRegistered   | The Channel is registered to an EventLoop.                                                        |
+| ChannelRegistered   | The Channel is registered to an EventLoop.                                                         |
 | ChannelActive       | The Channel is active (connected to its remote peer). It’s now possible to receive and send data. |
 | ChannelInactive     | The Channel isn’t connected to the remote peer.                                                   |
 

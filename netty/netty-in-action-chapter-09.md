@@ -6,6 +6,9 @@ This chapter covers
 - Overview of EmbeddedChannel
 - Testing ChannelHandlers with EmbeddedChannel
 
+- [CHAPTER 9](#chapter-9)
+  - [EmbeddedChannel](#embeddedchannel)
+
 ## EmbeddedChannel
 
 ```java

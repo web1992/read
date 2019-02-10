@@ -8,6 +8,18 @@ This chapter covers
 - Decoding delimited and length-based protocols
 - Writing big data
 
+- [CHAPTER 11](#chapter-11)
+  - [Securing Netty applications with SSL/TLS](#securing-netty-applications-with-ssltls)
+  - [Building Netty HTTP/HTTPS applications](#building-netty-httphttps-applications)
+  - [Idle connections and timeouts](#idle-connections-and-timeouts)
+  - [Delimited protocols](#delimited-protocols)
+  - [Length-based protocols](#length-based-protocols)
+  - [Writing big data](#writing-big-data)
+  - [Serializing data](#serializing-data)
+  - [JDK serialization](#jdk-serialization)
+  - [Serialization with JBoss Marshalling](#serialization-with-jboss-marshalling)
+  - [Serialization via Protocol Buffers](#serialization-via-protocol-buffers)
+
 ## Securing Netty applications with SSL/TLS
 
 - OpenSSL/SSLEngine

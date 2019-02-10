@@ -7,6 +7,19 @@ This chapter covers
 - Use cases
 - Memory allocation
 
+- [CHAPTER 5](#chapter-5)
+  - [api](#api)
+  - [ByteBuf](#bytebuf)
+  - [Read/write operations](#readwrite-operations)
+  - [Other useful operations](#other-useful-operations)
+  - [ByteBufHolder](#bytebufholder)
+  - [ByteBufAllocator](#bytebufallocator)
+  - [Unpooled buffers](#unpooled-buffers)
+  - [ByteBufUtil](#bytebufutil)
+  - [ReferenceCounted](#referencecounted)
+  - [Summary](#summary)
+
+
 ## api
 
 - `ByteBuf` abstract class
