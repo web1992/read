@@ -4,23 +4,22 @@
 
 - [Channel](#channel)
   - [NioServerSocketChannel](#nioserversocketchannel)
-    - [创建实例](#%E5%88%9B%E5%BB%BA%E5%AE%9E%E4%BE%8B)
-    - [创建 ServerSocketChannel](#%E5%88%9B%E5%BB%BA-serversocketchannel)
-  - [设置为非阻塞模式](#%E8%AE%BE%E7%BD%AE%E4%B8%BA%E9%9D%9E%E9%98%BB%E5%A1%9E%E6%A8%A1%E5%BC%8F)
-  - [unsafe 和 pipeline 的初始化](#unsafe-%E5%92%8C-pipeline-%E7%9A%84%E5%88%9D%E5%A7%8B%E5%8C%96)
-  - [绑定 Selector](#%E7%BB%91%E5%AE%9A-selector)
-    - [绑定 Socket](#%E7%BB%91%E5%AE%9A-socket)
-    - [NioSocketChannel 与 NioServerSocketChannel](#niosocketchannel-%E4%B8%8E-nioserversocketchannel)
+    - [init channel](#init-channel)
+    - [config](#config)
+  - [unsafe & pipeline init](#unsafe--pipeline-init)
+  - [bind Selector](#bind-selector)
+    - [bind Socket](#bind-socket)
+    - [NioSocketChannel & NioServerSocketChannel](#niosocketchannel--nioserversocketchannel)
   - [ServerBootstrapAcceptor](#serverbootstrapacceptor)
 
-> 上面的几个步骤在 java Nio 中是`同步`的代码调用，而在 Netty 中，进行了`异步`的处理,把 5,6 步骤放到了 taskQueue,让 NioEventLoop 进行处理
+> 上面的几个步骤在 java Nio 中是`同步`的代码调用，而在 Netty 中，进行了`异步`的处理,把 5,6 步骤放到了 taskQueue 中,让 NioEventLoop 进行处理
 > 同时也会把注册事件放入到 pipeline 中进行流处理(比如你可以注册一个 ChannelHandler 对注册事件进行特殊的处理)
 
 ## NioServerSocketChannel
 
 ![NioServerSocketChannel](./images/NioServerSocketChannel.png)
 
-### 创建实例
+### init channel
 
 `AbstractBootstrap#initAndRegister`
 
@@ -31,7 +30,7 @@
     init(channel);
 ```
 
-### 创建 ServerSocketChannel
+创建 ServerSocketChannel
 
 `NioServerSocketChannel#newSocket`
 
@@ -54,7 +53,7 @@
     }
 ```
 
-## 设置为非阻塞模式
+### config
 
 `AbstractNioChannel#AbstractNioChannel`
 
@@ -81,7 +80,7 @@
     }
 ```
 
-## unsafe 和 pipeline 的初始化
+## unsafe & pipeline init
 
 `AbstractChannel#AbstractChannel`
 
@@ -96,7 +95,7 @@
     }
 ```
 
-## 绑定 Selector
+## bind Selector
 
 `AbstractNioChannel#doRegister`
 
@@ -144,15 +143,15 @@
 
         final int interestOps = selectionKey.interestOps();
         // interestOps 其实就是 javaChannel().register(eventLoop().unwrappedSelector(), 0, this); 0这个参数
-        // readInterestOp 其实就是SelectionKey#OP_ACCEPT(readInterestOp在AbstractNioChannel的构造方法中进行的初始化)
-        // 这里进行检查如果插入的事件是0，那么就进行OP_ACCEPT的注册
+        // readInterestOp 其实就是 SelectionKey#OP_ACCEPT(readInterestOp在AbstractNioChannel的构造方法中进行的初始化)
+        // 这里进行检查如果插入的事件是0，那么就进行 OP_ACCEPT 的注册
         if ((interestOps & readInterestOp) == 0) {
             selectionKey.interestOps(interestOps | readInterestOp);
         }
     }
 ```
 
-### 绑定 Socket
+### bind Socket
 
 `NioServerSocketChannel#doBind`
 
@@ -171,7 +170,7 @@
     }
 ```
 
-### NioSocketChannel 与 NioServerSocketChannel
+### NioSocketChannel & NioServerSocketChannel
 
 | NioSocketChannel                                   | NioServerSocketChannel                                         |
 | -------------------------------------------------- | -------------------------------------------------------------- |
@@ -208,7 +207,7 @@ NioServerSocketChannel 继承了 `AbstractNioMessageChannel`
 
 在 EventLoop 中有下面这个代码:
 
-`unsafe.read();`有两种类型`NioByteUnsafe`&`NioMessageUnsafe`
+`unsafe.read();` 有两种类型 `NioByteUnsafe`&`NioMessageUnsafe`
 
 ```java
 // Also check for readOps of 0 to workaround possible JDK bug which may otherwise lead
@@ -218,10 +217,10 @@ if ((readyOps & (SelectionKey.OP_READ | SelectionKey.OP_ACCEPT)) != 0 || readyOp
     // 如果是OP_ACCEPT事件，unsafe就是 -> NioServerSocketChannel 的unsafe
     // 否则就是 -> NioSocketChannel 的的unsafe
     // 而NioServerSocketChannel的unsafe的读事件中，调用accept，并初始化了NioSocketChannel(客户端)
-    // 并通过  pipeline.fireChannelRead(readBuf.get(i)); 进行事件广播
-    // 最终事件被ServerBootstrapAcceptor（其实也是一个ChannelHandler）处理
-    // ServerBootstrapAcceptor 负责把这个客户端的NioSocketChannel与EventLoop，Selector进行关联
-    // 具体的代码实现可以看下面ServerBootstrapAcceptor的实现
+    // 并通过  pipeline.fireChannelRead(readBuf.get(i)); 进行事件的 pipeline 处理
+    // 最终事件被 ServerBootstrapAcceptor（其实也是一个ChannelHandler）处理
+    // ServerBootstrapAcceptor 负责把这个客户端的 NioSocketChannel 与 EventLoop，Selector 进行关联
+    // 具体的代码实现可以看下面 ServerBootstrapAcceptor 的实现
     unsafe.read();
 }
 ```
@@ -229,20 +228,20 @@ if ((readyOps & (SelectionKey.OP_READ | SelectionKey.OP_ACCEPT)) != 0 || readyOp
 ## ServerBootstrapAcceptor
 
 ```java
- // ServerBootstrapAcceptor 继承了ChannelInboundHandlerAdapter,其实就是一个ChannelHandler
- // 可以把ServerBootstrapAcceptor放入到pipeline进行流处理
+ // ServerBootstrapAcceptor 继承了ChannelInboundHandlerAdapter,其实就是一个 ChannelHandler
+ // 可以把 ServerBootstrapAcceptor 放入到 pipeline 进行流处理
  private static class ServerBootstrapAcceptor extends ChannelInboundHandlerAdapter {
  }
 ```
 
-`ServerBootstrapAcceptor`重写了`channelRead`方法,代码如下:
+`ServerBootstrapAcceptor` 重写了 `channelRead` 方法,代码如下:
 
 ```java
 @Override
 @SuppressWarnings("unchecked")
 public void channelRead(ChannelHandlerContext ctx, Object msg) {
-    // 这个事件是在EventLoop中unsafe.read()触发的
-    // child 这个channel是客户端的链接
+    // 这个事件是在 EventLoop 中 unsafe.read() 触发的
+    // child 这个 channel 是客户端的链接
     final Channel child = (Channel) msg;
     child.pipeline().addLast(childHandler);
     setChannelOptions(child, childOptions, logger);
@@ -250,11 +249,11 @@ public void channelRead(ChannelHandlerContext ctx, Object msg) {
         child.attr((AttributeKey<Object>) e.getKey()).set(e.getValue());
     }
     try {
-        // childGroup 本质上也是一个EventLoopGroup
-        // childGroup 是在ServerBootstrap初始的时候初始化的
-        // childGroup.register 这个方法的含义是从childGroup选择一个(轮询的方式)EventLoop与Channel
-        // 进行绑定，并且使用Selector管理Channel，
-        // 从而形成了下图的EventLoop 与Channel映射关系
+        // childGroup 本质上也是一个 EventLoopGroup
+        // childGroup 是在 ServerBootstrap 初始的时候初始化的
+        // childGroup.register 这个方法的含义是从 childGroup 选择一个(轮询的方式) EventLoop 与 Channel
+        // 进行绑定，并且使用 Selector 管理 Channel
+        // 从而形成了下图的 EventLoop 与 Channel 映射关系
         childGroup.register(child).addListener(new ChannelFutureListener() {
             @Override
             public void operationComplete(ChannelFuture future) throws Exception {
@@ -271,6 +270,6 @@ public void channelRead(ChannelHandlerContext ctx, Object msg) {
 
 最终 EventLoop 与 Channel 关系，如下图：
 
-一个`EventLoop`会关联多个`Channel`
+一个 `EventLoop` 会关联多个 `Channel`
 
 ![EventLoop](./images/EventLoop-Channel.png)

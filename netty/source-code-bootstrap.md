@@ -77,7 +77,7 @@ childGroup 当做参数给了 ServerBootstrapAcceptor，ServerBootstrapAcceptor 
 ```java
         // 获取到pipeline
         ChannelPipeline p = channel.pipeline();
-        // 注册initChannel事件，这个事件在其他渠道注册的时候会发生
+        // 注册 initChannel 事件，这个事件在其他渠道注册的时候会发生
         // 比如客户端连接到服务器的时候
         p.addLast(new ChannelInitializer<Channel>() {
             @Override
@@ -104,7 +104,7 @@ childGroup 当做参数给了 ServerBootstrapAcceptor，ServerBootstrapAcceptor 
 把打开的 channel 绑定到 SocketAddress 地址
 
 ```java
-// 这里把注册事件，通过pipeline 进行异步的注册
+// 这里把注册事件，通过 pipeline 进行异步的注册
 private static void doBind0(
             final ChannelFuture regFuture, final Channel channel,
             final SocketAddress localAddress, final ChannelPromise promise) {
