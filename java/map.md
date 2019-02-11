@@ -163,4 +163,6 @@ void afterNodeAccess(Node<K,V> p) { }
 
 ## 好文链接
 
-[讲述了hashcode方法的优点，缺点](https://ericlippert.com/2011/02/28/guidelines-and-rules-for-gethashcode/)
+- [讲述了hashcode方法的优点，缺点](https://ericlippert.com/2011/02/28/guidelines-and-rules-for-gethashcode/)
+- [hashmap](https://liujiacai.net/blog/2015/09/03/java-hashmap/)
+- [hashset vs hashmap](http://www.cnblogs.com/ywl925/p/3865269.html)
