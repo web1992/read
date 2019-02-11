@@ -1,7 +1,5 @@
 # map
 
-- [map (oracle doc)](https://docs.oracle.com/javase/tutorial/collections/implementations/map.html)
-
 - [map](#map)
   - [概要](#%E6%A6%82%E8%A6%81)
   - [问题思考](#%E9%97%AE%E9%A2%98%E6%80%9D%E8%80%83)
@@ -20,8 +18,8 @@
 
 Map 的集合实现可以分三类：
 
-1. 普通的实现 `HashMap` `TreeMap` `LinkedHashMap`
-2. 特殊实现 `EnumMap` `WeakHashMap` `IdentityHashMap`
+1. 普通的实现 `HashMap`,`TreeMap`,`LinkedHashMap`
+2. 特殊实现 `EnumMap`,`WeakHashMap`,`IdentityHashMap`
 3. `ConcurrentHashMap` 并发实现
 
 `TreeMap` 可以保证放入`Map`的元素是有序的（key 自然顺序）,`HashMap`不保证顺序，但是性能比`TreeMap`好。
@@ -83,7 +81,7 @@ HashMap的源码遍历实现:
     k7
 ```
 
-所以`HashMap`是无序的。
+所以`HashMap`是无序的（插入的顺序是k1->k7,但是循环遍历的结果，则不是）
 
 ## LinkedHashMap
 
@@ -95,7 +93,7 @@ HashMap的源码遍历实现:
 
 ### 源码分析
 
-`LinkedHashMap`没有重写`HashMap`的put方法，而是重写了`newTreeNode`方法
+`LinkedHashMap` 没有重写 `HashMap` 的 put 方法，而是重写了 `newTreeNode` 方法
 
 ```java
    TreeNode<K,V> newTreeNode(int hash, K key, V value, Node<K,V> next) {
@@ -139,21 +137,52 @@ HashMap的源码遍历实现:
 ### 访问顺序的实现
 
 ```java
-// 构造一个LinkedHashMap,实现访问顺序
+// 构造一个 LinkedHashMap,实现访问顺序
+// jdk 的默认实现是在每次访问一个元素之后，这个元素，会被移动到最后
+// 你也可以重写 afterNodeAccess 方法实现自定义的规则
 Map<String, String> map = new LinkedHashMap<>(2,0.75f,true);
 
-// LinkedHashMap 实现了HashMap的afterNodeAccess方法
+// LinkedHashMap 实现了HashMap 的 afterNodeAccess 方法
 // 如果 accessOrder = true,在每次访问元素的时候，都会调用此方法
-// 把这个元素放在Entry链接的最后
-// jdk 1.8源码
-void afterNodeAccess(Node<K,V> p) { }
+// 把这个元素放在 Entry 链接的最后
+// jdk 1.8 源码
+void afterNodeAccess(Node<K,V> e) { // move node to last
+    LinkedHashMap.Entry<K,V> last;
+    // 如果 accessOrder = true & tail!=e(存在二个以上的元素)
+    if (accessOrder && (last = tail) != e) {
+        // p = e
+        // b = e 之前的元素
+        // a = e 之后的元素
+        LinkedHashMap.Entry<K,V> p =
+            (LinkedHashMap.Entry<K,V>)e, b = p.before, a = p.after;
+        // 把当前元素的后续元素指向 null
+        p.after = null;
+        // 如果 e 之前的元素不存在，那把 a 当做 head,(因为 e 要变成 tail)
+        if (b == null)
+            head = a;
+        else
+            b.after = a;// 否则 a 就向前移动，成为 e 之前元素 b 的 tail
+        if (a != null)// 如果 e 的尾巴 a 不为空，让 a 的前一个元素指向 b
+            a.before = b;
+        else
+            last = b;// last 指向b(但是这里b可能为空，因此后续会进行判断)
+        if (last == null)// 如果b(last)为空，那么e就是head
+            head = p;
+        else {
+            p.before = last;// 如果tail不为空，e(p)要移动到最后(在last之后)
+            last.after = p;// 把p放在链表最后
+        }
+        tail = p;// 更新tail
+        ++modCount;
+    }
+}
 ```
 
 ## TreeMap
 
-1. 可以实现`Comparator`接口，当成参数传给`TreeMap`,`TreeMap`会使用`Comparator`的`compare`方法进行比较，实现排序
-2. 如果没有使用`Comparator`,`TreeMap`会使用`key`的对应的`Comparable`的`compareTo`方法进行比较(此时key不能为null)
-3. `TreeMap` 重写了`Map`的`put`方法,使用`红黑二叉树(From CLR)`算法保证顺序（每次put元素之后，都会遍历整个树，保证顺序）
+1. 可以实现 `Comparator` 接口，当成参数传给 `TreeMap`,`TreeMap` 会使用`Comparator` 的 `compare` 方法进行比较，实现排序
+2. 如果没有使用 `Comparator`,`TreeMap` 会使用 `key` 的对应的 `Comparable` 的`compareTo` 方法进行比较(此时key不能为null)
+3. `TreeMap` 重写了 `Map` 的 `put` 方法,使用`红黑二叉树(From CLR)`算法保证顺序（每次put元素之后，都会遍历整个树，保证顺序）
 
 具体的算法实现可以参考 [TreeMap的算法实现](https://liujiacai.net/blog/2015/09/04/java-treemap/)
 
@@ -166,3 +195,4 @@ void afterNodeAccess(Node<K,V> p) { }
 - [讲述了hashcode方法的优点，缺点](https://ericlippert.com/2011/02/28/guidelines-and-rules-for-gethashcode/)
 - [hashmap](https://liujiacai.net/blog/2015/09/03/java-hashmap/)
 - [hashset vs hashmap](http://www.cnblogs.com/ywl925/p/3865269.html)
+- [map (oracle doc)](https://docs.oracle.com/javase/tutorial/collections/implementations/map.html)
