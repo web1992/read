@@ -6,12 +6,16 @@
 - [ThreadPoolExecutor](#threadpoolexecutor)
   - [类图](#%E7%B1%BB%E5%9B%BE)
   - [设计目的](#%E8%AE%BE%E8%AE%A1%E7%9B%AE%E7%9A%84)
-  - [Core and maximum pool sizes](#core-and-maximum-pool-sizes)
-  - [On-demand construction](#on-demand-construction)
-  - [Creating new threads](#creating-new-threads)
-  - [Keep-alive times](#keep-alive-times)
-  - [Queuing](#queuing)
-  - [Rejected tasks](#rejected-tasks)
+  - [构造参数](#%E6%9E%84%E9%80%A0%E5%8F%82%E6%95%B0)
+    - [Core and maximum pool sizes](#core-and-maximum-pool-sizes)
+    - [On-demand construction](#on-demand-construction)
+    - [Creating new threads](#creating-new-threads)
+    - [Keep-alive times](#keep-alive-times)
+    - [Queuing](#queuing)
+      - [SynchronousQueue](#synchronousqueue)
+      - [LinkedBlockingQueue](#linkedblockingqueue)
+      - [ArrayBlockingQueue](#arrayblockingqueue)
+    - [Rejected tasks](#rejected-tasks)
   - [Hook methods](#hook-methods)
   - [Queue maintenance](#queue-maintenance)
   - [Finalization](#finalization)
@@ -28,33 +32,75 @@
 - 维护线程资源
 - 统计信息
 
-## Core and maximum pool sizes
+## 构造参数
+
+### Core and maximum pool sizes
 
 线程池大小策略
 
-- 当前线程数 < `corePoolSize` # 创建新的线程
-- `corePoolSize`  < 当前线程数 < `maximumPoolSize` & queue.isFll # 创建新的线程
-- `corePoolSize` = `maximumPoolSize` #线程固定大小
+| 线程数                                                         | 策略         |
+| -------------------------------------------------------------- | ------------ |
+| 当前线程数 < `corePoolSize`                                    | 创建新的线程 |
+| `corePoolSize`  < 当前线程数 < `maximumPoolSize` & queue.isFll | 创建新的线程 |
+| `corePoolSize` = `maximumPoolSize`                             | 线程固定大小 |
 
-## On-demand construction
+### On-demand construction
 
 默认情况下，只有当任务提交到了，才会创建线程，当然可以改变这个规则。
 
-## Creating new threads
+### Creating new threads
 
-thread 构造策略
-使用`ThreadFactory`来指定线程的Group,名称，优先级等其他设置
+thread 构造策略,使用`ThreadFactory`来指定线程的Group,名称，优先级等其他设置
 
-## Keep-alive times
+### Keep-alive times
 
-线程存活策略
-如果一个线程在`Keep-alive times`内没有被使用，则被会被销毁
+线程存活策略,如果一个线程在`Keep-alive times`内没有被使用，则被会被销毁
 
-## Queuing
+### Queuing
 
 队列策略
 
-## Rejected tasks
+| case                      | action                                                                                                                                                                                     |
+| ------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| pool size < corePoolSize  | adding a new thread       创建新的线程                                                                                                                                                     |
+| pool size >= corePoolSize | queuing a request    进入队列                                                                                                                                                              |
+| queue is full             | If a request cannot be queued, a new thread is created unless this would exceed maximumPoolSize, in which case, the task will be rejected. There are three general strategies for queuing: |
+
+> strategies for queuing
+
+| strategy         | Queue               |
+| ---------------- | ------------------- |
+| Direct handoffs  | SynchronousQueue    |
+| Unbounded queues | LinkedBlockingQueue |
+| Bounded queues   | ArrayBlockingQueue  |
+
+#### SynchronousQueue
+
+Direct handoffs. A good default choice for a work queue is a `SynchronousQueue` that hands off tasks to threads without otherwise holding them. Here, an attempt to queue a task will fail if no threads are immediately available to run it, so a new thread will be constructed. This policy avoids lockups when handling sets of requests that might have internal dependencies. Direct handoffs generally require unbounded maximumPoolSizes to avoid rejection of new submitted tasks. This in turn admits the possibility of unbounded thread growth when commands continue to arrive on average faster than they can be processed.
+
+`SynchronousQueue`同步的队列
+
+#### LinkedBlockingQueue
+
+Unbounded queues. Using an unbounded queue (for example a `LinkedBlockingQueue` without a predefined capacity) will cause new tasks to wait in the queue when all corePoolSize threads are busy. Thus, no more than corePoolSize threads will ever be created. (And the value of the maximumPoolSize therefore doesn't have any effect.) This may be appropriate when each task is completely independent of others, so tasks cannot affect each others execution; for example, in a web page server. While this style of queuing can be useful in smoothing out transient bursts of requests, it admits the possibility of unbounded work queue growth when commands continue to arrive on average faster than they can be processed.
+
+无边界的队列，同时也是有序的队列，（适应任务之间有依赖关系的场景）但是如果消费的速度小于生成的速度，会导致队列无限增加（最终可导致服务不可用）
+
+#### ArrayBlockingQueue
+
+Bounded queues. A bounded queue (for example, an `ArrayBlockingQueue`) helps prevent resource exhaustion when used with finite maximumPoolSizes, but can be more difficult to tune and control. Queue sizes and maximum pool sizes may be traded off for each other: Using large queues and small pools minimizes CPU usage, OS resources, and context-switching overhead, but can lead to artificially low throughput. If tasks frequently block (for example if they are I/O bound), a system may be able to schedule time for more threads than you otherwise allow. Use of small queues generally requires larger pool sizes, which keeps CPUs busier but may encounter unacceptable scheduling overhead, which also decreases throughput.
+
+有边界的队列，队列的大小和线程池的大小会相互影响，如果使用大队列&小线程池组合，可以减少 CPU,OS 资源的使用，线程切换，但是也可能导致低的吞吐量，如：任务经常阻塞(CPU一直在睡觉，CPU 得不到充分的利用)。
+如果使用小队列&大线程池组合，那么 CPU 会频繁的进行线程切换(CPU 都在进行线程切换了，没时间做其他事情了)，也会导致吞吐量的下降。
+
+### Rejected tasks
+
+| Policy                                 | Action                                                                 |
+| -------------------------------------- | ---------------------------------------------------------------------- |
+| ThreadPoolExecutor.AbortPolicy         | the handler throws a runtime RejectedExecutionException upon rejection |
+| ThreadPoolExecutor.CallerRunsPolicy    | the thread that invokes execute itself runs the task                   |
+| ThreadPoolExecutor.DiscardPolicy       | a task that cannot be executed is simply dropped                       |
+| ThreadPoolExecutor.DiscardOldestPolicy | the task at the head of the work queue is dropped                      |
 
 异常策略，当Queuing有边界时(如果queue是没有边界的则不会触发)，超过queue大小的任务，如何处理
 
@@ -91,16 +137,24 @@ public static void main(String[] args) throws InterruptedException {
 
 钩子方法，可以在任务执行之前（之后），之后做一些操作，如：统计信息
 
+- beforeExecute
+- afterExecute
+
 ## Queue maintenance
 
 Method `getQueue()` 为了调试设计,其他忽用
 
 ## Finalization
 
+如果大量的线程，长时间的不使用，需要进行回收，否则就会浪费不必要的资源。或者忘记调用 `shutdown()` 方法进行关闭时，也会造成资源的浪费.
+
 ## Executors
 
 `Executors`中一些常用方法的说明，如果理解这些方法的`作用`和`不同点`，可以避免使用中的坑
-如`newFixedThreadPool`和`newSingleThreadExecutor`都使用`LinkedBlockingQueue`来存储多余的任务，如果线程处理的速度小于任务创建的速度，那么无法处理的任务都会放入`Queue`中,随着队列的无限增大会导致内存资源耗尽
+
+如`newFixedThreadPool`和`newSingleThreadExecutor`都使用`LinkedBlockingQueue`来存储多余的任务
+
+如果线程处理的速度小于任务创建的速度，那么无法处理的任务都会放入`Queue`中,随着队列的无限增大会导致内存资源耗尽
 
 下面`Executors`提供的几个方法，底层的Queue都是没有边界的，使用时候请注意内存泄露
 
