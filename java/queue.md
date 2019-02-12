@@ -17,6 +17,8 @@
 
 ## BlockingQueue Method list
 
+下面的方法，有些会阻塞，有些会抛出异常，在使用的时候，需要理解每个方法产生的影响，避免坑。
+
 | Action  | Throws exception | Special value | Blocks         | Times out            |
 | ------- | ---------------- | ------------- | -------------- | -------------------- |
 | Insert  | add(e)           | offer(e)      | put(e)         | offer(e, time, unit) |
