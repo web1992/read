@@ -16,6 +16,7 @@
       - [LinkedBlockingQueue](#linkedblockingqueue)
       - [ArrayBlockingQueue](#arrayblockingqueue)
     - [Rejected tasks](#rejected-tasks)
+    - [Rejected demo](#rejected-demo)
   - [Hook methods](#hook-methods)
   - [Queue maintenance](#queue-maintenance)
   - [Finalization](#finalization)
@@ -60,15 +61,15 @@ thread 构造策略,使用`ThreadFactory`来指定线程的Group,名称，优先
 
 队列策略
 
-| case                      | action                                                                                                                                                                                     |
-| ------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| pool size < corePoolSize  | adding a new thread       创建新的线程                                                                                                                                                     |
-| pool size >= corePoolSize | queuing a request    进入队列                                                                                                                                                              |
-| queue is full             | If a request cannot be queued, a new thread is created unless this would exceed maximumPoolSize, in which case, the task will be rejected. There are three general strategies for queuing: |
+| case                      | action                                                                                                                                                                                    |
+| ------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| pool size < corePoolSize  | adding a new thread       创建新的线程                                                                                                                                                    |
+| pool size >= corePoolSize | queuing a request    进入队列                                                                                                                                                             |
+| queue is full             | If a request cannot be queued, a new thread is created unless this would exceed maximumPoolSize, in which case, the task will be rejected. There are three general strategies for queuing |
 
 > strategies for queuing
 
-| strategy         | Queue               |
+| strategy         | queue               |
 | ---------------- | ------------------- |
 | Direct handoffs  | SynchronousQueue    |
 | Unbounded queues | LinkedBlockingQueue |
@@ -76,26 +77,26 @@ thread 构造策略,使用`ThreadFactory`来指定线程的Group,名称，优先
 
 #### SynchronousQueue
 
-Direct handoffs. A good default choice for a work queue is a `SynchronousQueue` that hands off tasks to threads without otherwise holding them. Here, an attempt to queue a task will fail if no threads are immediately available to run it, so a new thread will be constructed. This policy avoids lockups when handling sets of requests that might have internal dependencies. Direct handoffs generally require unbounded maximumPoolSizes to avoid rejection of new submitted tasks. This in turn admits the possibility of unbounded thread growth when commands continue to arrive on average faster than they can be processed.
+**Direct handoffs**. A good default choice for a work queue is a `SynchronousQueue` that hands off tasks to threads without otherwise holding them. Here, an attempt to queue a task will fail if no threads are immediately available to run it, so a new thread will be constructed. This policy avoids lockups when handling sets of requests that might have internal dependencies. Direct handoffs generally require unbounded `maximumPoolSizes` to avoid rejection of new submitted tasks. This in turn admits the possibility of unbounded thread growth when commands continue to arrive on average faster than they can be processed.
 
 `SynchronousQueue`同步的队列
 
 #### LinkedBlockingQueue
 
-Unbounded queues. Using an unbounded queue (for example a `LinkedBlockingQueue` without a predefined capacity) will cause new tasks to wait in the queue when all corePoolSize threads are busy. Thus, no more than corePoolSize threads will ever be created. (And the value of the maximumPoolSize therefore doesn't have any effect.) This may be appropriate when each task is completely independent of others, so tasks cannot affect each others execution; for example, in a web page server. While this style of queuing can be useful in smoothing out transient bursts of requests, it admits the possibility of unbounded work queue growth when commands continue to arrive on average faster than they can be processed.
+**Unbounded queues**. Using an unbounded queue (for example a `LinkedBlockingQueue` without a predefined capacity) will cause new tasks to wait in the queue when all corePoolSize threads are busy. Thus, no more than corePoolSize threads will ever be created. (And the value of the `maximumPoolSize` therefore doesn't have any effect.) This may be appropriate when each task is completely independent of others, so tasks cannot affect each others execution; for example, in a web page server. While this style of queuing can be useful in smoothing out transient bursts of requests, it admits the possibility of unbounded work queue growth when commands continue to arrive on average faster than they can be processed.
 
 无边界的队列，同时也是有序的队列，（适应任务之间有依赖关系的场景）但是如果消费的速度小于生成的速度，会导致队列无限增加（最终可导致服务不可用）
 
 #### ArrayBlockingQueue
 
-Bounded queues. A bounded queue (for example, an `ArrayBlockingQueue`) helps prevent resource exhaustion when used with finite maximumPoolSizes, but can be more difficult to tune and control. Queue sizes and maximum pool sizes may be traded off for each other: Using large queues and small pools minimizes CPU usage, OS resources, and context-switching overhead, but can lead to artificially low throughput. If tasks frequently block (for example if they are I/O bound), a system may be able to schedule time for more threads than you otherwise allow. Use of small queues generally requires larger pool sizes, which keeps CPUs busier but may encounter unacceptable scheduling overhead, which also decreases throughput.
+**Bounded queues**. A bounded queue (for example, an `ArrayBlockingQueue`) helps prevent resource exhaustion when used with finite `maximumPoolSizes`, but can be more difficult to tune and control. Queue sizes and maximum pool sizes may be traded off for each other: Using large queues and small pools minimizes CPU usage, OS resources, and context-switching overhead, but can lead to artificially low throughput. If tasks frequently block (for example if they are I/O bound), a system may be able to schedule time for more threads than you otherwise allow. Use of small queues generally requires larger pool sizes, which keeps CPUs busier but may encounter unacceptable scheduling overhead, which also decreases throughput.
 
 有边界的队列，队列的大小和线程池的大小会相互影响，如果使用大队列&小线程池组合，可以减少 CPU,OS 资源的使用，线程切换，但是也可能导致低的吞吐量，如：任务经常阻塞(CPU一直在睡觉，CPU 得不到充分的利用)。
 如果使用小队列&大线程池组合，那么 CPU 会频繁的进行线程切换(CPU 都在进行线程切换了，没时间做其他事情了)，也会导致吞吐量的下降。
 
 ### Rejected tasks
 
-| Policy                                 | Action                                                                 |
+| policy                                 | action                                                                 |
 | -------------------------------------- | ---------------------------------------------------------------------- |
 | ThreadPoolExecutor.AbortPolicy         | the handler throws a runtime RejectedExecutionException upon rejection |
 | ThreadPoolExecutor.CallerRunsPolicy    | the thread that invokes execute itself runs the task                   |
@@ -104,7 +105,7 @@ Bounded queues. A bounded queue (for example, an `ArrayBlockingQueue`) helps pre
 
 异常策略，当Queuing有边界时(如果queue是没有边界的则不会触发)，超过queue大小的任务，如何处理
 
-demo
+### Rejected demo
 
 ```java
 public static void main(String[] args) throws InterruptedException {
@@ -199,9 +200,9 @@ public static ExecutorService newCachedThreadPool() {
 
 可以看到 上面的二个方法都使用`LinkedBlockingQueue`作用queue，那么为什么不使用`ArrayBlockingQueue`呢？
 
-如果知道了`ArrayList`与`LinkedList` 的区别，那么就很容易知道，基于链表实现的集合，插入和删除元素的速度更快
-而`LinkedList`只需要改变链接元素之间的指向，速度当然快,而`ThreadPoolExecutor`中的queue就是用了存储任务的，
-必定存在频繁的`插入`和`删除`操作，因此使用`LinkedBlockingQueue`
+使用两个锁来控制线程访问，这样队列可以同时进行put和take的操作，因此吞吐量相对ArrayBlockingQueue就高
+
+可参考 [queue](queue.md#LinkedBlockingQueue)
 
 ## 参考
 

@@ -1,20 +1,27 @@
 # Queue
 
-## 参考文档
+- [Queue](#queue)
+  - [queue-的实现类](#queue-%E7%9A%84%E5%AE%9E%E7%8E%B0%E7%B1%BB)
+  - [BlockingQueue Method list](#blockingqueue-method-list)
+  - [ArrayBlockingQueue](#arrayblockingqueue)
+    - [put](#put)
+    - [take](#take)
+  - [LinkedBlockingQueue](#linkedblockingqueue)
+  - [help GC](#help-gc)
+  - [SynchronousQueue](#synchronousqueue)
+  - [参考文档](#%E5%8F%82%E8%80%83%E6%96%87%E6%A1%A3)
 
-- [Queue (from oracle docs)](https://docs.oracle.com/javase/tutorial/collections/implementations/queue.html)
-
-## queue的实现类
+## queue-的实现类
 
 ![Queue](images/queue.png)
 
 ## BlockingQueue Method list
 
-||Throws exception|Special value|Blocks|Times out
-------|----------|-------------|------|----------
-Insert|add(e)|offer(e)|put(e)|offer(e, time, unit)
-Remove|remove()|poll()|take()|poll(time, unit)
-Examine(检查)|element()|peek()|not applicable|not applicable
+| Throws exception | Special value | Blocks   | Times out      |
+| ---------------- | ------------- | -------- | -------------- | -------------------- |
+| Insert           | add(e)        | offer(e) | put(e)         | offer(e, time, unit) |
+| Remove           | remove()      | poll()   | take()         | poll(time, unit)     |
+| Examine          | element()     | peek()   | not applicable | not applicable       |
 
 ## ArrayBlockingQueue
 
@@ -26,10 +33,10 @@ Examine(检查)|element()|peek()|not applicable|not applicable
 - 添加元素总是在队列末部
 - 删除元素总是在队列头部
 - 基于数组,大小在初始化时固定不变
-- 如果queue满了，`put`方法继续添加元素的时候，就会阻塞
-- 如果qu2ue是空的，`take`方法会阻塞一直到有数据插入
+- 如果 queue 满了，`put`方法继续添加元素的时候，就会阻塞
+- 如果 queue 是空的，`take`方法会阻塞一直到有数据插入
 
-put 方法
+### put
 
 ```java
     public void put(E e) throws InterruptedException {
@@ -46,7 +53,7 @@ put 方法
     }
 ```
 
-take 方法
+### take
 
 ```java
     public E take() throws InterruptedException {
@@ -211,7 +218,7 @@ head = Node{item=null, next=null}
 h.next = h; // help GC 参考下面的文档
 ```
 
--[help GC(stackoverflow)](https://stackoverflow.com/questions/10106191/openjdks-linkedblockingqueue-implementation-node-class-and-gc)
+- [help GC(stackoverflow)](https://stackoverflow.com/questions/10106191/openjdks-linkedblockingqueue-implementation-node-class-and-gc)
 
 总结：
 
@@ -219,3 +226,7 @@ h.next = h; // help GC 参考下面的文档
 `last`&`head`在初始化的是都是指向同一个对象，因此修改了`last`同时也会影响`head`的中的对象
 
 ## SynchronousQueue
+
+## 参考文档
+
+- [Queue (from oracle docs)](https://docs.oracle.com/javase/tutorial/collections/implementations/queue.html)
