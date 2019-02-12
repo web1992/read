@@ -4,7 +4,7 @@
 
 `Filter` 可以分为两类，`cunsumer Filter` 和 `provider Filter`
 
-`cunsumer Filter` 只会被服务调用者加载，`provider Filter` 只会被服务提供者加载
+`consumer Filter` 只会被服务调用者加载，`provider Filter` 只会被服务提供者加载
 
 可通过 `@Activate(group = "consumer")` or `@Activate(group = "provider")` `注解`来进行区分
 
@@ -185,7 +185,7 @@ demoFilter=cn.web1992.dubbo.demo.filter.DemoFilter
 
 > demo 源码:
 
-- [DemoFilter.java java代码](https://github.com/web1992/dubbos/tree/master/dubbo-demo-xml/dubbo-demo-xml-consumer/src/main/java/cn/web1992/dubbo/demo/filter)
+- [DemoFilter.java java 代码](https://github.com/web1992/dubbos/tree/master/dubbo-demo-xml/dubbo-demo-xml-consumer/src/main/java/cn/web1992/dubbo/demo/filter)
 - [org.apache.dubbo.rpc.Filter 配置](https://github.com/web1992/dubbos/tree/master/dubbo-demo-xml/dubbo-demo-xml-consumer/src/main/resources/META-INF/services)
 
 > 技巧：
