@@ -37,8 +37,6 @@
 
 ## ArrayBlockingQueue
 
-![ArrayBlockingQueue](./images/ArrayBlockingQueue.png)
-
 - FIFO (first-in-first-out)先进先出
 - 底层实现是数组
 - 线程安全，只使用一个可重入锁来来控制线程访问
