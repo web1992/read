@@ -1,6 +1,6 @@
-# thread
+# Thread
 
-- [thread](#thread)
+- [Thread](#thread)
   - [ThreadFactory](#threadfactory)
   - [ThreadGroup](#threadgroup)
   - [start](#start)
@@ -25,8 +25,8 @@
 ## start
 
 ```java
-        Thread t = new Thread(() -> System.out.println(Thread.currentThread().getName()+" start ..."));
-        t.start();// 启动这个新的线程
+    Thread t = new Thread(() -> System.out.println(Thread.currentThread().getName()+" start ..."));
+    t.start();// 启动这个新的线程
 ```
 
 `start` 会调用一个`start0`方法，让 jvm 启用一个线程
