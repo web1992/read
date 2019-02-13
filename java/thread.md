@@ -12,9 +12,11 @@
   - [InterruptedException](#interruptedexception)
   - [stop](#stop)
 
+对于 `Thread` 的理解，需要明白 `Thread` 中的所有常用的方法的含义，使用场景
+
 ## ThreadFactory
 
-可以方便的定义thread name，daemon status，priority, thread Group
+可以方便的定义 thread name，daemon status，priority, thread Group
 
 一个默认的实现`java.util.concurrent.Executors.DefaultThreadFactory`
 
@@ -24,10 +26,10 @@
 
 ```java
         Thread t = new Thread(() -> System.out.println(Thread.currentThread().getName()+" start ..."));
-        t.start();// 启动线程
+        t.start();// 启动这个新的线程
 ```
 
-`start` 会调用一个`start0`方法，让jvm启用一个线程
+`start` 会调用一个`start0`方法，让 jvm 启用一个线程
 
 Causes this thread to begin execution; the Java Virtual Machine
 calls the `run` method of this thread.
@@ -35,6 +37,9 @@ calls the `run` method of this thread.
 ## run
 
 ```java
+    // 这个 run 方法其实是在我们调用 Thread#start 方法之后，由 JVM 使用新的线程调用的
+    // JVM 保证在线程创建之后，会调用 Thread#run 方法
+    // 如果我们自己在代码中直接调用 Thread#run 方法，run 方法也会执行，但不是在新的线程中执行的
     @Override
     public void run() {
         if (target != null) {
@@ -52,16 +57,16 @@ calls the `run` method of this thread.
 
 使用`volatile`标记+`interrupt`
 
-- volatile变量,如果线程检查到的状态是关闭的，那么次变量不接受新的任务即可
-- volatile变量,保证可见性（一个线程修改变量的结果，对其他线程可见）
-- interrupt 使阻塞（blocked）状态的线程，出现`InterruptedException`异常，进行终止
+- volatile 变量,如果线程检查到的状态是关闭的，那么次变量不接受新的任务即可
+- volatile 变量,保证可见性（一个线程修改变量的结果，对其他线程可见）
+- interrupt 使阻塞（blocked）状态的线程，出现`InterruptedException`异常，终止线程
 
 ## join
 
 > Waits for this thread to die.
 
 - 一个线程等待另一个线程完成后，该线程继续执行
-- join 实现的是`wait()`+`notifyAll`(`notify`)
+- join 实现的是 `wait()` + `notifyAll`(`notify`)
 
 ```java
     public static void main(String[] args) throws Exception {
@@ -80,7 +85,7 @@ calls the `run` method of this thread.
 
             try {
                 System.out.println("run2 ...");
-                thread1.join();
+                //thread1.join();
                 System.out.println("run2 end ...");
             } catch (Exception e) {
                 e.printStackTrace();
@@ -113,7 +118,7 @@ calls the `run` method of this thread.
 
 - [thread yield](https://www.javamex.com/tutorials/threads/yield.shtml)
 
-线程让出cpu（别用）
+线程让出 cpu（别用）
 
 ## sleep
 
@@ -126,7 +131,9 @@ calls the `run` method of this thread.
 
 ## InterruptedException
 
-`InterruptedException` 是如何产生的demo
+`InterruptedException` 是如何产生的 demo
+
+如果一个线程在`sleep`状态（wait,join,sleep），调用 interrupt 会出现`InterruptedException`异常
 
 ```java
     public static void main(String[] args) throws InterruptedException {
@@ -148,18 +155,15 @@ calls the `run` method of this thread.
     }
 ```
 
-日志
+日志：
 
 ```txt
 [I am main] thread
 [I am Thread-0] thread
 java.lang.InterruptedException: sleep interrupted
     at java.lang.Thread.sleep(Native Method)
-    at com.aldb.payment.remit.T.lambda$main$0(T.java:24)
     at java.lang.Thread.run(Thread.java:748)
 ```
-
-- 1.如果一个线程在`sleep`状态（wait,join,sleep），调用interrupt 会出现`InterruptedException`异常
 
 ## stop
 
