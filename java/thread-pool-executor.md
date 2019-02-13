@@ -3,7 +3,7 @@
 > 目录
 
 - [ThreadPoolExecutor](#threadpoolexecutor)
-  - [类图](#%E7%B1%BB%E5%9B%BE)
+  - [ExecutorService类图](#executorservice%E7%B1%BB%E5%9B%BE)
   - [设计目的](#%E8%AE%BE%E8%AE%A1%E7%9B%AE%E7%9A%84)
   - [构造参数](#%E6%9E%84%E9%80%A0%E5%8F%82%E6%95%B0)
     - [Core and maximum pool sizes](#core-and-maximum-pool-sizes)
@@ -24,13 +24,13 @@
   - [Executors](#executors)
   - [参考](#%E5%8F%82%E8%80%83)
 
-## 类图
+## ExecutorService类图
 
 ![ThreadPoolExecutor](./images/ThreadPoolExecutor.png)
 
 ## 设计目的
 
-- 执行异步任务(主要)
+- (周期性的)执行异步任务(主要)
 - 维护线程资源
 - 统计信息
 
