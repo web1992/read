@@ -11,6 +11,7 @@
   - [sleep](#sleep)
   - [InterruptedException](#interruptedexception)
   - [stop](#stop)
+  - [好文连接](#%E5%A5%BD%E6%96%87%E8%BF%9E%E6%8E%A5)
 
 对于 `Thread` 的理解，需要明白 `Thread` 中的所有常用的方法的含义，使用场景
 
@@ -51,11 +52,10 @@ calls the `run` method of this thread.
 ## interrupt
 
 - [Interrupts](https://docs.oracle.com/javase/tutorial/essential/concurrency/interrupt.html)
-- [Thread stop](http://www.java67.com/2015/07/how-to-stop-thread-in-java-example.html)
 
 我们知道启动一个线程是用`start()`方法，但是如何关闭（安全的）一个线程呢？
 
-使用`volatile`标记+`interrupt`
+使用 `volatile` 标记 + `interrupt`
 
 - volatile 变量,如果线程检查到的状态是关闭的，那么次变量不接受新的任务即可
 - volatile 变量,保证可见性（一个线程修改变量的结果，对其他线程可见）
@@ -125,8 +125,8 @@ calls the `run` method of this thread.
 ```java
     // use TimeUnit
     TimeUnit.MILLISECONDS.sleep(200);
-    // user Thread
-    Thread..sleep(200);
+    // use Thread
+    Thread.sleep(200);
 ```
 
 ## InterruptedException
@@ -167,5 +167,12 @@ java.lang.InterruptedException: sleep interrupted
 
 ## stop
 
-- [threads](http://winterbe.com/posts/2015/04/07/java8-concurrency-tutorial-thread-executor-examples/)
-- [stop thread](http://forward.com.au/javaProgramming/HowToStopAThread.html)
+如何正确的终止一个线程，也是一门艺术 😂
+
+- [Thread stop](http://forward.com.au/javaProgramming/HowToStopAThread.html)
+- [Thread stop](http://www.java67.com/2015/07/how-to-stop-thread-in-java-example.html)
+- [threadPrimitiveDeprecation](https://docs.oracle.com/javase/1.5.0/docs/guide/misc/threadPrimitiveDeprecation.html)
+
+## 好文连接
+
+- [Java 8 threads](http://winterbe.com/posts/2015/04/07/java8-concurrency-tutorial-thread-executor-examples/)
