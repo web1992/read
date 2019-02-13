@@ -14,7 +14,6 @@
     - [LinkedBlockingQueue dequeue](#linkedblockingqueue-dequeue)
   - [demo](#demo)
   - [ArrayBlockingQueue vs LinkedBlockingQueue](#arrayblockingqueue-vs-linkedblockingqueue)
-  - [help GC](#help-gc)
   - [SynchronousQueue](#synchronousqueue)
   - [参考文档](#%E5%8F%82%E8%80%83%E6%96%87%E6%A1%A3)
 
@@ -258,22 +257,11 @@ last = Node{item=null, next=null}
 head = Node{item=null, next=null}
 ```
 
-总结：
-
-`LinkedBlockingQueue`中使用`last`&`head`二个变量实现了链表,`last`用于插入新的节点,`head`用于维护链表&实现`FIFO`
-`last`&`head`在初始化的是都是指向同一个对象，因此修改了`last`同时也会影响`head`的中的对象
-
 ## ArrayBlockingQueue vs LinkedBlockingQueue
 
 1. ArrayBlockingQueue 初始化必须声明大小, LinkedBlockingQueue 则不用，默认容量是 Integer.MAX_VALUE
 2. ArrayBlockingQueue 基于数组, LinkedBlockingQueue 的数据结构是链表
 3. ArrayBlockingQueue 中使用一个可重入锁进行并发控制, LinkedBlockingQueue 中使用二个可以重入锁，实现put,take的并发控制
-
-## help GC
-
-```java
-h.next = h; // help GC 参考下面的文档
-```
 
 ## SynchronousQueue
 
