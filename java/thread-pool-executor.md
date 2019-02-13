@@ -20,6 +20,8 @@
   - [Hook methods](#hook-methods)
   - [Queue maintenance](#queue-maintenance)
   - [Finalization](#finalization)
+  - [Method List](#method-list)
+    - [runWorker](#runworker)
   - [Executors](#executors)
   - [参考](#%E5%8F%82%E8%80%83)
 
@@ -149,20 +151,37 @@ Method `getQueue()` 为了调试设计,其他忽用
 
 如果大量的线程，长时间的不使用，需要进行回收，否则就会浪费不必要的资源。或者忘记调用 `shutdown()` 方法进行关闭时，也会造成资源的浪费.
 
+## Method List
+
+### runWorker
+
+我们知道如果 `ThreadPoolExecutor` 不执行 `shutdown` 方法，JVM 就不会退出，原因就在与 `runWorker` 中的 会区调用 `getTask` 方法，而 `getTask` 方法会调用 `BlockingQueue` 的 `take` 方法，（调用 `take` 方法时，如果队列中没有元素，那么该线程会一种阻塞，直到有数据放入队列），这就是 `ThreadPoolExecutor` 启动的线程池，不会主动关闭
+
+`Worker` 类实现了 `Runnable` 接口，因此可以提交给线程进行执行，当执行 Thread#start 方法，线程启动之后，就执行 run 方法，从而执行 runWorker 方法
+
+Worker 的 run 方法
+
+```java
+public void run() {
+    runWorker(this);
+}
+```
+
+而 `Thread#start` 是在 `addWorker` 方法中执行的
+
 ## Executors
 
-`Executors`中一些常用方法的说明，如果理解这些方法的`作用`和`不同点`，可以避免使用中的坑
+`Executors` 中一些常用方法的说明，如果理解这些方法的`作用`和`不同点`，可以避免使用中的坑
 
-如`newFixedThreadPool`和`newSingleThreadExecutor`都使用`LinkedBlockingQueue`来存储多余的任务
+如 `newFixedThreadPool` 和 `newSingleThreadExecutor`都使用  `LinkedBlockingQueue` 来存储多余的任务
 
-如果线程处理的速度小于任务创建的速度，那么无法处理的任务都会放入`Queue`中,随着队列的无限增大会导致内存资源耗尽
+如果线程处理的速度小于任务创建的速度，那么无法处理的任务都会放入 `Queue` 中,随着队列的无限增大会导致内存资源耗尽
 
-下面`Executors`提供的几个方法，底层的Queue都是没有边界的，使用时候请注意内存泄露
+下面 `Executors` 提供的几个方法，底层的Queue都是没有边界的，使用时候请注意内存泄露
 
-`ThreadPoolExecutor`使用`BlockingQueue`来存储多余的任务，那为什么不使用`ArrayList`,`LinkedList`呢？
+`ThreadPoolExecutor` 使用 `BlockingQueue` 来存储多余的任务，那为什么不使用`ArrayList`,`LinkedList`呢？
 
-1. `ArrayList`,`LinkedList`不是线程安全，如过使用这些来存储任务，会增加API的设计难度，而`BlockingQueue`天生为多线程而生
-2. 暂时没想到😂
+> `ArrayList`,`LinkedList` 不是线程安全，如过使用这些来存储任务，会增加API的设计难度，而 `BlockingQueue` 天生为多线程而生
 
 - 创建固定大小的线程池
 
