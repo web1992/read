@@ -1,7 +1,7 @@
 # Queue
 
 - [Queue](#queue)
-  - [queue-的实现类](#queue-%E7%9A%84%E5%AE%9E%E7%8E%B0%E7%B1%BB)
+  - [queue-常见实现类](#queue-%E5%B8%B8%E8%A7%81%E5%AE%9E%E7%8E%B0%E7%B1%BB)
   - [BlockingQueue Method list](#blockingqueue-method-list)
   - [ArrayBlockingQueue](#arrayblockingqueue)
     - [put](#put)
@@ -17,9 +17,13 @@
   - [SynchronousQueue](#synchronousqueue)
   - [参考文档](#%E5%8F%82%E8%80%83%E6%96%87%E6%A1%A3)
 
-## queue-的实现类
+## queue-常见实现类
 
-![Queue](images/queue.png)
+| queue               | uml                                                      |
+| ------------------- | -------------------------------------------------------- |
+| SynchronousQueue    | ![SynchronousQueue](./images/SynchronousQueue.png)       |
+| LinkedBlockingQueue | ![LinkedBlockingQueue](./images/LinkedBlockingQueue.png) |
+| ArrayBlockingQueue  | ![ArrayBlockingQueue](./images/ArrayBlockingQueue02.png) |
 
 ## BlockingQueue Method list
 
