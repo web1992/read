@@ -1,7 +1,6 @@
 # ThreadPoolExecutor
 
-- [draw.io file](./draw.io/ThreadPoolExecutor.xml)
-- [from oracle](https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/ThreadPoolExecutor.html)
+> 目录
 
 - [ThreadPoolExecutor](#threadpoolexecutor)
   - [类图](#%E7%B1%BB%E5%9B%BE)
@@ -226,3 +225,5 @@ public static ExecutorService newCachedThreadPool() {
 ## 参考
 
 - [ArrayList vs LinkedList](https://github.com/web1992/read/blob/master/java/list.md)
+- [from oracle](https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/ThreadPoolExecutor.html)
+- [draw.io file](./draw.io/ThreadPoolExecutor.xml)
