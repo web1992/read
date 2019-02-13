@@ -122,7 +122,7 @@
 - 底层使用链表而非数组存储元素
 - 添加元素总是在队列末部
 - 删除元素总是在队列头部
-- 使用两个锁来控制线程访问，这样队列可以同时进行put和take的操作，因此吞吐量相对ArrayBlockingQueue就高
+- 使用两个锁来控制线程访问，这样队列可以同时进行put和take的操作，因此吞吐量相对 ArrayBlockingQueue 高
 - 可以不指定队列大小，此时默认大小为Integer.MAX_VALUE (无边际的队列，会导致内存泄漏)
 
 ### init
@@ -266,6 +266,7 @@ head = Node{item=null, next=null}
 1. ArrayBlockingQueue 初始化必须声明大小, LinkedBlockingQueue 则不用，默认容量是 Integer.MAX_VALUE
 2. ArrayBlockingQueue 基于数组, LinkedBlockingQueue 的数据结构是链表
 3. ArrayBlockingQueue 中使用一个可重入锁进行并发控制, LinkedBlockingQueue 中使用二个可以重入锁，实现put,take的并发控制
+4. LinkedBlockingQueue 中使用last,head 来维护链接，put 操作只改变 last，take 操作只改变 head，因此二种操作，不存在操作共享数据，可以用二个锁进行并发控制
 
 ## SynchronousQueue
 
