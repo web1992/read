@@ -19,6 +19,7 @@
   - [Hook methods](#hook-methods)
   - [Queue maintenance](#queue-maintenance)
   - [Finalization](#finalization)
+  - [runState](#runstate)
   - [Method List](#method-list)
     - [runWorker](#runworker)
   - [Executors](#executors)
@@ -141,7 +142,9 @@ public static void main(String[] args) throws InterruptedException {
 
 - beforeExecute
 - afterExecute
-
+- onShutdown
+- terminated
+  
 ## Queue maintenance
 
 Method `getQueue()` 为了调试设计,其他忽用
@@ -149,6 +152,16 @@ Method `getQueue()` 为了调试设计,其他忽用
 ## Finalization
 
 如果大量的线程，长时间的不使用，需要进行回收，否则就会浪费不必要的资源。或者忘记调用 `shutdown()` 方法进行关闭时，也会造成资源的浪费.
+
+## runState
+
+| state      | desc                                                                                                                           |
+| ---------- | ------------------------------------------------------------------------------------------------------------------------------ |
+| RUNNING    | Accept new tasks and process queued tasks                                                                                      |
+| SHUTDOWN   | Don't accept new tasks, but process queued tasks                                                                               |
+| STOP       | Don't accept new tasks, don't process queued tasks,and interrupt in-progress tasks                                             |
+| TIDYING    | All tasks have terminated, workerCount is zero,the thread transitioning to state TIDYING will run the terminated() hook method |
+| TERMINATED | terminated() has completed                                                                                                     |
 
 ## Method List
 

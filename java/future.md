@@ -7,13 +7,13 @@ A Future represents the result of an asynchronous computation
 
 ![Future](./images/future.png)
 
-## 特点
+## 作用
 
 - 表示一个异步计算
 - 可以取消这个异步计算
 - 可以查询这个异步计算的状态，已经完成或者已经取消
 
-demo
+## demo
 
 ```java
 {
@@ -53,3 +53,5 @@ demo
         }
     }
 ```
+
+## FutureTask
