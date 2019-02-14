@@ -55,11 +55,11 @@
 
 ### Creating new threads
 
-thread 构造策略,使用`ThreadFactory`来指定线程的Group,名称，优先级等其他设置
+thread 构造策略,使用 `ThreadFactory` 来指定线程的 Group,名称，优先级等其他设置
 
 ### Keep-alive times
 
-线程存活策略,如果一个线程在`Keep-alive times`内没有被使用，则被会被销毁
+线程存活策略,如果一个线程在 `Keep-alive times` 内没有被使用，则被会被销毁
 
 ### Queuing
 
@@ -107,7 +107,7 @@ thread 构造策略,使用`ThreadFactory`来指定线程的Group,名称，优先
 | ThreadPoolExecutor.DiscardPolicy       | a task that cannot be executed is simply dropped                       |
 | ThreadPoolExecutor.DiscardOldestPolicy | the task at the head of the work queue is dropped                      |
 
-异常策略，当Queuing有边界时(如果queue是没有边界的则不会触发)，超过queue大小的任务，如何处理
+异常策略，当 Queuing 有边界时(如果 queue 是没有边界的则不会触发)，超过 queue 大小的任务，如何处理
 
 ### Rejected demo
 
@@ -361,7 +361,7 @@ public static ExecutorService newSingleThreadExecutor() {
 - newCachedThreadPool
 
 如果没有可以使用的线程，就创建新的，如果有则复用之前的线程
-如果一个线程在60秒内没有被使用，则被从cache中删除&线程会被终止
+如果一个线程在 60 秒内没有被使用，则被从 cache 中删除&线程会被终止
 
 ```java
 public static ExecutorService newCachedThreadPool() {
@@ -371,9 +371,9 @@ public static ExecutorService newCachedThreadPool() {
 }
 ```
 
-可以看到 上面的二个方法都使用`LinkedBlockingQueue`作用queue，那么为什么不使用`ArrayBlockingQueue`呢？
+可以看到 上面的二个方法都使用`LinkedBlockingQueue`作用 queue,那么为什么不使用`ArrayBlockingQueue`呢？
 
-使用两个锁来控制线程访问，这样队列可以同时进行put和take的操作，因此吞吐量相对ArrayBlockingQueue就高
+使用两个锁来控制线程访问，这样队列可以同时进行 put 和 take 的操作，因此吞吐量相对 ArrayBlockingQueue 就高
 
 可参考 [queue](queue.md#LinkedBlockingQueue)
 
