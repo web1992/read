@@ -371,6 +371,30 @@ public static ExecutorService newCachedThreadPool() {
 }
 ```
 
+`newCachedThreadPool` 创建的线程会在 60 秒之后，进行终止，是因为在构造 `ThreadPoolExecutor` 时
+`corePoolSize = 0` & `keepAliveTime=60`
+
+```java
+// 这里通过代码分析下实现原理
+// newCachedThreadPool 在构造线程池的时候，下面的代码 corePoolSize =0
+// wc 为线程数，只要有线程存在，那么 timed 就为 true
+// keepAliveTime =60 秒，
+// timed=ture 因此会执行 poll 从队列中获取任务，如果超过了60秒，没可执行的任务，
+// 那么就返回 null,同时因为 poll 的阻塞，该线程也等待了60 秒（其实就是线程这60秒只顾睡觉了，什么都没做）
+// 返回 null 之后，在后续的逻辑中，会进线程的终止 具体代码在 processWorkerExit 方法中
+
+boolean timed = allowCoreThreadTimeOut || wc > corePoolSize;
+
+Runnable r = timed ?
+                    workQueue.poll(keepAliveTime, TimeUnit.NANOSECONDS) :
+                    workQueue.take();
+                if (r != null)
+                    return r;
+```
+
+`newCachedThreadPool` 创建的线程池会在线程闲置 60 之后销毁所有的线程(corePoolSize=0)，从而退出
+而 `newFixedThreadPool` & `newSingleThreadExecutor` 创建的线程池(corePoolSize!=0)，由于始终存在一个或者多个线程，因此不会退出
+
 可以看到 上面的二个方法都使用`LinkedBlockingQueue`作用 queue,那么为什么不使用`ArrayBlockingQueue`呢？
 
 使用两个锁来控制线程访问，这样队列可以同时进行 put 和 take 的操作，因此吞吐量相对 ArrayBlockingQueue 就高
