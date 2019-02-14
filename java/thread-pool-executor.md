@@ -181,6 +181,56 @@ public void run() {
 
 而 `Thread#start` 是在 `addWorker` 方法中执行的
 
+```java
+    // Worker 继承了 AbstractQueuedSynchronizer，实现锁的功能
+    final void runWorker(Worker w) {
+        Thread wt = Thread.currentThread();
+        Runnable task = w.firstTask;
+        w.firstTask = null;
+        w.unlock(); // allow interrupts
+        boolean completedAbruptly = true;
+        try {
+            // getTask 是从 BlockingQueue 中获取数据的，如果没有数据，会一直阻塞
+            while (task != null || (task = getTask()) != null) {
+                w.lock();// 加锁
+                // If pool is stopping, ensure thread is interrupted;
+                // if not, ensure thread is not interrupted.  This
+                // requires a recheck in second case to deal with
+                // shutdownNow race while clearing interrupt
+                if ((runStateAtLeast(ctl.get(), STOP) ||
+                     (Thread.interrupted() &&
+                      runStateAtLeast(ctl.get(), STOP))) &&
+                    !wt.isInterrupted())
+                    wt.interrupt();
+                try {
+                    beforeExecute(wt, task);// 钩子方法
+                    Throwable thrown = null;
+                    try {
+                        task.run();// 执行任务
+                    } catch (RuntimeException x) {
+                        thrown = x; throw x;
+                    } catch (Error x) {
+                        thrown = x; throw x;
+                    } catch (Throwable x) {
+                        thrown = x; throw new Error(x);
+                    } finally {
+                        afterExecute(task, thrown);// 钩子方法
+                    }
+                } finally {
+                    task = null;
+                    w.completedTasks++;
+                    w.unlock();// 释放锁
+                }
+            }
+            completedAbruptly = false;
+        } finally {
+            // 这个 finally 块，只有在 调用了 Thread#interrupt 方法之后，才会执行
+            // 因为 while 循环中的 getTask 方法会阻塞
+            processWorkerExit(w, completedAbruptly);
+        }
+    }
+```
+
 ## Executors
 
 `Executors` 中一些常用方法的说明，如果理解这些方法的`作用`和`不同点`，可以避免使用中的坑
