@@ -11,6 +11,8 @@
   - [sleep](#sleep)
   - [InterruptedException](#interruptedexception)
   - [stop](#stop)
+  - [线程的状态转化](#%E7%BA%BF%E7%A8%8B%E7%9A%84%E7%8A%B6%E6%80%81%E8%BD%AC%E5%8C%96)
+  - [创建线程的方式](#%E5%88%9B%E5%BB%BA%E7%BA%BF%E7%A8%8B%E7%9A%84%E6%96%B9%E5%BC%8F)
   - [好文连接](#%E5%A5%BD%E6%96%87%E8%BF%9E%E6%8E%A5)
 
 对于 `Thread` 的理解，需要明白 `Thread` 中的所有常用的方法的含义，使用场景
@@ -172,6 +174,10 @@ java.lang.InterruptedException: sleep interrupted
 - [Thread stop](http://forward.com.au/javaProgramming/HowToStopAThread.html)
 - [Thread stop](http://www.java67.com/2015/07/how-to-stop-thread-in-java-example.html)
 - [threadPrimitiveDeprecation](https://docs.oracle.com/javase/1.5.0/docs/guide/misc/threadPrimitiveDeprecation.html)
+
+## 线程的状态转化
+
+## 创建线程的方式
 
 ## 好文连接
 
