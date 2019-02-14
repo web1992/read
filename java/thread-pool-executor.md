@@ -22,6 +22,8 @@
   - [runState](#runstate)
   - [Method List](#method-list)
     - [runWorker](#runworker)
+  - [getTask](#gettask)
+  - [Worker](#worker)
   - [Executors](#executors)
   - [参考](#%E5%8F%82%E8%80%83)
 
@@ -191,6 +193,9 @@ public void run() {
         boolean completedAbruptly = true;
         try {
             // getTask 是从 BlockingQueue 中获取数据的，如果没有数据，会一直阻塞
+            // getTask 如果返回了 null ,那么 while 就不再次循环了，
+            // 就会执行 finally 中的代码
+            // getTask 中也会对可用的线程数 -1
             while (task != null || (task = getTask()) != null) {
                 w.lock();// 加锁
                 // If pool is stopping, ensure thread is interrupted;
@@ -227,6 +232,93 @@ public void run() {
             // 这个 finally 块，只有在 调用了 Thread#interrupt 方法之后，才会执行
             // 因为 while 循环中的 getTask 方法会阻塞
             processWorkerExit(w, completedAbruptly);
+        }
+    }
+```
+
+## getTask
+
+```java
+    // getTask 返回了null,那么这个线程就会退出
+    // 有下面四种情况
+    // 1. 线程数超过了 maximumPoolSize，返回 Null
+    // 2. 线程池 stopped
+    // 3. 线程池 shutdown & 队列为空
+    // 4. 线程在执行的时间内，没有可执行任务，并且超过了 corePoolSize
+    //    那么就会退出（如：keepAliveTime=10，说明此线程已经阻塞了10 纳秒，依然没有可以执行的任务，那么线程就退出）
+    private Runnable getTask() {
+        boolean timedOut = false; // Did the last poll() time out?
+
+        for (;;) {
+            int c = ctl.get();
+            int rs = runStateOf(c);
+
+            // Check if queue empty only if necessary.
+            // 如果线程池正在关闭，或者任务队列为空，就返回空
+            // 同时把可用的线程数 -1
+            if (rs >= SHUTDOWN && (rs >= STOP || workQueue.isEmpty())) {
+                decrementWorkerCount();
+                return null;
+            }
+
+            int wc = workerCountOf(c);
+
+            // Are workers subject to culling?
+            boolean timed = allowCoreThreadTimeOut || wc > corePoolSize;
+
+            // 如果工作线程超过了配置的最大线程数，或者 允许超时&上一次任务超时了
+            // 并且（工作的线程大于1 或者队列为空）
+            // 就尝试进行线程的回收(减少)
+            // 尝试成功，就返回 null,后续会执行 processWorkerExit 方法
+            // 把 线程从 workers 集合中删除
+            if ((wc > maximumPoolSize || (timed && timedOut))
+                && (wc > 1 || workQueue.isEmpty())) {
+                if (compareAndDecrementWorkerCount(c))
+                    return null;
+                continue;
+            }
+
+            try {
+                // 如果允许线程超时，使用 poll 获取任务
+                // 否则使用 take 一直阻塞到有任务进入队列
+                Runnable r = timed ?
+                    workQueue.poll(keepAliveTime, TimeUnit.NANOSECONDS) :
+                    workQueue.take();
+                if (r != null)
+                    return r;
+                timedOut = true;// 如果 r=null,就是在制定时间内，没有可执行的任务，就设置超时标记为 true
+            } catch (InterruptedException retry) {
+                timedOut = false;
+            }
+        }
+    }
+```
+
+## Worker
+
+```java
+   // Worker 类是 ThreadPoolExecutor 的内部类
+   // Worker 继承了 aqs 类，实现了一个不可重入的锁功能
+   // Worker 实现锁功能的目的是为了方便终止线程
+   // 线程在执行任务的时候，会先加锁，执行完成之后，会释放锁
+   // 在终止线程的时候，会使用 tryLock 去获取锁，如果获取锁成功
+   // 说明此线程没有在执行任务，就使用 Thread#interrupt 方法终止线程，进行线程的回收
+   // Worker 实现了 Runnable 实现了 run 方法
+   // Worker 中维护一个 Thread
+   private final class Worker
+        extends AbstractQueuedSynchronizer
+        implements Runnable
+    {
+        Worker(Runnable firstTask) {
+            setState(-1); // inhibit interrupts until runWorker
+            this.firstTask = firstTask;
+            // 这里在创建 Thread 的时候把 Worker(Runnable) 给Thread
+            // 当在执行 Thread#start 的之后，线程启动之后，会执行下面的 run 方法
+            this.thread = getThreadFactory().newThread(this);
+        }
+        // 在线程启动之后，会执行 Worker 的 run 方法
+        public void run() {
+            runWorker(this);
         }
     }
 ```
@@ -269,7 +361,7 @@ public static ExecutorService newSingleThreadExecutor() {
 - newCachedThreadPool
 
 如果没有可以使用的线程，就创建新的，如果有则复用之前的线程
-如果一个线程在60秒内没有被使用，则被从cache中删除
+如果一个线程在60秒内没有被使用，则被从cache中删除&线程会被终止
 
 ```java
 public static ExecutorService newCachedThreadPool() {
