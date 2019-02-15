@@ -14,7 +14,7 @@
     - [loadExtensionClasses](#loadextensionclasses)
     - [getAdaptiveExtension](#getadaptiveextension)
     - [createAdaptiveExtensionClassCode](#createadaptiveextensionclasscode)
-  - [ServiceConfig](#serviceconfig)
+  - [Protocol](#protocol)
   - [Protocol\$Adaptive](#protocoladaptive)
   - [Summary](#summary)
 
@@ -289,7 +289,7 @@ private static final Protocol refprotocol = ExtensionLoader.getExtensionLoader(P
 
 `createAdaptiveExtensionClassCode` 生成的代码类内容，可以参考这里 [dubbo adaptive class](https://github.com/web1992/dubbos/tree/master/dubbo-source-code/src/main/java/cn/web1992)
 
-## ServiceConfig
+## Protocol
 
 - `ServiceConfig`中`protocol.export`这个方法的主要二个作用：
 
