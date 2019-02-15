@@ -265,9 +265,7 @@ mock=org.apache.dubbo.rpc.support.MockProtocol
 private static final Protocol refprotocol = ExtensionLoader.getExtensionLoader(Protocol.class).getAdaptiveExtension();
 ```
 
-上面的方法会最终返回下面的这个类`Protocol$Adaptive`,这个类是通过动态拼接而成的 [## Protocol\$Adaptive](#Protocol\$Adaptive)
-
-
+上面的方法会最终返回下面的这个类`Protocol$Adaptive`,这个类是通过动态拼接而成的 [Protocol\$Adaptive](#Protocol\$Adaptive)
 
 而`Protocol$Adaptive` 这个类是由 `createAdaptiveExtensionClassCode` 这个方法动态生成的对象
 
