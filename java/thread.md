@@ -177,7 +177,71 @@ java.lang.InterruptedException: sleep interrupted
 
 ## 线程的状态转化
 
+![threads-state](./images/threads-state.gif)
+
+线程的状态在多数情况下对我们来说是无感知的。但是再遇到线程问题，如死锁等，需要通过 `jstack` 命令生成线程快照
+排查问题的时候，是十分有帮助的。
+
+`jstack` 日志片段：
+
+[ExecutorsDemo 代码](https://github.com/web1992/javas/blob/master/tools/src/main/java/cn/web1992/utils/demo/executor/ExecutorsDemo.java)
+
+```log
+
+"pool-1-thread-2" #12 prio=5 os_prio=0 tid=0x000000005b486000 nid=0x460 waiting on condition [0x000000005bd2f000]
+   java.lang.Thread.State: WAITING (parking)
+        at sun.misc.Unsafe.park(Native Method)
+        - parking to wait for  <0x00000000d62af108> (a java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject)
+        at java.util.concurrent.locks.LockSupport.park(LockSupport.java:175)
+        at java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject.await(AbstractQueuedSynchronizer.java:2039)
+        at java.util.concurrent.LinkedBlockingQueue.take(LinkedBlockingQueue.java:442)
+        at java.util.concurrent.ThreadPoolExecutor.getTask(ThreadPoolExecutor.java:1074)
+        at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1134)
+        at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:624)
+        at java.lang.Thread.run(Thread.java:748)
+
+"pool-1-thread-1" #11 prio=5 os_prio=0 tid=0x000000005b49d000 nid=0x3624 waiting on condition [0x000000005b01e000]
+   java.lang.Thread.State: WAITING (parking)
+        at sun.misc.Unsafe.park(Native Method)
+        - parking to wait for  <0x00000000d62af108> (a java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject)
+        at java.util.concurrent.locks.LockSupport.park(LockSupport.java:175)
+        at java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject.await(AbstractQueuedSynchronizer.java:2039)
+        at java.util.concurrent.LinkedBlockingQueue.take(LinkedBlockingQueue.java:442)
+        at java.util.concurrent.ThreadPoolExecutor.getTask(ThreadPoolExecutor.java:1074)
+        at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1134)
+        at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:624)
+        at java.lang.Thread.run(Thread.java:748)
+
+```
+
+上面的 `ExecutorsDemo` 中，我们使用 `Executors.newFixedThreadPool(2)` 方法创建了二个线程，从上面的日志，我们可以快速的看到
+
+代码由于 `LinkedBlockingQueue.take` 方法造成阻塞.
+
 ## 创建线程的方式
+
+1. 实现 Runnable 接口
+2. 继承 Thread 类，重写 run 方法
+
+```java
+public class ThreadTest {
+    public static void main(String[] args) {
+
+        new Thread(() -> System.out.println("run")).start();
+
+        new ThreadRun().start();
+
+    }
+
+}
+
+class ThreadRun extends Thread {
+    @Override
+    public void run() {
+        System.out.println("ThreadRun");
+    }
+}
+```
 
 ## 好文连接
 
