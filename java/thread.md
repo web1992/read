@@ -179,7 +179,7 @@ java.lang.InterruptedException: sleep interrupted
 
 ![threads-state](./images/threads-state.gif)
 
-线程的状态在多数情况下对我们来说是无感知的。但是再遇到线程问题，如死锁等，需要通过 `jstack` 命令生成线程快照
+线程的状态在多数情况下对我们来说是无感知的。但是在遇到线程问题，如死锁等，需要通过 `jstack` 命令生成线程快照
 排查问题的时候，是十分有帮助的。
 
 `jstack` 日志片段：
