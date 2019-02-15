@@ -16,6 +16,7 @@
     - [createAdaptiveExtensionClassCode](#createadaptiveextensionclasscode)
   - [ServiceConfig](#serviceconfig)
   - [Protocol\$Adaptive](#protocoladaptive)
+  - [Summary](#summary)
 
 ## ExtensionLoader methods
 
@@ -271,11 +272,11 @@ private static final Protocol refprotocol = ExtensionLoader.getExtensionLoader(P
 
 ### createAdaptiveExtensionClassCode
 
-`createAdaptiveExtensionClassCode` 这个方法负责生成具体的 `$Adaptive` 实例，如: `Protocol$Adaptive`
+`createAdaptiveExtensionClassCode` 这个方法负责生成具体的 `***$Adaptive` 实例，如: `Protocol$Adaptive`
 
 这里的代码逻辑就是对 `org.apache.dubbo.rpc.Protocol` 接口中所有方法进行解析，生成一个实现类，包含接口中的所有方法
 
-类似的类还有（未全部包含）:
+类似的 SPI 类还有（未全部包含）:
 
 - Cluster\$Adaptive
 - Dispatcher\$Adaptive
@@ -385,3 +386,10 @@ public class Protocol$Adaptive implements org.apache.dubbo.rpc.Protocol {
 可以看到`export`这个方法有一个参数`org.apache.dubbo.rpc.Invoker`，从`getUrl()`获取一个`org.apache.dubbo.common.URL`对象
 
 然后获取`protocol`，如果为空，默认是`dubbo`，然后通过 `ExtensionLoader.getExtensionLoader.getExtension` 去加载具体的实现类
+
+## Summary
+
+1. dubbo 中通过 SPI 机制可以实现自定义扩展类，方便增加新功能
+2. dubbo 中通过 ***$Adaptive 自适应类，通过 `URL`参数的不同，实现不同的业务,更灵活，缺点难以debug
+3. dubbo 中通过 SPI 机制加载的类，会进行包装，属性注入，增强类的功能，提供 Filter,Moniter 等功能
+4. 未完待续...
