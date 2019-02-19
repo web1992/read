@@ -18,7 +18,7 @@
 在下面的例子中，会把 `CountDownLatch` 当做 `计数器` 来解说
 
 - [CountDownLatch](#countdownlatch)
-  - [docs](#docs)
+  - [concept](#concept)
   - [init](#init)
   - [await](#await)
   - [countDown](#countdown)
@@ -32,7 +32,7 @@
 - [CountDownLatch](https://www.cnblogs.com/shiyanch/archive/2011/04/04/2005233.html)
 - [CountDownLatch from oracle docs](https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/CountDownLatch.html)
 
-## docs
+## concept
 
 A synchronization aid that allows one or more threads to wait until
 a set of operations being performed in other threads completes.
@@ -87,12 +87,14 @@ public class CountDownLatchTest {
 上面的 `await` 方法会使当前线程阻塞，而当前获取的方式一般是通过 `Thread.currentThread()` 方便的获取
 
 ```java
+// CountDownLatch
  public void await() throws InterruptedException {
         sync.acquireSharedInterruptibly(1);
     }
 ```
 
 ```java
+    // AbstractQueuedSynchronizer
     public final void acquireSharedInterruptibly(int arg)
             throws InterruptedException {
         if (Thread.interrupted())
@@ -103,7 +105,7 @@ public class CountDownLatchTest {
         if (tryAcquireShared(arg) < 0)
             doAcquireSharedInterruptibly(arg);
     }
-
+    // CountDownLatch
     protected int tryAcquireShared(int acquires) {
         // -1 表示还有其他线程在获取锁
         return (getState() == 0) ? 1 : -1;
@@ -111,6 +113,7 @@ public class CountDownLatchTest {
 ```
 
 ```java
+    // AbstractQueuedSynchronizer
     // 下面的 for;; + shouldParkAfterFailedAcquire 方法实现了cas 语义
     private void doAcquireSharedInterruptibly(int arg)
         throws InterruptedException {
@@ -123,7 +126,7 @@ public class CountDownLatchTest {
                 if (p == head) {// 如果前一个节点为 head 说明只有一个线程在排队，进行尝试获取 计数器
                     int r = tryAcquireShared(arg);
                     if (r >= 0) {// 计数器为 0 了，不需要阻塞了
-                        setHeadAndPropagate(node, r);
+                        setHeadAndPropagate(node, r);// 对于 CountDownLatch 这个代码不会执行
                         p.next = null; // help GC
                         failed = false;
                         return;
@@ -140,7 +143,7 @@ public class CountDownLatchTest {
                 cancelAcquire(node);
         }
     }
-  
+    // AbstractQueuedSynchronizer
     private Node addWaiter(Node mode) {
         // 把当前线程包装成 Node
         Node node = new Node(Thread.currentThread(), mode);
@@ -157,7 +160,7 @@ public class CountDownLatchTest {
         enq(node);// 入队失败或者队尾不为空，那么执行入队操作
         return node;
     }
-
+    // AbstractQueuedSynchronizer
     private Node enq(final Node node) {
         // 这里一个无线循环
         // 也就是 cas 一直循环到设置成功
@@ -183,6 +186,100 @@ public class CountDownLatchTest {
 ## countDown
 
 分析 `countDown` 为什么会使线程取消阻塞状态
+
+```java
+// CountDownLatch
+public void countDown() {
+        sync.releaseShared(1);// 计数器 -1
+}
+
+// AbstractQueuedSynchronizer
+public final boolean releaseShared(int arg) {
+        if (tryReleaseShared(arg)) {// 尝试释放锁
+            doReleaseShared();// 返回 false 就不执行这个，存在其他线程已经执行了 cutDown
+            return true;
+        }
+        return false;
+}
+// CountDownLatch
+protected boolean tryReleaseShared(int releases) {
+            // Decrement count; signal when transition to zero
+            for (;;) {
+                int c = getState();
+                if (c == 0)// 如果 state =0 说明其他线程已经执行 cutDown 了，返回 false
+                    return false;
+                int nextc = c-1;// 这里使用 for + cas 把 state-1
+                if (compareAndSetState(c, nextc))
+                    return nextc == 0;
+            }
+}
+
+// AbstractQueuedSynchronizer
+// 这里会有唤醒线程的操作 unparkSuccessor
+private void doReleaseShared() {
+        /*
+         * Ensure that a release propagates, even if there are other
+         * in-progress acquires/releases.  This proceeds in the usual
+         * way of trying to unparkSuccessor of head if it needs
+         * signal. But if it does not, status is set to PROPAGATE to
+         * ensure that upon release, propagation continues.
+         * Additionally, we must loop in case a new node is added
+         * while we are doing this. Also, unlike other uses of
+         * unparkSuccessor, we need to know if CAS to reset status
+         * fails, if so rechecking.
+         */
+        for (;;) {
+            Node h = head;
+            if (h != null && h != tail) {// head 不等于 tail 说明至少有一个线程在队列中
+                int ws = h.waitStatus;// 获取 head 的状态
+                if (ws == Node.SIGNAL) {// 如果是需要唤醒的状态，修改 waitStatus
+                    if (!compareAndSetWaitStatus(h, Node.SIGNAL, 0))// 　修改失败，继续修改
+                        continue;            // loop to recheck cases
+                    unparkSuccessor(h);// 修改 waitStatus 成功，唤醒线程
+                }
+                else if (ws == 0 &&// 　如果 waitStatus =0 说明线程进入队列还没有成功，继续循环，等进入对列成功执行
+                         !compareAndSetWaitStatus(h, 0, Node.PROPAGATE))// 这里的修改 waitStatus=PROPAGATE 其实对 CountDownLatch 的实现没什么作用
+                    continue;                // loop on failed CAS
+            }
+            // h == head 这里　就是 if(true) 的写法
+            // 只有当上面的判断 h != null && h != tail 不成了，才会执行下面的代码
+            // 比如 head 为空了，或者 head == tail 了
+            // head==tail 说明有线程出队列了，因此结束循环
+            if (h == head)                   // loop if head changed
+                break;
+        }
+}
+// AbstractQueuedSynchronizer
+private void unparkSuccessor(Node node) {
+        /*
+         * If status is negative (i.e., possibly needing signal) try
+         * to clear in anticipation of signalling.  It is OK if this
+         * fails or if status is changed by waiting thread.
+         */
+        // doReleaseShared 中其实已经把 waitStatus 改成 0了
+        // 如果被其他线程该了，尝试修改成 0
+        int ws = node.waitStatus;
+        if (ws < 0)
+            compareAndSetWaitStatus(node, ws, 0);
+
+        /*
+         * Thread to unpark is held in successor, which is normally
+         * just the next node.  But if cancelled or apparently null,
+         * traverse backwards from tail to find the actual
+         * non-cancelled successor.
+         */
+         // 对于 CountDownLatch 来说 s!=null waitStatus 也不会取消
+        Node s = node.next;
+        if (s == null || s.waitStatus > 0) {// waitStatus 大于 0 是取消状态
+            s = null;
+            for (Node t = tail; t != null && t != node; t = t.prev)
+                if (t.waitStatus <= 0)
+                    s = t;
+        }
+        if (s != null)
+            LockSupport.unpark(s.thread);// 唤醒线程
+}
+```
 
 ## example1
 
