@@ -6,9 +6,9 @@
 
 `Thread#join` 可参照这个 [thread-join](thread.md#join)
 
-这里通过 `await` 和 `await` 方法的实现来分析的 `CountDownLatch` 的原理
+这里通过 `await` 和 `countDown` 方法的实现来分析的 `CountDownLatch` 的原理
 
-在读开始之前，需要理解下面 `aqs` 相关的知识，阅读起来在不费力。
+在开始之前，需要理解下面 `aqs` 相关的知识，阅读起来才不费力
 
 预先了解的知识：
 
@@ -99,7 +99,7 @@ public class CountDownLatchTest {
             throw new InterruptedException();
         // 首先通过 tryAcquireShared 尝试一下获取锁
         // 其实就是判断一下 state 是否等于0
-        // 如果小于 0 说明,计数器不为0。需要等待
+        // 如果小于 0 说明,计数器不为0,需要等待,否则不需要阻塞
         if (tryAcquireShared(arg) < 0)
             doAcquireSharedInterruptibly(arg);
     }
