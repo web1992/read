@@ -2,9 +2,7 @@
 
 `CountDownLatch` 可用来实现线程之间的协作(或者理解为一个`计数器`)，如线程 A 等待线程 B,C,D 执行完成之后，再进行继续其他操作
 
-类似 `Thread#join` 的方法, `join` 实现了两个线程执行的协作，而 `CountDownLatch` 可以实现 N 个线程之间的协作
-
-`Thread#join` 可参照这个 [thread-join](thread.md#join)
+类似 `Thread#join` 的方法, `Thread#join` 可参照这个 [thread-join](thread.md#join)
 
 这里通过 `await` 和 `countDown` 方法的实现来分析的 `CountDownLatch` 的原理
 
