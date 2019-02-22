@@ -10,6 +10,7 @@
     - [getExtensionLoader](#getextensionloader)
     - [getExtension](#getextension)
     - [createExtension](#createextension)
+    - [WrapperClass](#wrapperclass)
     - [injectExtension](#injectextension)
     - [loadExtensionClasses](#loadextensionclasses)
     - [getAdaptiveExtension](#getadaptiveextension)
@@ -131,6 +132,10 @@
     }
 ```
 
+### WrapperClass
+
+`WrapperClass` 是一个典型的设计模式:`装饰器模式`
+
 这里说明下`wrapperClasses`也是从`loadExtensionClasses`方法从`META-INF`读取配置文件而来
 
 可以在 `META-INF/dubbo/internal/org.apache.dubbo.rpc.Protocol` 文件中看到下面的配置：
@@ -154,7 +159,7 @@ mock=org.apache.dubbo.rpc.support.MockProtocol
     }
 
     // 上面代码的含义，只要提供了包含 SPI clazz (如:protocol) 这个参数的构造方法
-    // dubbo 就认为它是一个包装类
+    // dubbo 就认为它是一个包装类(装饰器模式)
     // 如 ProtocolFilterWrapper 的构造方法如下
     // ProtocolFilterWrapper 就会当做包装类对 DubboProtocol 等进行包装
     // 返回 ProtocolFilterWrapper 对象,而ProtocolFilterWrapper 的属性 protocol 是 DubboProtocol
@@ -191,6 +196,7 @@ mock=org.apache.dubbo.rpc.support.MockProtocol
                         }
                         try {
                             String property = method.getName().length() > 3 ? method.getName().substring(3, 4).toLowerCase() + method.getName().substring(4) : "";
+                            // objectFactory 也是基于 SPI 加载的
                             Object object = objectFactory.getExtension(pt, property);
                             if (object != null) {
                                 method.invoke(instance, object);
