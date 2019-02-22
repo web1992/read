@@ -203,8 +203,111 @@ public class Cluster$Adaptive implements org.apache.dubbo.rpc.cluster.Cluster {
 
 ## ProtocolFilterWrapper
 
+1. 基于装饰器设计
+2. 通过 SPI 加载 项目中的 `Filter`
+
+```java
+    // export 是服务提供者调用,进行服务的暴露
+    // Constants.PROVIDER 加载服务提供方法的 Filter
+    @Override
+    public <T> Exporter<T> export(Invoker<T> invoker) throws RpcException {
+        if (Constants.REGISTRY_PROTOCOL.equals(invoker.getUrl().getProtocol())) {
+            return protocol.export(invoker);
+        }
+        return protocol.export(buildInvokerChain(invoker, Constants.SERVICE_FILTER_KEY, Constants.PROVIDER));
+    }
+
+    // refer 是服务消费者调用
+    // Constants.CONSUMER 加载消费者的 Filter
+    @Override
+    public <T> Invoker<T> refer(Class<T> type, URL url) throws RpcException {
+        if (Constants.REGISTRY_PROTOCOL.equals(url.getProtocol())) {
+            return protocol.refer(type, url);
+        }
+        return buildInvokerChain(protocol.refer(type, url), Constants.REFERENCE_FILTER_KEY, Constants.CONSUMER);
+    }
+```
+
+`buildInvokerChain`
+
+```java
+
+    private static <T> Invoker<T> buildInvokerChain(final Invoker<T> invoker, String key, String group) {
+        Invoker<T> last = invoker;
+        // 加载系统的 Filter 和自定义的 Filter
+        // invoker.getUrl() url 中解析的 Filter 也会被加载
+        List<Filter> filters = ExtensionLoader.getExtensionLoader(Filter.class).getActivateExtension(invoker.getUrl(), key, group);
+        if (!filters.isEmpty()) {
+            for (int i = filters.size() - 1; i >= 0; i--) {
+                final Filter filter = filters.get(i);
+                final Invoker<T> next = last;
+                // 对当前的 invoker 进行包装
+                // 重写了 invoke 方法，通过 filter 进行调用
+                last = new Invoker<T>() {
+
+                    @Override
+                    public Class<T> getInterface() {
+                        return invoker.getInterface();
+                    }
+
+                    @Override
+                    public URL getUrl() {
+                        return invoker.getUrl();
+                    }
+
+                    @Override
+                    public boolean isAvailable() {
+                        return invoker.isAvailable();
+                    }
+
+                    @Override
+                    public Result invoke(Invocation invocation) throws RpcException {
+                        // 重写 invoke 方法
+                        // 使用 filter 进行调用
+                        Result result = filter.invoke(next, invocation);
+                        if (result instanceof AsyncRpcResult) {
+                            AsyncRpcResult asyncResult = (AsyncRpcResult) result;
+                            asyncResult.thenApplyWithContext(r -> filter.onResponse(r, invoker, invocation));
+                            return asyncResult;
+                        } else {
+                            return filter.onResponse(result, invoker, invocation);
+                        }
+                    }
+
+                    @Override
+                    public void destroy() {
+                        invoker.destroy();
+                    }
+
+                    @Override
+                    public String toString() {
+                        return invoker.toString();
+                    }
+                };
+            }
+        }
+        return last;
+    }
+```
+
 ## ProtocolListenerWrapper
 
-## MockProtocol
+`ProtocolListenerWrapper` 主要做作用是加载 `ListenerExporterWrapper` 和 `ListenerInvokerWrapper`
+
+对 `Export` 和 `Invoker` 进行包装
+
+### ListenerExporterWrapper
+
+`export` 在执行 `exporter.unexport()` 时，会通知所有注册的 `ExporterListener`
+
+### ListenerInvokerWrapper
+
+`invoker` 在执行 `invoker.destroy()` 时，会通知所有注册的 `InvokerListener`
 
 ## QosProtocolWrapper
+
+`QosProtocolWrapper` 的作用是通过重写 `export` 和 `refer` 启动 `QosServer`
+
+这样`服务提供者`和`服务消费者`会分别启动一个 `QosServer` 服务
+
+重写 `destroy` 用来关闭 `QosServer` 服务
