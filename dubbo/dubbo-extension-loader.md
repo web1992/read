@@ -342,7 +342,7 @@ Node 类中有`URL getUrl();` 这个方法可以返回 URL 对象.
 
 ## Protocol\$Adaptive
 
-`ExtensionLoader.getExtensionLoader(Protocol.class).getAdaptiveExtension();`这个返回的 `protocol` 是包装之后的一个 `Adaptive`类
+`ExtensionLoader.getExtensionLoader(Protocol.class).getAdaptiveExtension();`这个返回的是包装之后的`Protocol` 类实例
 
 具体的代码实现逻辑如下：
 
