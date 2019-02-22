@@ -33,6 +33,42 @@ public interface Protocol {
 }
 ```
 
+## RegistryProtocol & DubboProtocol
+
+在服务启动的时候，会在 `RegistryProtocol` 中调用 `DubboProtocol` 的 `export` 方法，
+
+而 `RegistryProtocol` & `DubboProtocol` 都是基于 SPI 加载进行调用的，都被包装类进行了包装，如：`ProtocolFilterWrapper`
+
+这也是导致 `ProtocolFilterWrapper` 代码中有 `if (Constants.REGISTRY_PROTOCOL.equals(xx)){}` 这个判断的原因
+
+`ProtocolFilterWrapper` 包装了 `RegistryProtocol` & `DubboProtocol` 这个两个类，因此 `export` 方法会被执行两次，如果不进行判断
+
+那么 `buildInvokerChain` 方法就会重复执行两次，导致错误
+
+看一个线程帧栈图：
+
+![dubbo-protocol-export](images/dubbo-protocol-export.png)
+
+> `ProtocolFilterWrapper` 的代码逻辑
+
+```java
+    @Override
+    public <T> Exporter<T> export(Invoker<T> invoker) throws RpcException {
+        if (Constants.REGISTRY_PROTOCOL.equals(invoker.getUrl().getProtocol())) {
+            return protocol.export(invoker);
+        }
+        return protocol.export(buildInvokerChain(invoker, Constants.SERVICE_FILTER_KEY, Constants.PROVIDER));
+    }
+
+    @Override
+    public <T> Invoker<T> refer(Class<T> type, URL url) throws RpcException {
+        if (Constants.REGISTRY_PROTOCOL.equals(url.getProtocol())) {
+            return protocol.refer(type, url);
+        }
+        return buildInvokerChain(protocol.refer(type, url), Constants.REFERENCE_FILTER_KEY, Constants.CONSUMER);
+    }
+```
+
 ## DubboProtocol
 
 > DubboProtocol#export
@@ -200,6 +236,10 @@ public class Cluster$Adaptive implements org.apache.dubbo.rpc.cluster.Cluster {
     }
 }
 ```
+
+## Protocol\$Adaptive
+
+`Protocol$Adaptive` 可参照：[Protocol$Adaptive](dubbo-extension-loader.md#protocoladaptive)
 
 ## ProtocolFilterWrapper
 
