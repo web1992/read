@@ -6,7 +6,7 @@
 
 The essence of the Abstract Factory Pattern is to "Provide an interface for creating _families_ of related or dependent objects without specifying their concrete classes".
 
-## The Abstract Factory design pattern solves problems like:
+## The Abstract Factory design pattern solves problems like
 
 - How can an application be independent of how its objects are created?
 - How can a class be independent of how the objects it requires are created?

@@ -31,6 +31,7 @@
 - [Strategy pattern(Policy Pattern)](strategy-pattern.md)
 - [Reactor Pattern](reactor-pattern.md)
 - [Template method pattern](template-method-pattern.md)
+- [Decorator pattern](decorator-pattern.md)
 
 ## 模型
 
