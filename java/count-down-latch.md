@@ -271,7 +271,7 @@ private void unparkSuccessor(Node node) {
         if (s == null || s.waitStatus > 0) {// waitStatus 大于 0 是取消状态
             s = null;
             for (Node t = tail; t != null && t != node; t = t.prev)
-                if (t.waitStatus <= 0)
+                if (t.waitStatus <= 0)// 线程的状态需要唤醒，
                     s = t;
         }
         if (s != null)
