@@ -126,6 +126,8 @@ specVersion=2.7.0-SNAPSHOT
 timestamp=1551021857794
 ```
 
+providerUrl vs subscribeUrl
+
 ![overrideSubscribeUrl-vs-providerUrl](images/overrideSubscribeUrl-vs-providerUrl.png)
 
 ## doLocalExport
@@ -149,6 +151,8 @@ private <T> ExporterChangeableWrapper<T> doLocalExport(final Invoker<T> originIn
     return exporter;
 }
 ```
+
+`protocol.export` 方法实际是调用的 `DubboProtocol` 类中的方法，具体参考 [DubboProtocol](dubbo-protocol-dubbo-protocol.md)
 
 ## ExporterChangeableWrapper
 
