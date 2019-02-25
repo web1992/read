@@ -1,5 +1,15 @@
 # RegistryProtocol
 
+- [RegistryProtocol](#registryprotocol)
+  - [成员变量](#%E6%88%90%E5%91%98%E5%8F%98%E9%87%8F)
+  - [export](#export)
+  - [registryUrl](#registryurl)
+  - [providerUrl](#providerurl)
+  - [overrideSubscribeUrl](#overridesubscribeurl)
+  - [doLocalExport](#dolocalexport)
+  - [ExporterChangeableWrapper](#exporterchangeablewrapper)
+  - [refer](#refer)
+
 1. `RegistryProtocol` 是基于 SPI 机制加载的
 2. 调用 `DubboProtocol`
 3. 注册服务到注册中心
@@ -25,8 +35,13 @@ private ProxyFactory proxyFactory;
 ## export
 
 ```java
+// export 方法主要做两件事情：
+// 1. 调用 DubboProtocol 启动本地的 TCP 服务
+// 2. 调用 Registry 注册服务
+// 3. 生成 registryUrl providerUrl subscribeUrl 用来注册，订阅服务
 @Override
 public <T> Exporter<T> export(final Invoker<T> originInvoker) throwsRpcException {
+    // registryUrl providerUrl 是根据 Invoker 中的参数配置，添加额外的参数，用来注册服务使用
     URL registryUrl = getRegistryUrl(originInvoker);
     // url to export locally
     URL providerUrl = getProviderUrl(originInvoker);
@@ -39,8 +54,10 @@ public <T> Exporter<T> export(final Invoker<T> originInvoker) throwsRpcException
     overrideListeners.put(overrideSubscribeUrl, overrideSubscribeListener);
     providerUrl = overrideUrlWithConfig(providerUrl, overrideSubscribeListener);
     //export invoker
+    // 启动本地服务，生成包装之后的 Exporter
     final ExporterChangeableWrapper<T> exporter = doLocalExport(originInvoker, providerUrl);
     // url to registry
+    // 获取注册中心
     final Registry registry = getRegistry(originInvoker);
     final URL registeredProviderUrl = getRegisteredProviderUrl(providerUrl, registryUrl);
     ProviderInvokerWrapper<T> providerInvokerWrapper = ProviderConsumerRegTable.registerProvider(originInvoker,
@@ -48,6 +65,7 @@ public <T> Exporter<T> export(final Invoker<T> originInvoker) throwsRpcException
     //to judge if we need to delay publish
     boolean register = registeredProviderUrl.getParameter("register", true);
     if (register) {
+        // 这里注册服务到注册中心，如 zookeeper
         register(registryUrl, registeredProviderUrl);
         providerInvokerWrapper.setReg(true);
     }
@@ -60,9 +78,11 @@ public <T> Exporter<T> export(final Invoker<T> originInvoker) throwsRpcException
 }
 ```
 
+下面看下 `registryUrl` `providerUrl` `overrideSubscribeUrl` 中参数的区别，就可以明白他们之前的区别了
+
 ## registryUrl
 
-url 解码
+registryUrl 需要 url 解码
 
 `registryUrl = multicast 信息 + provider 信息`
 
