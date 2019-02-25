@@ -3,6 +3,7 @@
 ## export
 
 ```java
+    // 暴露服务，返回 Exporter 对象
     @Override
     public <T> Exporter<T> export(Invoker<T> invoker) throws RpcException {
         URL url = invoker.getUrl();
@@ -36,6 +37,8 @@
 ## openServer
 
 ```java
+    // 创建服务 Server 对象,并放到 serverMap
+    // Server 在这里代表了一种服务资源，可以参考下面 Server 接口的简单解释
     private void openServer(URL url) {
         // find server.
         String key = url.getAddress();
@@ -61,6 +64,12 @@
 ## createServer
 
 ```java
+    // 创建服务器
+    // 首先进行参数的完善,并检查
+    // Exchangers 是一个工具类，提供了获取 Exchanger，绑定端口，启动服务的作用
+    // Exchangers 通过 SPI 加载 Exchanger 实现类 HeaderExchanger
+    // Transporters 通过 SPI 加载 Transporter 实现类 NettyTransporter
+    // Transporter 是对底层进行网络传输层的抽象，如Netty
     private ExchangeServer createServer(URL url) {
         // send readonly event when server closes, it's enabled by default
         url = url.addParameterIfAbsent(Constants.CHANNEL_READONLYEVENT_SENT_KEY, Boolean.TRUE.toString());
@@ -89,6 +98,47 @@
         return server;
     }
 
+```
+
+## requestHandler
+
+## NettyServer
+
+![NettyServer](images/dubbo-NettyServer.png)
+
+## Server
+
+```java
+// 从 Server 定义方法可以看出， Server 中引用了代表客户端与服务器连接的 Channel 资源
+// 提供了 getChannels 和 getChannel 方法，方便查询（管理,操作）这些资源
+public interface Server extends Endpoint, Resetable {
+
+    /**
+     * is bound.
+     *
+     * @return bound
+     */
+    boolean isBound();
+
+    /**
+     * get channels.
+     *
+     * @return channels
+     */
+    Collection<Channel> getChannels();
+
+    /**
+     * get channel.
+     *
+     * @param remoteAddress
+     * @return channel
+     */
+    Channel getChannel(InetSocketAddress remoteAddress);
+
+    @Deprecated
+    void reset(org.apache.dubbo.common.Parameters parameters);
+
+}
 ```
 
 ## refer
