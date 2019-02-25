@@ -66,10 +66,9 @@
 ```java
     // 创建服务器
     // 首先进行参数的完善,并检查
-    // Exchangers 是一个工具类，提供了获取 Exchanger，绑定端口，启动服务的作用
     // Exchangers 通过 SPI 加载 Exchanger 实现类 HeaderExchanger
     // Transporters 通过 SPI 加载 Transporter 实现类 NettyTransporter
-    // Transporter 是对底层进行网络传输层的抽象，如Netty
+    // Transporter 是对底层进行网络传输层的抽象，如 NettyTransporter
     private ExchangeServer createServer(URL url) {
         // send readonly event when server closes, it's enabled by default
         url = url.addParameterIfAbsent(Constants.CHANNEL_READONLYEVENT_SENT_KEY, Boolean.TRUE.toString());
@@ -100,11 +99,61 @@
 
 ```
 
-## requestHandler
+## ExchangeHandler
+
+![ExchangeHandler](images/ExchangeHandler.png)
+
+从图上可以看到 `ExchangeHandler` 其实也是一个 `ChannelHandler`, `ChannelHandler` 会处理网络 IO 相关的事件，
+如 连接事件，关闭连接事件，读事件，写事件等等，如果熟悉 Netty 的底层事件，那么理解这个很容易
+这里的 `ChannelHandler` 和 Netty 中的 `ChannelHandler` 作用类似，都是处理 IO 相关的事件。
 
 ## NettyServer
 
 ![NettyServer](images/dubbo-NettyServer.png)
+
+```java
+    // 这里可以看到十分经典的 Netty 服务启动代码
+    // 1. 配置 bossGroup workerGroup 可以理解工作线程组
+    //    bossGroup 处理服务器的工作，因此线程数是1，减少线程上下文的切换开销
+    //    workerGroup 处理已经连接到服务器的客户端相关的事件，而这个线程数是可配置的
+    // 2. 设置 TCP 参数
+    // 3. 设置 ChannelHandler
+    //    addLast 执行了3次，添加了3个 ChannelHandler 处理 IO 事件
+    @Override
+    protected void doOpen() throws Throwable {
+        bootstrap = new ServerBootstrap();
+
+        bossGroup = new NioEventLoopGroup(1, new DefaultThreadFactory("NettyServerBoss", true));
+        workerGroup = new NioEventLoopGroup(getUrl().getPositiveParameter(Constants.IO_THREADS_KEY, Constants.DEFAULT_IO_THREADS),
+                new DefaultThreadFactory("NettyServerWorker", true));
+
+        // 这里的 this 也就是 NettyServer 自己
+        // NettyServer 是一个 ChannelHandler 通过 addLast 方法添加到 Netty 的 pipeline 中处理 IO 事件
+        final NettyServerHandler nettyServerHandler = new NettyServerHandler(getUrl(), this);
+        channels = nettyServerHandler.getChannels();
+
+        bootstrap.group(bossGroup, workerGroup)
+                .channel(NioServerSocketChannel.class)
+                .childOption(ChannelOption.TCP_NODELAY, Boolean.TRUE)
+                .childOption(ChannelOption.SO_REUSEADDR, Boolean.TRUE)
+                .childOption(ChannelOption.ALLOCATOR, PooledByteBufAllocator.DEFAULT)
+                .childHandler(new ChannelInitializer<NioSocketChannel>() {
+                    @Override
+                    protected void initChannel(NioSocketChannel ch) throws Exception {
+                        NettyCodecAdapter adapter = new NettyCodecAdapter(getCodec(), getUrl(), NettyServer.this);
+                        ch.pipeline()//.addLast("logging",new LoggingHandler(LogLevel.INFO))//for debug
+                                .addLast("decoder", adapter.getDecoder())
+                                .addLast("encoder", adapter.getEncoder())
+                                .addLast("handler", nettyServerHandler);
+                    }
+                });
+        // bind
+        ChannelFuture channelFuture = bootstrap.bind(getBindAddress());
+        channelFuture.syncUninterruptibly();
+        channel = channelFuture.channel();
+
+    }
+```
 
 ## Server
 
