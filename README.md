@@ -2,7 +2,6 @@
 
 ## 技巧
 
-- [计算机技术书籍（GitHub）](https://github.com/yuanliangding/books)
 - [学习到底是什么（🚀 知乎）](https://zhuanlan.zhihu.com/p/27989078)
 
 ## 阅读笔记
@@ -19,6 +18,7 @@
 ## books
 
 - [https://github.com/yuanliangding/books](https://github.com/yuanliangding/books)
+- [计算机技术书籍（GitHub）](https://github.com/yuanliangding/books)
 
 ## 他山之石
 
