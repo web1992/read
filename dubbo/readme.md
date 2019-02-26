@@ -4,6 +4,20 @@
 
 ## index
 
+`dubbo` 源码分析
+
+`dubbo` 版本: **2.7.1-SNAPSHOT**
+
+```xml
+<dependency>
+    <groupId>org.apache.dubbo</groupId>
+    <artifactId>dubbo-bom</artifactId>
+    <version>2.7.1-SNAPSHOT</version>
+    <type>pom</type>
+    <scope>import</scope>
+</dependency>
+```
+
 - [dubbo-get-start.md](dubbo-get-start.md)
 - [dubbo-exporter.md](dubbo-exporter.md)
 - [dubbo-extension-loader.md](dubbo-extension-loader.md)
