@@ -6,7 +6,7 @@
 
 `dubbo` 源码分析
 
-`dubbo` 版本: **2.7.1-SNAPSHOT**,目前 dubbo 还在 apache 服务，不太版本之间的改动还是很大的
+`dubbo` 版本: **2.7.1-SNAPSHOT**,目前 `dubbo` 还在 `apache` 基金服务，不太版本之间的改动还是很大的
 
 ```xml
 <dependency>
