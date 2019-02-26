@@ -14,6 +14,7 @@
     - [getClients](#getclients)
     - [initClient](#initclient)
     - [NettyClient](#nettyclient)
+  - [ChannelHandler](#channelhandler)
 
 ## export
 
@@ -394,3 +395,9 @@ public interface Server extends Endpoint, Resetable {
 | ![NettyClient](images/NettyClient.png) | ![NettyServer](images/dubbo-NettyServer.png) |
 
 从上面的类图对比可以看到,`NettyClient` 和 `NettyServer` 实现了很多类似的接口
+
+## ChannelHandler
+
+不管是 `NettyServer` 还是 `NettyClient`; 中 `ChannelHandler` 都在负责处理具体的 `IO` 事件和业务逻辑
+
+因此理解了 `ChannelHandler`;就对 `dubbo` 中 `IO` 相关的东西理解掌握了
