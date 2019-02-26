@@ -19,6 +19,10 @@
 
 ```java
 
+// Protocol 是在 dubbo 中十分重要的概念
+// RegistryProtocol 和 DubboProtocol 是 Protocol 的两个抽象
+// DubboProtocol 负责服务的启动&客户端服务的连接
+// RegistryProtocol 负责服务的注册
 // Protocol 中的主要方法是 export 和 refer
 // 通过 export 方法，暴露，注册服务
 // 通过 refer 方法，发现，订阅服务
@@ -26,7 +30,7 @@
 // refer 主要是客户端相关的业务，如注册，订阅一个服务
 // destroy 负责服务的关闭，取消注册，取消订阅
 // 如果要完全理解 Protocol 的功能，理解`RegistryProtocol` 和 `DubboProtocol` 的实现就可以
-// export 返回的Exporter实例，refer 返回的Invoker 实例都是经过层层包装的包装类，从而实现 Filter 等功能
+// export 返回的Exporter实例，refer 返回的 Invoker 实例都是经过层层包装的包装类，从而实现 Filter 等功能
 // 包装类的生成有些是在代码中写死的，而有些是通过 SPI 机制生成的包装对象
 @SPI("dubbo")
 public interface Protocol {
@@ -35,7 +39,7 @@ public interface Protocol {
 
     @Adaptive
     <T> Exporter<T> export(Invoker<T> invoker) throws RpcException;
-  
+
     @Adaptive
     <T> Invoker<T> refer(Class<T> type, URL url) throws RpcException;
 
@@ -224,7 +228,7 @@ public interface Protocol {
     }
 ```
 
-> Cluster$Adaptive
+> Cluster\$Adaptive
 
 `Cluster$Adaptive` 是通过代码动态生成的
 
@@ -250,7 +254,7 @@ public class Cluster$Adaptive implements org.apache.dubbo.rpc.cluster.Cluster {
 
 ## Protocol\$Adaptive
 
-`Protocol$Adaptive` 可参照：[Protocol$Adaptive](dubbo-extension-loader.md#protocoladaptive)
+`Protocol$Adaptive` 可参照：[Protocol\$Adaptive](dubbo-extension-loader.md#protocoladaptive)
 
 ## ProtocolFilterWrapper
 
