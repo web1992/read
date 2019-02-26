@@ -1,7 +1,7 @@
 # DubboProtocol
 
 `DubboProtocol` 的 `export` 方法用来启动 TCP 通信的服务器，返回 `Exporter`
-`DubboProtocol` 的 `refer`  方法用来启动 TCP 通信的客户端，返回 `Invoker`
+`DubboProtocol` 的 `refer` 方法用来启动 TCP 通信的客户端，返回 `Invoker`
 
 - [DubboProtocol](#dubboprotocol)
   - [export](#export)
@@ -374,6 +374,7 @@ public interface Server extends Endpoint, Resetable {
             if (url.getParameter(Constants.LAZY_CONNECT_KEY, false)) {
                 client = new LazyConnectExchangeClient(url, requestHandler);
             } else {
+                // 创建客户端连接
                 client = Exchangers.connect(url, requestHandler);
             }
         } catch (RemotingException e) {
@@ -385,3 +386,11 @@ public interface Server extends Endpoint, Resetable {
 ```
 
 ### NettyClient
+
+`NettyClient` 类图
+
+| !NettyClient                           | NettyServer                                  |
+| -------------------------------------- | -------------------------------------------- |
+| ![NettyClient](images/NettyClient.png) | ![NettyServer](images/dubbo-NettyServer.png) |
+
+从上面的类图对比可以看到,`NettyClient` 和 `NettyServer` 实现了很多类似的接口
