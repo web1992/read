@@ -177,3 +177,5 @@ private <T> ExporterChangeableWrapper<T> doLocalExport(final Invoker<T> originIn
 ## ExporterChangeableWrapper
 
 ## refer
+
+当消费者启动的时候，会调用 `refer` 这个方法

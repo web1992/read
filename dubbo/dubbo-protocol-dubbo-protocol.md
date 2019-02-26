@@ -1,5 +1,20 @@
 # DubboProtocol
 
+`DubboProtocol` 的 `export` 方法用来启动 TCP 通信的服务器，返回 `Exporter`
+`DubboProtocol` 的 `refer`  方法用来启动 TCP 通信的客户端，返回 `Invoker`
+
+- [DubboProtocol](#dubboprotocol)
+  - [export](#export)
+    - [openServer](#openserver)
+    - [createServer](#createserver)
+    - [ExchangeHandler](#exchangehandler)
+    - [NettyServer](#nettyserver)
+    - [Server](#server)
+  - [refer](#refer)
+    - [getClients](#getclients)
+    - [initClient](#initclient)
+    - [NettyClient](#nettyclient)
+
 ## export
 
 ```java
@@ -34,7 +49,7 @@
     }
 ```
 
-## openServer
+### openServer
 
 ```java
     // 创建服务 Server 对象,并放到 serverMap
@@ -61,7 +76,7 @@
     }
 ```
 
-## createServer
+### createServer
 
 ```java
     // 创建服务器
@@ -83,6 +98,9 @@
         url = url.addParameter(Constants.CODEC_KEY, DubboCodec.NAME);
         ExchangeServer server;
         try {
+            // 这里把 requestHandler 当做参数给了 Exchangers
+            // 最终成为 NettyServer 的一个成员变量
+            //  而这个变量测试继承来自 AbstractPeer
             server = Exchangers.bind(url, requestHandler);
         } catch (RemotingException e) {
             throw new RpcException("Fail to start server(url: " + url + ") " + e.getMessage(), e);
@@ -99,7 +117,7 @@
 
 ```
 
-## ExchangeHandler
+### ExchangeHandler
 
 ![ExchangeHandler](images/ExchangeHandler.png)
 
@@ -107,7 +125,99 @@
 如 连接事件，关闭连接事件，读事件，写事件等等，如果熟悉 Netty 的底层事件，那么理解这个很容易
 这里的 `ChannelHandler` 和 Netty 中的 `ChannelHandler` 作用类似，都是处理 IO 相关的事件。
 
-## NettyServer
+`requestHandler` 是在 [createServer](#createServer) 方法的中通过 `Exchangers.bind(url, requestHandler);` 当做参数给 `NettyServer` 的父类的
+
+```java
+private ExchangeHandler requestHandler = new ExchangeHandlerAdapter() {
+    @Override
+    public CompletableFuture<Object> reply(ExchangeChannel channel, Object message) throws RemotingException {
+        if (message instanceof Invocation) {
+            Invocation inv = (Invocation) message;
+            Invoker<?> invoker = getInvoker(channel, inv);
+            // need to consider backward-compatibility if it's a callback
+            if (Boolean.TRUE.toString().equals(inv.getAttachments().get(IS_CALLBACK_SERVICE_INVOKE))) {
+                String methodsStr = invoker.getUrl().getParameters().get("methods");
+                boolean hasMethod = false;
+                if (methodsStr == null || !methodsStr.contains(",")) {
+                    hasMethod = inv.getMethodName().equals(methodsStr);
+                } else {
+                    String[] methods = methodsStr.split(",");
+                    for (String method : methods) {
+                        if (inv.getMethodName().equals(method)) {
+                            hasMethod = true;
+                            break;
+                        }
+                    }
+                }
+                if (!hasMethod) {
+                    logger.warn(new IllegalStateException("The methodName " + inv.getMethodName()
+                            + " not found in callback service interface ,invoke will be ignored."
+                            + " please update the api interface. url is:"
+                            + invoker.getUrl()) + " ,invocation is :" + inv);
+                    return null;
+                }
+            }
+            RpcContext rpcContext = RpcContext.getContext();
+            rpcContext.setRemoteAddress(channel.getRemoteAddress());
+            Result result = invoker.invoke(inv);
+            if (result instanceof AsyncRpcResult) {
+                return ((AsyncRpcResult) result).getResultFuture().thenApply(r -> (Object) r);
+            } else {
+                return CompletableFuture.completedFuture(result);
+            }
+        }
+        throw new RemotingException(channel, "Unsupported request: "
+                + (message == null ? null : (message.getClass().getName() + ": " + message))
+                + ", channel: consumer: " + channel.getRemoteAddress() + " --> provider: " + channel.getLocalAddress());
+    }
+    @Override
+    public void received(Channel channel, Object message) throws RemotingException {
+        if (message instanceof Invocation) {
+            reply((ExchangeChannel) channel, message);
+        } else {
+            super.received(channel, message);
+        }
+    }
+    @Override
+    public void connected(Channel channel) throws RemotingException {
+        invoke(channel, Constants.ON_CONNECT_KEY);
+    }
+    @Override
+    public void disconnected(Channel channel) throws RemotingException {
+        if (logger.isInfoEnabled()) {
+            logger.info("disconnected from " + channel.getRemoteAddress() + ",url:" + channel.getUrl());
+        }
+        invoke(channel, Constants.ON_DISCONNECT_KEY);
+    }
+    private void invoke(Channel channel, String methodKey) {
+        Invocation invocation = createInvocation(channel, channel.getUrl(), methodKey);
+        if (invocation != null) {
+            try {
+                received(channel, invocation);
+            } catch (Throwable t) {
+                logger.warn("Failed to invoke event method " + invocation.getMethodName() + "(), cause: " + t.getMessage(), t);
+            }
+        }
+    }
+    private Invocation createInvocation(Channel channel, URL url, String methodKey) {
+        String method = url.getParameter(methodKey);
+        if (method == null || method.length() == 0) {
+            return null;
+        }
+        RpcInvocation invocation = new RpcInvocation(method, new Class<?>[0], new Object[0]);
+        invocation.setAttachment(Constants.PATH_KEY, url.getPath());
+        invocation.setAttachment(Constants.GROUP_KEY, url.getParameter(Constants.GROUP_KEY));
+        invocation.setAttachment(Constants.INTERFACE_KEY, url.getParameter(Constants.INTERFACE_KEY));
+        invocation.setAttachment(Constants.VERSION_KEY, url.getParameter(Constants.VERSION_KEY));
+        if (url.getParameter(Constants.STUB_EVENT_KEY, false)) {
+            invocation.setAttachment(Constants.STUB_EVENT_KEY, Boolean.TRUE.toString());
+        }
+        return invocation;
+    }
+};
+```
+
+### NettyServer
 
 ![NettyServer](images/dubbo-NettyServer.png)
 
@@ -116,7 +226,7 @@
     // 1. 配置 bossGroup workerGroup 可以理解工作线程组
     //    bossGroup 处理服务器的工作，因此线程数是1，减少线程上下文的切换开销
     //    workerGroup 处理已经连接到服务器的客户端相关的事件，而这个线程数是可配置的
-    // 2. 设置 TCP 参数
+    // 2. 设置 TCP 相关的参数
     // 3. 设置 ChannelHandler
     //    addLast 执行了3次，添加了3个 ChannelHandler 处理 IO 事件
     @Override
@@ -155,7 +265,9 @@
     }
 ```
 
-## Server
+关于 `NettyServer` 可以看这个文章 [NettyServer](dubbo-remoting-server.md)
+
+### Server
 
 ```java
 // 从 Server 定义方法可以看出， Server 中引用了代表客户端与服务器连接的 Channel 资源
@@ -191,3 +303,85 @@ public interface Server extends Endpoint, Resetable {
 ```
 
 ## refer
+
+当消费者启动的时候，会调用 `refer` 这个方法
+
+```java
+    // refer 返回一个 DubboInvoker
+    // DubboInvoker 中包含了ExchangeClient 表示客户端与服务器的连接
+    @Override
+    public <T> Invoker<T> refer(Class<T> serviceType, URL url) throws RpcException {
+        optimizeSerialization(url);
+        // create rpc invoker.
+        DubboInvoker<T> invoker = new DubboInvoker<T>(serviceType, url, getClients(url), invokers);
+        invokers.add(invoker);
+        return invoker;
+    }
+```
+
+### getClients
+
+```java
+    // 首先查询配置，看是共享客户端，还是不需要共享
+    // 默认是只有一个客户端连接
+    // getSharedClient 会创建一个 ExchangeClient 并放入缓存中
+    private ExchangeClient[] getClients(URL url) {
+        // whether to share connection
+        boolean service_share_connect = false;
+        int connections = url.getParameter(Constants.CONNECTIONS_KEY, 0);
+        // if not configured, connection is shared, otherwise, one connection for one service
+        if (connections == 0) {
+            service_share_connect = true;
+            connections = 1;
+        }
+
+        ExchangeClient[] clients = new ExchangeClient[connections];
+        for (int i = 0; i < clients.length; i++) {
+            if (service_share_connect) {
+                clients[i] = getSharedClient(url);
+            } else {
+                clients[i] = initClient(url);
+            }
+        }
+        return clients;
+    }
+```
+
+### initClient
+
+```java
+    /**
+     * Create new connection
+     */
+    private ExchangeClient initClient(URL url) {
+
+        // client type setting.
+        String str = url.getParameter(Constants.CLIENT_KEY, url.getParameter(Constants.SERVER_KEY, Constants.DEFAULT_REMOTING_CLIENT));
+
+        url = url.addParameter(Constants.CODEC_KEY, DubboCodec.NAME);
+        // enable heartbeat by default
+        url = url.addParameterIfAbsent(Constants.HEARTBEAT_KEY, String.valueOf(Constants.DEFAULT_HEARTBEAT));
+
+        // BIO is not allowed since it has severe performance issue.
+        if (str != null && str.length() > 0 && !ExtensionLoader.getExtensionLoader(Transporter.class).hasExtension(str)) {
+            throw new RpcException("Unsupported client type: " + str + "," +
+                    " supported client type is " + StringUtils.join(ExtensionLoader.getExtensionLoader(Transporter.class).getSupportedExtensions(), " "));
+        }
+
+        ExchangeClient client;
+        try {
+            // connection should be lazy
+            if (url.getParameter(Constants.LAZY_CONNECT_KEY, false)) {
+                client = new LazyConnectExchangeClient(url, requestHandler);
+            } else {
+                client = Exchangers.connect(url, requestHandler);
+            }
+        } catch (RemotingException e) {
+            throw new RpcException("Fail to create remoting client for service(" + url + "): " + e.getMessage(), e);
+        }
+        return client;
+    }
+
+```
+
+### NettyClient
