@@ -27,11 +27,11 @@
 // DubboProtocol 负责服务的启动&客户端服务的连接
 // RegistryProtocol 负责服务的注册
 // Protocol 中的主要方法是 export 和 refer
-// export 和 refer 都有 Adaptive 注解，表明这是一个自适应的方法
+// export 和 refer 都有 Adaptive 注解，表明这是一个自适应的方法，关于自适应可参考下面的链接
 // 通过 export 方法，暴露，注册服务
 // 通过 refer 方法，发现，订阅服务
 // expor 主要是服务器相关的业务，如启用一个 Netty 服务，并暴露服务
-// refer 主要是客户端相关的业务，如注册，订阅一个服务
+// refer 主要是客户端相关的业务，如简历服务器连接，订阅一个服务
 // destroy 负责服务的关闭，取消注册，取消订阅
 // 如果要完全理解 Protocol 的功能，理解 RegistryProtocol 和 DubboProtocol 的实现就可以
 // export 返回的Exporter实例，refer 返回的 Invoker 实例都是经过层层包装的包装类，从而实现 Filter 等功能
