@@ -148,7 +148,7 @@ timestamp=1551021857794
 
 providerUrl vs subscribeUrl
 
-![overrideSubscribeUrl-vs-providerUrl](images/overrideSubscribeUrl-vs-providerUrl.png)
+![overrideSubscribeUrl-vs-providerUrl](images/dubbo-overrideSubscribeUrl-vs-providerUrl.png)
 
 ## doLocalExport
 

@@ -120,7 +120,7 @@
 
 ### ExchangeHandler
 
-![ExchangeHandler](images/ExchangeHandler.png)
+![ExchangeHandler](images/dubbo-ExchangeHandler.png)
 
 从图上可以看到 `ExchangeHandler` 其实也是一个 `ChannelHandler`, `ChannelHandler` 会处理网络 IO 相关的事件，
 如 连接事件，关闭连接事件，读事件，写事件等等，如果熟悉 Netty 的底层事件，那么理解这个很容易
@@ -390,9 +390,9 @@ public interface Server extends Endpoint, Resetable {
 
 `NettyClient` 类图
 
-| !NettyClient                           | NettyServer                                  |
-| -------------------------------------- | -------------------------------------------- |
-| ![NettyClient](images/NettyClient.png) | ![NettyServer](images/dubbo-NettyServer.png) |
+| NettyClient                                  | NettyServer                                  |
+| -------------------------------------------- | -------------------------------------------- |
+| ![NettyClient](images/dubbo-NettyClient.png) | ![NettyServer](images/dubbo-NettyServer.png) |
 
 从上面的类图对比可以看到,`NettyClient` 和 `NettyServer` 实现了很多类似的接口
 
