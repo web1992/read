@@ -15,6 +15,8 @@
     - [initClient](#initclient)
     - [NettyClient](#nettyclient)
   - [ChannelHandler](#channelhandler)
+    - [NettyClientHandler](#nettyclienthandler)
+    - [NettyServerHandler](#nettyserverhandler)
 
 ## export
 
@@ -222,6 +224,12 @@ private ExchangeHandler requestHandler = new ExchangeHandlerAdapter() {
 
 ![NettyServer](images/dubbo-NettyServer.png)
 
+`NettyServer` 的主要作用：
+
+1. NettyServer 在初始的时候，包装 ExchangeHandler (ExchangeHandler 可认为是一个回调函数)
+2. 启动服务器，等待客户端连接，生成 ExchangeServer
+3. 处理 IO 事件，并在 ExchangeHandler 中传递
+
 ```java
     // 这里可以看到十分经典的 Netty 服务启动代码
     // 1. 配置 bossGroup workerGroup 可以理解工作线程组
@@ -396,8 +404,72 @@ public interface Server extends Endpoint, Resetable {
 
 从上面的类图对比可以看到,`NettyClient` 和 `NettyServer` 实现了很多类似的接口
 
+`NettyClient` 主要的功能：
+
+1. NettyClient 在初始化的时候，包装从 DubboProtocol 传递来的参数 ExchangeHandler (ExchangeHandler 可以理解为回调函数)
+2. 与服务器建立连接，创建 ExchangeClient 并返回给 DubboProtocol 包装成 Invoker
+3. 处理 IO 事件，并在 ExchangeHandler 中传递
+
 ## ChannelHandler
 
-不管是 `NettyServer` 还是 `NettyClient`; 中 `ChannelHandler` 都在负责处理具体的 `IO` 事件和业务逻辑
+不管是 `NettyServer` 还是 `NettyClient`; 中 `ChannelHandler` 都在负责处理具体的 `IO` 事件和业务逻辑的
 
-因此理解了 `ChannelHandler`;就对 `dubbo` 中 `IO` 相关的东西理解掌握了
+因此理解了 `org.apache.dubbo.remoting.ChannelHandler` 就对 `dubbo` 中 `IO` 相关的东西理解掌握了
+
+dubbo 中量实现了 netty 的相关的 hander, `NettyClientHandler` 和 `NettyServerHandler`
+
+`NettyClientHandler` 和 `NettyServerHandler` 把 `org.apache.dubbo.remoting.ChannelHandler` 通过构造方法进行包装，
+
+从而把 Netty 中的 IO 事件，传递到 dubbo 自定义的 ChannelHandler 中，执行 dubbo 相关的业务逻辑
+
+具体的构造过程，看下面的代码片段
+
+### NettyClientHandler
+
+```java
+// 这里的 this 其实是 NettyClient
+// NettyClient 本质也是 org.apache.dubbo.remoting.ChannelHandler
+final NettyClientHandler nettyClientHandler = new NettyClientHandler(getUrl(), this);
+
+// 解码/编码 器
+// NettyCodecAdapter 封装了把 io.netty.buffer.ByteBuf 变成 org.apache.dubbo.remoting.buffer.ChannelBuffer
+// NettyCodecAdapter 包装了 Codec2 进行编码/解码
+// ByteBuf -> ChannelBuffer -> Object  把 byte 字节转化成 java 对象
+// Object -> ChannelBuffer -> ByteBuf  把 java 对象转化成 byte 字节
+NettyCodecAdapter adapter = new NettyCodecAdapter(getCodec(), getUrl(), NettyClient.this);
+```
+
+上面通过 `org.apache.dubbo.remoting.buffer.ChannelBuffer` 和 `org.apache.dubbo.remoting.ChannelHandler` 对 netty
+
+相关的 `io.netty.buffer.ByteBuf` 和 `io.netty.channel.ChannelHandler` 进行了包装，后续替换 netty 底层通信框架时，提供了可能
+
+> 当进行网络通信的时候，数据的流向如下：
+
+```log
+    TCP
+    ↓
+    Netty
+    ↓
+    Codec2
+    ↓
+    NettyClientHandler
+    ↓
+    NettyClient
+    ↓
+    DubboProtocol#requestHandler (ExchangeHandler)
+    ↓
+    Invoker
+```
+
+### NettyServerHandler
+
+`NettyServerHandler` 其实是为了包装 `NettyServer` 而存在的，数据的流向和 `NettyClientHandler` 一样
+
+```java
+// 这里的 this 其实是 NettyServer
+// NettyServer 本质也是 org.apache.dubbo.remoting.ChannelHandler
+final NettyServerHandler nettyServerHandler = new NettyServerHandler(getUrl(), this);
+
+// 解码/编码 器
+NettyCodecAdapter adapter = new NettyCodecAdapter(getCodec(), getUrl(), NettyServer.this);
+```
