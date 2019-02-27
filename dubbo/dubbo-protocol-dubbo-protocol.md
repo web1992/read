@@ -1,7 +1,8 @@
 # DubboProtocol
 
-`DubboProtocol` 的 `export` 方法用来启动 TCP 通信的服务器，返回 `Exporter`
-`DubboProtocol` 的 `refer` 方法用来启动 TCP 通信的客户端，返回 `Invoker`
+`DubboProtocol` 的 `export` 方法用来启动 `TCP` 通信的服务器，返回 `Exporter`
+
+`DubboProtocol` 的 `refer` 方法用来启动 `TCP` 通信的客户端，返回 `Invoker`
 
 - [DubboProtocol](#dubboprotocol)
   - [export](#export)
@@ -412,9 +413,9 @@ public interface Server extends Endpoint, Resetable {
 
 ## ChannelHandler
 
-不管是 `NettyServer` 还是 `NettyClient`; 中 `ChannelHandler` 都在负责处理具体的 `IO` 事件和业务逻辑的
+不管是 `NettyServer` 还是 `NettyClient` 中的 `ChannelHandler` 都在负责处理具体的 `IO` 事件和业务逻辑的
 
-因此理解了 `org.apache.dubbo.remoting.ChannelHandler` 就对 `dubbo` 中 `IO` 相关的东西理解掌握了
+因此理解了 `org.apache.dubbo.remoting.ChannelHandler` 就对 `dubbo` 中 `IO` 相关的东西了解个大概了
 
 dubbo 中量实现了 netty 的相关的 hander, `NettyClientHandler` 和 `NettyServerHandler`
 
@@ -432,10 +433,14 @@ dubbo 中量实现了 netty 的相关的 hander, `NettyClientHandler` 和 `Netty
 final NettyClientHandler nettyClientHandler = new NettyClientHandler(getUrl(), this);
 
 // 解码/编码 器
-// NettyCodecAdapter 封装了把 io.netty.buffer.ByteBuf 变成 org.apache.dubbo.remoting.buffer.ChannelBuffer
-// NettyCodecAdapter 包装了 Codec2 进行编码/解码
-// ByteBuf -> ChannelBuffer -> Object  把 byte 字节转化成 java 对象
-// Object -> ChannelBuffer -> ByteBuf  把 java 对象转化成 byte 字节
+// NettyCodecAdapter 封装了把
+// io.netty.buffer.ByteBuf 转化 org.apache.dubbo.remoting.buffer.ChannelBuffer
+// 把 org.apache.dubbo.remoting.buffer.ChannelBuffer 转化 io.netty.buffer.ByteBuf 相关的操作
+// InternalEncoder 负责编码
+// InternalDecoder 负责解码
+// InternalEncoder 和 InternalDecoder 把编码/解码的操作传递给 Codec2
+// 解码(decoder): ByteBuf -> ChannelBuffer -> Object  把 byte 字节转化成 java 对象
+// 编码(encoder): Object -> ChannelBuffer -> ByteBuf  把 java 对象转化成 byte 字节
 NettyCodecAdapter adapter = new NettyCodecAdapter(getCodec(), getUrl(), NettyClient.this);
 ```
 
