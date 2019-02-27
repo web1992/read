@@ -2,7 +2,7 @@
 
 `DubboProtocol` 的 `export` 方法用来启动 `TCP` 通信的服务器，返回 `Exporter`
 
-`DubboProtocol` 的 `refer` 方法用来启动 `TCP` 通信的客户端，返回 `Invoker`
+`DubboProtocol` 的 `refer` 方法用来建立 `TCP` 通信连接的客户端，返回 `Invoker`
 
 - [DubboProtocol](#dubboprotocol)
   - [export](#export)
@@ -274,8 +274,6 @@ private ExchangeHandler requestHandler = new ExchangeHandlerAdapter() {
 
     }
 ```
-
-关于 `NettyServer` 可以看这个文章 [NettyServer](dubbo-remoting-server.md)
 
 ### Server
 
