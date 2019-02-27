@@ -348,7 +348,10 @@ Node 类中有`URL getUrl();` 这个方法可以返回 URL 对象.
 
 ```java
 import org.apache.dubbo.common.extension.ExtensionLoader;
-
+// Protocol$Adaptive 是 Protocol 接口实现自适应类的关键
+// 当我们执行 protocol.export 方法时，其实调用的是 Protocol$Adaptive 中的 export 方法
+// Protocol$Adaptive 会根据 url 中的参数，或者 Invoker 中 url 的参数，通过 SPI 去加载具体的实现类
+// 从而实现参数不同，调用不同的实现类，实现 dubbo 的(方法)自适应
 public class Protocol$Adaptive implements org.apache.dubbo.rpc.Protocol {
     public void destroy() {
         throw new UnsupportedOperationException("method public abstract void org.apache.dubbo.rpc.Protocol.destroy() of interface org.apache.dubbo.rpc.Protocol is not adaptive method!");
@@ -396,6 +399,6 @@ public class Protocol$Adaptive implements org.apache.dubbo.rpc.Protocol {
 ## Summary
 
 1. dubbo 中通过 SPI 机制可以实现自定义扩展类，方便增加新功能
-2. dubbo 中通过 ***$Adaptive 自适应类，通过 `URL`参数的不同，实现不同的业务,更灵活，缺点难以debug
+2. dubbo 中通过 ***$Adaptive 自适应类，通过 `URL` 参数的不同，实现不同的业务,更灵活，缺点难以 debug
 3. dubbo 中通过 SPI 机制加载的类，会进行包装，属性注入，增强类的功能，提供 Filter,Moniter 等功能
 4. 未完待续...

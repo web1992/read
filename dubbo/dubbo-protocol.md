@@ -1,6 +1,7 @@
 # Protocol
 
 - [Protocol](#protocol)
+  - [Protocol interface](#protocol-interface)
   - [RegistryProtocol & DubboProtocol](#registryprotocol--dubboprotocol)
   - [DubboProtocol](#dubboprotocol)
   - [RegistryProtocol](#registryprotocol)
@@ -11,6 +12,8 @@
     - [ListenerInvokerWrapper](#listenerinvokerwrapper)
   - [QosProtocolWrapper](#qosprotocolwrapper)
 
+## Protocol interface
+
 `Protocol`中主要有两个方法：`export`和`refer`
 
 `Protocol`的两个主要的实现类是`DubboProtocol`和`RegistryProtocol`
@@ -20,16 +23,17 @@
 ```java
 
 // Protocol 是在 dubbo 中十分重要的概念
-// RegistryProtocol 和 DubboProtocol 是 Protocol 的两个抽象
+// RegistryProtocol 和 DubboProtocol 是 Protocol 的两个实现类
 // DubboProtocol 负责服务的启动&客户端服务的连接
 // RegistryProtocol 负责服务的注册
 // Protocol 中的主要方法是 export 和 refer
+// export 和 refer 都有 Adaptive 注解，表明这是一个自适应的方法
 // 通过 export 方法，暴露，注册服务
 // 通过 refer 方法，发现，订阅服务
 // expor 主要是服务器相关的业务，如启用一个 Netty 服务，并暴露服务
 // refer 主要是客户端相关的业务，如注册，订阅一个服务
 // destroy 负责服务的关闭，取消注册，取消订阅
-// 如果要完全理解 Protocol 的功能，理解`RegistryProtocol` 和 `DubboProtocol` 的实现就可以
+// 如果要完全理解 Protocol 的功能，理解 RegistryProtocol 和 DubboProtocol 的实现就可以
 // export 返回的Exporter实例，refer 返回的 Invoker 实例都是经过层层包装的包装类，从而实现 Filter 等功能
 // 包装类的生成有些是在代码中写死的，而有些是通过 SPI 机制生成的包装对象
 @SPI("dubbo")
@@ -47,6 +51,8 @@ public interface Protocol {
 
 }
 ```
+
+自适应 [dubbo-extension-loader.md](dubbo-extension-loader.md#protocoladaptive)
 
 ## RegistryProtocol & DubboProtocol
 
