@@ -1,6 +1,6 @@
 # Dispatcher
 
-`Dispatcher` 的作用是对 ChannelHandler 进行包装,然后提交给线程池，进行异步任务的处理
+`Dispatcher` 的作用是对 ChannelHandler 进行包装,包装后的 ChannelHandler 会把 IO 事件提交给线程池，进行异步任务的处理
 
 ```java
 @SPI(AllDispatcher.NAME)
