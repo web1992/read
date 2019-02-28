@@ -17,6 +17,8 @@
 2. request reply 消息机制 HeaderExchangeHandler
 3. 提供异步的 Future 结果功能 HeaderExchangeChannel
 
+> TODO: 后续会进行 demo 验证，同时找到遗漏点
+
 ## HeaderExchanger
 
 ```java
