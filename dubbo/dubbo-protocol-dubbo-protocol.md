@@ -446,7 +446,7 @@ NettyCodecAdapter adapter = new NettyCodecAdapter(getCodec(), getUrl(), NettyCli
 
 相关的 `io.netty.buffer.ByteBuf` 和 `io.netty.channel.ChannelHandler` 进行了包装，后续替换 netty 底层通信框架时，提供了可能
 
-> 当进行网络通信的时候，数据的流向如下：
+> 当进行网络通信的时候，数据的流向如下(并不包含全部的 ChannelHandler)：
 
 ```log
     TCP
