@@ -11,6 +11,12 @@
     - [received](#received)
   - [DecodeHandler](#decodehandler)
 
+`HeaderExchanger` 提供了下面的几个功能：
+
+1. 心跳任务，重新连接任务 HeartbeatTimerTask ReconnectTimerTask CloseTimerTask
+2. request reply 消息机制 HeaderExchangeHandler
+3. 提供异步的 Future 结果功能 HeaderExchangeChannel
+
 ## HeaderExchanger
 
 ```java
@@ -180,7 +186,7 @@ HeaderExchangeHandler 重写了下面的几个方法:
 ### received
 
 ```java
-    // 这里是在接受到消息是，根据消息类型，做不同的处理
+    // 这里是在接收到消息时，根据消息类型，做不同的处理
     // isEvent 设置 Channel 属性事件
     // isTwoWay 消息需要执行回复，会执行 ExchangeHandler#reply 事件
     // Request
