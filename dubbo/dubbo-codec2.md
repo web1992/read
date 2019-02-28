@@ -23,3 +23,7 @@ public interface Codec2 {
 ## DubboCodec
 
 ![DubboCodec](./images/dubbo-DubboCodec.png)
+
+## DecodeHandler
+
+支持 `Decodeable`

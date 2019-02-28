@@ -2,6 +2,7 @@
 
 - [Exchanger](#exchanger)
   - [HeaderExchanger](#headerexchanger)
+  - [HeaderExchangeChannel](#headerexchangechannel)
   - [HeaderExchangeClient](#headerexchangeclient)
   - [HeaderExchangeServer](#headerexchangeserver)
   - [HeaderExchangeHandler](#headerexchangehandler)
@@ -9,7 +10,6 @@
     - [disconnected](#disconnected)
     - [sent](#sent)
     - [received](#received)
-  - [DecodeHandler](#decodehandler)
 
 `HeaderExchanger` 提供了下面的几个功能：
 
@@ -17,7 +17,7 @@
 2. request reply 消息机制 HeaderExchangeHandler
 3. 提供异步的 Future 结果功能 HeaderExchangeChannel
 
-> TODO: 后续会进行 demo 验证，同时找到遗漏点
+> TODO: 后续会进行 demo 举例，同时找到遗漏点
 
 ## HeaderExchanger
 
@@ -70,6 +70,54 @@ public class HeaderExchanger implements Exchanger {
 | HeaderExchangeClient                                           | HeaderExchangeServer                                           |
 | -------------------------------------------------------------- | -------------------------------------------------------------- |
 | ![HeaderExchangeClient](images/dubbo-HeaderExchangeClient.png) | ![HeaderExchangeServer](images/dubbo-HeaderExchangeServer.png) |
+
+## HeaderExchangeChannel
+
+对 `org.apache.dubbo.remoting.Channel` 进行包装，提供异步任务的结果功能
+
+![HeaderExchangeChannel](./images/dubbo-HeaderExchangeChannel.png)
+
+```java
+// HeaderExchangeChannel 实现了 ExchangeChannel
+// 从下面的签名方法 ResponseFuture 就可以看出 HeaderExchangeChannel 提供了异步结果的功能
+// 当执行 request 方法时候，会放回 ResponseFuture，方便在后续获取结果
+public interface ExchangeChannel extends Channel {
+
+    /**
+     * send request.
+     *
+     * @param request
+     * @return response future
+     * @throws RemotingException
+     */
+    ResponseFuture request(Object request) throws RemotingException;
+
+    /**
+     * send request.
+     *
+     * @param request
+     * @param timeout
+     * @return response future
+     * @throws RemotingException
+     */
+    ResponseFuture request(Object request, int timeout) throws RemotingException;
+
+    /**
+     * get message handler.
+     *
+     * @return message handler
+     */
+    ExchangeHandler getExchangeHandler();
+
+    /**
+     * graceful close.
+     *
+     * @param timeout
+     */
+    @Override
+    void close(int timeout);
+}
+```
 
 ## HeaderExchangeClient
 
@@ -232,7 +280,3 @@ HeaderExchangeHandler 重写了下面的几个方法:
         }
     }
 ```
-
-## DecodeHandler
-
-支持 `Decodeable`
