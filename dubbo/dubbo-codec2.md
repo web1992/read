@@ -27,3 +27,7 @@ public interface Codec2 {
 ## DecodeHandler
 
 支持 `Decodeable`
+
+## 好文链接
+
+- [dubbo-protocol](http://dubbo.incubator.apache.org/zh-cn/blog/dubbo-protocol.html)
