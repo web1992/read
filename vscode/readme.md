@@ -2,5 +2,5 @@
 
 ## vscode for java
 
-[tutorial with vscode](https://code.visualstudio.com/docs/java/java-tutorial)
-[java extensions](https://code.visualstudio.com/docs/java/extensions)
+- [tutorial with vscode](https://code.visualstudio.com/docs/java/java-tutorial)
+- [java extensions](https://code.visualstudio.com/docs/java/extensions)
