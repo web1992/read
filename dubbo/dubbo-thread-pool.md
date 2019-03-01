@@ -1,6 +1,6 @@
 # ThreadPool
 
-`dubbo` 线程池的实现，主要作用是创建 Executor
+`dubbo` 线程池的实现，主要作用是创建 `Executor`
 
 已经有的实现类:
 
