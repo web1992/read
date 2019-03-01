@@ -9,12 +9,12 @@
 - LimitedThreadPool
 - EagerThreadPool
 
-| ThreadPool        | 特点                                                                                                                                 |
-| ----------------- | ------------------------------------------------------------------------------------------------------------------------------------ |
-| FixedThreadPool   | 核心线程数为 200，最大线程数是 200 ，固定大小的线程池,队列大小默认为 0，队列实现类是 SynchronousQueue                                |
-| CachedThreadPool  | 核心线程数为 0，最大线程数是 Integer.MAX_VALUE，队列大小默认为 0，队列实现类是 SynchronousQueue，线程超过 1 分钟，没有使用，会被回收 |
-| LimitedThreadPool | 核心线程数为 0，最大线程数是 200,线程一直存活，队列大小默认为 0，队列实现类是 SynchronousQueue                                       |
-| EagerThreadPool   | 核心线程数为 0，最大线程数是 Integer.MAX_VALUE，队列大小默认为 0，队列实现类是 SynchronousQueue，线程超过 1 分钟，没有使用，会被回收 |
+| ThreadPool        | 特点                                                                                                                                                                                  |
+| ----------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| FixedThreadPool   | 核心线程数为 200，最大线程数是 200 ，固定大小的线程池,队列大小默认为 0，队列实现类是 SynchronousQueue                                                                                 |
+| CachedThreadPool  | 核心线程数为 0，最大线程数是 Integer.MAX_VALUE，队列大小默认为 0，队列实现类是 SynchronousQueue，线程超过 1 分钟，没有使用，会被回收                                                  |
+| LimitedThreadPool | 核心线程数为 0，最大线程数是 200,线程一直存活，队列大小默认为 0，队列实现类是 SynchronousQueue                                                                                        |
+| EagerThreadPool   | 核心线程数为 0，最大线程数是 Integer.MAX_VALUE，队列大小默认为 0，队列实现类是 SynchronousQueue，线程超过 1 分钟，没有使用，会被回收(如果有任务，线程池会一直增加到Integer.MAX_VALUE) |
 
 ## WrappedChannelHandler
 
