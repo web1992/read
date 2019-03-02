@@ -1,5 +1,13 @@
 # Codec2
 
+`Codec2` 解决的问题：
+
+1. 半包，粘包 的问题
+2. head 解析
+3. body 解析
+4. 对象序列化
+5. 对象放序列化
+
 ## Codec2 interface
 
 ```java
