@@ -1,12 +1,15 @@
 # Codec2
 
+`dubbo` 中的协议是通过 `head + body` 组成的变长协议
+
 `Codec2` 解决的问题：
 
 1. 半包，粘包 的问题
 2. head 解析
 3. body 解析
-4. 对象序列化
-5. 对象放序列化
+4. body 长度
+5. 对象序列化
+6. 对象放序列化
 
 ## Codec2 interface
 
