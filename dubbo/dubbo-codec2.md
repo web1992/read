@@ -9,7 +9,7 @@
 3. body 解析
 4. body 长度
 5. 对象序列化
-6. 对象放序列化
+6. 对象反序列化
 
 `org.apache.dubbo.remoting.Codec2` 实现类：
 
