@@ -17,6 +17,8 @@
 ```
 
 - [dubbo-codec2.md](dubbo-codec2.md)
+- [dubbo-channel-buffer.md](dubbo-channel-buffer.md)
+- [dubbo-channel-handler.md](dubbo-channel-handler.md)
 - [dubbo-dispatcher.md](dubbo-dispatcher.md)
 - [dubbo-exchanger.md](dubbo-exchanger.md)
 - [dubbo-exporter.md](dubbo-exporter.md)

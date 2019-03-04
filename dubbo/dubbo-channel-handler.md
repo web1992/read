@@ -19,31 +19,37 @@
 
 服务器端的事件从 `decoder` -> `DubboProtocol#requestHandler`
 
-- decoder
-  - encoder
-    - IdleStateHandler
-      - NettyServerHandler
-        - NettyServer
-          - MultiMessageHandler
-            - HeartbeatHandler
-              - AllChannelHandler
-                - DecodeHandler
-                  - HeaderExchangeHandler
-                    - DubboProtocol#requestHandler
+```java
+Netty
+-> decoder
+  -> encoder
+    -> IdleStateHandler
+      -> NettyServerHandler
+        -> NettyServer
+          -> MultiMessageHandler
+            -> HeartbeatHandler
+              -> AllChannelHandler
+                -> DecodeHandler
+                  -> HeaderExchangeHandler
+                    -> DubboProtocol#requestHandler
+```
 
 `dubbo` 客户端端的 `handler` 链:
 
-- decoder
-  - encoder
-    - IdleStateHandler
-      - NettyClientHandler
-        - NettyClient
-          - MultiMessageHandler
-            - HeartbeatHandler
-              - AllChannelHandler
-                - DecodeHandler
-                  - HeaderExchangeHandler
-                    - DubboProtocol#requestHandler
+```java
+Netty
+-> decoder
+  -> encoder
+    -> IdleStateHandler
+      -> NettyClientHandler
+        -> NettyClient
+          -> MultiMessageHandler
+            -> HeartbeatHandler
+              -> AllChannelHandler
+                -> DecodeHandler
+                  -> HeaderExchangeHandler
+                    -> DubboProtocol#requestHandler
+```
 
 客户端端的事件从 `decoder` -> `DubboProtocol#requestHandler`
 
