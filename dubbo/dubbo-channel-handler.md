@@ -12,6 +12,8 @@
 - AllChannelHandler
 - NettyServerHandler
 - NettyServer
+- NettyClientHandler
+- NettyClient
 
 `dubbo` 服务器端的 `handler` 链:
 
