@@ -11,6 +11,22 @@
 5. 对象序列化
 6. 对象放序列化
 
+`org.apache.dubbo.remoting.Codec2` 实现类：
+
+> 按照模块分类
+
+- transport
+  - org.apache.dubbo.remoting.transport.AbstractCodec
+  - org.apache.dubbo.remoting.transport.codec.TransportCodec
+  - org.apache.dubbo.remoting.transport.codec.CodecAdapter
+- protocol
+  - org.apache.dubbo.rpc.protocol.dubbo.DubboCountCodec
+  - org.apache.dubbo.rpc.protocol.dubbo.DubboCodec
+- exchange
+  - org.apache.dubbo.remoting.exchange.codec.ExchangeCodec
+- telnet
+  - org.apache.dubbo.remoting.telnet.codec.TelnetCodec
+
 ## Codec2 interface
 
 ```java
