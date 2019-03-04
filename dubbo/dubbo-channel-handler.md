@@ -2,6 +2,10 @@
 
 `dubbo` 中的 `ChannelHandler` 用来处理所有 IO 相关的事件的转发：编码，解码，序列化，反序列化
 
+> 实现类预览：
+
+![ChannelHandler](images/dubbo-channel-handler-all.png)
+
 `ChannelHandler` 使用了包装类，常见的 handler:
 
 > 按照模块分类
