@@ -33,7 +33,7 @@
 
 `dubbo` 客户端端的 `handler` 链:
 
-- decod
+- decoder
   - encoder
     - IdleStateHandler
       - NettyClientHandler
