@@ -2,9 +2,9 @@
 
 `dubbo` 中的协议是通过 `head + body` 组成的变长协议
 
-`Codec2` 解决的问题：
+`Codec2` 解决的作用：
 
-1. 半包，粘包 的问题
+1. 半包 粘包
 2. head 解析
 3. body 解析
 4. body 长度
@@ -46,6 +46,14 @@ public interface Codec2 {
 
 }
 ```
+
+类图：
+
+![dubbo-codec2](images/dubbo-codec2.png)
+
+## DubboCountCodec
+
+`DubboCountCodec` 对 `DubboCodec` 进行了简单的包装，提供了计数的功能
 
 ## DubboCodec
 
