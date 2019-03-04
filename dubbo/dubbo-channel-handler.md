@@ -14,11 +14,9 @@
 
 ![ChannelHandler](images/dubbo-channel-handler-all.png)
 
-`dubbo` 中的 `ChannelHandler` 之间使用了包装，从而形成类似链式的调用,每种 ChannelHandler 类实现不同的功能
+`dubbo` 中的 `ChannelHandler` 之间使用了包装，从而形成类似链式的调用,每种 `ChannelHandler` 类实现不同的功能
 
 ## demo
-
-例子：
 
 ```java
 interface ChannelHandler {
@@ -60,7 +58,7 @@ public static void main(String[] args){
 
 ```
 
-而在 `dubbo` 中，对 `ChannelHandler` 很多层的包装
+而在 `dubbo` 中，对 `ChannelHandler` 进行了更多层的包装
 
 ## 常见的 handler
 
