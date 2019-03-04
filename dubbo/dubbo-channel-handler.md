@@ -33,17 +33,17 @@
 
 `dubbo` 客户端端的 `handler` 链:
 
-- decoder
+- decod
   - encoder
     - IdleStateHandler
       - NettyClientHandler
         - NettyClient
-              - MultiMessageHandler
-                  - HeartbeatHandler
-                      - AllChannelHandler
-                          - DecodeHandler
-                              - HeaderExchangeHandler
-                                  - DubboProtocol#requestHandler
+          - MultiMessageHandler
+            - HeartbeatHandler
+              - AllChannelHandler
+                - DecodeHandler
+                  - HeaderExchangeHandler
+                    - DubboProtocol#requestHandler
 
 客户端端的事件从 `decoder` -> `DubboProtocol#requestHandler`
 
