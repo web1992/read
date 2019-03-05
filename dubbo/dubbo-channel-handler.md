@@ -99,6 +99,16 @@ Netty
                     -> DubboProtocol#requestHandler
 ```
 
+上面的 `decoder` 和 `encoder` 是 `io.netty.channel.ChannelHandler` 的实现类
+
+`decoder` 和 `encoder` 他们会把具体实现交给 `org.apache.dubbo.remoting.Codec2` 的实现类，进行编码/解码的处理
+
+`org.apache.dubbo.remoting.Codec2` 会返回 编码/解码之后的 `Object` 交给 `io.netty.channel.ChannelHandler`
+
+`io.netty.channel.ChannelHandler` 再转发给 `org.apache.dubbo.remoting.ChannelHandler`
+
+可参考 `org.apache.dubbo.remoting.transport.netty4.NettyCodecAdapter` 的代码
+
 `dubbo` 客户端端的 `handler` 链:
 
 ```java
