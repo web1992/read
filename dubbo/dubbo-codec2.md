@@ -7,6 +7,7 @@
     - [DubboCodec-decodeBody](#dubbocodec-decodebody)
   - [ExchangeCodec](#exchangecodec)
     - [ExchangeCodec-decode](#exchangecodec-decode)
+  - [TelnetCodec](#telnetcodec)
   - [好文链接](#%E5%A5%BD%E6%96%87%E9%93%BE%E6%8E%A5)
 
 `dubbo` 中的协议是通过 `head + body` 组成的变长协议
@@ -254,7 +255,8 @@ Java 中的 true 和 false 只能表示两种结果，但是使用二进制，�
         // check magic number.
         // 如果 readable > 0 那么 header[0] 就不会出现数组越界
         // readable > 1 header[1] 也是同样的道理
-        // header[0] != MAGIC_HIGH ||  header[1] != MAGIC_LOW 说明协议不是从头开始读取的
+        // header[0] != MAGIC_HIGH ||  header[1] != MAGIC_LOW
+        // 说明协议不是 dubbo protocol (执行 TelnetCodec#decode 相关的解码操作)
         if (readable > 0 && header[0] != MAGIC_HIGH
                 || readable > 1 && header[1] != MAGIC_LOW) {
             int length = header.length;
@@ -271,12 +273,15 @@ Java 中的 true 和 false 只能表示两种结果，但是使用二进制，�
                 if (header[i] == MAGIC_HIGH && header[i + 1] == MAGIC_LOW) {
                     // 更新 readIndex下次读取的位置，下一个读取从这个新的位置开始读取
                     buffer.readerIndex(buffer.readerIndex() - header.length + i);
-                    // copy 一个新的数组，长度为 i(其实是就是读取剩余的 head byte,之前的条件是不是从头开始读取的)
+                    // copy 一个新的数组，长度为 i
+                    // 这些 0 到 i 的数据会被 copy 到 header 中 进行 TelnetCodec#decode 操作
+                    //（会被任务是 telnet 协议进行解码）
+                    // 这里就使 dubbo 同时支持了 telnet 协议和自定义的 dubbo protocol
                     header = Bytes.copyOf(header, i);
                     break;
                 }
             }
-            // 调用父类 TelnetCodec#decode
+            // 调用父类 TelnetCodec#decode,进行 telnet 协议解码
             return super.decode(channel, buffer, readable, header);
         }
         // check length.
@@ -319,7 +324,9 @@ Java 中的 true 和 false 只能表示两种结果，但是使用二进制，�
     }
 ```
 
-[DubboCodec#decodeBody](#DubboCodec-decodeBody)
+🔗 [DubboCodec#decodeBody](#DubboCodec-decodeBody)
+
+## TelnetCodec
 
 ## 好文链接
 
