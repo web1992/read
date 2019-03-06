@@ -4,13 +4,14 @@
   - [Codec2 interface](#codec2-interface)
   - [DubboCountCodec](#dubbocountcodec)
   - [DubboCodec](#dubbocodec)
-    - [decodeBody](#decodebody)
+    - [DubboCodec-decodeBody](#dubbocodec-decodebody)
   - [ExchangeCodec](#exchangecodec)
+    - [ExchangeCodec-decode](#exchangecodec-decode)
   - [好文链接](#%E5%A5%BD%E6%96%87%E9%93%BE%E6%8E%A5)
 
 `dubbo` 中的协议是通过 `head + body` 组成的变长协议
 
-![dubo-codec2.png](images/dubo-codec2.png)
+![dubbo-codec2-protocol.png](images/dubbo-codec2-protocol.png)
 
 `Codec2` 解决的作用：
 
@@ -93,7 +94,7 @@ public static final String DEFAULT_DUBBO_PROTOCOL_VERSION = "2.0.2";
 
 下面看 `decodeBody` 的具体实现
 
-### decodeBody
+### DubboCodec-decodeBody
 
 ```java
 // 1.获取 flag
@@ -230,6 +231,95 @@ Java 中的 true 和 false 只能表示两种结果，但是使用二进制，�
 进行运算和组合，可以表达出更多的条件组合
 
 可以参考这个文章: [nio-selection-key.md](../java/nio-selection-key.md)
+
+### ExchangeCodec-decode
+
+```java
+    @Override
+    public Object decode(Channel channel, ChannelBuffer buffer) throws IOException {
+        // 从 buffer 中读取 可读数据的长度
+        int readable = buffer.readableBytes();
+        // 初始化一个 HEADER_LENGTH 长度的 byte 数组，用来存储协议头
+        // Math.min 如果可读取的数据小于 HEADER_LENGTH，就读取部分数据，否则读取的数据长度为 HEADER_LENGTH
+        byte[] header = new byte[Math.min(readable, HEADER_LENGTH)];
+        // 读取数据
+        buffer.readBytes(header);
+        // 继续读取协议的其他部分
+        return decode(channel, buffer, readable, header);
+    }
+
+    // 这里读取协议的其他部分
+    @Override
+    protected Object decode(Channel channel, ChannelBuffer buffer, int readable, byte[] header) throws IOException {
+        // check magic number.
+        // 如果 readable > 0 那么 header[0] 就不会出现数组越界
+        // readable > 1 header[1] 也是同样的道理
+        // header[0] != MAGIC_HIGH ||  header[1] != MAGIC_LOW 说明协议不是从头开始读取的
+        if (readable > 0 && header[0] != MAGIC_HIGH
+                || readable > 1 && header[1] != MAGIC_LOW) {
+            int length = header.length;
+            // header.length < readable 数组的长度小于可读取的数据（其实数组就是放不下多余的数据）
+            // 使用 Bytes.copyOf 复制一个新的数组
+            if (header.length < readable) {
+                header = Bytes.copyOf(header, readable);
+                // 读取数据到 head 中，从 length 处开始读取
+                // 读取数据的长度 = readable - length （因为 readable 中存在有些数据已经被读取过了，不需要再次重复读取了）
+                buffer.readBytes(header, length, readable - length);
+            }
+            // 从 byte 数据中循环遍历找到新的 head 开始的索引位置
+            for (int i = 1; i < header.length - 1; i++) {
+                if (header[i] == MAGIC_HIGH && header[i + 1] == MAGIC_LOW) {
+                    // 更新 readIndex下次读取的位置，下一个协议初始位置进行读取
+                    buffer.readerIndex(buffer.readerIndex() - header.length + i);
+                    // copy 一个新的数组，长度为 i(其实是就是读取剩余的 head byte,之前的条件是不是从头开始读取的)
+                    header = Bytes.copyOf(header, i);
+                    break;
+                }
+            }
+            // 调用父类 TelnetCodec#decode
+            return super.decode(channel, buffer, readable, header);
+        }
+        // check length.
+        // 如果可读的数据小于 HEADER_LENGTH ，终止读取
+        if (readable < HEADER_LENGTH) {
+            return DecodeResult.NEED_MORE_INPUT;
+        }
+
+        // get data length.
+        // 从 header 数组的 12 位置开始读取数据，计算出数据的长度
+        int len = Bytes.bytes2int(header, 12);
+        // checkPayload 检查数据长度是否过长 默认 8M，超过会报错
+        checkPayload(channel, len);
+
+        // 可读取的数据太少，终止读取
+        int tt = len + HEADER_LENGTH;
+        if (readable < tt) {
+            return DecodeResult.NEED_MORE_INPUT;
+        }
+
+        // limit input stream.
+        // 把 ChannelBuffer 转化成 java.io.InputStream 方便在 decodeBody 进行反序列化操作
+        ChannelBufferInputStream is = new ChannelBufferInputStream(buffer, len);
+
+        try {
+            // 开始读取 body 实现在 DubboCodec#decodeBody
+            return decodeBody(channel, is, header);
+        } finally {
+            if (is.available() > 0) {
+                try {
+                    if (logger.isWarnEnabled()) {
+                        logger.warn("Skip input stream " + is.available());
+                    }
+                    StreamUtils.skipUnusedStream(is);
+                } catch (IOException e) {
+                    logger.warn(e.getMessage(), e);
+                }
+            }
+        }
+    }
+```
+
+[DubboCodec#decodeBody](#DubboCodec-decodeBody)
 
 ## 好文链接
 
