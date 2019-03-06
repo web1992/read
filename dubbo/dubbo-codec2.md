@@ -269,7 +269,7 @@ Java 中的 true 和 false 只能表示两种结果，但是使用二进制，�
             // 从 byte 数据中循环遍历找到新的 head 开始的索引位置
             for (int i = 1; i < header.length - 1; i++) {
                 if (header[i] == MAGIC_HIGH && header[i + 1] == MAGIC_LOW) {
-                    // 更新 readIndex下次读取的位置，下一个协议初始位置进行读取
+                    // 更新 readIndex下次读取的位置，下一个读取从这个新的位置开始读取
                     buffer.readerIndex(buffer.readerIndex() - header.length + i);
                     // copy 一个新的数组，长度为 i(其实是就是读取剩余的 head byte,之前的条件是不是从头开始读取的)
                     header = Bytes.copyOf(header, i);
