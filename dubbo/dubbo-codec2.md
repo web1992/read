@@ -5,6 +5,9 @@
   - [Codec2 interface](#codec2-interface)
   - [ExchangeCodec](#exchangecodec)
     - [ExchangeCodec-decode](#exchangecodec-decode)
+    - [ExchangeCodec-encodeRequest](#exchangecodec-encoderequest)
+    - [ExchangeCodec-encodeResponse](#exchangecodec-encoderesponse)
+    - [ExchangeCodec-telnet](#exchangecodec-telnet)
   - [DubboCountCodec](#dubbocountcodec)
   - [DubboCodec](#dubbocodec)
     - [DubboCodec-decodeBody](#dubbocodec-decodebody)
@@ -17,14 +20,15 @@
 
 ![dubbo-codec2-protocol.png](images/dubbo-codec2-protocol.png)
 
-`Codec2` 解决的作用：
+`Codec2` 的作用：
 
-1. 半包 粘包
+1. 半包 粘包解析
 2. head 解析
-3. body 解析
-4. body 长度
+3. body 长度解析
+4. body 解析
 5. 对象序列化
 6. 对象反序列化
+7. telnet 协议解析
 
 `org.apache.dubbo.remoting.Codec2` 实现类：
 
@@ -68,6 +72,10 @@ public interface Codec2 {
 
 ## ExchangeCodec
 
+`ExchangeCodec` 中 `encode` 方法负责编码  `Request` & `Response` 和 `String(telent)` 而 `decode` 负责解析协议的 `head` 部分
+
+`decodeBody` 方法负责解码 `body` 而 `decodeBody` 方法被 `DubboCodec` 类重写了 因此 `body` 的解析在 `DubboCodec#decodeBody` 方法中
+
 `ExchangeCodec` 中定义的字段
 
 ```java
@@ -102,7 +110,7 @@ Java 中的 `&` 和 `|` 可以利用二进制的特性，方便的进行条件�
 Java 中的 true 和 false 只能表示两种结果，但是使用二进制，并利用 `&` 和 `|`
 进行运算和组合，可以表达出更多的条件组合
 
-可以参考这个文章: [nio-selection-key.md](../java/nio-selection-key.md)
+java nio 中的巧妙运用，可以参考这个文章: [nio-selection-key.md](../java/nio-selection-key.md)
 
 ### ExchangeCodec-decode
 
@@ -196,6 +204,12 @@ Java 中的 true 和 false 只能表示两种结果，但是使用二进制，�
 ```
 
 🔗 [DubboCodec#decodeBody](#DubboCodec-decodeBody)
+
+### ExchangeCodec-encodeRequest
+
+### ExchangeCodec-encodeResponse
+
+### ExchangeCodec-telnet
 
 ## DubboCountCodec
 
