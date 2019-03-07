@@ -207,6 +207,72 @@ java nio 中的巧妙运用，可以参考这个文章: [nio-selection-key.md](.
 
 ### ExchangeCodec-encodeRequest
 
+```java
+protected void encodeRequest(Channel channel, ChannelBuffer buffer, Request req) throws IOException {
+    // 获取 序列化对象
+    Serialization serialization = getSerialization(channel);
+    // header. 创建长度为 HEADER_LENGTH 的数组
+    byte[] header = new byte[HEADER_LENGTH];
+    // set magic number.
+    // 设置 magic number 用来表示协议的开始，
+    // 可以在 ExchangeCodec#decode 看到解码时的操作
+    Bytes.short2bytes(MAGIC, header);
+    // set request and serialization flag.
+    // 如果 serialization.getContentTypeId() = 2 = (00000010)
+    //  10000000 | 00000010 = 10000010 这里其实就是把 序列化的ID 放在 header[2] 中
+    header[2] = (byte) (FLAG_REQUEST | serialization.getContentTypeId());
+    if (req.isTwoWay()) {
+        // 10000010 | 01000000 = (11000010)
+        header[2] |= FLAG_TWOWAY;
+    }
+    if (req.isEvent()) {
+        // 11000010 | 00100000 = (11100010)
+        header[2] |= FLAG_EVENT;
+    }
+    // 因为 FLAG_REQUEST 和 FLAG_TWOWAY 和 FLAG_EVENT 二进制中 1 的都在不同的位置上
+    // 因为进行 | 操作就是就是把这个三个标记放入到 head[2] 中
+    // 可以用一个字节的值表示 3 个值，减少字节占用数
+    // set request id.
+    // 从协议的设计图中可知 head[3] 应该是存储的 status 信息
+    // encodeRequest 时编码请求，因此跳过 head[3]
+    // reqId 放在 head[4] 中，下面的就是这个操作
+    Bytes.long2bytes(req.getId(), header, 4);
+    // encode request data.
+    // 获取 写索引的位置
+    int savedWriteIndex = buffer.writerIndex();
+    // 改变写索引的位置
+    buffer.writerIndex(savedWriteIndex + HEADER_LENGTH);
+    // 把 ChannelBuffer 包装成 OutputStream
+    ChannelBufferOutputStream bos = new ChannelBufferOutputStream(buffer);
+    // 获取 ObjectOutput 容器
+    ObjectOutput out = serialization.serialize(channel.getUrl(), bos);
+    // 根据不同的请求类型
+    if (req.isEvent()) {
+        // 如果是事件，简单的执行 writeObject
+        encodeEventData(channel, out, req.getData());
+    } else {
+        // 否则从 RpcInvocation 获取 版本,方法,参数类型,参数,attachment 进行写入
+        encodeRequestData(channel, out, req.getData(), req.getVersion());
+    }
+    out.flushBuffer();
+    if (out instanceof Cleanable) {
+        ((Cleanable) out).cleanup();
+    }
+    bos.flush();
+    bos.close();
+    // 获取写入的数据长度
+    int len = bos.writtenBytes();
+    // 检查数据长度是否过大
+    checkPayload(channel, len);
+    // 从协议的设计图中可知 head[12] 应该是存储数据的长度，这里写入数据长度信息
+    Bytes.int2bytes(len, header, 12);
+    // write 更新写的索引
+    buffer.writerIndex(savedWriteIndex);
+    buffer.writeBytes(header); // write header.
+    buffer.writerIndex(savedWriteIndex + HEADER_LENGTH + len);
+}
+```
+
 ### ExchangeCodec-encodeResponse
 
 ### ExchangeCodec-telnet
