@@ -3,11 +3,11 @@
 - [Codec2](#codec2)
   - [简介](#%E7%AE%80%E4%BB%8B)
   - [Codec2 interface](#codec2-interface)
+  - [ExchangeCodec](#exchangecodec)
+    - [ExchangeCodec-decode](#exchangecodec-decode)
   - [DubboCountCodec](#dubbocountcodec)
   - [DubboCodec](#dubbocodec)
     - [DubboCodec-decodeBody](#dubbocodec-decodebody)
-  - [ExchangeCodec](#exchangecodec)
-    - [ExchangeCodec-decode](#exchangecodec-decode)
   - [TelnetCodec](#telnetcodec)
   - [好文链接](#%E5%A5%BD%E6%96%87%E9%93%BE%E6%8E%A5)
 
@@ -65,151 +65,6 @@ public interface Codec2 {
 类图：
 
 ![dubbo-codec2](images/dubbo-codec2.png)
-
-## DubboCountCodec
-
-`DubboCountCodec` 对 `DubboCodec` 进行了简单的包装，重写了 `decode` 方法
-
-会返回 `MultiMessage` 可以同时解码出多个 `Object`
-
-## DubboCodec
-
-![DubboCodec](./images/dubbo-DubboCodec.png)
-
-DubboCodec 实现的方法：
-
-- decodeBody
-- encodeResponseData
-- encodeRequestData
-
-`encodeResponseData` 和 `encodeRequestData` 都有一个重载的方法，多了一个参数 `String version`
-
-```java
-// DubboCodec
-public static final String DUBBO_VERSION = Version.getProtocolVersion();
-
-//  Version
-public static final String DEFAULT_DUBBO_PROTOCOL_VERSION = "2.0.2";
-```
-
-`DubboCodec` 虽然是 `Codec2` 的子类，但是并没有实现 `Codec2` 的二个核心方法 `encode` 和 `decode`
-
-而实现了 `ExchangeCodec` 的 `decodeBody` 方法,`encode` 和 `decode` 方法继承自 `ExchangeCodec` 类
-
-下面看 `decodeBody` 的具体实现
-
-### DubboCodec-decodeBody
-
-```java
-// 1.获取 flag
-// 2.获取 proto
-// 3.反序列化
-// 4.返回 Response/Request
-@Override
-protected Object decodeBody(Channel channel, InputStream is, byte[]header) throws IOException {
-    // header[2] = (byte) (FLAG_REQUEST | serialization.getContentTypeId()); 这个是 encode 里面的操作
-    // header[2] 就是利用二进制的 | 操作特性，同时把 flag 和 serialization id 用一个值存储（减少字节数）
-    // 在 decode 的时候利用 & 计算出 serialization id
-    // 例子：
-    // 假如 serialization.getContentTypeId() = 2 = 00000010
-    // 那么 (FLAG_REQUEST | 00000010 ) = (10000000 | 00000010) =(10000010)
-    // 那么 (flag & SERIALIZATION_MASK) = (10000010 & 00011111) = 00000010
-    // 这里利用二进制的特性,计算出序列化的id
-    // set request and serialization flag.
-    byte flag = header[2], proto = (byte) (flag & SERIALIZATION_MASK);
-    // get request id.
-    long id = Bytes.bytes2long(header, 4);
-    // flag & FLAG_REQUEST 这里因为存在 3 种 flag，而他们二进制的 1 都在不同的位置上
-    // 因此 一种 flag 和另一种 flag 进行 & 运算 结果总是 0 (二进制 00000000)
-    if ((flag & FLAG_REQUEST) == 0) {// 等于 0 说不不是 FLAG_REQUEST 就当做响应处理
-        // decode response.
-        Response res = new Response(id);
-        if ((flag & FLAG_EVENT) != 0) {// 判断是否是 FLAG_EVENT
-            res.setEvent(true);
-        }
-        // get status.
-        byte status = header[3];
-        res.setStatus(status);
-        try {
-            // 反序列化
-            ObjectInput in = CodecSupport.deserialize(channel.getUrl(), is, proto);
-            if (status == Response.OK) {
-                Object data;
-                if (res.isHeartbeat()) {// 心跳事件
-                    data = decodeHeartbeatData(channel, in);
-                } else if (res.isEvent()) {// 其他事件
-                    data = decodeEventData(channel, in);
-                } else {// 正常的请求响应
-                    DecodeableRpcResult result;
-                    if (channel.getUrl().getParameter(
-                            Constants.DECODE_IN_IO_THREAD_KEY,
-                            Constants.DEFAULT_DECODE_IN_IO_THREAD)) {
-                        result = new DecodeableRpcResult(channel, res, is,
-                                (Invocation) getRequestData(id), proto);
-                        result.decode();
-                    } else {
-                        result = new DecodeableRpcResult(channel, res,
-                                new UnsafeByteArrayInputStream(readMessageData(is)),
-                                (Invocation) getRequestData(id), proto);
-                    }
-                    data = result;
-                }
-                res.setResult(data);
-            } else {
-                res.setErrorMessage(in.readUTF());
-            }
-        } catch (Throwable t) {
-            if (log.isWarnEnabled()) {
-                log.warn("Decode response failed: " + t.getMessage(), t);
-            }
-            res.setStatus(Response.CLIENT_ERROR);
-            res.setErrorMessage(StringUtils.toString(t));
-        }
-        return res;
-    } else {
-        // 请求解码
-        // decode request.
-        Request req = new Request(id);
-        req.setVersion(Version.getProtocolVersion());
-        req.setTwoWay((flag & FLAG_TWOWAY) != 0);
-        if ((flag & FLAG_EVENT) != 0) {
-            req.setEvent(true);
-        }
-        try {
-            Object data;
-            ObjectInput in = CodecSupport.deserialize(channel.getUrl(), is, proto);
-            if (req.isHeartbeat()) {
-                data = decodeHeartbeatData(channel, in);
-            } else if (req.isEvent()) {
-                data = decodeEventData(channel, in);
-            } else {
-                DecodeableRpcInvocation inv;
-                if (channel.getUrl().getParameter(
-                        Constants.DECODE_IN_IO_THREAD_KEY,
-                        Constants.DEFAULT_DECODE_IN_IO_THREAD)) {
-                    inv = new DecodeableRpcInvocation(channel, req, is, proto);
-                    inv.decode();
-                } else {
-                    inv = new DecodeableRpcInvocation(channel, req,
-                            new UnsafeByteArrayInputStream(readMessageData(is)), proto);
-                }
-                data = inv;
-            }
-            req.setData(data);
-        } catch (Throwable t) {
-            if (log.isWarnEnabled()) {
-                log.warn("Decode request failed: " + t.getMessage(), t);
-            }
-            // bad request
-            req.setBroken(true);
-            req.setData(t);
-        }
-        return req;
-    }
-}
-```
-
-上面说过 `dubbo` 的协议是 `head + body`,`decodeBody` 也就是从 `InputStream` 经过 `序列化` 解析出 `ObjectInput` 对象
 
 ## ExchangeCodec
 
@@ -341,6 +196,156 @@ Java 中的 true 和 false 只能表示两种结果，但是使用二进制，�
 ```
 
 🔗 [DubboCodec#decodeBody](#DubboCodec-decodeBody)
+
+## DubboCountCodec
+
+`DubboCountCodec` 对 `DubboCodec` 进行了简单的包装，重写了 `decode` 方法
+
+会返回 `MultiMessage` 可以同时解码出多个 `Object`
+
+## DubboCodec
+
+![DubboCodec](./images/dubbo-DubboCodec.png)
+
+DubboCodec 实现的方法：
+
+- decodeBody
+- encodeResponseData
+- encodeRequestData
+
+`encodeResponseData` 和 `encodeRequestData` 都有一个重载的方法，多了一个参数 `String version`
+
+```java
+// DubboCodec
+public static final String DUBBO_VERSION = Version.getProtocolVersion();
+
+//  Version
+public static final String DEFAULT_DUBBO_PROTOCOL_VERSION = "2.0.2";
+```
+
+`DubboCodec` 虽然是 `Codec2` 的子类，但是并没有实现 `Codec2` 的二个核心方法 `encode` 和 `decode`
+
+而实现了 `ExchangeCodec` 的 `decodeBody` 方法,`encode` 和 `decode` 方法继承自 `ExchangeCodec` 类
+
+下面看 `decodeBody` 的具体实现
+
+### DubboCodec-decodeBody
+
+```java
+// 1.获取 flag
+// 2.获取 proto
+// 3.反序列化
+// 4.返回 Response/Request
+@Override
+protected Object decodeBody(Channel channel, InputStream is, byte[]header) throws IOException {
+    // header[2] = (byte) (FLAG_REQUEST | serialization.getContentTypeId()); 这个是 encode 里面的操作
+    // header[2] 就是利用二进制的 | 操作特性，同时把 flag 和 serialization id 用一个值存储（减少字节数）
+    // 在 decode 的时候利用 & 计算出 serialization id
+    // 例子：
+    // 假如 serialization.getContentTypeId() = 2 = 00000010
+    // 那么 (FLAG_REQUEST | 00000010 ) = (10000000 | 00000010) =(10000010)
+    // 那么 (flag & SERIALIZATION_MASK) = (10000010 & 00011111) = 00000010
+    // 这里利用二进制的特性,计算出序列化的id
+    // set request and serialization flag.
+    byte flag = header[2], proto = (byte) (flag & SERIALIZATION_MASK);
+    // get request id.
+    long id = Bytes.bytes2long(header, 4);
+    // flag & FLAG_REQUEST 这里因为存在 3 种 flag，而他们二进制的 1 都在不同的位置上
+    // 因此 一种 flag 和另一种 flag 进行 & 运算 结果总是 0 (二进制 00000000)
+    if ((flag & FLAG_REQUEST) == 0) {// 等于 0 说不不是 FLAG_REQUEST 就当做响应处理
+        // decode response.
+        Response res = new Response(id);
+        if ((flag & FLAG_EVENT) != 0) {// 判断是否是 FLAG_EVENT
+            res.setEvent(true);
+        }
+        // get status.
+        byte status = header[3];
+        res.setStatus(status);
+        try {
+            // 反序列化
+            ObjectInput in = CodecSupport.deserialize(channel.getUrl(), is, proto);
+            if (status == Response.OK) {
+                Object data;
+                if (res.isHeartbeat()) {// 心跳事件
+                    data = decodeHeartbeatData(channel, in);
+                } else if (res.isEvent()) {// 其他事件
+                    data = decodeEventData(channel, in);
+                } else {// 正常的请求响应
+                    // DecodeableRpcResult 包含了  Exception,Attachment,result 3 部分
+                    // 分别进行不同的解析操作
+                    DecodeableRpcResult result;
+                    if (channel.getUrl().getParameter(
+                            Constants.DECODE_IN_IO_THREAD_KEY,
+                            Constants.DEFAULT_DECODE_IN_IO_THREAD)) {
+                        result = new DecodeableRpcResult(channel, res, is,
+                                (Invocation) getRequestData(id), proto);
+                        result.decode();// 解析这三个部分
+                    } else {
+                        result = new DecodeableRpcResult(channel, res,
+                                new UnsafeByteArrayInputStream(readMessageData(is)),
+                                (Invocation) getRequestData(id), proto);
+                    }
+                    data = result;
+                }
+                res.setResult(data);
+            } else {
+                res.setErrorMessage(in.readUTF());
+            }
+        } catch (Throwable t) {
+            if (log.isWarnEnabled()) {
+                log.warn("Decode response failed: " + t.getMessage(), t);
+            }
+            res.setStatus(Response.CLIENT_ERROR);
+            res.setErrorMessage(StringUtils.toString(t));
+        }
+        return res;
+    } else {
+        // 请求解码
+        // decode request.
+        Request req = new Request(id);
+        req.setVersion(Version.getProtocolVersion());// 协议版本
+        req.setTwoWay((flag & FLAG_TWOWAY) != 0);// 利用二进制运算设置 flag
+        if ((flag & FLAG_EVENT) != 0) {
+            req.setEvent(true);
+        }
+        try {
+            Object data;
+            // 反序列化
+            // ObjectInput 可以看做是 byte 数据容器,从 ObjectInput 可以读取到对象
+            ObjectInput in = CodecSupport.deserialize(channel.getUrl(), is, proto);
+            if (req.isHeartbeat()) {
+                data = decodeHeartbeatData(channel, in);
+            } else if (req.isEvent()) {
+                data = decodeEventData(channel, in);
+            } else {
+                // DecodeableRpcInvocation 同样包含了  Exception,Attachment,result 3 部分
+                DecodeableRpcInvocation inv;
+                if (channel.getUrl().getParameter(
+                        Constants.DECODE_IN_IO_THREAD_KEY,
+                        Constants.DEFAULT_DECODE_IN_IO_THREAD)) {
+                    inv = new DecodeableRpcInvocation(channel, req, is, proto);
+                    inv.decode();// 解析这三个部分
+                } else {
+                    inv = new DecodeableRpcInvocation(channel, req,
+                            new UnsafeByteArrayInputStream(readMessageData(is)), proto);
+                }
+                data = inv;
+            }
+            req.setData(data);
+        } catch (Throwable t) {
+            if (log.isWarnEnabled()) {
+                log.warn("Decode request failed: " + t.getMessage(), t);
+            }
+            // bad request
+            req.setBroken(true);
+            req.setData(t);
+        }
+        return req;
+    }
+}
+```
+
+上面说过 `dubbo` 的协议是 `head + body`,`decodeBody` 也就是从 `InputStream` 经过 `序列化` 解析出 `ObjectInput` 对象
 
 ## TelnetCodec
 
