@@ -1,6 +1,7 @@
 # Codec2
 
 - [Codec2](#codec2)
+  - [简介](#%E7%AE%80%E4%BB%8B)
   - [Codec2 interface](#codec2-interface)
   - [DubboCountCodec](#dubbocountcodec)
   - [DubboCodec](#dubbocodec)
@@ -9,6 +10,8 @@
     - [ExchangeCodec-decode](#exchangecodec-decode)
   - [TelnetCodec](#telnetcodec)
   - [好文链接](#%E5%A5%BD%E6%96%87%E9%93%BE%E6%8E%A5)
+
+## 简介
 
 `dubbo` 中的协议是通过 `head + body` 组成的变长协议
 
@@ -104,27 +107,39 @@ public static final String DEFAULT_DUBBO_PROTOCOL_VERSION = "2.0.2";
 // 4.返回 Response/Request
 @Override
 protected Object decodeBody(Channel channel, InputStream is, byte[]header) throws IOException {
+    // header[2] = (byte) (FLAG_REQUEST | serialization.getContentTypeId()); 这个是 encode 里面的操作
+    // header[2] 就是利用二进制的 | 操作特性，同时把 flag 和 serialization id 用一个值存储（减少字节数）
+    // 在 decode 的时候利用 & 计算出 serialization id
+    // 例子：
+    // 假如 serialization.getContentTypeId() = 2 = 00000010
+    // 那么 (FLAG_REQUEST | 00000010 ) = (10000000 | 00000010) =(10000010)
+    // 那么 (flag & SERIALIZATION_MASK) = (10000010 & 00011111) = 00000010
+    // 这里利用二进制的特性,计算出序列化的id
+    // set request and serialization flag.
     byte flag = header[2], proto = (byte) (flag & SERIALIZATION_MASK);
     // get request id.
     long id = Bytes.bytes2long(header, 4);
-    if ((flag & FLAG_REQUEST) == 0) {
+    // flag & FLAG_REQUEST 这里因为存在 3 种 flag，而他们二进制的 1 都在不同的位置上
+    // 因此 一种 flag 和另一种 flag 进行 & 运算 结果总是 0 (二进制 00000000)
+    if ((flag & FLAG_REQUEST) == 0) {// 等于 0 说不不是 FLAG_REQUEST 就当做响应处理
         // decode response.
         Response res = new Response(id);
-        if ((flag & FLAG_EVENT) != 0) {
+        if ((flag & FLAG_EVENT) != 0) {// 判断是否是 FLAG_EVENT
             res.setEvent(true);
         }
         // get status.
         byte status = header[3];
         res.setStatus(status);
         try {
+            // 反序列化
             ObjectInput in = CodecSupport.deserialize(channel.getUrl(), is, proto);
             if (status == Response.OK) {
                 Object data;
-                if (res.isHeartbeat()) {
+                if (res.isHeartbeat()) {// 心跳事件
                     data = decodeHeartbeatData(channel, in);
-                } else if (res.isEvent()) {
+                } else if (res.isEvent()) {// 其他事件
                     data = decodeEventData(channel, in);
-                } else {
+                } else {// 正常的请求响应
                     DecodeableRpcResult result;
                     if (channel.getUrl().getParameter(
                             Constants.DECODE_IN_IO_THREAD_KEY,
@@ -152,6 +167,7 @@ protected Object decodeBody(Channel channel, InputStream is, byte[]header) throw
         }
         return res;
     } else {
+        // 请求解码
         // decode request.
         Request req = new Request(id);
         req.setVersion(Version.getProtocolVersion());
@@ -217,14 +233,14 @@ protected static final int SERIALIZATION_MASK = 0x1f;
 
 | 字段               | 10 进制 | 16 进制 | 2 进制           |
 | ------------------ | ------- | ------- | ---------------- |
-| HEADER_LENGTH      | 16      | 10      | 10000            |
+| HEADER_LENGTH      | 16      | 10      | 00010000         |
 | MAGIC              | 55995   | dabb    | 1101101010111011 |
 | MAGIC_HIGH         | 218     | da      | 11011010         |
 | MAGIC_LOW          | 187     | bb      | 10111011         |
-| FLAG_REQUEST       | 128     | 80      | 10000000         |
-| FLAG_TWOWAY        | 64      | 40      | 1000000          |
-| FLAG_EVENT         | 32      | 20      | 100000           |
-| SERIALIZATION_MASK | 31      | 1f      | 11111            |
+| FLAG_REQUEST       | -128    | 80      | 10000000         |
+| FLAG_TWOWAY        | 64      | 40      | 01000000         |
+| FLAG_EVENT         | 32      | 20      | 00100000         |
+| SERIALIZATION_MASK | 31      | 1f      | 00011111         |
 
 这个表中虽然列出了 10 进制，16 进制，但是我们关心的其实是二进制，
 Java 中的 `&` 和 `|` 可以利用二进制的特性，方便的进行条件的判断，
