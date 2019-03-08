@@ -275,6 +275,96 @@ protected void encodeRequest(Channel channel, ChannelBuffer buffer, Request req)
 
 ### ExchangeCodec-encodeResponse
 
+```java
+// encodeResponse 中的处理和 encodeRequest 差别不大
+// encodeResponse 会设置 header[3] = status; 状态字段
+protected void encodeResponse(Channel channel, ChannelBuffer buffer, Response res) throws IOException {
+    int savedWriteIndex = buffer.writerIndex();
+    try {
+        Serialization serialization = getSerialization(channel);
+        // header.
+        byte[] header = new byte[HEADER_LENGTH];
+        // set magic number.
+        Bytes.short2bytes(MAGIC, header);
+        // set request and serialization flag.
+        header[2] = serialization.getContentTypeId();
+        if (res.isHeartbeat()) {
+            header[2] |= FLAG_EVENT;
+        }
+        // set response status.
+        // 设置 status
+        byte status = res.getStatus();
+        header[3] = status;
+        // set request id.
+        Bytes.long2bytes(res.getId(), header, 4);
+        buffer.writerIndex(savedWriteIndex + HEADER_LENGTH);
+        ChannelBufferOutputStream bos = new ChannelBufferOutputStream(buffer);
+        ObjectOutput out = serialization.serialize(channel.getUrl(), bos);
+        // encode response data or error message.
+        if (status == Response.OK) {
+            if (res.isHeartbeat()) {
+                encodeHeartbeatData(channel, out, res.getResult());
+            } else {
+                encodeResponseData(channel, out, res.getResult(), res.getVersion());
+            }
+        } else {
+            out.writeUTF(res.getErrorMessage());
+        }
+        out.flushBuffer();
+        if (out instanceof Cleanable) {
+            ((Cleanable) out).cleanup();
+        }
+        bos.flush();
+        bos.close();
+        int len = bos.writtenBytes();
+        checkPayload(channel, len);
+        Bytes.int2bytes(len, header, 12);
+        // write
+        buffer.writerIndex(savedWriteIndex);
+        buffer.writeBytes(header); // write header.
+        buffer.writerIndex(savedWriteIndex + HEADER_LENGTH + len);
+    } catch (Throwable t) {
+        // clear buffer
+        buffer.writerIndex(savedWriteIndex);
+        // send error message to Consumer, otherwise, Consumer will wait till timeout.
+        if (!res.isEvent() && res.getStatus() != Response.BAD_RESPONSE) {
+            Response r = new Response(res.getId(), res.getVersion());
+            r.setStatus(Response.BAD_RESPONSE);
+            if (t instanceof ExceedPayloadLimitException) {
+                logger.warn(t.getMessage(), t);
+                try {
+                    r.setErrorMessage(t.getMessage());
+                    channel.send(r);
+                    return;
+                } catch (RemotingException e) {
+                    logger.warn("Failed to send bad_response info back: " + t.getMessage() + ", cause: " + e.getMessage(), e);
+                }
+            } else {
+                // FIXME log error message in Codec and handle in caught() of IoHanndler?
+                logger.warn("Fail to encode response: " + res + ", send bad_response info instead, cause: " + t.getMessage(), t);
+                try {
+                    r.setErrorMessage("Failed to send response: " + res + ", cause: " + StringUtils.toString(t));
+                    channel.send(r);
+                    return;
+                } catch (RemotingException e) {
+                    logger.warn("Failed to send bad_response info back: " + res + ", cause: " + e.getMessage(), e);
+                }
+            }
+        }
+        // Rethrow exception
+        if (t instanceof IOException) {
+            throw (IOException) t;
+        } else if (t instanceof RuntimeException) {
+            throw (RuntimeException) t;
+        } else if (t instanceof Error) {
+            throw (Error) t;
+        } else {
+            throw new RuntimeException(t.getMessage(), t);
+        }
+    }
+}
+```
+
 ### ExchangeCodec-telnet
 
 ## DubboCountCodec
