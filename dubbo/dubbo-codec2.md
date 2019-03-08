@@ -367,6 +367,8 @@ protected void encodeResponse(Channel channel, ChannelBuffer buffer, Response re
 
 ### ExchangeCodec-telnet
 
+`ExchangeCodec` 继承了 `TelnetCodec` 因此可以调用父类，执行 `telent` 协议解码
+
 ## DubboCountCodec
 
 `DubboCountCodec` 对 `DubboCodec` 进行了简单的包装，重写了 `decode` 方法
