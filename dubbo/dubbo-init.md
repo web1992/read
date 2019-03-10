@@ -438,6 +438,16 @@ System.out.println("result: " + hello);
 
         return invoker.invoke(createInvocation(method, args)).recreate();
     }
+    // createInvocation 用来创建 RpcInvocation
+    // RpcInvocation 实现了 Serializable 接口从而可进行网络传输
+    private RpcInvocation createInvocation(Method method, Object[] args) {
+        RpcInvocation invocation = new RpcInvocation(method, args);
+        if (RpcUtils.hasFutureReturnType(method)) {
+            invocation.setAttachment(Constants.FUTURE_RETURNTYPE_KEY, "true");
+            invocation.setAttachment(Constants.ASYNC_KEY, "true");
+        }
+        return invocation;
+    }
 ```
 
 ### customer invoker
