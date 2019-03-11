@@ -116,11 +116,11 @@ java nio 中的巧妙运用，可以参考这个文章: [nio-selection-key.md](.
 
 ### Magic number
 
-关于 `MAGIC` 可以参考维基百科 [Magic number](https://en.wikipedia.org/wiki/Magic_number_(programming))
+关于 `Magic number` 可以参考维基百科 [Magic number](https://en.wikipedia.org/wiki/Magic_number_(programming))
 
-`Magic number` 可以用来区分文件的类型如: zip (50 4B 03 04),exe (4D 5A), `dubbo` 中用二个 `MAGIC_HIGH` 和 `MAGIC_LOW`
+`Magic number` 可以用来区分文件的类型如: `.zip` -> `(50 4B)` `.java` -> `(CAFEBABE)`
 
-来识别 `dubbo` 自定义的协议(如果在读取协议 `head` 时，遇到了上面的二个值，就认为是协议的开始，进行解码操作)
+`dubbo` 中用二个 `MAGIC_HIGH` 和 `MAGIC_LOW` 来识别 `dubbo` 自定义的协议(如果在读取协议 `head` 时，遇到了上面的二个值，就认为是协议的开始，进行解码操作)
 
 ### ExchangeCodec-decode
 
