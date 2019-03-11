@@ -8,7 +8,6 @@
     - [ExchangeCodec-decode](#exchangecodec-decode)
     - [ExchangeCodec-encodeRequest](#exchangecodec-encoderequest)
     - [ExchangeCodec-encodeResponse](#exchangecodec-encoderesponse)
-    - [ExchangeCodec-telnet](#exchangecodec-telnet)
   - [DubboCountCodec](#dubbocountcodec)
   - [DubboCodec](#dubbocodec)
     - [DubboCodec-decodeBody](#dubbocodec-decodebody)
@@ -19,6 +18,8 @@
 ## 简介
 
 `dubbo` 中的协议是通过 `head + body` 组成的变长协议
+
+`dubbo` 协议设计图:
 
 ![dubbo-codec2-protocol.png](images/dubbo-codec2-protocol.png)
 
@@ -164,7 +165,7 @@ java nio 中的巧妙运用，可以参考这个文章: [nio-selection-key.md](.
                     buffer.readerIndex(buffer.readerIndex() - header.length + i);
                     // copy 一个新的数组，长度为 i
                     // 这些 0 到 i 的数据会被 copy 到 header 中 进行 TelnetCodec#decode 操作
-                    //（会被任务是 telnet 协议进行解码）
+                    //（会被认为是 telnet 协议进行解码）
                     // 这里就使 dubbo 同时支持了 telnet 协议和自定义的 dubbo protocol
                     header = Bytes.copyOf(header, i);
                     break;
@@ -244,7 +245,7 @@ protected void encodeRequest(Channel channel, ChannelBuffer buffer, Request req)
     // 可以用一个字节的值表示 3 个值，减少字节占用数
     // set request id.
     // 从协议的设计图中可知 head[3] 应该是存储的 status 信息
-    // encodeRequest 时编码请求，因此跳过 head[3]
+    // encodeRequest 是请求编码,没有state,因此跳过 head[3]
     // reqId 放在 head[4] 中，下面的就是这个操作
     Bytes.long2bytes(req.getId(), header, 4);
     // encode request data.
@@ -257,11 +258,15 @@ protected void encodeRequest(Channel channel, ChannelBuffer buffer, Request req)
     // 获取 ObjectOutput 容器
     ObjectOutput out = serialization.serialize(channel.getUrl(), bos);
     // 根据不同的请求类型
+     // req.getData() 对象类型其实是 RpcInvocation
     if (req.isEvent()) {
         // 如果是事件，简单的执行 writeObject
         encodeEventData(channel, out, req.getData());
     } else {
         // 否则从 RpcInvocation 获取 版本,方法,参数类型,参数,attachment 进行写入
+        // RpcInvocation 是通过 InvokerInvocationHandler 的 createInvocation 方法创建的
+        // 它会把 方法名称 和 方法参数 进行包装
+        // encodeRequestData 其实就是 RpcInvocation 进行序列化，进行网络传输
         encodeRequestData(channel, out, req.getData(), req.getVersion());
     }
     out.flushBuffer();
@@ -287,7 +292,7 @@ protected void encodeRequest(Channel channel, ChannelBuffer buffer, Request req)
 
 ```java
 // encodeResponse 中的处理和 encodeRequest 差别不大
-// encodeResponse 会设置 header[3] = status; 状态字段
+// encodeResponse 多了设置 header[3] = status; 状态字段 这个步骤
 protected void encodeResponse(Channel channel, ChannelBuffer buffer, Response res) throws IOException {
     int savedWriteIndex = buffer.writerIndex();
     try {
@@ -375,10 +380,6 @@ protected void encodeResponse(Channel channel, ChannelBuffer buffer, Response re
 }
 ```
 
-### ExchangeCodec-telnet
-
-`ExchangeCodec` 继承了 `TelnetCodec` 因此可以调用父类，执行 `telent` 协议解码
-
 ## DubboCountCodec
 
 `DubboCountCodec` 对 `DubboCodec` 进行了简单的包装，重写了 `decode` 方法
@@ -391,9 +392,9 @@ protected void encodeResponse(Channel channel, ChannelBuffer buffer, Response re
 
 DubboCodec 实现的方法：
 
-- decodeBody
-- encodeResponseData
-- encodeRequestData
+- `decodeBody`
+- `encodeResponseData`
+- `encodeRequestData`
 
 `encodeResponseData` 和 `encodeRequestData` 都有一个重载的方法，多了一个参数 `String version`
 
@@ -501,6 +502,7 @@ protected Object decodeBody(Channel channel, InputStream is, byte[]header) throw
                 data = decodeEventData(channel, in);
             } else {
                 // DecodeableRpcInvocation 同样包含了  Exception,Attachment,result 3 部分
+                // DecodeableRpcInvocation 对 RpcInvocation 进行了包装
                 DecodeableRpcInvocation inv;
                 if (channel.getUrl().getParameter(
                         Constants.DECODE_IN_IO_THREAD_KEY,
