@@ -4,6 +4,7 @@
   - [简介](#%E7%AE%80%E4%BB%8B)
   - [Codec2 interface](#codec2-interface)
   - [ExchangeCodec](#exchangecodec)
+    - [Magic number](#magic-number)
     - [ExchangeCodec-decode](#exchangecodec-decode)
     - [ExchangeCodec-encodeRequest](#exchangecodec-encoderequest)
     - [ExchangeCodec-encodeResponse](#exchangecodec-encoderesponse)
@@ -112,6 +113,14 @@ Java 中的 true 和 false 只能表示两种结果，但是使用二进制，�
 进行运算和组合，可以表达出更多的条件组合
 
 java nio 中的巧妙运用，可以参考这个文章: [nio-selection-key.md](../java/nio-selection-key.md)
+
+### Magic number
+
+关于 `MAGIC` 可以参考维基百科 [Magic number](https://en.wikipedia.org/wiki/Magic_number_(programming))
+
+`Magic number` 可以用来区分文件的类型如: zip (50 4B 03 04),exe (4D 5A), `dubbo` 中用二个 `MAGIC_HIGH` 和 `MAGIC_LOW`
+
+来识别 `dubbo` 自定义的协议(如果在读取协议 `head` 时，遇到了上面的二个值，就认为是协议的开始，进行解码操作)
 
 ### ExchangeCodec-decode
 
@@ -575,3 +584,4 @@ else if (message instanceof String) {// 如果解码的结果对象是 String
 ## 好文链接
 
 - [dubbo-protocol](http://dubbo.incubator.apache.org/zh-cn/blog/dubbo-protocol.html)
+- [Magic number](https://en.wikipedia.org/wiki/Magic_number_(programming))
