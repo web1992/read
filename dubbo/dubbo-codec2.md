@@ -12,6 +12,7 @@
   - [DubboCodec](#dubbocodec)
     - [DubboCodec-decodeBody](#dubbocodec-decodebody)
   - [TelnetCodec](#telnetcodec)
+    - [TelnetHandler](#telnethandler)
   - [好文链接](#%E5%A5%BD%E6%96%87%E9%93%BE%E6%8E%A5)
 
 ## 简介
@@ -520,6 +521,56 @@ protected Object decodeBody(Channel channel, InputStream is, byte[]header) throw
 上面说过 `dubbo` 的协议是 `head + body`,`decodeBody` 也就是从 `InputStream` 经过 `序列化` 解析出 `ObjectInput` 对象
 
 ## TelnetCodec
+
+`ExchangeCodec` 在进行 `decode` 操作的时候，先读取 `header[0]` 和 `header[1]` 中的 `MAGIC_HIGH` 和 `MAGIC_LOW`
+
+如果不存在，就调用父类 `TelnetCodec` 的 `decode` 方法进行解码操作(解码完成之后返回 String),解码操作完成之后进行 `channelHandler` 的转发
+
+最终在 `HeaderExchangeHandler` 进行 `telnet` 相关的处理
+
+代码片段:
+
+```java
+// ExchangeCodec
+// check magic number.
+if (readable > 0 && header[0] != MAGIC_HIGH
+        || readable > 1 && header[1] != MAGIC_LOW) {
+    int length = header.length;
+    if (header.length < readable) {
+        header = Bytes.copyOf(header, readable);
+        buffer.readBytes(header, length, readable - length);
+    }
+    for (int i = 1; i < header.length - 1; i++) {
+        if (header[i] == MAGIC_HIGH && header[i + 1] == MAGIC_LOW) {
+            buffer.readerIndex(buffer.readerIndex() - header.length + i);
+            header = Bytes.copyOf(header, i);
+            break;
+        }
+    }
+    return super.decode(channel, buffer, readable, header);
+}
+
+// HeaderExchangeHandler
+// ....
+else if (message instanceof String) {// 如果解码的结果对象是 String
+                if (isClientSide(channel)) {
+                    Exception e = new Exception("Dubbo client can not supported string message: " + message + " in channel: " + channel + ", url: " + channel.getUrl());
+                    logger.error(e.getMessage(), e);
+                } else {
+                    String echo = handler.telnet(channel, (String) message);// 处理 telnet
+                    if (echo != null && echo.length() > 0) {
+                        channel.send(echo);
+                    }
+                }
+            }
+// ...
+```
+
+### TelnetHandler
+
+`TelnetHandler` 类图
+
+![TelnetHandler](images/dubbo-TelnetHandler.png)
 
 ## 好文链接
 
