@@ -44,7 +44,7 @@ NetUtils.joinMulticastGroup(multicastSocket, multicastAddress);
 
 ```java
 public MulticastRegistry(URL url) {
-    // super 调用服务类的方法
+    // super 调用父类的方法
     // AbstractRegistry 会检查服务注册文件是否存在，如果存在，那么就加载文件
     super(url);
     if (url.isAnyHost()) {
