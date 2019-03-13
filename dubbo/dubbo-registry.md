@@ -1,8 +1,18 @@
 # Registry
 
-`dubbo` 是支持集群的，同时也提供了服务的动态发现，注册功能，而这些功能的实现就是 `Registry` 接口
+`dubbo` 提供了服务的动态发现，注册功能，而这些功能的实现就是 `Registry` 接口
 
 `Registry` 是通过 `RegistryFactory` 创建的，而 `RegistryFactory` 实现了 `dubbo` 自适应
+
+- [Registry](#registry)
+  - [RegistryService](#registryservice)
+  - [AbstractRegistry](#abstractregistry)
+  - [FailbackRegistry](#failbackregistry)
+  - [MulticastRegistry](#multicastregistry)
+    - [uml](#uml)
+    - [简介](#%E7%AE%80%E4%BB%8B)
+    - [MulticastRegistry init](#multicastregistry-init)
+  - [ZookeeperRegistry](#zookeeperregistry)
 
 ## RegistryService
 
@@ -20,6 +30,16 @@ public interface RegistryService {
 ## AbstractRegistry
 
 ## FailbackRegistry
+
+`FailbackRegistry` 中定义了几个 map 存储注册失败的服务信息，同时与定时器关联，在定时器中进行重试注册
+
+```java
+private final ConcurrentMap<URL, FailedRegisteredTask> failedRegistered = new ConcurrentHashMap<URL, FailedRegisteredTask>();
+private final ConcurrentMap<URL, FailedUnregisteredTask> failedUnregistered = new ConcurrentHashMap<URL, FailedUnregisteredTask>();
+private final ConcurrentMap<Holder, FailedSubscribedTask> failedSubscribed = new ConcurrentHashMap<Holder, FailedSubscribedTask>();
+private final ConcurrentMap<Holder, FailedUnsubscribedTask> failedUnsubscribed = new ConcurrentHashMap<Holder, FailedUnsubscribedTask>();
+private final ConcurrentMap<Holder, FailedNotifiedTask> failedNotified = new ConcurrentHashMap<Holder, FailedNotifiedTask>();
+```
 
 ## MulticastRegistry
 
@@ -138,6 +158,41 @@ private void receive(String msg, InetSocketAddress remoteAddress) {
         }
     }/* else if (msg.startsWith(UNSUBSCRIBE)) {
     }*/
+}
+
+// MulticastRegistry 实现了 FailbackRegistry 的几个模板方法：
+// doRegister
+// doUnregister
+// doSubscribe
+// doUnsubscribe
+// 上面的几个方法在对应的 RegistryService 接口中定义的方法被调用
+@Override
+public void doRegister(URL url) {
+    multicast(Constants.REGISTER + " " + url.toFullString());
+}
+@Override
+public void doUnregister(URL url) {
+    multicast(Constants.UNREGISTER + " " + url.toFullString());
+}
+@Override
+public void doSubscribe(URL url, NotifyListener listener) {
+    if (Constants.ANY_VALUE.equals(url.getServiceInterface())) {
+        admin = true;
+    }
+    multicast(Constants.SUBSCRIBE + " " + url.toFullString());
+    synchronized (listener) {
+        try {
+            listener.wait(url.getParameter(Constants.TIMEOUT_KEY, Constants.DEFAULT_TIMEOUT));
+        } catch (InterruptedException e) {
+        }
+    }
+}
+@Override
+public void doUnsubscribe(URL url, NotifyListener listener) {
+    if (!Constants.ANY_VALUE.equals(url.getServiceInterface()) && url.getParameter(Constants.REGISTER_KEY, true)) {
+        unregister(url);
+    }
+    multicast(Constants.UNSUBSCRIBE + " " + url.toFullString());
 }
 ```
 
