@@ -19,7 +19,7 @@
 
 ## invoker uml
 
-![dubbo-Invoker](images/dubbo-invoker.png)
+![dubbo-Invoker](images/dubbo-Invoker.png)
 
 由于存在多个集群模式，因此有多个 `xxxClusterInvoker` 的实现
 
