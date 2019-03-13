@@ -59,3 +59,49 @@ public class JdkProxyFactory extends AbstractProxyFactory {
 
 }
 ```
+
+## InvokerInvocationHandler
+
+`ProxyFactory` 生成 `proxy` 对象，`InvokerInvocationHandler` 负责处理方法`回调`
+
+把方法调用通过 `invoker` 进行网络通信，实现 `rpc` 原型方法调用
+
+```java
+public class InvokerInvocationHandler implements InvocationHandler {
+    private static final Logger logger = LoggerFactory.getLogger(InvokerInvocationHandler.class);
+    private final Invoker<?> invoker;
+
+    public InvokerInvocationHandler(Invoker<?> handler) {
+        this.invoker = handler;
+    }
+
+    @Override
+    public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
+        String methodName = method.getName();
+        Class<?>[] parameterTypes = method.getParameterTypes();
+        if (method.getDeclaringClass() == Object.class) {
+            return method.invoke(invoker, args);
+        }
+        if ("toString".equals(methodName) && parameterTypes.length == 0) {
+            return invoker.toString();
+        }
+        if ("hashCode".equals(methodName) && parameterTypes.length == 0) {
+            return invoker.hashCode();
+        }
+        if ("equals".equals(methodName) && parameterTypes.length == 1) {
+            return invoker.equals(args[0]);
+        }
+
+        return invoker.invoke(createInvocation(method, args)).recreate();
+    }
+
+    private RpcInvocation createInvocation(Method method, Object[] args) {
+        RpcInvocation invocation = new RpcInvocation(method, args);
+        if (RpcUtils.hasFutureReturnType(method)) {
+            invocation.setAttachment(Constants.FUTURE_RETURNTYPE_KEY, "true");
+            invocation.setAttachment(Constants.ASYNC_KEY, "true");
+        }
+        return invocation;
+    }
+}
+```
