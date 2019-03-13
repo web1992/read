@@ -11,11 +11,18 @@
 
 ## 简介
 
+```java
+public interface Invoker<T> extends Node {
+    Class<T> getInterface();
+    Result invoke(Invocation invocation) throws RpcException;
+}
+```
+
 `invoker` 对象可以理解为在 `customer` 启动时创建
 
 `invoker` 对象被 `ProxyFactory` 进行包装, `ProxyFactory` 生成代理类配合 `InvokerInvocationHandler` 实现远程方法的调用
 
-`invoker` 对象是通过 `dubbo` 的 `SPI` 机制加载的，因此进行了很多包装类的包装，提供了 `mock`,`failover`,`cluster` 等功能
+`dubbo` 中对 `invoker` 进行了很多包装类的包装，提供了 `mock`,`failover`,`cluster` 等功能
 
 ## invoker uml
 
