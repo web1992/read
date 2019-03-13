@@ -29,7 +29,7 @@
 
 ![dubbo-invoker-stack](images/dubbo-invoker-stack.png)
 
-从上图可以看到 `FailoverClusterInvoker`,`DemoFilter`,`DubboInvoker`
+从上图可以看到从 `proxy -> DubboInvoker` 的调用链
 
 `DemoFilter` 是我们自定义的 `Filter`
 
