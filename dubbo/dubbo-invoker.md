@@ -22,7 +22,7 @@ public interface Invoker<T> extends Node {
 
 `invoker` 对象被 `ProxyFactory` 进行包装, `ProxyFactory` 生成代理类配合 `InvokerInvocationHandler` 实现远程方法的调用
 
-`dubbo` 中对 `invoker` 进行了很多包装类的包装，提供了 `mock`,`failover`,`cluster` 等功能
+`dubbo` 中对 `invoker` 进行了很多包装类的包装，提供了 `mock`,`filter`,`cluster` 等功能
 
 ## invoker uml
 
@@ -44,7 +44,7 @@ public interface Invoker<T> extends Node {
 
 ## FailoverClusterInvoker
 
-`FailoverClusterInvoker` 是默认的集群模式
+`FailoverCluster` 是默认的集群模式
 
 ### FailoverCluster
 
