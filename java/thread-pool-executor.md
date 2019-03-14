@@ -396,9 +396,9 @@ Runnable r = timed ?
 而 `newFixedThreadPool` & `newSingleThreadExecutor` 创建的线程池(corePoolSize!=0)，由于始终存在一个或者多个线程
 而这一个或者多个线程因为调用 `workQueue.take()` 会阻塞，因此不会退出(需要手动的调用 shutdown 方法)
 
-可以看到 上面的二个方法都使用`LinkedBlockingQueue`作用 queue,那么为什么不使用`ArrayBlockingQueue`呢？
+可以看到 上面的二个方法都使用`LinkedBlockingQueue`作用 `queue`,那么为什么不使用`ArrayBlockingQueue`呢？
 
-使用两个锁来控制线程访问，这样队列可以同时进行 put 和 take 的操作，因此吞吐量相对 ArrayBlockingQueue 就高
+使用两个锁来控制线程访问，这样队列可以同时进行 `put` 和 `take` 的操作，因此吞吐量相对 `ArrayBlockingQueue` 就高
 
 可参考 [queue](queue.md#LinkedBlockingQueue)
 
