@@ -278,8 +278,9 @@ public RunnableScheduledFuture<?> take() throws InterruptedException {
             if (first == null)
                 available.await();
             else {
+                // 计算延迟的时间 delay = time - now()
                 long delay = first.getDelay(NANOSECONDS);
-                if (delay <= 0)
+                if (delay <= 0)// 小于 0 说明时间到了,返回这个 Runnable
                     return finishPoll(first);
                 first = null; // don't retain ref while waiting
                 if (leader != null)
@@ -288,6 +289,9 @@ public RunnableScheduledFuture<?> take() throws InterruptedException {
                     Thread thisThread = Thread.currentThread();
                     leader = thisThread;
                     try {
+                        // 等待 delay 纳秒时间，其实就是在 delay 纳秒之后返回 Runnable
+                        // 然后提交给 queue 执行任务
+                        // 这样就实现了 周期性任务 的执行
                         available.awaitNanos(delay);
                     } finally {
                         if (leader == thisThread)
@@ -301,5 +305,21 @@ public RunnableScheduledFuture<?> take() throws InterruptedException {
             available.signal();
         lock.unlock();
     }
+}
+
+/**
+* Performs common bookkeeping for poll and take: Replaces
+* first element with last and sifts it down.  Call only when
+* holding lock.
+* @param f the task to remove and return
+*/
+private RunnableScheduledFuture<?> finishPoll(RunnableScheduledFuture<?> f) {
+    int s = --size;
+    RunnableScheduledFuture<?> x = queue[s];
+    queue[s] = null;
+    if (s != 0)
+        siftDown(0, x);
+    setIndex(f, -1);
+    return f;
 }
 ```
