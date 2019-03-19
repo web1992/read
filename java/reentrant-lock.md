@@ -7,6 +7,9 @@
   - [公平锁&非公平锁的实现](#%E5%85%AC%E5%B9%B3%E9%94%81%E9%9D%9E%E5%85%AC%E5%B9%B3%E9%94%81%E7%9A%84%E5%AE%9E%E7%8E%B0)
     - [NonfairSync](#nonfairsync)
     - [FairSync](#fairsync)
+  - [AbstractQueuedSynchronizer](#abstractqueuedsynchronizer)
+    - [acquire](#acquire)
+    - [acquireQueued](#acquirequeued)
   - [demo](#demo)
   - [Link](#link)
 
@@ -153,6 +156,63 @@ final boolean nonfairTryAcquire(int acquires) {
             return false;
         }
     }
+```
+
+## AbstractQueuedSynchronizer
+
+### acquire
+
+```java
+// AbstractQueuedSynchronizer
+// 1.tryAcquire 尝试获取锁
+//   如果获取锁失败，那么把当前线程进入队列（执行addWaiter）
+// 2.addWaiter 把当前线程封装成 Node 放入队列
+// 3.acquireQueued 阻塞当前线程
+public final void acquire(int arg) {
+    if (!tryAcquire(arg) &&
+        acquireQueued(addWaiter(Node.EXCLUSIVE), arg))
+        selfInterrupt();
+}
+```
+
+### acquireQueued
+
+```java
+// AbstractQueuedSynchronizer
+// 这个方法做了下面几件事：
+// 1.更新前一个 node 的 waitStatus = Node.SIGNAL
+//   acquireQueued 方法是在 tryAcquire 执行失败之后执行的(获取锁失败)
+//   然后通过 shouldParkAfterFailedAcquire 方法获取前一个node 的 waitStatus
+//   如果不是 Node.SIGNAL 就更新为 Node.SIGNAL
+// 2.阻塞当前线程
+//   parkAndCheckInterrupt 方法使用 LockSupport.park(this); 阻塞当前线程
+//   阻塞当前线程
+// 3.获取锁
+//   tryAcquire 是在 for(;;) 中执行的
+//   当前线程在第一次调用 tryAcquire 时，获取锁失败，就会执行 parkAndCheckInterrupt
+//   进入阻塞，当再次被唤醒时，再次调用 tryAcquire 获取锁,获取失败，再次进入阻塞
+//   成功执行 return 结束循环
+final boolean acquireQueued(final Node node, int arg) {
+    boolean failed = true;
+    try {
+        boolean interrupted = false;
+        for (;;) {
+            final Node p = node.predecessor();
+            if (p == head && tryAcquire(arg)) {// 尝试获取锁(当前线程)
+                setHead(node);
+                p.next = null; // help GC
+                failed = false;
+                return interrupted;
+            }
+            if (shouldParkAfterFailedAcquire(p, node) &&
+                parkAndCheckInterrupt())// 这里会阻塞（阻塞当前线程）
+                interrupted = true;
+        }
+    } finally {
+        if (failed)
+            cancelAcquire(node);
+    }
+}
 ```
 
 ## demo
