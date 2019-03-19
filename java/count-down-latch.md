@@ -23,11 +23,11 @@
 - [java.util.concurrent.locks.AbstractQueuedSynchronizer](aqs.md)
 - [java.util.concurrent.locks.LockSupport](lock-support.md)
 
+## concept
+
 在下面的例子中，会把 `CountDownLatch` 当做 `计数器` 来解说
 
 `CountDownLatch` 可以用来处理几个线程之间的协作，如 A 线程等待 B,C,D 线程任务完成之后，再执行 A 自己的任务。
-
-## concept
 
 A synchronization aid that allows one or more threads to wait until
 a set of operations being performed in other threads completes.
