@@ -128,6 +128,8 @@ private void doAcquireSharedInterruptibly(int arg)
             }
             // shouldParkAfterFailedAcquire + for 循环，去改变前一个节点的状态
             // 直到修改成功（也是cas）
+            // shouldParkAfterFailedAcquire 会修改前一个 Node 节点的 waitStatus = Node.SIGNAL
+            // 修改成功，才会阻塞当前线程(执行parkAndCheckInterrupt)
             if (shouldParkAfterFailedAcquire(p, node) &&
                 parkAndCheckInterrupt())// parkAndCheckInterrupt 这里使用 LockSupport.park 阻塞当前线程
                 throw new InterruptedException();
@@ -189,7 +191,7 @@ public void countDown() {
 // AbstractQueuedSynchronizer
 public final boolean releaseShared(int arg) {
         if (tryReleaseShared(arg)) {// 尝试释放锁
-            doReleaseShared();// 返回 false 就不执行这个，存在其他线程已经执行了 cutDown
+            doReleaseShared();// 返回 false 就不执行这个，存在其他线程已经执行了 countDown
             return true;
         }
         return false;
@@ -199,7 +201,7 @@ protected boolean tryReleaseShared(int releases) {
             // Decrement count; signal when transition to zero
             for (;;) {
                 int c = getState();
-                if (c == 0)// 如果 state =0 说明其他线程已经执行 cutDown 了，返回 false
+                if (c == 0)// 如果 state =0 说明其他线程已经执行 countDown 了，返回 false
                     return false;
                 int nextc = c-1;// 这里使用 for + cas 把 state-1
                 if (compareAndSetState(c, nextc))
@@ -230,12 +232,14 @@ private void doReleaseShared() {
                         continue;            // loop to recheck cases
                     unparkSuccessor(h);// 修改 waitStatus 成功，唤醒线程
                 }
-                else if (ws == 0 &&// 　如果 waitStatus =0 说明线程进入队列还没有成功，继续循环，等进入对列成功执行
-                         !compareAndSetWaitStatus(h, 0, Node.PROPAGATE))// 这里的修改 waitStatus=PROPAGATE 其实对 CountDownLatch 的实现没什么作用
+                // 　如果 waitStatus =0 说明线程进入队列还没有成功，继续循环，等进入对列成功执行
+                // 这里的修改 waitStatus=PROPAGATE 其实对 CountDownLatch 的实现没什么作用
+                else if (ws == 0 &&
+                         !compareAndSetWaitStatus(h, 0, Node.PROPAGATE))
                     continue;                // loop on failed CAS
             }
             // h == head 这里　就是 if(true) 的写法
-            // 只有当上面的判断 h != null && h != tail 不成了，才会执行下面的代码
+            // 只有当上面的判断 h != null && h != tail 不成立了，才会执行下面的代码
             // 比如 head 为空了，或者 head == tail 了
             // head==tail 说明有线程出队列了，因此结束循环
             if (h == head)                   // loop if head changed
