@@ -1,5 +1,15 @@
 # CountDownLatch
 
+- [CountDownLatch](#countdownlatch)
+  - [concept](#concept)
+  - [init](#init)
+  - [await](#await)
+  - [countDown](#countdown)
+  - [example1](#example1)
+  - [example2](#example2)
+  - [example3](#example3)
+  - [参考](#%E5%8F%82%E8%80%83)
+
 `CountDownLatch` 可用来实现线程之间的协作(或者理解为一个`计数器`)，如线程 A 等待线程 B,C,D 执行完成之后，再进行继续其他操作
 
 类似 `Thread#join` 的方法, `Thread#join` 可参照这个 [thread-join](thread.md#join)
@@ -15,20 +25,7 @@
 
 在下面的例子中，会把 `CountDownLatch` 当做 `计数器` 来解说
 
-- [CountDownLatch](#countdownlatch)
-  - [concept](#concept)
-  - [init](#init)
-  - [await](#await)
-  - [countDown](#countdown)
-  - [example1](#example1)
-  - [example2](#example2)
-  - [example3](#example3)
-  - [参考](#%E5%8F%82%E8%80%83)
-
 `CountDownLatch` 可以用来处理几个线程之间的协作，如 A 线程等待 B,C,D 线程任务完成之后，再执行 A 自己的任务。
-
-- [CountDownLatch](https://www.cnblogs.com/shiyanch/archive/2011/04/04/2005233.html)
-- [CountDownLatch from oracle docs](https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/CountDownLatch.html)
 
 ## concept
 
@@ -63,19 +60,18 @@ public class CountDownLatchTest {
 
     }
 }
-
 ```
 
 `new CountDownLatch()`
 
 ```java
-   // 在进行 new CountDownLatch 会创建一个 Sync 对象
-   // Sync 是 CountDownLatch 的内部类
-   // Sync 继承了 AbstractQueuedSynchronizer 实现了锁的功能
-   public CountDownLatch(int count) {
-        if (count < 0) throw new IllegalArgumentException("count < 0");
-        this.sync = new Sync(count);
-    }
+// 在进行 new CountDownLatch 会创建一个 Sync 对象
+// Sync 是 CountDownLatch 的内部类
+// Sync 继承了 AbstractQueuedSynchronizer 实现了锁的功能
+public CountDownLatch(int count) {
+    if (count < 0) throw new IllegalArgumentException("count < 0");
+    this.sync = new Sync(count);
+}
 ```
 
 ## await
@@ -86,99 +82,98 @@ public class CountDownLatchTest {
 
 ```java
 // CountDownLatch
- public void await() throws InterruptedException {
+public void await() throws InterruptedException {
         sync.acquireSharedInterruptibly(1);
-    }
+}
 ```
 
 ```java
-    // AbstractQueuedSynchronizer
-    public final void acquireSharedInterruptibly(int arg)
-            throws InterruptedException {
-        if (Thread.interrupted())
-            throw new InterruptedException();
-        // 首先通过 tryAcquireShared 尝试一下获取锁
-        // 其实就是判断一下 state 是否等于0
-        // 如果小于 0 说明,计数器不为0,需要等待,否则不需要阻塞
-        if (tryAcquireShared(arg) < 0)
-            doAcquireSharedInterruptibly(arg);
-    }
-    // CountDownLatch
-    protected int tryAcquireShared(int acquires) {
-        // -1 表示还有其他线程在获取锁
-        return (getState() == 0) ? 1 : -1;
-     }
-```
-
-```java
-    // AbstractQueuedSynchronizer
-    // 下面的 for;; + shouldParkAfterFailedAcquire 方法实现了cas 语义
-    private void doAcquireSharedInterruptibly(int arg)
+// AbstractQueuedSynchronizer
+public final void acquireSharedInterruptibly(int arg)
         throws InterruptedException {
-        // 当前线程进入队列排队
-        final Node node = addWaiter(Node.SHARED);
-        boolean failed = true;
-        try {
-            for (;;) {
-                final Node p = node.predecessor();// 获取当前的节点的前一个节点
-                if (p == head) {// 如果前一个节点为 head 说明只有一个线程在排队，进行尝试获取 计数器
-                    int r = tryAcquireShared(arg);
-                    if (r >= 0) {// 计数器为 0 了，不需要阻塞了
-                        setHeadAndPropagate(node, r);// 对于 CountDownLatch 这个代码不会执行
-                        p.next = null; // help GC
-                        failed = false;
-                        return;
-                    }
-                }
-                // shouldParkAfterFailedAcquire + for 循环，去改变前一个节点的状态
-                // 直到修改成功（也是cas）
-                if (shouldParkAfterFailedAcquire(p, node) &&
-                    parkAndCheckInterrupt())// parkAndCheckInterrupt 这里使用 LockSupport.park 阻塞当前线程
-                    throw new InterruptedException();
-            }
-        } finally {
-            if (failed)
-                cancelAcquire(node);
-        }
-    }
-    // AbstractQueuedSynchronizer
-    private Node addWaiter(Node mode) {
-        // 把当前线程包装成 Node
-        Node node = new Node(Thread.currentThread(), mode);
-        // Try the fast path of enq; backup to full enq on failure
-        Node pred = tail;// 队尾
-        if (pred != null) {
-            node.prev = pred;
-            // 队尾 不为空，说明有线程在排队，那么当前线程，也就是node 变成 tail
-            if (compareAndSetTail(pred, node)) {// 这里尝试变成tail,如果成功，就返回当前 Node
-                pred.next = node;
-                return node;
-            }
-        }
-        enq(node);// 入队失败或者队尾不为空，那么执行入队操作
-        return node;
-    }
-    // AbstractQueuedSynchronizer
-    private Node enq(final Node node) {
-        // 这里一个无线循环
-        // 也就是 cas 一直循环到设置成功
-        // 这里是有 cas 的目的是多线程的时候，会存在竞争，存在 head 或者tail 已经被其他线程初始化的情况
-        // cas 成功，结束循环
-        for (;;) {
-            Node t = tail;// 第一次 tail 为空的时候，进行初始化 head 和 tail
-            if (t == null) { // Must initialize
-                if (compareAndSetHead(new Node()))
-                    tail = head;
-            } else {
-                node.prev = t;
-                if (compareAndSetTail(t, node)) {
-                    t.next = node;
-                    return t;
-                }
-            }
-        }
-    }
+    if (Thread.interrupted())
+        throw new InterruptedException();
+    // 首先通过 tryAcquireShared 尝试一下获取锁
+    // 其实就是判断一下 state 是否等于0
+    // 如果小于 0 说明,计数器不为0,需要等待,否则不需要阻塞
+    if (tryAcquireShared(arg) < 0)
+        doAcquireSharedInterruptibly(arg);
+}
+// CountDownLatch
+protected int tryAcquireShared(int acquires) {
+    // -1 表示还有其他线程在获取锁
+    return (getState() == 0) ? 1 : -1;
+ }
+```
 
+```java
+// AbstractQueuedSynchronizer
+// 下面的 for;; + shouldParkAfterFailedAcquire 方法实现了cas 语义
+private void doAcquireSharedInterruptibly(int arg)
+    throws InterruptedException {
+    // 当前线程进入队列排队
+    final Node node = addWaiter(Node.SHARED);
+    boolean failed = true;
+    try {
+        for (;;) {
+            final Node p = node.predecessor();// 获取当前的节点的前一个节点
+            if (p == head) {// 如果前一个节点为 head 说明只有一个线程在排队，进行尝试获取 计数器
+                int r = tryAcquireShared(arg);
+                if (r >= 0) {// 计数器为 0 了，不需要阻塞了
+                    setHeadAndPropagate(node, r);// 对于 CountDownLatch 这个代码不会执行
+                    p.next = null; // help GC
+                    failed = false;
+                    return;
+                }
+            }
+            // shouldParkAfterFailedAcquire + for 循环，去改变前一个节点的状态
+            // 直到修改成功（也是cas）
+            if (shouldParkAfterFailedAcquire(p, node) &&
+                parkAndCheckInterrupt())// parkAndCheckInterrupt 这里使用 LockSupport.park 阻塞当前线程
+                throw new InterruptedException();
+        }
+    } finally {
+        if (failed)
+            cancelAcquire(node);
+    }
+}
+// AbstractQueuedSynchronizer
+private Node addWaiter(Node mode) {
+    // 把当前线程包装成 Node
+    Node node = new Node(Thread.currentThread(), mode);
+    // Try the fast path of enq; backup to full enq on failure
+    Node pred = tail;// 队尾
+    if (pred != null) {
+        node.prev = pred;
+        // 队尾 不为空，说明有线程在排队，那么当前线程，也就是node 变成 tail
+        if (compareAndSetTail(pred, node)) {// 这里尝试变成tail,如果成功，就返回当前 Node
+            pred.next = node;
+            return node;
+        }
+    }
+    enq(node);// 入队失败或者队尾不为空，那么执行入队操作
+    return node;
+}
+// AbstractQueuedSynchronizer
+private Node enq(final Node node) {
+    // 这里一个无线循环
+    // 也就是 cas 一直循环到设置成功
+    // 这里是有 cas 的目的是多线程的时候，会存在竞争，存在 head 或者tail 已经被其他线程初始化的情况
+    // cas 成功，结束循环
+    for (;;) {
+        Node t = tail;// 第一次 tail 为空的时候，进行初始化 head 和 tail
+        if (t == null) { // Must initialize
+            if (compareAndSetHead(new Node()))
+                tail = head;
+        } else {
+            node.prev = t;
+            if (compareAndSetTail(t, node)) {
+                t.next = node;
+                return t;
+            }
+        }
+    }
+}
 ```
 
 ## countDown
@@ -415,3 +410,5 @@ class Driver2 {
 ## 参考
 
 - [CountDownLatch & CyclicBarrier](https://github.com/CL0610/Java-concurrency/tree/master/25.%E5%A4%A7%E7%99%BD%E8%AF%9D%E8%AF%B4java%E5%B9%B6%E5%8F%91%E5%B7%A5%E5%85%B7%E7%B1%BB-CountDownLatch%EF%BC%8CCyclicBarrier)
+- [CountDownLatch](https://www.cnblogs.com/shiyanch/archive/2011/04/04/2005233.html)
+- [CountDownLatch from oracle docs](https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/CountDownLatch.html)

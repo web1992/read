@@ -14,6 +14,7 @@
 ## 源码分析
 
 - [count-down-latch.md](count-down-latch.md)
+- [reentrant-lock.md](reentrant-lock.md)
 
 ## 参考
 
