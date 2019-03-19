@@ -1,9 +1,8 @@
 # ReentrantLock
 
-- [@see Condition](condition.md)
-
 - [ReentrantLock](#reentrantlock)
   - [特点](#%E7%89%B9%E7%82%B9)
+  - [Lock interface](#lock-interface)
   - [可重入的实现](#%E5%8F%AF%E9%87%8D%E5%85%A5%E7%9A%84%E5%AE%9E%E7%8E%B0)
   - [公平锁&非公平锁的实现](#%E5%85%AC%E5%B9%B3%E9%94%81%E9%9D%9E%E5%85%AC%E5%B9%B3%E9%94%81%E7%9A%84%E5%AE%9E%E7%8E%B0)
     - [NonfairSync](#nonfairsync)
@@ -15,11 +14,59 @@
 
 - 提供了和 `synchronized` 同样的语义，但是扩展了 `synchronized`
 - 可以重入，同一个线程可以多次获取锁
-- 可以实现 `公平锁` & `非公平锁`
+- 实现了 `公平锁` & `非公平锁` 的语义
 - 必须使用 `try` `finally` 来释放锁
 - 可以使用 `tryLock` 设置锁的超时时间
 
+## Lock interface
+
+```java
+// 这里看下 Lock接口的定义
+// lock 用来获取锁
+// unlock 用来释放锁
+// Condition 负责线程的阻塞和唤醒
+public interface Lock {
+    void lock();
+    void lockInterruptibly() throws InterruptedException;
+    boolean tryLock();
+    boolean tryLock(long time, TimeUnit unit) throws InterruptedException;
+    void unlock();
+    Condition newCondition();
+}
+```
+
 ## 可重入的实现
+
+以公平锁为例，看下 `tryAcquire` 方法的实现
+
+```java
+protected final boolean tryAcquire(int acquires) {
+    final Thread current = Thread.currentThread();
+    int c = getState();// c=0 意味着没有线程获取锁
+    if (c == 0) {
+        // hasQueuedPredecessors 是判断是否有其他线程在排队，为了实现公平锁的语义
+        // 下面尝试修改 state 的值，如果修改成功，那么代表获取锁成功
+        if (!hasQueuedPredecessors() &&
+            compareAndSetState(0, acquires)) {
+            setExclusiveOwnerThread(current);
+            return true;
+        }
+    }
+    else if (current == getExclusiveOwnerThread()) {
+        // 这里是可重入锁的实现
+        // 如果之前获取锁的线程和当前线程是同一个
+        // 就对 state +1
+        // 这里 setState 直接设置，而没有使用 cas
+        // 是因为当地线程已经获取锁了，其他线程不会修改 state 的值
+        int nextc = c + acquires;
+        if (nextc < 0)
+            throw new Error("Maximum lock count exceeded");
+        setState(nextc);
+        return true;
+    }
+    return false;
+}
+```
 
 > 陷阱： 如果使用了两次 try 获取锁，那么必须使用两次 unlock 去释放锁，否则其他线程会获取不到锁
 
@@ -201,4 +248,5 @@ class BlockArray<E> {
 
 ## Link
 
+- [Condition](condition.md)
 - [https://tech.meituan.com/2018/11/15/java-lock.html](https://tech.meituan.com/2018/11/15/java-lock.html)
