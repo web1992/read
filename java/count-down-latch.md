@@ -55,9 +55,7 @@ public class CountDownLatchTest {
         // 主线程执行了 await，因此一直在阻塞
         new Thread(r).start();
         cdl.await();// 线程进行等待
-
         System.out.println("end");
-
     }
 }
 ```
@@ -120,7 +118,9 @@ private void doAcquireSharedInterruptibly(int arg)
             if (p == head) {// 如果前一个节点为 head 说明只有一个线程在排队，进行尝试获取 计数器
                 int r = tryAcquireShared(arg);
                 if (r >= 0) {// 计数器为 0 了，不需要阻塞了
-                    setHeadAndPropagate(node, r);// 对于 CountDownLatch 这个代码不会执行
+                    // 当 await 唤醒之后，会执行这个代码
+                    // 修改 head
+                    setHeadAndPropagate(node, r);
                     p.next = null; // help GC
                     failed = false;
                     return;
@@ -139,6 +139,34 @@ private void doAcquireSharedInterruptibly(int arg)
             cancelAcquire(node);
     }
 }
+// AbstractQueuedSynchronizer
+private void setHeadAndPropagate(Node node, int propagate) {
+    Node h = head; // Record old head for check below
+    setHead(node);
+    /*
+     * Try to signal next queued node if:
+     *   Propagation was indicated by caller,
+     *     or was recorded (as h.waitStatus either before
+     *     or after setHead) by a previous operation
+     *     (note: this uses sign-check of waitStatus because
+     *      PROPAGATE status may transition to SIGNAL.)
+     * and
+     *   The next node is waiting in shared mode,
+     *     or we don't know, because it appears null
+     *
+     * The conservatism in both of these checks may cause
+     * unnecessary wake-ups, but only when there are multiple
+     * racing acquires/releases, so most need signals now or soon
+     * anyway.
+     */
+    if (propagate > 0 || h == null || h.waitStatus < 0 ||
+        (h = head) == null || h.waitStatus < 0) {
+        Node s = node.next;
+        if (s == null || s.isShared())
+            doReleaseShared();
+    }
+}
+
 // AbstractQueuedSynchronizer
 private Node addWaiter(Node mode) {
     // 把当前线程包装成 Node
@@ -197,6 +225,8 @@ public final boolean releaseShared(int arg) {
         return false;
 }
 // CountDownLatch
+// 只有在 state =0 的时候 tryReleaseShared 才返回true
+// 才会执行 doReleaseShared 的代码，去真正的释放锁，唤醒线程
 protected boolean tryReleaseShared(int releases) {
             // Decrement count; signal when transition to zero
             for (;;) {
@@ -232,7 +262,7 @@ private void doReleaseShared() {
                         continue;            // loop to recheck cases
                     unparkSuccessor(h);// 修改 waitStatus 成功，唤醒线程
                 }
-                // 　如果 waitStatus =0 说明线程进入队列还没有成功，继续循环，等进入对列成功执行
+                // 如果 waitStatus =0 说明线程进入队列还没有成功，继续循环，等进入对列成功执行
                 // 这里的修改 waitStatus=PROPAGATE 其实对 CountDownLatch 的实现没什么作用
                 else if (ws == 0 &&
                          !compareAndSetWaitStatus(h, 0, Node.PROPAGATE))
@@ -292,9 +322,9 @@ class Driver {
     CountDownLatch startSignal = new CountDownLatch(1);
     //  完成的信号
     CountDownLatch doneSignal = new CountDownLatch(N);
-     for (int i = 0; i < N; ++i) // create and start threads
-      new Thread(new Worker(startSignal, doneSignal)).start();
-     doSomethingElse();            // don't let run yet
+    for (int i = 0; i < N; ++i) // create and start threads
+    new Thread(new Worker(startSignal, doneSignal)).start();
+    doSomethingElse();            // don't let run yet
     // 发出开始的信号
     startSignal.countDown();      // let all threads proceed
     doSomethingElse();
