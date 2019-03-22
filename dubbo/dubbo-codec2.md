@@ -11,6 +11,8 @@
   - [DubboCountCodec](#dubbocountcodec)
   - [DubboCodec](#dubbocodec)
     - [DubboCodec-decodeBody](#dubbocodec-decodebody)
+  - [DecodeableRpcResult](#decodeablerpcresult)
+  - [DecodeableRpcInvocation](#decodeablerpcinvocation)
   - [TelnetCodec](#telnetcodec)
     - [TelnetHandler](#telnethandler)
   - [好文链接](#%E5%A5%BD%E6%96%87%E9%93%BE%E6%8E%A5)
@@ -530,6 +532,14 @@ protected Object decodeBody(Channel channel, InputStream is, byte[]header) throw
 ```
 
 上面说过 `dubbo` 的协议是 `head + body`,`decodeBody` 也就是从 `InputStream` 经过 `序列化` 解析出 `ObjectInput` 对象
+
+## DecodeableRpcResult
+
+解码 RPC 结果
+
+## DecodeableRpcInvocation
+
+解码 RPC 请求
 
 ## TelnetCodec
 
