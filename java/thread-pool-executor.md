@@ -41,6 +41,8 @@
 - 维护线程资源
 - 统计信息
 
+周期性的执行任务，可参考这个 [scheduled-thread-pool-executor.md](scheduled-thread-pool-executor.md)
+
 ## 构造参数
 
 ### Core and maximum pool sizes
