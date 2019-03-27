@@ -21,10 +21,14 @@
   - [Finalization](#finalization)
   - [runState](#runstate)
   - [Method List](#method-list)
+    - [execute](#execute)
     - [runWorker](#runworker)
     - [getTask](#gettask)
   - [Worker](#worker)
   - [Executors](#executors)
+    - [newFixedThreadPool](#newfixedthreadpool)
+    - [newSingleThreadExecutor](#newsinglethreadexecutor)
+    - [newCachedThreadPool](#newcachedthreadpool)
   - [参考](#%E5%8F%82%E8%80%83)
 
 ## ExecutorService类图
@@ -167,11 +171,70 @@ Method `getQueue()` 为了调试设计,其他忽用
 
 ## Method List
 
+### execute
+
+```java
+public void execute(Runnable command) {
+    if (command == null)
+        throw new NullPointerException();
+    /*
+     * Proceed in 3 steps:
+     *
+     * 1. If fewer than corePoolSize threads are running, try to
+     * start a new thread with the given command as its first
+     * task.  The call to addWorker atomically checks runState and
+     * workerCount, and so prevents false alarms that would add
+     * threads when it shouldn't, by returning false.
+     *
+     * 2. If a task can be successfully queued, then we still need
+     * to double-check whether we should have added a thread
+     * (because existing ones died since last checking) or that
+     * the pool shut down since entry into this method. So we
+     * recheck state and if necessary roll back the enqueuing if
+     * stopped, or start a new thread if there are none.
+     *
+     * 3. If we cannot queue task, then we try to add a new
+     * thread.  If it fails, we know we are shut down or saturated
+     * and so reject the task.
+     */
+    int c = ctl.get();
+    // 1. 当前的线程数，小于核心线程数，创建线程
+    if (workerCountOf(c) < corePoolSize) {
+        if (addWorker(command, true))
+            return;
+        c = ctl.get();
+    }
+    // 2. 如果线程池没有关闭，任务进入 queue 成功
+    if (isRunning(c) && workQueue.offer(command)) {
+        int recheck = ctl.get();
+        // 再次检查线程池是否关闭
+        // 如果关闭了，删除任务（从 queue 中删除）
+        // 如果删除任务成功，则执行 reject
+        // (线程正在关闭&&从queue 中删除了，那么此任务就不会被执行了)
+        if (!isRunning(recheck) && remove(command))
+            reject(command);
+        // 这里 worlerCont 判断其实不是必要的
+        // 这里就是判断如果线程池中没有线程，就新增一个线程
+        else if (workerCountOf(recheck) == 0)
+            addWorker(null, false);
+    }
+    // 3. 线程池正在关闭 & 进入 queue 失败,就执行新增线程
+    //   新增线程失败，触发 reject
+    //   (addWorker 中有对线程池状态的判断) 这里没有执行线程只状态的检查
+    else if (!addWorker(command, false))
+        reject(command);
+}
+```
+
 ### runWorker
 
-我们知道如果 `ThreadPoolExecutor` 不执行 `shutdown` 方法，JVM 就不会退出，原因就在与 `runWorker` 中的 会区调用 `getTask` 方法，而 `getTask` 方法会调用 `BlockingQueue` 的 `take` 方法，（调用 `take` 方法时，如果队列中没有元素，那么该线程会一种阻塞，直到有数据放入队列），这就是 `ThreadPoolExecutor` 启动的线程池，不会主动关闭
+我们知道如果 通过 `newFixedThreadPool` 和 `newSingleThreadExecutor` 创建的 `ThreadPoolExecutor` 不执行 `shutdown` 方法，JVM 就不会退出，原因就在与 `runWorker` 中的 会区调用 `getTask` 方法，而 `getTask` 方法会调用 `BlockingQueue` 的 `take` 方法，（调用 `take` 方法时，如果队列中没有元素，那么该线程会一直阻塞，直到有数据放入队列），这就是 `newFixedThreadPool`& `newSingleThreadExecutor` 启动的线程池，不会主动关闭的原因
 
-`Worker` 类实现了 `Runnable` 接口，因此可以提交给线程进行执行，当执行 Thread#start 方法，线程启动之后，就执行 run 方法，从而执行 runWorker 方法
+`newCachedThreadPool` 创建的线程池会，如果超过 60 秒没有可执行的任务，就会退出,原因在与会执行 `workQueue.poll(keepAliveTime, TimeUnit.NANOSECONDS)`
+
+该方法只会阻塞 60 秒，如果过了 60 秒，还没任务可执行，会更新 `timedOut`变量的值，那么就会结束 `while` 循环，最终终止线程
+
+`Worker` 类实现了 `Runnable` 接口，因此可以提交给线程进行执行，当执行 `Thread#start` 方法，线程启动之后，就执行 `run` 方法，从而执行 `runWorker` 方法
 
 Worker 的 run 方法
 
@@ -184,56 +247,88 @@ public void run() {
 而 `Thread#start` 是在 `addWorker` 方法中执行的
 
 ```java
-    // Worker 继承了 AbstractQueuedSynchronizer，实现锁的功能
-    final void runWorker(Worker w) {
-        Thread wt = Thread.currentThread();
-        Runnable task = w.firstTask;
-        w.firstTask = null;
-        w.unlock(); // allow interrupts
-        boolean completedAbruptly = true;
-        try {
-            // getTask 是从 BlockingQueue 中获取数据的，如果没有数据，会一直阻塞
-            // getTask 如果返回了 null ,那么 while 就不再次循环了，
-            // 就会执行 finally 中的代码
-            // getTask 中也会对可用的线程数 -1
-            while (task != null || (task = getTask()) != null) {
-                w.lock();// 加锁
-                // If pool is stopping, ensure thread is interrupted;
-                // if not, ensure thread is not interrupted.  This
-                // requires a recheck in second case to deal with
-                // shutdownNow race while clearing interrupt
-                if ((runStateAtLeast(ctl.get(), STOP) ||
-                     (Thread.interrupted() &&
-                      runStateAtLeast(ctl.get(), STOP))) &&
-                    !wt.isInterrupted())
-                    wt.interrupt();
+// Worker 继承了 AbstractQueuedSynchronizer，实现锁的功能
+final void runWorker(Worker w) {
+    Thread wt = Thread.currentThread();
+    Runnable task = w.firstTask;
+    w.firstTask = null;
+    w.unlock(); // allow interrupts
+    boolean completedAbruptly = true;
+    try {
+        // getTask 是从 BlockingQueue 中获取数据的，如果没有数据，会一直阻塞
+        // getTask 如果返回了 null ,那么 while 就不再次循环了，
+        // 就会执行 finally 中的代码
+        // getTask 中也会对可用的线程数 -1
+        while (task != null || (task = getTask()) != null) {
+            w.lock();// 加锁
+            // If pool is stopping, ensure thread is interrupted;
+            // if not, ensure thread is not interrupted.  This
+            // requires a recheck in second case to deal with
+            // shutdownNow race while clearing interrupt
+            if ((runStateAtLeast(ctl.get(), STOP) ||
+                 (Thread.interrupted() &&
+                  runStateAtLeast(ctl.get(), STOP))) &&
+                !wt.isInterrupted())
+                wt.interrupt();
+            try {
+                beforeExecute(wt, task);// 钩子方法
+                Throwable thrown = null;
                 try {
-                    beforeExecute(wt, task);// 钩子方法
-                    Throwable thrown = null;
-                    try {
-                        task.run();// 执行任务
-                    } catch (RuntimeException x) {
-                        thrown = x; throw x;
-                    } catch (Error x) {
-                        thrown = x; throw x;
-                    } catch (Throwable x) {
-                        thrown = x; throw new Error(x);
-                    } finally {
-                        afterExecute(task, thrown);// 钩子方法
-                    }
+                    task.run();// 执行任务
+                } catch (RuntimeException x) {
+                    thrown = x; throw x;
+                } catch (Error x) {
+                    thrown = x; throw x;
+                } catch (Throwable x) {
+                    thrown = x; throw new Error(x);
                 } finally {
-                    task = null;
-                    w.completedTasks++;
-                    w.unlock();// 释放锁
+                    afterExecute(task, thrown);// 钩子方法
                 }
+            } finally {
+                task = null;
+                w.completedTasks++;
+                w.unlock();// 释放锁
             }
-            completedAbruptly = false;
-        } finally {
-            // 这个 finally 块，只有在 调用了 Thread#interrupt 方法之后，才会执行
-            // 因为 while 循环中的 getTask 方法会阻塞
-            processWorkerExit(w, completedAbruptly);
         }
+        completedAbruptly = false;
+    } finally {
+        // 这个 finally 块
+        // 只有在调用了 getTask() 方法返回了 null 之后(while 循环会结束)
+        // 才会执行关闭线程的操作
+        // 具体的线程退出操作在 interruptIdleWorkers 中
+        processWorkerExit(w, completedAbruptly);
     }
+}
+// 关闭线程，通过 t.interrupt(); 进行关闭线程
+// onlyOne = true 一次只关闭一个线程
+// interruptIdleWorkers 方法的逻辑就是从 workers 集合中查询找到一个 Worker
+// 执行两个判断:
+// 1. 判断线程是否执行了 interrupt 方法
+//    如果执行过了，说明线程已经终止了，找下一个线程
+// 2. 并尝试获取锁，如果获取锁成功，证明
+//    这个线程没有正在执行的任务(空闲状态)
+//    执行 t.interrupt(); 进行线程的退出
+private void interruptIdleWorkers(boolean onlyOne) {
+final ReentrantLock mainLock = this.mainLock;
+mainLock.lock();
+try {
+    for (Worker w : workers) {
+        Thread t = w.thread;
+        if (!t.isInterrupted() && w.tryLock()) {
+            try {
+                t.interrupt();
+            } catch (SecurityException ignore) {
+            } finally {
+                w.unlock();
+            }
+        }
+        if (onlyOne)
+            break;
+    }
+} finally {
+    mainLock.unlock();
+}
+}
 ```
 
 ### getTask
@@ -299,7 +394,7 @@ public void run() {
 ```java
    // Worker 类是 ThreadPoolExecutor 的内部类
    // Worker 继承了 aqs 类，实现了一个不可重入的锁功能
-   // Worker 实现锁功能的目的是为了方便终止线程
+   // Worker 实现锁功能的目的是为了方便终止线程(可参考 interruptIdleWorkers 方法)
    // 线程在执行任务的时候，会先加锁，执行完成之后，会释放锁
    // 在终止线程的时候，会使用 tryLock 去获取锁，如果获取锁成功
    // 说明此线程没有在执行任务，就使用 Thread#interrupt 方法终止线程，进行线程的回收
@@ -337,6 +432,8 @@ public void run() {
 
 > `ArrayList`,`LinkedList` 不是线程安全，如过使用这些来存储任务，会增加API的设计难度，而 `BlockingQueue` 天生为多线程而生
 
+### newFixedThreadPool
+
 - 创建固定大小的线程池
 
 ```java
@@ -346,6 +443,8 @@ public static ExecutorService newFixedThreadPool(int nThreads) {
                                       new LinkedBlockingQueue<Runnable>());
 }
 ```
+
+### newSingleThreadExecutor
 
 - 创建一个只包含一个线程的线程池
 
@@ -358,7 +457,7 @@ public static ExecutorService newSingleThreadExecutor() {
 }
 ```
 
-- newCachedThreadPool
+### newCachedThreadPool
 
 如果没有可以使用的线程，就创建新的，如果有则复用之前的线程
 如果一个线程在 60 秒内没有被使用，则被从 cache 中删除&线程会被终止
@@ -394,7 +493,7 @@ Runnable r = timed ?
 
 `newCachedThreadPool` 创建的线程池会在线程闲置 60 之后销毁所有的线程(corePoolSize=0)，从而退出(不需要手动的调用 shutdown 方法)
 而 `newFixedThreadPool` & `newSingleThreadExecutor` 创建的线程池(corePoolSize!=0)，由于始终存在一个或者多个线程
-而这一个或者多个线程因为调用 `workQueue.take()` 会阻塞，因此不会退出(需要手动的调用 shutdown 方法)
+而这一个或者多个线程因为调用 `workQueue.take()` 会阻塞，因此不会退出(需要手动的调用 `shutdown` 方法)
 
 可以看到 上面的二个方法都使用`LinkedBlockingQueue`作用 `queue`,那么为什么不使用`ArrayBlockingQueue`呢？
 
