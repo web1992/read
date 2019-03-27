@@ -176,6 +176,14 @@ Method `getQueue()` 为了调试设计,其他忽用
 ### execute
 
 ```java
+// execute 方法会根据当前线程池的状态，对任务进行不同的处理
+// execute 与 submit 对比:
+// execute 是 java.util.concurrent.Executor 中定义的方法
+// submit  是 java.util.concurrent.ExecutorService 中定义的方法
+// execute 返回值是 void
+// submit 返回值是 Future
+// submit 最终还是把任务给了 execute 进行执行的
+// submit 支持异步的结果查询
 public void execute(Runnable command) {
     if (command == null)
         throw new NullPointerException();
@@ -216,7 +224,7 @@ public void execute(Runnable command) {
         if (!isRunning(recheck) && remove(command))
             reject(command);
         // 这里 worlerCont 判断其实不是必要的
-        // 这里就是判断如果线程池中没有线程，就新增一个线程
+        // 这里就是判断如果线程池中没有线程(线程池正在运行),就新增一个线程
         else if (workerCountOf(recheck) == 0)
             addWorker(null, false);
     }
