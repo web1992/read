@@ -85,6 +85,10 @@ HashMap的源码遍历实现:
 
 ## LinkedHashMap
 
+`LinkedHashMap` 继承了 `HashMap`
+
+![LinkedHashMap](images/LinkedHashMap.png)
+
 ### 插入顺序的实现
 
 `LinkedHashMap` 内部是基于链表实现的
