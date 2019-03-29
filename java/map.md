@@ -38,6 +38,10 @@ Map 的集合实现可以分三类：
 
 [hash表的解释](https://liujiacai.net/blog/2015/09/03/java-hashmap/#哈希表（hash-table）)
 
+> 下面看下为什么 `HashMap` 无法保证顺序（插入顺序和遍历顺序不一致）
+
+这里通过图表解释
+
 自己动手画了一个hash冲突产生的图（假设k3与k5产生了hash冲突）
 如果产生了hash冲突，那么`HashMap`中的元素按照链表的方式存储
 
@@ -47,7 +51,7 @@ Map 的集合实现可以分三类：
 key --hash function--> hashcode ----index function--> 索引 ----> 放入bucketsz中(放入buckets是一个Map.Entry 数组)
 ```
 
-而 ``HashMap`的源码遍历实现:
+而 `HashMap`的源码遍历实现:
 
 ```java
 // source version jdk 1.8
@@ -83,9 +87,12 @@ public void forEach(BiConsumer<? super K, ? super V> action) {
     k7
 ```
 
+而插入的顺序是 k1 -> k7
 所以`HashMap`是无序的:插入顺序和遍历顺序不一致
 
 ### demo
+
+> 这里通过 demo 验证
 
 ```java
 public static void main(String[] args) {
