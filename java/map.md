@@ -48,25 +48,25 @@ key --hash function--> hashcode ----index function--> 索引 ----> 放入buckets
 HashMap的源码遍历实现:
 
 ```java
-    // source version jdk 1.8
-    @Override
-    public void forEach(BiConsumer<? super K, ? super V> action) {
-        Node<K,V>[] tab;
-        if (action == null)
-            throw new NullPointerException();
-        if (size > 0 && (tab = table) != null) {
-            int mc = modCount;
-            // 通过Node<K,V>[] table的长度顺序遍历
-            // 通过Node实现了Map.Entry接口
-            for (int i = 0; i < tab.length; ++i) {
-                // 如果产生了hash冲突图，继续循环遍历
-                for (Node<K,V> e = tab[i]; e != null; e = e.next)
-                    action.accept(e.key, e.value);
-            }
-            if (modCount != mc)
-                throw new ConcurrentModificationException();
+// source version jdk 1.8
+@Override
+public void forEach(BiConsumer<? super K, ? super V> action) {
+    Node<K,V>[] tab;
+    if (action == null)
+        throw new NullPointerException();
+    if (size > 0 && (tab = table) != null) {
+        int mc = modCount;
+        // 通过Node<K,V>[] table的长度顺序遍历
+        // 通过Node实现了Map.Entry接口
+        for (int i = 0; i < tab.length; ++i) {
+            // 如果产生了hash冲突图，继续循环遍历
+            for (Node<K,V> e = tab[i]; e != null; e = e.next)
+                action.accept(e.key, e.value);
         }
+        if (modCount != mc)
+            throw new ConcurrentModificationException();
     }
+}
 ```
 
 因此遍历输出的顺序是:
@@ -100,40 +100,40 @@ HashMap的源码遍历实现:
 `LinkedHashMap` 没有重写 `HashMap` 的 put 方法，而是重写了 `newTreeNode` 方法
 
 ```java
-   TreeNode<K,V> newTreeNode(int hash, K key, V value, Node<K,V> next) {
-        TreeNode<K,V> p = new TreeNode<K,V>(hash, key, value, next);
-        // 多了这个方法
-        linkNodeLast(p);
-        return p;
-    }
+TreeNode<K,V> newTreeNode(int hash, K key, V value, Node<K,V> next) {
+    TreeNode<K,V> p = new TreeNode<K,V>(hash, key, value, next);
+    // 多了这个方法
+    linkNodeLast(p);
+    return p;
+}
 
-     // link at the end of list
-    private void linkNodeLast(LinkedHashMap.Entry<K,V> p) {
-        LinkedHashMap.Entry<K,V> last = tail;
-        tail = p;
-        if (last == null)
-            head = p;
-        else {
-            // 把新的节点放在链表的最末端
-            p.before = last;
-            last.after = p;
-        }
+ // link at the end of list
+private void linkNodeLast(LinkedHashMap.Entry<K,V> p) {
+    LinkedHashMap.Entry<K,V> last = tail;
+    tail = p;
+    if (last == null)
+        head = p;
+    else {
+        // 把新的节点放在链表的最末端
+        p.before = last;
+        last.after = p;
     }
+}
 ```
 
 遍历的实现：
 
 ```java
-    public void forEach(BiConsumer<? super K, ? super V> action) {
-        if (action == null)
-            throw new NullPointerException();
-        int mc = modCount;
-        // 从链表的头开始找，一直到空
-        for (LinkedHashMap.Entry<K,V> e = head; e != null; e = e.after)
-            action.accept(e.key, e.value);
-        if (modCount != mc)
-            throw new ConcurrentModificationException();
-    }
+public void forEach(BiConsumer<? super K, ? super V> action) {
+    if (action == null)
+        throw new NullPointerException();
+    int mc = modCount;
+    // 从链表的头开始找，一直到空
+    for (LinkedHashMap.Entry<K,V> e = head; e != null; e = e.after)
+        action.accept(e.key, e.value);
+    if (modCount != mc)
+        throw new ConcurrentModificationException();
+}
 ```
 
 `LinkedHashMap`中所有的`Entry`都是链接在一起的，遍历的时候，从链表的头一直遍历到链表的结束，从而保证其插入顺序的有序。
