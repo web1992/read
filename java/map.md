@@ -302,6 +302,8 @@ protected boolean removeEldestEntry(Map.Entry<K,V> eldest) {
 
 #### demo removeEldestEntry
 
+`MaxSizeMap` 是一个只能存储 11 个元素的map，如果超过了11 ，多余的数据就会被删除
+
 ```java
 public static void main(String[] args) {
     Map<String, String> myMap = new MaxSizeMap<>();
