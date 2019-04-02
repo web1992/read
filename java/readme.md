@@ -28,6 +28,7 @@
 - [queue.md](queue.md)
 - [reentrant-lock.md](reentrant-lock.md)
 - [thread-pool-executor.md](thread-pool-executor.md)
+- [scheduled-thread-pool-executor.md](scheduled-thread-pool-executor.md)
 
 ## collection
 

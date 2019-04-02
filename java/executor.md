@@ -2,5 +2,6 @@
 
 - [Future](future.md)
 - [ThreadPoolExecutor](thread-pool-executor.md)
+- [ScheduledThreadPoolExecutor](scheduled-thread-pool-executor.md)
 
-![executor](./images/executor.png)
+![Executor](images/ScheduledThreadPoolExecutor.png)
