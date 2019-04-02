@@ -10,6 +10,7 @@
     - [get](#get)
     - [cancel](#cancel)
   - [hook method](#hook-method)
+  - [one more thing](#one-more-thing)
   - [link](#link)
 
 ## 简介
@@ -75,7 +76,7 @@ try {
 ### run
 
 ```java
-// 这个run 方法的执行者，其实是 ThreadPoolExecutor 中的线程
+// 这个run 方法的执行者，其实是 ThreadPoolExecutor 线程池中的线程
 public void run() {
     if (state != NEW ||
         !UNSAFE.compareAndSwapObject(this, runnerOffset,
@@ -172,6 +173,27 @@ public boolean cancel(boolean mayInterruptIfRunning) {
 // 这个方法在任务，完成，取消，任务异常的时候，都会触发
 // 其实是在 finishCompletion 方法中被调用的
 protected void done() { }
+```
+
+## one more thing
+
+`FutureTask` 的设计，其实简单，可以通过下面的简化版本，进行理解
+
+```java
+class FutureTask {
+    // main 线程执行这个方法
+    public V get() {
+        // 检查 state
+        // (等待结果)返回 outcome
+        return v;
+    }
+
+    // 线程池中的线程执行这个方法
+    public void run() {
+      // 执行任务
+      // 更新 state 和 outcome
+    }
+}
 ```
 
 ## link
