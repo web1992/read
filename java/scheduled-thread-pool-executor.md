@@ -9,9 +9,9 @@
   - [scheduleAtFixedRate](#scheduleatfixedrate)
   - [scheduleWithFixedDelay](#schedulewithfixeddelay)
   - [ScheduledFutureTask](#scheduledfuturetask)
-  - [变量](#%E5%8F%98%E9%87%8F)
+    - [变量](#%E5%8F%98%E9%87%8F)
     - [run](#run)
-  - [getDelay](#getdelay)
+    - [getDelay](#getdelay)
   - [DelayedWorkQueue](#delayedworkqueue)
     - [offer](#offer)
     - [poll](#poll)
@@ -109,7 +109,7 @@ public ScheduledFuture<?> scheduleWithFixedDelay(Runnable command,
 
 ![ScheduledFutureTask](images/ScheduledFutureTask.png)
 
-## 变量
+### 变量
 
 ```java
 /** Sequence number to break ties FIFO */
@@ -182,7 +182,7 @@ void reExecutePeriodic(RunnableScheduledFuture<?> task) {
 }
 ```
 
-## getDelay
+### getDelay
 
 ```java
 // getDelay 获取还需要等待的时间
