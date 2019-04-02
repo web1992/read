@@ -63,12 +63,23 @@ public ScheduledFuture<?> scheduleAtFixedRate(Runnable command,
         new ScheduledFutureTask<Void>(command,
                                       null,
                                       triggerTime(initialDelay, unit),
-                                      unit.toNanos(period));
+                                      unit.toNanos(period));// 不同点
     RunnableScheduledFuture<Void> t = decorateTask(command, sft);
     sft.outerTask = t;
     delayedExecute(t);
     return t;
 }
+```
+
+`scheduleAtFixedRate` 与 `scheduleWithFixedDelay` 不同点在这个方法
+
+```java
+unit.toNanos(period));// scheduleAtFixedRate
+unit.toNanos(-delay));// scheduleWithFixedDelay
+
+// 这个值会被当做 ScheduledFutureTask 的成员变量 period
+// 用来区分 scheduleAtFixedRate scheduleWithFixedDelay
+// 用 setNextRunTime 计算下次执行的时间
 ```
 
 ## scheduleWithFixedDelay
@@ -86,7 +97,7 @@ public ScheduledFuture<?> scheduleWithFixedDelay(Runnable command,
         new ScheduledFutureTask<Void>(command,
                                       null,
                                       triggerTime(initialDelay, unit),
-                                      unit.toNanos(-delay));
+                                      unit.toNanos(-delay));// 不同点
     RunnableScheduledFuture<Void> t = decorateTask(command, sft);
     sft.outerTask = t;
     delayedExecute(t);
@@ -104,13 +115,15 @@ public ScheduledFuture<?> scheduleWithFixedDelay(Runnable command,
 /** Sequence number to break ties FIFO */
 private final long sequenceNumber;
 /** The time the task is enabled to execute in nanoTime units */
-private long time;
+private long time;// 任务执行的时间
 /**
  * Period in nanoseconds for repeating tasks.  A positive
  * value indicates fixed-rate execution.  A negative value
  * indicates fixed-delay execution.  A value of 0 indicates a
  * non-repeating task.
  */
+ // period > 0 fixed-rate
+ // period < 0 fixed-delay
 private final long period;
 /** The actual task to be re-enqueued by reExecutePeriodic */
 RunnableScheduledFuture<V> outerTask = this;
@@ -157,7 +170,7 @@ long triggerTime(long delay) {
         ((delay < (Long.MAX_VALUE >> 1)) ? delay : overflowFree(delay));
 }
 
-//
+// 任务执行之后，被重新放进了队列中
 void reExecutePeriodic(RunnableScheduledFuture<?> task) {
     if (canRunInCurrentRunState(true)) {
         super.getQueue().add(task);
@@ -186,11 +199,13 @@ public long getDelay(TimeUnit unit) {
 
 `DelayedWorkQueue` 是基于数组实现的一个队列,初始大小是 16
 
-使用 `ReentrantLock` 控制并发
+使用 `ReentrantLock` 控制并发,重写了 `offer`,`take`,`poll` 方法
 
 ### offer
 
 ```java
+// offer 向 DelayedWorkQueue 维护的数组中添加一个任务
+// 如果空间不足就扩容
 public boolean offer(Runnable x) {
     if (x == null)
         throw new NullPointerException();
@@ -222,47 +237,50 @@ public boolean offer(Runnable x) {
 ### poll
 
 ```java
-        public RunnableScheduledFuture<?> poll(long timeout, TimeUnit unit)
-            throws InterruptedException {
-            long nanos = unit.toNanos(timeout);
-            final ReentrantLock lock = this.lock;
-            lock.lockInterruptibly();
-            try {
-                for (;;) {
-                    RunnableScheduledFuture<?> first = queue[0];
-                    if (first == null) {
-                        if (nanos <= 0)
-                            return null;
-                        else
-                            nanos = available.awaitNanos(nanos);
-                    } else {
-                        long delay = first.getDelay(NANOSECONDS);
-                        if (delay <= 0)
-                            return finishPoll(first);
-                        if (nanos <= 0)
-                            return null;
-                        first = null; // don't retain ref while waiting
-                        if (nanos < delay || leader != null)
-                            nanos = available.awaitNanos(nanos);
-                        else {
-                            Thread thisThread = Thread.currentThread();
-                            leader = thisThread;
-                            try {
-                                long timeLeft = available.awaitNanos(delay);
-                                nanos -= delay - timeLeft;
-                            } finally {
-                                if (leader == thisThread)
-                                    leader = null;
-                            }
-                        }
+public RunnableScheduledFuture<?> poll(long timeout, TimeUnit unit)
+    throws InterruptedException {
+    long nanos = unit.toNanos(timeout);
+    final ReentrantLock lock = this.lock;
+    lock.lockInterruptibly();
+    try {
+        for (;;) {
+            RunnableScheduledFuture<?> first = queue[0];
+            if (first == null) {// 数据中没有可执行的任务
+                if (nanos <= 0)// 等待了nanos 时间后，依然没可执行的任务，返回空
+                    return null;
+                else// 等待 timeout 时间后，继续执行 for 循环，就会再次 检查 first 是否有数据，如果没有继续等待
+                    nanos = available.awaitNanos(nanos);// 同时更新 nanos
+            } else {
+                // 走到这里，说明 queue 中肯定是有任务的
+                // 检查 delay 是否需要执行了,如果需要执行了
+                // 直接返回该任务(其实就是提交给线程池，进行任务执行)
+                long delay = first.getDelay(NANOSECONDS);
+                if (delay <= 0)
+                    return finishPoll(first);
+                if (nanos <= 0)// 看下面 nanos -= delay - timeLeft; 的处理
+                    return null;
+                first = null; // don't retain ref while waiting
+                if (nanos < delay || leader != null)
+                    nanos = available.awaitNanos(nanos);
+                else {
+                    Thread thisThread = Thread.currentThread();
+                    leader = thisThread;
+                    try {
+                        long timeLeft = available.awaitNanos(delay);
+                        nanos -= delay - timeLeft;
+                    } finally {
+                        if (leader == thisThread)
+                            leader = null;
                     }
                 }
-            } finally {
-                if (leader == null && queue[0] != null)
-                    available.signal();
-                lock.unlock();
             }
         }
+    } finally {
+        if (leader == null && queue[0] != null)
+            available.signal();
+        lock.unlock();
+    }
+}
 
 ```
 
@@ -275,13 +293,15 @@ public RunnableScheduledFuture<?> take() throws InterruptedException {
     try {
         for (;;) {
             RunnableScheduledFuture<?> first = queue[0];
+            // 如果没有数据等待,如果其他线程执行了 offer 提交了任务
+            // 会执行 available.signal(); 唤醒 take （也就是线程池的线程）
             if (first == null)
                 available.await();
             else {
                 // 计算延迟的时间 delay = time - now()
                 long delay = first.getDelay(NANOSECONDS);
                 if (delay <= 0)// 小于 0 说明时间到了,返回这个 Runnable
-                    return finishPoll(first);
+                    return finishPoll(first);// 这里保证了 queue 一定是有一个任务的
                 first = null; // don't retain ref while waiting
                 if (leader != null)
                     available.await();
@@ -292,6 +312,7 @@ public RunnableScheduledFuture<?> take() throws InterruptedException {
                         // 等待 delay 纳秒时间，其实就是在 delay 纳秒之后返回 Runnable
                         // 然后提交给 queue 执行任务
                         // 这样就实现了 周期性任务 的执行
+                        // awaitNanos 方法会使当前线程阻塞，等待唤醒（不会占用CPU）
                         available.awaitNanos(delay);
                     } finally {
                         if (leader == thisThread)
@@ -307,19 +328,27 @@ public RunnableScheduledFuture<?> take() throws InterruptedException {
     }
 }
 
+// time 是任务要执行的时间点
+// time - now() < 0 说明已经超过了当前时间
+// 立即执行
+public long getDelay(TimeUnit unit) {
+    return unit.convert(time - now(), NANOSECONDS);
+}
+
 /**
 * Performs common bookkeeping for poll and take: Replaces
 * first element with last and sifts it down.  Call only when
 * holding lock.
 * @param f the task to remove and return
 */
+// 这里是从数据中拿到下一个需要执行的任务
 private RunnableScheduledFuture<?> finishPoll(RunnableScheduledFuture<?> f) {
-    int s = --size;
+    int s = --size;// 下一个
     RunnableScheduledFuture<?> x = queue[s];
     queue[s] = null;
     if (s != 0)
         siftDown(0, x);
-    setIndex(f, -1);
+    setIndex(f, -1);// 更新 heapIndex 方便后续排序使用
     return f;
 }
 ```
