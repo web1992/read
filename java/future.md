@@ -181,11 +181,13 @@ protected void done() { }
 
 ```java
 class FutureTask {
+    private Object outcome;
+    private volatile int state;
     // main 线程执行这个方法
     public V get() {
         // 检查 state
         // (等待结果)返回 outcome
-        return v;
+        return (V)outcome;
     }
 
     // 线程池中的线程执行这个方法
