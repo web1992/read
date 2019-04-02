@@ -1,7 +1,7 @@
 # ReentrantLock
 
 - [ReentrantLock](#reentrantlock)
-  - [特点](#%E7%89%B9%E7%82%B9)
+  - [简介](#%E7%AE%80%E4%BB%8B)
   - [Lock interface](#lock-interface)
   - [可重入的实现](#%E5%8F%AF%E9%87%8D%E5%85%A5%E7%9A%84%E5%AE%9E%E7%8E%B0)
   - [公平锁&非公平锁的实现](#%E5%85%AC%E5%B9%B3%E9%94%81%E9%9D%9E%E5%85%AC%E5%B9%B3%E9%94%81%E7%9A%84%E5%AE%9E%E7%8E%B0)
@@ -13,7 +13,7 @@
   - [demo](#demo)
   - [Link](#link)
 
-## 特点
+## 简介
 
 - 提供了和 `synchronized` 同样的语义，但是扩展了 `synchronized`
 - 可以重入，同一个线程可以多次获取锁
@@ -61,6 +61,10 @@ protected final boolean tryAcquire(int acquires) {
         // 就对 state +1
         // 这里 setState 直接设置，而没有使用 cas
         // 是因为当地线程已经获取锁了，其他线程不会修改 state 的值
+        // 如果你执行了两次 lock 方法，那么必须执行两次 unlock
+        // 其他线程才会释放锁
+        // 原因也很简单，执行了两次 lock 之后 state=2
+        // 如果只执行一次 unlock ，此时state=1 ,不为 0
         int nextc = c + acquires;
         if (nextc < 0)
             throw new Error("Maximum lock count exceeded");
