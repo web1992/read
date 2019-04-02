@@ -18,9 +18,8 @@
 
 1. `ScheduledThreadPoolExecutor` 支持周期性执行某一个任务
 2. 包装 `Runnable` `Callable` 为 ScheduledFutureTask
-3. 使用自定义的 `DelayedWorkQueue` 执行任务
-
-`ScheduledThreadPoolExecutor` = `ThreadPoolExecutor`+`ScheduledExecutorService`
+3. 使用自定义的 `DelayedWorkQueue` 维护任务
+4. `ScheduledThreadPoolExecutor` = `ThreadPoolExecutor`+`ScheduledExecutorService`
 
 ![ScheduledThreadPoolExecutor](images/ScheduledThreadPoolExecutor.png)
 
