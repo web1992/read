@@ -1,9 +1,5 @@
 # ScheduledThreadPoolExecutor
 
-`ScheduledThreadPoolExecutor` = `ThreadPoolExecutor`+`ScheduledExecutorService`
-
-![ScheduledThreadPoolExecutor](images/ScheduledThreadPoolExecutor.png)
-
 - [ScheduledThreadPoolExecutor](#scheduledthreadpoolexecutor)
   - [java doc](#java-doc)
   - [scheduleAtFixedRate](#scheduleatfixedrate)
@@ -20,6 +16,10 @@
 1. `ScheduledThreadPoolExecutor` 支持周期性执行某一个任务
 2. 包装 `Runnable` `Callable` 为 ScheduledFutureTask
 3. 使用自定义的 `DelayedWorkQueue` 执行任务
+
+`ScheduledThreadPoolExecutor` = `ThreadPoolExecutor`+`ScheduledExecutorService`
+
+![ScheduledThreadPoolExecutor](images/ScheduledThreadPoolExecutor.png)
 
 ## java doc
 
