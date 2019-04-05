@@ -1,5 +1,7 @@
 # read 随笔
 
+> 更聪明的学习，而不是苦读。
+
 ## 技巧
 
 - [学习到底是什么（🚀 知乎）](https://zhuanlan.zhihu.com/p/27989078)
@@ -10,7 +12,7 @@
 - [Netty in action](netty/readme.md)
 - [dubbo](dubbo/readme.md)
 - [java 基础](java/readme.md)
-  
+
 ## 设计模式
 
 - [软件开发设计模式](design-patterns/readme.md)
