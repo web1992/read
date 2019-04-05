@@ -11,6 +11,11 @@
 5. `AbstractQueuedSynchronizer` 可以实现共享锁，排他锁的语义，如 ReentrantReadWriteLock
 6. `AbstractQueuedSynchronizer` 可以实现公平锁，非公平锁的语义
 
+## 源码分析
+
+- [count-down-latch.md](count-down-latch.md)
+- [reentrant-lock.md](reentrant-lock.md)
+
 ## 参考
 
 - [cas and aqs (csdn)](https://blog.csdn.net/u010862794/article/details/72892300)

@@ -1,5 +1,15 @@
 # CountDownLatch
 
+- [CountDownLatch](#countdownlatch)
+  - [concept](#concept)
+  - [init](#init)
+  - [await](#await)
+  - [countDown](#countdown)
+  - [example1](#example1)
+  - [example2](#example2)
+  - [example3](#example3)
+  - [参考](#%E5%8F%82%E8%80%83)
+
 `CountDownLatch` 可用来实现线程之间的协作(或者理解为一个`计数器`)，如线程 A 等待线程 B,C,D 执行完成之后，再进行继续其他操作
 
 类似 `Thread#join` 的方法, `Thread#join` 可参照这个 [thread-join](thread.md#join)
@@ -13,24 +23,11 @@
 - [java.util.concurrent.locks.AbstractQueuedSynchronizer](aqs.md)
 - [java.util.concurrent.locks.LockSupport](lock-support.md)
 
+## concept
+
 在下面的例子中，会把 `CountDownLatch` 当做 `计数器` 来解说
 
-- [CountDownLatch](#countdownlatch)
-  - [concept](#concept)
-  - [init](#init)
-  - [await](#await)
-  - [countDown](#countdown)
-  - [example1](#example1)
-  - [example2](#example2)
-  - [example3](#example3)
-  - [参考](#%E5%8F%82%E8%80%83)
-
 `CountDownLatch` 可以用来处理几个线程之间的协作，如 A 线程等待 B,C,D 线程任务完成之后，再执行 A 自己的任务。
-
-- [CountDownLatch](https://www.cnblogs.com/shiyanch/archive/2011/04/04/2005233.html)
-- [CountDownLatch from oracle docs](https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/CountDownLatch.html)
-
-## concept
 
 A synchronization aid that allows one or more threads to wait until
 a set of operations being performed in other threads completes.
@@ -58,24 +55,21 @@ public class CountDownLatchTest {
         // 主线程执行了 await，因此一直在阻塞
         new Thread(r).start();
         cdl.await();// 线程进行等待
-
         System.out.println("end");
-
     }
 }
-
 ```
 
 `new CountDownLatch()`
 
 ```java
-   // 在进行 new CountDownLatch 会创建一个 Sync 对象
-   // Sync 是 CountDownLatch 的内部类
-   // Sync 继承了 AbstractQueuedSynchronizer 实现了锁的功能
-   public CountDownLatch(int count) {
-        if (count < 0) throw new IllegalArgumentException("count < 0");
-        this.sync = new Sync(count);
-    }
+// 在进行 new CountDownLatch 会创建一个 Sync 对象
+// Sync 是 CountDownLatch 的内部类
+// Sync 继承了 AbstractQueuedSynchronizer 实现了锁的功能
+public CountDownLatch(int count) {
+    if (count < 0) throw new IllegalArgumentException("count < 0");
+    this.sync = new Sync(count);
+}
 ```
 
 ## await
@@ -86,99 +80,130 @@ public class CountDownLatchTest {
 
 ```java
 // CountDownLatch
- public void await() throws InterruptedException {
+public void await() throws InterruptedException {
         sync.acquireSharedInterruptibly(1);
-    }
+}
 ```
 
 ```java
-    // AbstractQueuedSynchronizer
-    public final void acquireSharedInterruptibly(int arg)
-            throws InterruptedException {
-        if (Thread.interrupted())
-            throw new InterruptedException();
-        // 首先通过 tryAcquireShared 尝试一下获取锁
-        // 其实就是判断一下 state 是否等于0
-        // 如果小于 0 说明,计数器不为0,需要等待,否则不需要阻塞
-        if (tryAcquireShared(arg) < 0)
-            doAcquireSharedInterruptibly(arg);
-    }
-    // CountDownLatch
-    protected int tryAcquireShared(int acquires) {
-        // -1 表示还有其他线程在获取锁
-        return (getState() == 0) ? 1 : -1;
-     }
-```
-
-```java
-    // AbstractQueuedSynchronizer
-    // 下面的 for;; + shouldParkAfterFailedAcquire 方法实现了cas 语义
-    private void doAcquireSharedInterruptibly(int arg)
+// AbstractQueuedSynchronizer
+public final void acquireSharedInterruptibly(int arg)
         throws InterruptedException {
-        // 当前线程进入队列排队
-        final Node node = addWaiter(Node.SHARED);
-        boolean failed = true;
-        try {
-            for (;;) {
-                final Node p = node.predecessor();// 获取当前的节点的前一个节点
-                if (p == head) {// 如果前一个节点为 head 说明只有一个线程在排队，进行尝试获取 计数器
-                    int r = tryAcquireShared(arg);
-                    if (r >= 0) {// 计数器为 0 了，不需要阻塞了
-                        setHeadAndPropagate(node, r);// 对于 CountDownLatch 这个代码不会执行
-                        p.next = null; // help GC
-                        failed = false;
-                        return;
-                    }
-                }
-                // shouldParkAfterFailedAcquire + for 循环，去改变前一个节点的状态
-                // 直到修改成功（也是cas）
-                if (shouldParkAfterFailedAcquire(p, node) &&
-                    parkAndCheckInterrupt())// parkAndCheckInterrupt 这里使用 LockSupport.park 阻塞当前线程
-                    throw new InterruptedException();
-            }
-        } finally {
-            if (failed)
-                cancelAcquire(node);
-        }
-    }
-    // AbstractQueuedSynchronizer
-    private Node addWaiter(Node mode) {
-        // 把当前线程包装成 Node
-        Node node = new Node(Thread.currentThread(), mode);
-        // Try the fast path of enq; backup to full enq on failure
-        Node pred = tail;// 队尾
-        if (pred != null) {
-            node.prev = pred;
-            // 队尾 不为空，说明有线程在排队，那么当前线程，也就是node 变成 tail
-            if (compareAndSetTail(pred, node)) {// 这里尝试变成tail,如果成功，就返回当前 Node
-                pred.next = node;
-                return node;
-            }
-        }
-        enq(node);// 入队失败或者队尾不为空，那么执行入队操作
-        return node;
-    }
-    // AbstractQueuedSynchronizer
-    private Node enq(final Node node) {
-        // 这里一个无线循环
-        // 也就是 cas 一直循环到设置成功
-        // 这里是有 cas 的目的是多线程的时候，会存在竞争，存在 head 或者tail 已经被其他线程初始化的情况
-        // cas 成功，结束循环
-        for (;;) {
-            Node t = tail;// 第一次 tail 为空的时候，进行初始化 head 和 tail
-            if (t == null) { // Must initialize
-                if (compareAndSetHead(new Node()))
-                    tail = head;
-            } else {
-                node.prev = t;
-                if (compareAndSetTail(t, node)) {
-                    t.next = node;
-                    return t;
-                }
-            }
-        }
-    }
+    if (Thread.interrupted())
+        throw new InterruptedException();
+    // 首先通过 tryAcquireShared 尝试一下获取锁
+    // 其实就是判断一下 state 是否等于0
+    // 如果小于 0 说明,计数器不为0,需要等待,否则不需要阻塞
+    if (tryAcquireShared(arg) < 0)
+        doAcquireSharedInterruptibly(arg);
+}
+// CountDownLatch
+protected int tryAcquireShared(int acquires) {
+    // -1 表示还有其他线程在获取锁
+    return (getState() == 0) ? 1 : -1;
+ }
+```
 
+```java
+// AbstractQueuedSynchronizer
+// 下面的 for;; + shouldParkAfterFailedAcquire 方法实现了cas 语义
+private void doAcquireSharedInterruptibly(int arg)
+    throws InterruptedException {
+    // 当前线程进入队列排队
+    final Node node = addWaiter(Node.SHARED);
+    boolean failed = true;
+    try {
+        for (;;) {
+            final Node p = node.predecessor();// 获取当前的节点的前一个节点
+            if (p == head) {// 如果前一个节点为 head 说明只有一个线程在排队，进行尝试获取 计数器
+                int r = tryAcquireShared(arg);
+                if (r >= 0) {// 计数器为 0 了，不需要阻塞了
+                    // 当 await 唤醒之后，会执行这个代码
+                    // 修改 head
+                    setHeadAndPropagate(node, r);
+                    p.next = null; // help GC
+                    failed = false;
+                    return;
+                }
+            }
+            // shouldParkAfterFailedAcquire + for 循环，去改变前一个节点的状态
+            // 直到修改成功（也是cas）
+            // shouldParkAfterFailedAcquire 会修改前一个 Node 节点的 waitStatus = Node.SIGNAL
+            // 修改成功，才会阻塞当前线程(执行parkAndCheckInterrupt)
+            if (shouldParkAfterFailedAcquire(p, node) &&
+                parkAndCheckInterrupt())// parkAndCheckInterrupt 这里使用 LockSupport.park 阻塞当前线程
+                throw new InterruptedException();
+        }
+    } finally {
+        if (failed)
+            cancelAcquire(node);
+    }
+}
+// AbstractQueuedSynchronizer
+private void setHeadAndPropagate(Node node, int propagate) {
+    Node h = head; // Record old head for check below
+    setHead(node);
+    /*
+     * Try to signal next queued node if:
+     *   Propagation was indicated by caller,
+     *     or was recorded (as h.waitStatus either before
+     *     or after setHead) by a previous operation
+     *     (note: this uses sign-check of waitStatus because
+     *      PROPAGATE status may transition to SIGNAL.)
+     * and
+     *   The next node is waiting in shared mode,
+     *     or we don't know, because it appears null
+     *
+     * The conservatism in both of these checks may cause
+     * unnecessary wake-ups, but only when there are multiple
+     * racing acquires/releases, so most need signals now or soon
+     * anyway.
+     */
+    if (propagate > 0 || h == null || h.waitStatus < 0 ||
+        (h = head) == null || h.waitStatus < 0) {
+        Node s = node.next;
+        if (s == null || s.isShared())
+            doReleaseShared();
+    }
+}
+
+// AbstractQueuedSynchronizer
+private Node addWaiter(Node mode) {
+    // 把当前线程包装成 Node
+    Node node = new Node(Thread.currentThread(), mode);
+    // Try the fast path of enq; backup to full enq on failure
+    Node pred = tail;// 队尾
+    if (pred != null) {
+        node.prev = pred;
+        // 队尾 不为空，说明有线程在排队，那么当前线程，也就是node 变成 tail
+        if (compareAndSetTail(pred, node)) {// 这里尝试变成tail,如果成功，就返回当前 Node
+            pred.next = node;
+            return node;
+        }
+    }
+    enq(node);// 入队失败或者队尾不为空，那么执行入队操作
+    return node;
+}
+// AbstractQueuedSynchronizer
+private Node enq(final Node node) {
+    // 这里一个无线循环
+    // 也就是 cas 一直循环到设置成功
+    // 这里是有 cas 的目的是多线程的时候，会存在竞争，存在 head 或者tail 已经被其他线程初始化的情况
+    // cas 成功，结束循环
+    for (;;) {
+        Node t = tail;// 第一次 tail 为空的时候，进行初始化 head 和 tail
+        if (t == null) { // Must initialize
+            if (compareAndSetHead(new Node()))
+                tail = head;
+        } else {
+            node.prev = t;
+            if (compareAndSetTail(t, node)) {
+                t.next = node;
+                return t;
+            }
+        }
+    }
+}
 ```
 
 ## countDown
@@ -194,17 +219,19 @@ public void countDown() {
 // AbstractQueuedSynchronizer
 public final boolean releaseShared(int arg) {
         if (tryReleaseShared(arg)) {// 尝试释放锁
-            doReleaseShared();// 返回 false 就不执行这个，存在其他线程已经执行了 cutDown
+            doReleaseShared();// 返回 false 就不执行这个，存在其他线程已经执行了 countDown
             return true;
         }
         return false;
 }
 // CountDownLatch
+// 只有在 state =0 的时候 tryReleaseShared 才返回true
+// 才会执行 doReleaseShared 的代码，去真正的释放锁，唤醒线程
 protected boolean tryReleaseShared(int releases) {
             // Decrement count; signal when transition to zero
             for (;;) {
                 int c = getState();
-                if (c == 0)// 如果 state =0 说明其他线程已经执行 cutDown 了，返回 false
+                if (c == 0)// 如果 state =0 说明其他线程已经执行 countDown 了，返回 false
                     return false;
                 int nextc = c-1;// 这里使用 for + cas 把 state-1
                 if (compareAndSetState(c, nextc))
@@ -235,12 +262,14 @@ private void doReleaseShared() {
                         continue;            // loop to recheck cases
                     unparkSuccessor(h);// 修改 waitStatus 成功，唤醒线程
                 }
-                else if (ws == 0 &&// 　如果 waitStatus =0 说明线程进入队列还没有成功，继续循环，等进入对列成功执行
-                         !compareAndSetWaitStatus(h, 0, Node.PROPAGATE))// 这里的修改 waitStatus=PROPAGATE 其实对 CountDownLatch 的实现没什么作用
+                // 如果 waitStatus =0 说明线程进入队列还没有成功，继续循环，等进入对列成功执行
+                // 这里的修改 waitStatus=PROPAGATE 其实对 CountDownLatch 的实现没什么作用
+                else if (ws == 0 &&
+                         !compareAndSetWaitStatus(h, 0, Node.PROPAGATE))
                     continue;                // loop on failed CAS
             }
             // h == head 这里　就是 if(true) 的写法
-            // 只有当上面的判断 h != null && h != tail 不成了，才会执行下面的代码
+            // 只有当上面的判断 h != null && h != tail 不成立了，才会执行下面的代码
             // 比如 head 为空了，或者 head == tail 了
             // head==tail 说明有线程出队列了，因此结束循环
             if (h == head)                   // loop if head changed
@@ -293,9 +322,9 @@ class Driver {
     CountDownLatch startSignal = new CountDownLatch(1);
     //  完成的信号
     CountDownLatch doneSignal = new CountDownLatch(N);
-     for (int i = 0; i < N; ++i) // create and start threads
-      new Thread(new Worker(startSignal, doneSignal)).start();
-     doSomethingElse();            // don't let run yet
+    for (int i = 0; i < N; ++i) // create and start threads
+    new Thread(new Worker(startSignal, doneSignal)).start();
+    doSomethingElse();            // don't let run yet
     // 发出开始的信号
     startSignal.countDown();      // let all threads proceed
     doSomethingElse();
@@ -415,3 +444,5 @@ class Driver2 {
 ## 参考
 
 - [CountDownLatch & CyclicBarrier](https://github.com/CL0610/Java-concurrency/tree/master/25.%E5%A4%A7%E7%99%BD%E8%AF%9D%E8%AF%B4java%E5%B9%B6%E5%8F%91%E5%B7%A5%E5%85%B7%E7%B1%BB-CountDownLatch%EF%BC%8CCyclicBarrier)
+- [CountDownLatch](https://www.cnblogs.com/shiyanch/archive/2011/04/04/2005233.html)
+- [CountDownLatch from oracle docs](https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/CountDownLatch.html)
