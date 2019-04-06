@@ -18,7 +18,7 @@
 - 提供了和 `synchronized` 同样的语义，但是扩展了 `synchronized`
 - 可以重入，同一个线程可以多次获取锁
 - 实现了 `公平锁` & `非公平锁` 的语义
-- 必须使用 `try` `finally` 来释放锁
+- 必须使用 `try`加锁，`finally` 来释放锁
 - 可以使用 `tryLock` 设置锁的超时时间
 
 ## Lock interface
@@ -61,10 +61,11 @@ protected final boolean tryAcquire(int acquires) {
         // 就对 state +1
         // 这里 setState 直接设置，而没有使用 cas
         // 是因为当地线程已经获取锁了，其他线程不会修改 state 的值
-        // 如果你执行了两次 lock 方法，那么必须执行两次 unlock
-        // 其他线程才会释放锁
+        // 如果线程A执行了两次 lock 方法，那么必须执行两次 unlock
+        // 线程A才会释放锁
         // 原因也很简单，执行了两次 lock 之后 state=2
         // 如果只执行一次 unlock ，此时state=1 ,不为 0
+        // 其他线程是无法获取锁
         int nextc = c + acquires;
         if (nextc < 0)
             throw new Error("Maximum lock count exceeded");
@@ -80,6 +81,8 @@ protected final boolean tryAcquire(int acquires) {
 ## 公平锁&非公平锁的实现
 
 `ReentrantLock` 使用两个内部类 `NonfairSync` 和 `FairSync` 来实现非公平锁和公平锁
+
+![Sync.png](./images/Sync.png)
 
 ### NonfairSync
 
