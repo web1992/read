@@ -18,7 +18,7 @@
 
 This exception may be thrown by methods that have detected concurrent modification of an object when such modification is not permissible.
 
-使用`fail-fast`在并发修改集合元素内容，如`add`,`remove`时，使集合可以自己检测到集合已经被修改了，后续的操作如果不中断，会产生其他问题，因此，抛出`ConcurrentModificationException`异常，中断流程。
+使用`fail-fast`机制在并发修改集合元素内容，如`add`,`remove`时，使集合可以自己检测到集合中的元素已经被修改了，后续的操作如果不中断，会产生其他问题，因此，抛出`ConcurrentModificationException`异常，中断流程。
 
 ## 设计原理
 
