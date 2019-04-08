@@ -4,13 +4,13 @@
 
 ## index
 
-`dubbo` 源码分析 版本: **2.7.1-SNAPSHOT** 目前 `dubbo` 还在 `apache` 基金孵化 不同的版本之间的改动还是很大的
+`dubbo` 源码分析 版本: **2.7.1** 目前 `dubbo` 还在 `apache` 基金孵化 不同的版本之间的改动还是很大的
 
 ```xml
 <dependency>
     <groupId>org.apache.dubbo</groupId>
     <artifactId>dubbo-bom</artifactId>
-    <version>2.7.1-SNAPSHOT</version>
+    <version>2.7.1</version>
     <type>pom</type>
     <scope>import</scope>
 </dependency>
