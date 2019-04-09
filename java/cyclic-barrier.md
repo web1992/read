@@ -51,34 +51,34 @@ public class CyclicBarrierDemo {
 ## init
 
 ```java
-    // 4 个人（线程）到达之后，会打印 开始斗地主
-    CyclicBarrier cyclicBarrier = new CyclicBarrier(4, () -> System.out.println("开始斗地主 ..."));
+ // 4 个人（线程）到达之后，会打印 开始斗地主
+ CyclicBarrier cyclicBarrier = new CyclicBarrier(4, () -> System.out.println("开始斗地主 ..."));
 
-    // CyclicBarrier 的成员变量
+ // CyclicBarrier 的成员变量
 
-    /** The lock for guarding barrier entry */
-    private final ReentrantLock lock = new ReentrantLock();// 锁控制并发
-    /** Condition to wait on until tripped */
-    private final Condition trip = lock.newCondition();// 控制线程的阻塞，唤醒
-    /** The number of parties */
-    private final int parties;// 斗地主需要的人数,这里是 4，这个值在初始化之后不会改变
-    /* The command to run when tripped */
-    private final Runnable barrierCommand;// 4 人到期之后执行的任务
-    /** The current generation */
-    private Generation generation = new Generation();// 可以理解为一个版本号
+ /** The lock for guarding barrier entry */
+ private final ReentrantLock lock = new ReentrantLock();// 锁控制并发
+ /** Condition to wait on until tripped */
+ private final Condition trip = lock.newCondition();// 控制线程的阻塞，唤醒
+ /** The number of parties */
+ private final int parties;// 斗地主需要的人数,这里是 4，这个值在初始化之后不会改变
+ /* The command to run when tripped */
+ private final Runnable barrierCommand;// 4 人到期之后执行的任务
+ /** The current generation */
+ private Generation generation = new Generation();// 可以理解为一个版本号
 
-    /**
-     * Number of parties still waiting. Counts down from parties to 0
-     * on each generation.  It is reset to parties on each new
-     * generation or when broken.
-     */
-    private int count;//这个值会不断减少
+ /**
+  * Number of parties still waiting. Counts down from parties to 0
+  * on each generation.  It is reset to parties on each new
+  * generation or when broken.
+  */
+ private int count;//这个值会不断减少
 ```
 
 ## await
 
 ```java
-    public int await() throws InterruptedException, BrokenBarrierException {
+public int await() throws InterruptedException, BrokenBarrierException {
         try {
             return dowait(false, 0L);// 具体逻辑在 dowait 方法中
         } catch (TimeoutException toe) {
@@ -156,15 +156,30 @@ private int dowait(boolean timed, long nanos)
 
 ## reset
 
+重置
+
 ```java
-    public void reset() {
-        final ReentrantLock lock = this.lock;
-        lock.lock();
-        try {
-            breakBarrier();   // break the current generation
-            nextGeneration(); // start a new generation
-        } finally {
-            lock.unlock();
-        }
+public void reset() {
+    final ReentrantLock lock = this.lock;
+    lock.lock();
+    try {
+        breakBarrier();   // break the current generation
+        nextGeneration(); // start a new generation
+    } finally {
+        lock.unlock();
     }
+}
+private void breakBarrier() {
+    generation.broken = true;
+    count = parties;
+    trip.signalAll();
+}
+private void nextGeneration() {
+    // signal completion of last generation
+    trip.signalAll();
+    // set up next generation
+    // count 会不断的减少，二个parties 是固定不变的
+    count = parties;
+    generation = new Generation();
+}
 ```
