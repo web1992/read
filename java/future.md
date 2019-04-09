@@ -142,7 +142,7 @@ public V get(long timeout, TimeUnit unit)
 ```java
 // 取消任务
 // 如果一个任务已经完成了，那么返回 false
-// 取消成功，返回成功
+// 取消成功，返回 true
 public boolean cancel(boolean mayInterruptIfRunning) {
     if (!(state == NEW &&
           UNSAFE.compareAndSwapInt(this, stateOffset, NEW,
