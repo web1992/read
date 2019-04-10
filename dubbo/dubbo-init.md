@@ -61,7 +61,7 @@
 </beans>
 ```
 
-`dubbo`的初始化是以 spring 的扩展点为基础，进行配置，实现初始化的。
+`dubbo`的初始化是以 `spring` 的扩展点为基础，进行配置，实现初始化的。
 
 源码`org.apache.dubbo.config.spring.schema.DubboNamespaceHandler`
 
@@ -151,9 +151,10 @@ public class DubboNamespaceHandler extends NamespaceHandlerSupport {
 <dubbo:service interface="cn.web1992.dubbo.demo.DemoService" ref="demoService"/>
 ```
 
-export 过程会把 `DemoService`这个接口中的所有的方法进行解析，拼接成一个`URL` 字符串， 当作一种资源，在暴露服务的时候使用。
+export 过程会把 `DemoService`这个接口中的所有的方法进行解析，拼接成一个`URL` 字符串，当作一种资源，在暴露服务的时候使用。
 
 `ServiceConfig`中会调用`protocol.export`进行服务的暴露，而我使用的 protocol 配置是`<dubbo:protocol name="dubbo"/>`
+
 因此会使用`DubboProtocol`进行服务的暴露
 
 `ServiceConfig`代码片段：
@@ -300,22 +301,21 @@ registry 是在`RegistryProtocol` 的`export`方法中触发的
 代码片段：
 
 ```java
-        // url to registry
-        // 获取注册实现类，通过 SPI 获取
-        final Registry registry = getRegistry(originInvoker);
-        final URL registeredProviderUrl = getRegisteredProviderUrl(providerUrl, registryUrl);
-        ProviderInvokerWrapper<T> providerInvokerWrapper = ProviderConsumerRegTable.registerProvider(originInvoker,
-                registryUrl, registeredProviderUrl);
-        //to judge if we need to delay publish
-        boolean register = registeredProviderUrl.getParameter("register", true);
-        if (register) {
-            // 开始注册
-            register(registryUrl, registeredProviderUrl);
-            providerInvokerWrapper.setReg(true);
-        }
-
-        // Deprecated! Subscribe to override rules in 2.6.x or before.
-        registry.subscribe(overrideSubscribeUrl, overrideSubscribeListener);
+// url to registry
+// 获取注册实现类，通过 SPI 获取
+final Registry registry = getRegistry(originInvoker);
+final URL registeredProviderUrl = getRegisteredProviderUrl(providerUrl, registryUrl);
+ProviderInvokerWrapper<T> providerInvokerWrapper = ProviderConsumerRegTable.registerProvider(originInvoker,
+        registryUrl, registeredProviderUrl);
+//to judge if we need to delay publish
+boolean register = registeredProviderUrl.getParameter("register", true);
+if (register) {
+    // 开始注册
+    register(registryUrl, registeredProviderUrl);
+    providerInvokerWrapper.setReg(true);
+}
+// Deprecated! Subscribe to override rules in 2.6.x or before.
+registry.subscribe(overrideSubscribeUrl, overrideSubscribeListener);
 ```
 
 ### provider subscribe
