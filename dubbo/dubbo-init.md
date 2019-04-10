@@ -322,6 +322,57 @@ registry.subscribe(overrideSubscribeUrl, overrideSubscribeListener);
 
 ### provider invoker
 
+先说 `invoker` 的`暴露`，其实就是把 `invoker` 放入到 `Map` 中
+
+```java
+// DubboProtocol 的 export 方法
+// 把 invoker 放入到 exporterMap 中
+@Override
+public <T> Exporter<T> export(Invoker<T> invoker) throws RpcException {
+    URL url = invoker.getUrl();
+    // export service.
+    String key = serviceKey(url);
+    // 把 invoker 包装成 DubboExporter
+    DubboExporter<T> exporter = new DubboExporter<T>(invoker, key, exporterMap);
+    // 放入到 exporterMap 中
+    exporterMap.put(key, exporter);
+    //export an stub service for dispatching event
+    Boolean isStubSupportEvent = url.getParameter(Constants.STUB_EVENT_KEY, Constants.DEFAULT_STUB_EVENT);
+    Boolean isCallbackservice = url.getParameter(Constants.IS_CALLBACK_SERVICE, false);
+    if (isStubSupportEvent && !isCallbackservice) {
+        String stubServiceMethods = url.getParameter(Constants.STUB_EVENT_METHODS_KEY);
+        if (stubServiceMethods == null || stubServiceMethods.length() == 0) {
+            if (logger.isWarnEnabled()) {
+                logger.warn(new IllegalStateException("consumer [" + url.getParameter(Constants.INTERFACE_KEY) +
+                        "], has set stubproxy support event ,but no stub methods founded."));
+            }
+        } else { `ExchangeHandler requestHandler` 中 
+            stubServiceMethodsMap.put(url.getServiceKey(), stubServiceMethods);
+        }
+    }
+    openServer(url);
+    optimizeSerialization(url);
+    return exporter;
+}
+```
+
+通过上面的 `export` 方法，`Invoker` 暴露完成。
+
+下面看下 `Invoker` 查找
+
+在这篇文章中 [dubbo-channel-handler.md](dubbo-channel-handler.md) 我们知道 `TCP` 请求经过层层的 `ChannelHandler` 处理
+
+最终会执行到 `DubboProtocol` 的 `ExchangeHandler#requestHandler` 中
+
+然后会执行 `getInvoker` 方法，从 `exporterMap` 中查询 `Invoker`
+
+```java
+// 代码片段，查询 Invoker
+ DubboExporter<?> exporter = (DubboExporter<?>) exporterMap.get(serviceKey);
+```
+
+至此 `Invoker` 的`暴露`和`查找`，形成闭环
+
 ## consumer init
 
 通过下面的配置，来分析 `consumer` 的初始化过程
