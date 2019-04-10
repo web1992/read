@@ -24,11 +24,15 @@
 
 初始化过程，以下面的这个简单的 xml 配置为例子
 
-provider 的初始化，其实是类 `ServiceBean`的初始化过程,具体的实现在 `ServiceConfig`类中
+`provider` 的初始化，其实是类 `ServiceBean`的初始化过程,具体的实现在 `ServiceConfig`类中
 
 > 说明：
 
-dubbo 很多可扩展的类方法(如 protocol,registry)，都是基于 dubbo 的 SPI 机制进行方法调用的，如果要想理解代码的执行逻辑，最好对 dubbo 的 SPI 的机制有所了解。
+`dubbo` 很多可扩展的类方法(如 `org.apache.dubbo.rpc.Protocol`,`org.apache.dubbo.registry.Registry`)，都是基于 `dubbo` 的 `SPI` 机制进行方法调用的
+
+如果要想理解代码的执行逻辑，最好对 `dubbo` 的 `SPI` 的机制有所了解。
+
+关于 `SPI` 可参考 [dubbo-extension-loader.md](dubbo-extension-loader.md)
 
 > dubbo-provider.xml
 
