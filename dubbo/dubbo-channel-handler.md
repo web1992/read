@@ -112,7 +112,7 @@ Netty
       -> NettyServerHandler # netty ChannelDuplexHandler 的实现
         -> NettyServer # 负责启动netty 服务，并维护 io.netty.channel.Channel
           -> MultiMessageHandler # 支持多个消息的解析
-            -> HeartbeatHandler # 心跳检测，如果是心脏IO事件，则直接返回（后续的Handler则不会执行了）
+            -> HeartbeatHandler # 心跳检测，如果是心跳IO事件，则直接返回（后续的Handler则不会执行了）
               -> AllChannelHandler # 线程池，异步执行
                 -> DecodeHandler # 进行 Decodeable 的
                   -> HeaderExchangeHandler # 负责检查 Result 是否完成，并执行 Channel#send 发送结果

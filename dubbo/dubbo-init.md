@@ -418,11 +418,11 @@ public class ReferenceBean<T> extends ReferenceConfig<T> implements FactoryBean,
 ### invoker&proxy init
 
 ```java
-    @Override
-    public Object getObject() {
-        // get 会调用 init 方法
-        return get();
-    }
+@Override
+public Object getObject() {
+    // get 会调用 init 方法
+    return get();
+}
 ```
 
 `init`方法
@@ -448,7 +448,6 @@ public class ReferenceBean<T> extends ReferenceConfig<T> implements FactoryBean,
 
 ```java
 // createProxy 方法主要有两个操作，创建invoker和生成proxy
-
 // 通过 SPI 创建 invoker
 invoker = refprotocol.refer(interfaceClass, urls.get(0));
 
