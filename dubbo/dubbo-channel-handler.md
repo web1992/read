@@ -129,7 +129,7 @@ Netty
 
 可参考 `org.apache.dubbo.remoting.transport.netty4.NettyCodecAdapter` 的代码
 
-`dubbo` 客户端端的 `handler` 链:
+`dubbo` 客户端的 `handler` 链:
 
 ```java
 Netty
@@ -146,11 +146,52 @@ Netty
                     -> DubboProtocol#requestHandler
 ```
 
-客户端端的事件从 `decoder` -> `DubboProtocol#requestHandler`
+客户端的事件从 `decoder` -> `DubboProtocol#requestHandler`
 
 ## DecodeHandler
 
 ![DecodeHandler](images/dubbo-DecodeHandler.png)
+
+以一个方法调用为例：
+
+```txt
+请求：
+
+dubbo customer ------Request------> dubbo provider
+                      (TCP)
+customer 把方法调用(包含方法名，参数)通过 TCP 网络传输到 provider
+
+
+响应：
+
+dubbo customer <------Response------ dubbo provider
+                      (TCP)
+
+provider 接受到 TCP 请求，解析，转化为本地方执行，执行之后生成 Result
+再把 Result 通过网络发送到 customer
+```
+
+看下 `DecodeHandler` 的 `received` 方法
+
+```java
+// DecodeHandler
+@Override
+public void received(Channel channel, Object message) throwRemotingException {
+    if (message instanceof Decodeable) {
+        decode(message);
+    }
+
+    if (message instanceof Request) {
+        decode(((Request) message).getData());
+    }
+
+    if (message instanceof Response) {
+        decode(((Response) message).getResult());
+    }
+
+    handler.received(channel, message);
+}
+```
 
 ## AllChannelHandler
 
