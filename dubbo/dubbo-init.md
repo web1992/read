@@ -3,6 +3,7 @@
 从以下这个几个方面分析 `dubbo` 初始化：
 
 - [dubbo init](#dubbo-init)
+  - [Protocol](#protocol)
   - [provider init](#provider-init)
     - [ServiceBean](#servicebean)
     - [export](#export)
@@ -11,14 +12,46 @@
     - [provider invoker](#provider-invoker)
   - [consumer init](#consumer-init)
     - [ReferenceBean](#referencebean)
-    - [invoker&proxy init](#invokerproxy-init)
-    - [customer invoker](#customer-invoker)
+    - [init](#init)
+    - [refer](#refer)
+    - [getProxy](#getproxy)
+    - [InvokerInvocationHandler](#invokerinvocationhandler)
     - [customer subscribe](#customer-subscribe)
     - [customer client](#customer-client)
 
 一个简单的 dubbo 例子
 
 - [demo of dubbo](https://github.com/web1992/dubbos)
+
+## Protocol
+
+`Protocol` 在 `dubbo` 中是一个十分重要的概念,`dubbo` 服务的，启动，初始，注册，等等，都是通过 `Protocol` 不同的实现类
+
+组合实现的，因此在了解 `dubbo` 的初始之前，需要对 `Protocol` 有一个概念。
+
+```java
+@SPI("dubbo")
+public interface Protocol {
+
+    int getDefaultPort();
+
+    // export 方法，主要负责 dubbo provider 的初始化
+    @Adaptive
+    <T> Exporter<T> export(Invoker<T> invoker) throws RpcException;
+
+    // refer 方法，主要负责 dubbo customer 的初始化
+    @Adaptive
+    <T> Invoker<T> refer(Class<T> type, URL url) throws RpcException;
+
+    void destroy();
+}
+```
+
+`Protocol` 可以参考下面的这些文档：
+
+- [dubbo-protocol.md](dubbo-protocol.md)
+- [dubbo-protocol-registry-protocol.md](dubbo-protocol-registry-protocol.md)
+- [dubbo-protocol-dubbo-protocol.md](dubbo-protocol-dubbo-protocol.md)
 
 ## provider init
 
@@ -346,7 +379,7 @@ public <T> Exporter<T> export(Invoker<T> invoker) throws RpcException {
                 logger.warn(new IllegalStateException("consumer [" + url.getParameter(Constants.INTERFACE_KEY) +
                         "], has set stubproxy support event ,but no stub methods founded."));
             }
-        } else { `ExchangeHandler requestHandler` 中 
+        } else {
             stubServiceMethodsMap.put(url.getServiceKey(), stubServiceMethods);
         }
     }
@@ -407,15 +440,18 @@ public <T> Exporter<T> export(Invoker<T> invoker) throws RpcException {
 
 ```java
 public class ReferenceBean<T> extends ReferenceConfig<T> implements FactoryBean, ApplicationContextAware, InitializingBean, DisposableBean
+{
+ //
+}
 ```
 
 `ReferenceBean` 的类图：
 
 ![ReferenceBean](./images/dubbo-ReferenceBean.png)
 
-`ReferenceBean` 实现了 `FactoryBean` 接口,通过`getObject`来进行客户端的初始化
+`ReferenceBean` 实现了 `FactoryBean` 接口,通过 `getObject` 来进行客户端的初始化
 
-### invoker&proxy init
+### init
 
 ```java
 @Override
@@ -451,7 +487,7 @@ public Object getObject() {
 // 通过 SPI 创建 invoker
 invoker = refprotocol.refer(interfaceClass, urls.get(0));
 
-// 通过 SPI 创建 proxy 并返回
+// 通过 SPI 创建 proxy(包装 invoker) 并返回
 return (T) proxyFactory.getProxy(invoker);
 ```
 
@@ -468,43 +504,103 @@ System.out.println("result: " + hello);
 我们为`DemoService`生成一个代理类(`Proxy`), 并且宣称我实现了`DemoService`中的所有方法.当我们调用`sayHello`方法
 的时候，我们其实是调用代理类，代理类通过`TCP`发送请求，处理响应，然后返回结果。
 
-`dubbo` 使用 `JavassistProxyFactory` 来进行生产代理类，当执行 `sayHello` 方法时，实际执行的是 `InvokerInvocationHandler` 中的 `invoke` 方法
+### refer
 
-`InvokerInvocationHandler` 的 `invoke` 方法:
+`refer` 和上面的 `export` 方法类似，都是 `Protocol` 接口中定义的方法, refer 主要负责初始化客户端&生成 invoker
 
 ```java
-    @Override
-    public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
-        String methodName = method.getName();
-        Class<?>[] parameterTypes = method.getParameterTypes();
-        if (method.getDeclaringClass() == Object.class) {
-            return method.invoke(invoker, args);
-        }
-        if ("toString".equals(methodName) && parameterTypes.length == 0) {
-            return invoker.toString();
-        }
-        if ("hashCode".equals(methodName) && parameterTypes.length == 0) {
-            return invoker.hashCode();
-        }
-        if ("equals".equals(methodName) && parameterTypes.length == 1) {
-            return invoker.equals(args[0]);
-        }
-
-        return invoker.invoke(createInvocation(method, args)).recreate();
+// RegistryProtocol
+@Override
+@SuppressWarnings("unchecked")
+public <T> Invoker<T> refer(Class<T> type, URL url) throws RpcException {
+    url = URLBuilder.from(url)
+            .setProtocol(url.getParameter(REGISTRY_KEY, DEFAULT_REGISTRY))
+            .removeParameter(REGISTRY_KEY)
+            .build();
+    Registry registry = registryFactory.getRegistry(url);
+    if (RegistryService.class.equals(type)) {
+        return proxyFactory.getInvoker((T) registry, type, url);
     }
-    // createInvocation 用来创建 RpcInvocation
-    // RpcInvocation 实现了 Serializable 接口从而可进行网络传输
-    private RpcInvocation createInvocation(Method method, Object[] args) {
-        RpcInvocation invocation = new RpcInvocation(method, args);
-        if (RpcUtils.hasFutureReturnType(method)) {
-            invocation.setAttachment(Constants.FUTURE_RETURNTYPE_KEY, "true");
-            invocation.setAttachment(Constants.ASYNC_KEY, "true");
+    // group="a,b" or group="*"
+    Map<String, String> qs = StringUtils.parseQueryString(url.getParameterAndDecoded(REFER_KEY));
+    String group = qs.get(Constants.GROUP_KEY);
+    if (group != null && group.length() > 0) {
+        if ((COMMA_SPLIT_PATTERN.split(group)).length > 1 || "*".equals(group)) {
+            return doRefer(getMergeableCluster(), registry, type, url);
         }
-        return invocation;
     }
+    return doRefer(cluster, registry, type, url);
+}
+// RegistryProtocol
+private <T> Invoker<T> doRefer(Cluster cluster, Registry registry, Class<T> type, URL url) {
+    RegistryDirectory<T> directory = new RegistryDirectory<T>(type, url);
+    directory.setRegistry(registry);
+    directory.setProtocol(protocol);
+    // all attributes of REFER_KEY
+    Map<String, String> parameters = new HashMap<String, String>(directory.getUrl().getParameters());
+    URL subscribeUrl = new URL(CONSUMER_PROTOCOL, parameters.remove(REGISTER_IP_KEY), 0, type.getName(), parameters);
+    if (!ANY_VALUE.equals(url.getServiceInterface()) && url.getParameter(REGISTER_KEY, true)) {
+        directory.setRegisteredConsumerUrl(getRegisteredConsumerUrl(subscribeUrl, url));
+        registry.register(directory.getRegisteredConsumerUrl());
+    }
+    directory.buildRouterChain(subscribeUrl);
+    directory.subscribe(subscribeUrl.addParameter(CATEGORY_KEY,
+            PROVIDERS_CATEGORY + "," + CONFIGURATORS_CATEGORY + "," + ROUTERS_CATEGORY));
+    Invoker invoker = cluster.join(directory);
+    ProviderConsumerRegTable.registerConsumer(invoker, url, subscribeUrl, directory);
+    return invoker;
+}
 ```
 
-### customer invoker
+### getProxy
+
+包装生成的 `invoker`
+
+```java
+// JavassistProxyFactory
+@Override
+@SuppressWarnings("unchecked")
+public <T> T getProxy(Invoker<T> invoker, Class<?>[] interfaces) {
+    return (T) Proxy.getProxy(interfaces).newInstance(new InvokerInvocationHandler(invoker));
+}
+```
+
+### InvokerInvocationHandler
+
+`dubbo` 使用 `JavassistProxyFactory` 来进行生产代理类，当执行 `sayHello` 方法时，实际执行的是 `InvokerInvocationHandler` 中的 `invoke` 方法
+
+`InvokerInvocationHandler` 的 `invoke` 方法代码:
+
+```java
+@Override
+public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
+    String methodName = method.getName();
+    Class<?>[] parameterTypes = method.getParameterTypes();
+    if (method.getDeclaringClass() == Object.class) {
+        return method.invoke(invoker, args);
+    }
+    if ("toString".equals(methodName) && parameterTypes.length == 0) {
+        return invoker.toString();
+    }
+    if ("hashCode".equals(methodName) && parameterTypes.length == 0) {
+        return invoker.hashCode();
+    }
+    if ("equals".equals(methodName) && parameterTypes.length == 1) {
+        return invoker.equals(args[0]);
+    }
+    return invoker.invoke(createInvocation(method, args)).recreate();
+}
+// createInvocation 用来创建 RpcInvocation
+// RpcInvocation 实现了 Serializable 接口从而可进行网络传输
+private RpcInvocation createInvocation(Method method, Object[] args) {
+    RpcInvocation invocation = new RpcInvocation(method, args);
+    if (RpcUtils.hasFutureReturnType(method)) {
+        invocation.setAttachment(Constants.FUTURE_RETURNTYPE_KEY, "true");
+        invocation.setAttachment(Constants.ASYNC_KEY, "true");
+    }
+    return invocation;
+}
+```
 
 这里说明下为什么要了解一下`invoker`,`dubbo` 对 `invoker`进行了包装，来实现如`mock`服务的功能
 
