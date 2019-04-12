@@ -25,7 +25,7 @@
 
 ## Protocol
 
-`Protocol` 在 `dubbo` 中是一个十分重要的概念,`dubbo` 服务的，启动，初始，注册，等等，都是通过 `Protocol` 不同的实现类
+`Protocol` 在 `dubbo` 中是一个十分重要的概念,`dubbo` 服务的，启动，初始，注册(发布)，订阅 等等，都是通过 `Protocol` 不同的实现类
 
 组合实现的，因此在了解 `dubbo` 的初始之前，需要对 `Protocol` 有一个概念。
 
@@ -401,7 +401,7 @@ public <T> Exporter<T> export(Invoker<T> invoker) throws RpcException {
 
 ```java
 // 代码片段，查询 Invoker
- DubboExporter<?> exporter = (DubboExporter<?>) exporterMap.get(serviceKey);
+DubboExporter<?> exporter = (DubboExporter<?>) exporterMap.get(serviceKey);
 ```
 
 至此 `Invoker` 的`暴露`和`查找`，形成闭环
@@ -429,7 +429,6 @@ public <T> Exporter<T> export(Invoker<T> invoker) throws RpcException {
     <dubbo:reference id="demoService" check="false" interface="cn.web1992.dubbo.demo.DemoService"/>
 
 </beans>
-
 ```
 
 ### ReferenceBean
@@ -502,7 +501,7 @@ System.out.println("result: " + hello);
 
 我们为了调用`DemoService`的`sayHello`方法，但是我们客户端只有一个`接口类`，没有`实现类`，那怎么办呢？为了调用远程的方法
 我们为`DemoService`生成一个代理类(`Proxy`), 并且宣称我实现了`DemoService`中的所有方法.当我们调用`sayHello`方法
-的时候，我们其实是调用代理类，代理类通过`TCP`发送请求，处理响应，然后返回结果。
+的时候，我们其实是调用代理类，代理类通过`TCP`发送请求，等待处理响应，然后返回结果。
 
 ### refer
 
@@ -533,6 +532,7 @@ public <T> Invoker<T> refer(Class<T> type, URL url) throws RpcException {
 }
 // RegistryProtocol
 private <T> Invoker<T> doRefer(Cluster cluster, Registry registry, Class<T> type, URL url) {
+    // 目录服务
     RegistryDirectory<T> directory = new RegistryDirectory<T>(type, url);
     directory.setRegistry(registry);
     directory.setProtocol(protocol);
@@ -543,9 +543,13 @@ private <T> Invoker<T> doRefer(Cluster cluster, Registry registry, Class<T> type
         directory.setRegisteredConsumerUrl(getRegisteredConsumerUrl(subscribeUrl, url));
         registry.register(directory.getRegisteredConsumerUrl());
     }
+    // 路由功能
     directory.buildRouterChain(subscribeUrl);
+    // 注册服务
     directory.subscribe(subscribeUrl.addParameter(CATEGORY_KEY,
             PROVIDERS_CATEGORY + "," + CONFIGURATORS_CATEGORY + "," + ROUTERS_CATEGORY));
+    // 集群功能
+    // Invoker = Cluster + Directory
     Invoker invoker = cluster.join(directory);
     ProviderConsumerRegTable.registerConsumer(invoker, url, subscribeUrl, directory);
     return invoker;
@@ -587,7 +591,7 @@ public Object invoke(Object proxy, Method method, Object[] args) throws Throwabl
     }
     if ("equals".equals(methodName) && parameterTypes.length == 1) {
         return invoker.equals(args[0]);
-    }
+    }   
     return invoker.invoke(createInvocation(method, args)).recreate();
 }
 // createInvocation 用来创建 RpcInvocation
@@ -610,4 +614,91 @@ private RpcInvocation createInvocation(Method method, Object[] args) {
 
 ### customer subscribe
 
+`subscribe` 的主要作用：
+
+1. 执行服务的订阅
+2. 建立 customer 与 provider 的 TCP 连接
+3. 生成 DubboInvoker 对象
+
+`RegistryDirectory` 的接口定义
+
+```java
+// RegistryDirectory
+// RegistryDirectory 实现了 NotifyListener
+public class RegistryDirectory<T> extends AbstractDirectory<T> implements NotifyListener {
+
+}
+```
+
+```java
+// RegistryDirectory
+public void subscribe(URL url) {
+    setConsumerUrl(url);
+    consumerConfigurationListener.addNotifyListener(this);
+    serviceConfigurationListener = new ReferenceConfigurationListener(this, url);
+    registry.subscribe(url, this);// 这里传入自己，在订阅完成之后，会执行下面的 notify 方法
+}
+
+// 这里个方法在订阅完成之后会执行 notify，类似函数回调
+@Override
+public synchronized void notify(List<URL> urls) {
+    Map<String, List<URL>> categoryUrls = urls.stream()
+            .filter(Objects::nonNull)
+            .filter(this::isValidCategory)
+            .filter(this::isNotCompatibleFor26x)
+            .collect(Collectors.groupingBy(url -> {
+                if (UrlUtils.isConfigurator(url)) {
+                    return CONFIGURATORS_CATEGORY;
+                } else if (UrlUtils.isRoute(url)) {
+                    return ROUTERS_CATEGORY;
+                } else if (UrlUtils.isProvider(url)) {
+                    return PROVIDERS_CATEGORY;
+                }
+                return "";
+            }));
+    List<URL> configuratorURLs = categoryUrls.getOrDefault(CONFIGURATORS_CATEGORY, Collections.emptyList());
+    this.configurators = Configurator.toConfigurators(configuratorURLs).orElse(this.configurators);
+    List<URL> routerURLs = categoryUrls.getOrDefault(ROUTERS_CATEGORY, Collections.emptyList());
+    toRouters(routerURLs).ifPresent(this::addRouters);
+    // providers
+    List<URL> providerURLs = categoryUrls.getOrDefault(PROVIDERS_CATEGORY, Collections.emptyList());
+    // 这里会创建 invoker
+    // 最终会执行到 toInvokers 方法
+    refreshOverrideAndInvoker(providerURLs);
+}
+
+// toInvokers 代码片段
+// protocol 是通过 SPI 加载的，因此进行了多层的包装，最内层的是 DubboProtocol
+// 这里的 refer 方法最终会执行到 DubboProtocol 的 refer 方法
+// DubboProtocol 负责生成 client (customer 与 provider 建立 TCP 连接)
+// 并创建 DubboInvoker
+invoker = new InvokerDelegate<>(protocol.refer(serviceType, url), url, providerUrl);
+
+
+// DubboProtocol refer 方法
+@Override
+public <T> Invoker<T> refer(Class<T> serviceType, URL url) throws RpcException {
+    optimizeSerialization(url);
+    // create rpc invoker.
+    // getClients 其实就是创建 TCP 连接 ExchangeClient
+    // 并被 DubboInvoker 包装
+    // 当我执行方调用的时候，就会执行这个流程: proxy -> invoker ->  ExchangeClient -> TCP(网络)
+    DubboInvoker<T> invoker = new DubboInvoker<T>(serviceType, url, getClients(url), invokers);
+    invokers.add(invoker);
+    return invoker;
+}
+```
+
 ### customer client
+
+`ExchangeClient` 可以看做是 `dubbo` 对底层的网络通信（TCP）的封装
+
+如果你想调用远程的方法，把数据请求包装之后，交给 `HeaderExchangeClient` 它就会进行数据的网络传输，完成一次 `RPC` 调用
+
+```txt
+    ---------------------customer-----------------            ------------------------provider-----------------------
+    |                                            |            |                                                     |
+    |                                            |            |                                                     |
+    |                                            |            |                                                     |
+user bean  -> proxy -> Invoker -> ExchangeClient  -> TCP -> ExchangeServer -> Exporter -> Invoker -> proxy -> user bean
+```
