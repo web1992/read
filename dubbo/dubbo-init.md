@@ -698,9 +698,11 @@ public <T> Invoker<T> refer(Class<T> serviceType, URL url) throws RpcException {
 最终的调用链：
 
 ```txt
-    ---------------------customer-----------------            ------------------------provider-----------------------
-    |                                            |            |                                                     |
-    |                                            |            |                                                     |
-    |                                            |            |                                                     |
-user bean  -> proxy -> Invoker -> ExchangeClient  -> TCP -> ExchangeServer -> Exporter -> Invoker -> proxy -> user bean
+    ---------------customer----------------                 ------------------------provider------------------
+    |                                     |                 |                                                |
+    |                                     |                 |                                                |
+    |                                     |                 |                                                |
+  bean  -> proxy -> Invoker -> ExchangeClient  -> TCP -> ExchangeServer -> Exporter -> Invoker -> proxy ->  bean
 ```
+
+图解：bean = spring bean
