@@ -21,3 +21,7 @@ console.log(obj1);
 console.log(obj2);
 console.log(obj3);
 ```
+
+## Object.defineProperty
+
+- [defineProperty](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Object/defineProperty)
