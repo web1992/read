@@ -18,6 +18,7 @@
     - [InvokerInvocationHandler](#invokerinvocationhandler)
     - [customer subscribe](#customer-subscribe)
     - [customer client](#customer-client)
+  - [Summary](#summary)
 
 一个简单的 dubbo 例子
 
@@ -695,6 +696,8 @@ public <T> Invoker<T> refer(Class<T> serviceType, URL url) throws RpcException {
 
 如果你想调用远程的方法，把数据请求包装之后，交给 `HeaderExchangeClient` 它就会进行数据的网络传输，完成一次 `RPC` 调用
 
+## Summary
+
 最终的调用链：
 
 ```txt
@@ -706,3 +709,7 @@ public <T> Invoker<T> refer(Class<T> serviceType, URL url) throws RpcException {
 ```
 
 图解：bean = spring bean
+
+`RegistryProtocol` 在 `dubbo` 中是负责创建 `DubboInvoker` 等等
+
+`DubboProtocol` 在 `dubbo` 中是负责创建 `ExchangeClient` `ExchangeServer`
