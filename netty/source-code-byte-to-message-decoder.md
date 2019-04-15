@@ -422,7 +422,7 @@ BEFORE DECODE (16 bytes)                       AFTER DECODE (13 bytes)
 
 `ObjectDecoder` 是 netty 实现的 java 序列化，可与`ObjectEncoder`一起使用
 
-例子:[demo](https://github.com/web1992/java_note/tree/master/app_tools/src/main/java/cn/web1992/utils/demo/netty/serializable)
+例子:[demo](https://github.com/web1992/javas/tree/master/tools/src/main/java/cn/web1992/utils/demo/netty/serializable)
 
 ```java
  // 构造方法

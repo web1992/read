@@ -60,43 +60,42 @@ childGroup 当做参数给了 ServerBootstrapAcceptor，ServerBootstrapAcceptor 
 ### channelFactory
 
 ```java
-    // ReflectiveChannelFactory
-    @Override
-    public T newChannel() {
-        try {
-            // 这里使用反射进行实例化
-            return clazz.newInstance();
-        } catch (Throwable t) {
-            throw new ChannelException("Unable to create Channel from class " + clazz, t);
-        }
+// ReflectiveChannelFactory
+@Override
+public T newChannel() {
+    try {
+        // 这里使用反射进行实例化
+        return clazz.newInstance();
+    } catch (Throwable t) {
+        throw new ChannelException("Unable to create Channel from class " + clazz, t);
     }
+}
 ```
 
 ### init
 
 ```java
-        // 获取到pipeline
-        ChannelPipeline p = channel.pipeline();
-        // 注册 initChannel 事件，这个事件在其他渠道注册的时候会发生
-        // 比如客户端连接到服务器的时候
-        p.addLast(new ChannelInitializer<Channel>() {
+// 获取到pipeline
+ChannelPipeline p = channel.pipeline();
+// 注册 initChannel 事件，这个事件在其他渠道注册的时候会发生
+// 比如客户端连接到服务器的时候
+p.addLast(new ChannelInitializer<Channel>() {
+    @Override
+    public void initChannel(final Channel ch) throws Exception {
+        final ChannelPipeline pipeline = ch.pipeline();
+        ChannelHandler handler = config.handler();
+        if (handler != null) {
+            pipeline.addLast(handler);
+        }
+        ch.eventLoop().execute(new Runnable() {
             @Override
-            public void initChannel(final Channel ch) throws Exception {
-                final ChannelPipeline pipeline = ch.pipeline();
-                ChannelHandler handler = config.handler();
-                if (handler != null) {
-                    pipeline.addLast(handler);
-                }
-
-                ch.eventLoop().execute(new Runnable() {
-                    @Override
-                    public void run() {
-                        pipeline.addLast(new ServerBootstrapAcceptor(
-                                ch, currentChildGroup, currentChildHandler, currentChildOptions, currentChildAttrs));
-                    }
-                });
+            public void run() {
+                pipeline.addLast(new ServerBootstrapAcceptor(
+                        ch, currentChildGroup, currentChildHandler, currentChildOptions, currentChildAttrs));
             }
         });
+    }
+});
 ```
 
 ## bind
