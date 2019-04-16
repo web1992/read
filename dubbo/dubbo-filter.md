@@ -73,58 +73,52 @@ timeout=org.apache.dubbo.rpc.filter.TimeoutFilter
 `ProtocolFilterWrapper`负责对`Filter`进行链接，形成`Filter`链,`ProtocolFilterWrapper` 是 `Protocol` 的实现类
 
 ```java
-    private static <T> Invoker<T> buildInvokerChain(final Invoker<T> invoker, String key, String group) {
-        Invoker<T> last = invoker;
-        // 通过 SPI 获取所有的扩展点
-        List<Filter> filters = ExtensionLoader.getExtensionLoader(Filter.class).getActivateExtension(invoker.getUrl(), key, group);
-        if (!filters.isEmpty()) {
-            for (int i = filters.size() - 1; i >= 0; i--) {
-                final Filter filter = filters.get(i);
-                final Invoker<T> next = last;
-                // 循环对 Filter 进行包装，形成一个链
-                last = new Invoker<T>() {
-
-                    @Override
-                    public Class<T> getInterface() {
-                        return invoker.getInterface();
+private static <T> Invoker<T> buildInvokerChain(final Invoker<T> invoker, String key, String group) {
+    Invoker<T> last = invoker;
+    // 通过 SPI 获取所有的扩展点
+    List<Filter> filters = ExtensionLoader.getExtensionLoader(Filter.class).getActivateExtension(invoker.getUrl(), key, group);
+    if (!filters.isEmpty()) {
+        for (int i = filters.size() - 1; i >= 0; i--) {
+            final Filter filter = filters.get(i);
+            final Invoker<T> next = last;
+            // 循环对 Filter 进行包装，形成一个链
+            last = new Invoker<T>() {
+                @Override
+                public Class<T> getInterface() {
+                    return invoker.getInterface();
+                }
+                @Override
+                public URL getUrl() {
+                    return invoker.getUrl();
+                }
+                @Override
+                public boolean isAvailable() {
+                    return invoker.isAvailable();
+                }
+                @Override
+                public Result invoke(Invocation invocation) throws RpcException {
+                    Result result = filter.invoke(next, invocation);
+                    if (result instanceof AsyncRpcResult) {
+                        AsyncRpcResult asyncResult = (AsyncRpcResult) result;
+                        asyncResult.thenApplyWithContext(r -> filter.onResponse(r, invoker, invocation));
+                        return asyncResult;
+                    } else {
+                        return filter.onResponse(result, invoker, invocation);
                     }
-
-                    @Override
-                    public URL getUrl() {
-                        return invoker.getUrl();
-                    }
-
-                    @Override
-                    public boolean isAvailable() {
-                        return invoker.isAvailable();
-                    }
-
-                    @Override
-                    public Result invoke(Invocation invocation) throws RpcException {
-                        Result result = filter.invoke(next, invocation);
-                        if (result instanceof AsyncRpcResult) {
-                            AsyncRpcResult asyncResult = (AsyncRpcResult) result;
-                            asyncResult.thenApplyWithContext(r -> filter.onResponse(r, invoker, invocation));
-                            return asyncResult;
-                        } else {
-                            return filter.onResponse(result, invoker, invocation);
-                        }
-                    }
-
-                    @Override
-                    public void destroy() {
-                        invoker.destroy();
-                    }
-
-                    @Override
-                    public String toString() {
-                        return invoker.toString();
-                    }
-                };
-            }
+                }
+                @Override
+                public void destroy() {
+                    invoker.destroy();
+                }
+                @Override
+                public String toString() {
+                    return invoker.toString();
+                }
+            };
         }
-        return last;
     }
+    return last;
+}
 ```
 
 ## demo filter
