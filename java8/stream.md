@@ -136,6 +136,8 @@ System.out.println(collect);
 <R> Stream<R> flatMap(Function<? super T, ? extends Stream<? extends R>> mapper);
 ```
 
+- [https://www.mkyong.com/java8/java-8-flatmap-example/](https://www.mkyong.com/java8/java-8-flatmap-example/)
+
 ### sorted
 
 ```java
