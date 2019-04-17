@@ -19,6 +19,7 @@
     - [customer subscribe](#customer-subscribe)
     - [customer client](#customer-client)
   - [Summary](#summary)
+  - [provider invoker vs customer invoker](#provider-invoker-vs-customer-invoker)
 
 一个简单的 dubbo 例子
 
@@ -354,6 +355,8 @@ registry.subscribe(overrideSubscribeUrl, overrideSubscribeListener);
 
 ### provider subscribe
 
+这个会监听 `configurators` (配置中心)信息的变化),如果需要 provider 会重新暴露服务(重新生成 invoker 对象)
+
 ### provider invoker
 
 先说 `invoker` 的`暴露`，其实就是把 `invoker` 放入到 `Map` 中
@@ -592,7 +595,7 @@ public Object invoke(Object proxy, Method method, Object[] args) throws Throwabl
     }
     if ("equals".equals(methodName) && parameterTypes.length == 1) {
         return invoker.equals(args[0]);
-    }   
+    }
     return invoker.invoke(createInvocation(method, args)).recreate();
 }
 // createInvocation 用来创建 RpcInvocation
@@ -617,7 +620,7 @@ private RpcInvocation createInvocation(Method method, Object[] args) {
 
 `subscribe` 的主要作用：
 
-1. 执行服务的订阅
+1. 订阅 providers 服务
 2. 建立 customer 与 provider 的 TCP 连接
 3. 生成 DubboInvoker 对象
 
@@ -639,7 +642,58 @@ public void subscribe(URL url) {
     serviceConfigurationListener = new ReferenceConfigurationListener(this, url);
     registry.subscribe(url, this);// 这里传入自己，在订阅完成之后，会执行下面的 notify 方法
 }
+```
 
+以 `ZookeeperRegistry#doSubscribe`  `订阅`逻辑为例：
+
+```java
+Override
+public void doSubscribe(final URL url, final NotifyListener listener) {
+    try {
+        if (Constants.ANY_VALUE.equals(url.getServiceInterface())) {
+           // 省略的代码
+        } else {
+            List<URL> urls = new ArrayList<>();
+            for (String path : toCategoriesPath(url)) {
+                // 这里的 path 有下面三种
+                // 0 = "/dubbo/cn.web1992.dubbo.demo.DemoService/providers"
+                // 1 = "/dubbo/cn.web1992.dubbo.demo.DemoService/configurators"
+                // 2 = "/dubbo/cn.web1992.dubbo.demo.DemoService/routers"
+                ConcurrentMap<NotifyListener, ChildListener> listeners = zkListeners.get(url);
+                if (listeners == null) {
+                    zkListeners.putIfAbsent(url, new ConcurrentHashMap<>());
+                    listeners = zkListeners.get(url);
+                }
+                ChildListener zkListener = listeners.get(listener);
+                if (zkListener == null) {
+                    listeners.putIfAbsent(listener, (parentPath, currentChilds) -> ZookeeperRegistry.this.notify(url, listener, toUrlsWithEmpty(url, parentPath, currentChilds)));
+                    zkListener = listeners.get(listener);
+                }
+                // 在 zookeeper 中建立临时节点(上面的三个)
+                // 拿最主要的 providers 为例：
+                // 首先 providers 节点是 provider (服务提供这) 在启动的时候建立的
+                // 当 porvider 的信息如：服务 ip 变更，服务下线，新增接口，接口新增方法 等等
+                // providers 节点的信息会发生改变
+                // 这样 csutomer 监听到这些信息的变化，执行 notify
+                // notify 的作用就是通知 listener
+                // listener 中会对新的 urls 参数进行分析，来决定是否重新生成 invoker
+                // invoker 可以理解为  customer 与 provider 的 TCP 连接
+                // 如：当 provider 的 ip 变化的时候，invoker 肯定是要重新生成的，重新在新的 IP 上建立连接
+                zkClient.create(path, false);
+                List<String> children = zkClient.addChildListener(path, zkListener);
+                if (children != null) {
+                    urls.addAll(toUrlsWithEmpty(url, path, children));
+                }
+            }
+            notify(url, listener, urls);
+        }
+    } catch (Throwable e) {
+        throw new RpcException("Failed to subscribe " + url + " to zookeeper " + getUrl() + ", cause: " + e.getMessage(), e);
+    }
+}
+```
+
+```java
 // 这里个方法在订阅完成之后会执行 notify，类似函数回调
 @Override
 public synchronized void notify(List<URL> urls) {
@@ -713,3 +767,9 @@ public <T> Invoker<T> refer(Class<T> serviceType, URL url) throws RpcException {
 `RegistryProtocol` 在 `dubbo` 中是负责创建 `DubboInvoker` 等等
 
 `DubboProtocol` 在 `dubbo` 中是负责创建 `ExchangeClient` `ExchangeServer`
+
+## provider invoker vs customer invoker
+
+`provider invoker` 会被 `Export` 对象包装，放在缓存中,而 `provider invoker` 包装 Spring bean
+
+`customer invoker` 同样会被 `Export` 对象包装,而`customer invoker` 包装 `ExchangeClient` (客户端与服务器的连接)
