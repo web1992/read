@@ -7,14 +7,16 @@
 ## zookeeper info
 
 ```sh
-# 在
+# 在 provider 启动之后执行
 ls /dubbo
 
 [cn.web1992.dubbo.demo.DemoService]
 
 ls /dubbo/cn.web1992.dubbo.demo.DemoService
 
-[configurators, consumers, providers, routers]
+# [configurators, consumers, providers, routers]
+
+ls /dubbo/cn.web1992.dubbo.demo.DemoService/providers
 
 ```
 
