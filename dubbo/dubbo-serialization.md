@@ -97,26 +97,30 @@ public class Hessian2Serialization implements Serialization {
 
 ## ObjectOutput
 
-`ObjectOutput` 是 dubbo 中`输出流`的抽象，可以对流中写一个字符，写入一个boolean 等等
+`ObjectOutput` 是 dubbo 中`输出流`的抽象(可以理解为`java.io.OutputStream` 升级版本)
+
+可以向流中写一个字符串(`writeUTF`)，写入一个 `boolean` (`writeBool`) 等等
 
 他需要与 `OutputStream` 配合使用,`dubbo` 中实现了一个 `OutputStream` 的实现类 `ChannelBufferOutputStream`
 
 当读取数据时会调用 `ObjectOutput` 的 `write*` 方法,类之间的调用链：
 
 ```java
-ObjectOutput(Hessian2ObjectOutput).write -> OutputStream.write -> ChannelBuffer.write
+ObjectOutput(Hessian2ObjectOutput).write -> OutputStream.write -> ChannelBuffer.write -> io.netty.buffer.ByteBuf
 ```
 
 ## ObjectInput
 
-`ObjectInput` 是 dubbo 中`输入流`的抽象，可以从流中读取一个字符，读取一个boolean 等等
+`ObjectInput` 是 dubbo 中`输入流`的抽象(可以理解为`java.io.InputStream` 升级版本)
+
+可以从流中读取一个字符串(`readUTF`)，读取一个 `boolean` (`readBool`) 等等
 
 他需要与 `InputStream` 配合使用,`dubbo` 中实现了一个 `InputStream` 的实现类 `ChannelBufferInputStream`
 
 而当使用 `ObjectInput` 的 `read*` 方法写入数据的时候,类之间的调用链：
 
 ```java
-ObjectInput(Hessian2ObjectInput).read -> InputStream.read -> ChannelBuffer.read
+ObjectInput(Hessian2ObjectInput).read -> InputStream.read -> ChannelBuffer.read -> io.netty.buffer.ByteBuf
 ```
 
 ## ChannelBufferOutputStream
