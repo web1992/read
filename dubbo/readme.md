@@ -29,7 +29,6 @@
 - [dubbo-init.md](dubbo-init.md)
 - [dubbo-invocation.md](dubbo-invocation.md)
 - [dubbo-invoker.md](dubbo-invoker.md)
-- [dubbo-javassist.md](dubbo-javassist.md)
 - [dubbo-protocol-dubbo-protocol.md](dubbo-protocol-dubbo-protocol.md)
 - [dubbo-protocol-registry-protocol.md](dubbo-protocol-registry-protocol.md)
 - [dubbo-protocol.md](dubbo-protocol.md)
