@@ -1,19 +1,19 @@
-# zookeeper
+# ZookeeperRegistry
 
-- [zookeeper](#zookeeper)
-  - [uml](#uml)
+- [ZookeeperRegistry](#zookeeperregistry)
+  - [ZookeeperRegistry UML](#zookeeperregistry-uml)
   - [zookeeper info](#zookeeper-info)
     - [provider start](#provider-start)
     - [consumer start](#consumer-start)
   - [AbstractRegistry](#abstractregistry)
   - [FailbackRegistry](#failbackregistry)
-  - [ZookeeperRegistry](#zookeeperregistry)
+  - [ZookeeperRegistry methods](#zookeeperregistry-methods)
     - [doRegister](#doregister)
     - [doUnregister](#dounregister)
     - [doSubscribe](#dosubscribe)
     - [doUnsubscribe](#dounsubscribe)
 
-## uml
+## ZookeeperRegistry UML
 
 ![ZookeeperRegistry](images/dubbo-registry-zookeeper.png)
 
@@ -33,7 +33,7 @@ ls /dubbo
 
 ls /dubbo/cn.web1992.dubbo.demo.DemoService
 
-# configurators, consumers, providers, routers
+# configurators,providers
 
 ls /dubbo/cn.web1992.dubbo.demo.DemoService/providers
 
@@ -121,7 +121,7 @@ ls /dubbo/cn.web1992.dubbo.demo.DemoService/consumers
 
 `AbstractRegistry` 抽象类，根据名字就可以知道，这个类提供一下通用方法的实现
 
-比如当 `provider` 信息变化的时候 `customer` 会把这些信息存储在文件中，启动的时候，也会从文件中读取这些洗洗
+比如当 `provider` 信息变化的时候 `customer` 会把这些信息存储在文件中，启动的时候，也会从文件中读取这些信息
 
 文件内容如下：
 
@@ -143,9 +143,9 @@ public abstract void doUnsubscribe(URL url, NotifyListener listener);
 
 `FailbackRegistry` 提供了注册失败的重试机制
 
-`abstract` 方法,子类实现这些抽象方法，完成注册，订阅逻辑，在发生异常的时候
+上面的 `abstract` 方法,子类会实现这些抽象方法，完成注册，订阅逻辑，在发生异常的时候
 
-被 `FailbackRegistry`捕获,他会创建定时任务，执行注册任务
+被 `FailbackRegistry`捕获,他会创建定时任务，执行异步的注册(订阅等，都有异步的定时任务)
 
 ```java
 // FailbackRegistry
@@ -164,7 +164,7 @@ private void addFailedRegistered(URL url) {
 }
 ```
 
-## ZookeeperRegistry
+## ZookeeperRegistry methods
 
 `ZookeeperRegistry` 是 `dubbo` 以 `zk` 作为注册中心的具体实现类
 
