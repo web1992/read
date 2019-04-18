@@ -43,7 +43,7 @@ public <T> Exporter<T> export(Invoker<T> invoker) throws RpcException {
     // 然后放入到 DubboExporter 中
     DubboExporter<T> exporter = new DubboExporter<T>(invoker, key, exporterMap);
     exporterMap.put(key, exporter);
-    // 省略其它代码
+    // ...省略其它代码
     return exporter;
 }
 ```
@@ -54,7 +54,7 @@ public <T> Exporter<T> export(Invoker<T> invoker) throws RpcException {
 // 下面的代码会再客户端的请求到来的时候执行
 // 在 DubboProtocol 的内部类 ExchangeHandler
 Invoker<?> getInvoker(Channel channel, Invocation inv) throws RemotingException {
-    // 省略其它代码
+    // ...省略其它代码
     String serviceKey = serviceKey(port, path, inv.getAttachments().get(Constants.VERSION_KEY), inv.getAttachments().get(Constants.GROUP_KEY));
     // 从 exporterMap 中查询 DubboExporter
     DubboExporter<?> exporter = (DubboExporter<?>) exporterMap.get(serviceKey);
