@@ -1,8 +1,10 @@
 # new
 
-- [new](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/new)
+- [new](#new)
+  - [factory function](#factory-function)
+  - [construct function](#construct-function)
 
-The new operator creates an instance of a user-defined object type or of one of the built-in object types that has a constructor function.The new keyword does the following 4 things
+The new operator creates an `instance` of a user-defined `object` type or of one of the built-in object types that has a constructor function.The new keyword does the following 4 things
 
 1. It creates a brand new object out of thin air.
 2. It links `this` object to another object
@@ -16,8 +18,8 @@ Creating a user-defined object requires two steps:
 
 When the code `new Foo(...)` is executed, the following things happen:
 
-- A new object is created, inheriting from Foo.prototype.
-- The constructor function Foo is called with the specified arguments, and with this bound to the newly created object. new Foo is equivalent to new Foo(), i.e. if no argument list is specified, Foo is called without arguments.
+- A new object is created, inheriting from `Foo.prototype`.
+- The constructor function `Foo` is called with the specified arguments, and with this bound to the newly created object. new Foo is equivalent to new Foo(), i.e. if no argument list is specified, Foo is called without arguments.
 - The object (not null, false, 3.1415 or other primitive types) returned by the constructor function becomes the result of the whole new expression. If the constructor function doesn't explicitly return an object, the object created in step 1 is used instead. (Normally constructors don't return a value, but they can choose to do so if they want to override the normal object creation process.)
 
 > If you didn't write the new operator, the Constructor Function would be invoked like any Regular Function, without creating an Object. In this case, the value of this is also different.
@@ -66,3 +68,5 @@ carBmw.run();
 let carBen = Car("Ben");
 // carBen.run(); // will get error
 ```
+
+- [new](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/new)
