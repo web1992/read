@@ -14,3 +14,7 @@
 ## Function.prototype.call
 
 `Calls` (`executes`) a function and sets its this to the provided value, arguments can be passed as they are.
+
+- [apply.md](apply.md)
+- [call.md](call.md)
+- [bind.md](bind.md)
