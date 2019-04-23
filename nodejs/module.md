@@ -1,8 +1,9 @@
 # module
 
-> file demo.js
+`module` `nodejs` 的内置函数
 
 ```js
+// file demo.js
 var 1
 ```
 
@@ -10,14 +11,13 @@ run `node demo.js` you can get this error
 
 ```js
 (function (exports, require, module, __filename, __dirname) { var 1
-....
+// ....
 ```
 
-That's why you can use `require('.fs')` in node,node wrap you js file
-
-> file demo.js
+That's why you can use `require('.fs')` in `nodejs`,`nodejs` wrap you `js` file
 
 ```js
+// file demo.js
 console.log("exports= ",exports);
 console.log("require= ",require);
 console.log("module= ",module);
