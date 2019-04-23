@@ -2,6 +2,7 @@
 
 - [webpack concepts](https://webpack.docschina.org/concepts)
 - [code splitting](https://webpack.js.org/guides/code-splitting/)
+- [concepts[](https://webpack.js.org/concepts)
 
 ## get start
 
@@ -54,7 +55,7 @@ There are a couple of different options available in webpack that help you autom
     },
 ```
 
-In most cases, you probably would want to use webpack-dev-server, but let's explore all of the above options.
+In most cases, you probably would want to use `webpack-dev-server`, but let's explore all of the above options.
 
 ## code splitting
 
