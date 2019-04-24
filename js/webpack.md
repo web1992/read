@@ -3,6 +3,7 @@
 - [webpack concepts](https://webpack.docschina.org/concepts)
 - [code splitting](https://webpack.js.org/guides/code-splitting/)
 - [concepts[](https://webpack.js.org/concepts)
+- [loaders](https://webpack.js.org/concepts/loaders)
 
 ## get start
 
