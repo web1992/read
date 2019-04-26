@@ -5,6 +5,7 @@
 - [concepts[](https://webpack.js.org/concepts)
 - [loaders](https://webpack.js.org/concepts/loaders)
 - [targets](https://webpack.js.org/concepts/targets)
+- [hot-module-replacement](https://webpack.js.org/concepts/hot-module-replacement)
 
 ## get start
 
