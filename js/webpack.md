@@ -69,3 +69,7 @@ There are three general approaches to code splitting available:
 - **Dynamic Imports**: Split code via inline function calls within modules.
 
 ## __webpack_require__
+
+## loader
+
+- [https://webpack.js.org/contribute/writing-a-loader](https://webpack.js.org/contribute/writing-a-loader)
