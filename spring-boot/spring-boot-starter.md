@@ -70,3 +70,17 @@ mvn spring-boot:run
 ## Starters
 
 [https://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/#using-boot-starter](https://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/#using-boot-starter)
+
+## Hot Swapping
+
+- [Hot Swapping](https://docs.spring.io/spring-boot/docs/2.1.4.RELEASE/reference/htmlsingle/#howto-hotswapping)
+
+## Developer Tools
+
+- [Developer Tools](https://docs.spring.io/spring-boot/docs/2.1.4.RELEASE/reference/htmlsingle/#using-boot-devtools)
+
+## Using a Trigger File
+
+```porps
+spring.devtools.restart.trigger-file
+```
