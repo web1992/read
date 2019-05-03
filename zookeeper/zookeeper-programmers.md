@@ -1,17 +1,17 @@
 # Zookeeper Programmers
 
-- 1 [the-zookeeper-data-model](#the-zookeeper-data-model)
-- 2 [zookeeper-watches](#zookeeper-watches)
-- 3 [pluggable-zookeeper-authentication](#pluggable-zookeeper-authentication)
-- 4 [consistency-guarantees](#consistency-guarantees)
-- 5 [building-blocks:-a-guide-to-zookeeper-operations](#building-blocks:-a-guide-to-zookeeper-operations)
+- [Zookeeper Programmers](#zookeeper-programmers)
+  - [The ZooKeeper Data Model](#the-zookeeper-data-model)
+  - [ZooKeeper Watches](#zookeeper-watches)
+  - [Pluggable ZooKeeper authentication](#pluggable-zookeeper-authentication)
+  - [Consistency Guarantees](#consistency-guarantees)
+  - [Building Blocks: A Guide to ZooKeeper Operations](#building-blocks-a-guide-to-zookeeper-operations)
 
 ZooKeeper Programmer's Guide
 
 Developing Distributed Applications that use ZooKeeper
 
 You can see origin document at here [Zookeeper Programmers](https://zookeeper.apache.org/doc/r3.5.3-beta/zookeeperProgrammers.html)
-
 
 ## The ZooKeeper Data Model
 
@@ -43,13 +43,11 @@ public interface AuthenticationProvider {
 
 ## Consistency Guarantees
 
-
 ## Building Blocks: A Guide to ZooKeeper Operations
 
 [Link](https://zookeeper.apache.org/doc/r3.5.3-beta/zookeeperProgrammers.html#sc_connectingToZk)
 
 Gotchas: Common Problems and Troubleshooting
-
 
 So now you know ZooKeeper. It's fast, simple, your application works, but wait ... something's wrong. Here are some pitfalls that ZooKeeper users fall into:
 
