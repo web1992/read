@@ -1,7 +1,7 @@
 # EventLoop
 
 - [EventLoop](#eventloop)
-  - [1. NioEventLoop](#1-nioeventloop)
+  - [NioEventLoop](#nioeventloop)
     - [EventLoop 的初始化](#eventloop-%E7%9A%84%E5%88%9D%E5%A7%8B%E5%8C%96)
     - [EventLoop 的定时任务](#eventloop-%E7%9A%84%E5%AE%9A%E6%97%B6%E4%BB%BB%E5%8A%A1)
     - [EventLoop 的异步任务](#eventloop-%E7%9A%84%E5%BC%82%E6%AD%A5%E4%BB%BB%E5%8A%A1)
@@ -16,7 +16,7 @@
     - [`EventExecutorGroup`的初始化](#eventexecutorgroup%E7%9A%84%E5%88%9D%E5%A7%8B%E5%8C%96)
   - [参考资料](#%E5%8F%82%E8%80%83%E8%B5%84%E6%96%99)
 
-## 1. NioEventLoop
+## NioEventLoop
 
 类图继承关系：
 
@@ -30,20 +30,20 @@
 
 下面从这几个方面进行分析：
 
-1.  [EventLoop 的初始化](#EventLoop的初始化)
-2.  [EventLoop 的定时任务](#EventLoop的定时任务)
-3.  [EventLoop 的异步任务](#EventLoop的异步任务)
-4.  [EventLoop I/O task and non-I/O tasks](#EventLoop-I/O-task-and-non-I/O-tasks)
-5.  [EventLoop 核心方法 run](#EventLoop核心方法run)
-6.  [EventLoop 核心方法 processSelectedKeys](#EventLoop核心方法processSelectedKeys)
-7.  [EventLoop 核心方法 processSelectedKey](#EventLoop核心方法processSelectedKey)
-8.  [EventLoop 核心方法 select](#EventLoop核心方法select)
-9.  [EventLoop 核心方法 runAllTasks](#EventLoop核心方法runAllTasks)
+1. [EventLoop 的初始化](#EventLoop的初始化)
+2. [EventLoop 的定时任务](#EventLoop的定时任务)
+3. [EventLoop 的异步任务](#EventLoop的异步任务)
+4. [EventLoop I/O task and non-I/O tasks](#EventLoop-I/O-task-and-non-I/O-tasks)
+5. [EventLoop 核心方法 run](#EventLoop核心方法run)
+6. [EventLoop 核心方法 processSelectedKeys](#EventLoop核心方法processSelectedKeys)
+7. [EventLoop 核心方法 processSelectedKey](#EventLoop核心方法processSelectedKey)
+8. [EventLoop 核心方法 select](#EventLoop核心方法select)
+9. [EventLoop 核心方法 runAllTasks](#EventLoop核心方法runAllTasks)
 10. [EventLoop 与 EventLoopGroup](#NioEventLoopGroup)
 
 ### EventLoop 的初始化
 
-`Channel`在进行初始之后，会进行一个注册`register`的操作,这个时候`Channel`与`EventLoop`进行了关联
+`Channel` 在进行初始之后，会进行一个注册 `register` 的操作,这个时候 `Channel` 与 `EventLoop` 进行了关联
 
 `AbstractChannel#AbstractUnsafe#register`
 
@@ -51,7 +51,7 @@
         @Override
         public final void register(EventLoop eventLoop, final ChannelPromise promise) {
             // 省略其它代码
-            // Channel 与eventLoop 进行关联
+            // Channel 与 eventLoop 进行关联
             AbstractChannel.this.eventLoop = eventLoop;
             // 其他注册事件处理
             if (eventLoop.inEventLoop()) {
@@ -85,8 +85,8 @@ For example, you might want to register a task to be fired after a client has be
 remote peer to check whether the connection is still alive. If there is no response, you
 know you can close the channel
 
-个人理解 `EventLoop`提供的定时任务和 jdk 提供的定时任务执行 API 功能相似，但是 netty 的`EventLoop`与
-`Channel`进行了关联，可以定时对`Channel`连接执行一些操作(如心跳检查)
+个人理解 `EventLoop` 提供的定时任务和 `jdk` 提供的定时任务执行 `API` 功能相似，但是 `netty` 的 `EventLoop` 与
+`Channel` 进行了关联，可以定时对 `Channel` 连接执行一些操作(如心跳检查)
 
 ### EventLoop 的异步任务
 
@@ -101,8 +101,8 @@ out requiring synchronization in the ChannelHandlers.
 进行异步任务的执行
 
 ```java
-    // NioEventLoop 继承了 SingleThreadEventExecutor 中维护了一个任务队列，进行异步任务的处理
-   private final Queue<Runnable> taskQueue;
+// NioEventLoop 继承了 SingleThreadEventExecutor 中维护了一个任务队列，进行异步任务的处理
+private final Queue<Runnable> taskQueue;
 ```
 
 ![EventLoop](./images/EventLoop.png)
@@ -110,19 +110,19 @@ out requiring synchronization in the ChannelHandlers.
 代码例子：
 
 ```java
-            if (eventLoop.inEventLoop()) {
-                // 是同一个线程
+if (eventLoop.inEventLoop()) {
+    // 是同一个线程
+    register0(promise);
+} else {
+    // 不是同一个线程
+    // 包装成 Runnable，放到任务队列进行执行
+    eventLoop.execute(new Runnable() {
+            @Override
+            public void run() {
                 register0(promise);
-            } else {
-                // 不是同一个线程
-                // 包装成Runnable，放到任务队列进行执行
-                eventLoop.execute(new Runnable() {
-                        @Override
-                        public void run() {
-                            register0(promise);
-                        }
-                    });
             }
+        });
+}
 ```
 
 We stated earlier the importance of not blocking the current I/O thread. We’ll say
@@ -130,7 +130,7 @@ it again in another way: “Never put a long-running task in the execution queue
 because it will `block` any other task from executing on the same thread.” If you must
 make blocking calls or execute long-running tasks, we advise the use of a dedicated EventExecutor
 
-> 请不要在`taskQueue`进行`耗时`的异步任务，耗时的任务会阻塞其他任务的执行（性能会下降）
+> 请不要在 `taskQueue` 进行`耗时`的异步任务，耗时的任务会阻塞其他任务的执行（性能会下降）
 
 ### EventLoop I/O task and non-I/O tasks
 
