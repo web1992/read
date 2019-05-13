@@ -1,3 +1,4 @@
 # typescript
 
-[TypeScript](https://www.typescriptlang.org/index.html)
+- [TypeScript](https://www.tslang.cn/index.html)
+- [docs](https://www.tslang.cn/docs/home.html)
