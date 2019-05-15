@@ -21,7 +21,7 @@
 
 `ChannelHandler` 使用了 `责任链` 设计模式，可参考:
 
-- [chain-of-responsibility-pattern.md](./design-patterns/chain-of-responsibility-pattern.md)
+- [chain-of-responsibility-pattern.md](../design-patterns/chain-of-responsibility-pattern.md)
 - [https://en.wikipedia.org/wiki/Chain-of-responsibility_pattern](https://en.wikipedia.org/wiki/Chain-of-responsibility_pattern)
 
 ## demo
