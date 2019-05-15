@@ -1,6 +1,7 @@
 # ChannelHandler
 
 - [ChannelHandler](#channelhandler)
+  - [设计模式](#%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F)
   - [demo](#demo)
   - [常见的 handler](#%E5%B8%B8%E8%A7%81%E7%9A%84-handler)
   - [dubbo handler 链](#dubbo-handler-%E9%93%BE)
@@ -15,6 +16,13 @@
 ![ChannelHandler](images/dubbo-channel-handler-all.png)
 
 `dubbo` 中的 `ChannelHandler` 之间使用了包装，从而形成类似链式的调用,每种 `ChannelHandler` 类实现不同的功能
+
+## 设计模式
+
+`ChannelHandler` 使用了 `责任链` 设计模式，可参考:
+
+- [chain-of-responsibility-pattern.md](./design-patterns/chain-of-responsibility-pattern.md)
+- [https://en.wikipedia.org/wiki/Chain-of-responsibility_pattern](https://en.wikipedia.org/wiki/Chain-of-responsibility_pattern)
 
 ## demo
 

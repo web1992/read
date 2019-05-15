@@ -1,6 +1,6 @@
 # Decorator pattern
 
-装饰器设计模式，23 中设计模式之一
+装饰器设计模式，23种设计模式之一
 
 想要理解这个设计模式，可参照 [wikipedia](https://en.wikipedia.org/wiki/Decorator_pattern) 的解释
 
