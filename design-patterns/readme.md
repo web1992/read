@@ -34,6 +34,7 @@
 - [Reactor Pattern](reactor-pattern.md)
 - [Template method pattern](template-method-pattern.md)
 - [Decorator pattern](decorator-pattern.md)
+- [Chain-of-responsibility pattern](chain-of-responsibility-pattern.md)
 
 ## 模型
 
