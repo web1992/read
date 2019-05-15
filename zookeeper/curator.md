@@ -6,7 +6,7 @@ Apache Curator is a Java/JVM client library for Apache ZooKeeper, a distributed 
 
 ## get start
 
-- []https://curator.apache.org/getting-started.html(https://curator.apache.org/getting-started.html)
+- [https://curator.apache.org/getting-started.html](https://curator.apache.org/getting-started.html)
 
 ## Distributed Lock
 
