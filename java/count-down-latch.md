@@ -186,7 +186,7 @@ private Node addWaiter(Node mode) {
 }
 // AbstractQueuedSynchronizer
 private Node enq(final Node node) {
-    // 这里一个无线循环
+    // 这里一个无限循环
     // 也就是 cas 一直循环到设置成功
     // 这里是有 cas 的目的是多线程的时候，会存在竞争，存在 head 或者tail 已经被其他线程初始化的情况
     // cas 成功，结束循环
