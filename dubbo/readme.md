@@ -45,6 +45,7 @@
 - [dubbo-thread-pool.md](dubbo-thread-pool.md)
 - [dubbo-transporter.md](dubbo-transporter.md)
 - [dubbo-url.md](dubbo-url.md)
+- [dubbo-reset.md](dubbo-reset.md)
 
 ## 参考资料
 
