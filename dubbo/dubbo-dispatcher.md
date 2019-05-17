@@ -1,6 +1,13 @@
 # Dispatcher
 
-`Dispatcher` 的作用是对 ChannelHandler 进行包装,包装后的 ChannelHandler 会把 IO 事件提交给线程池，进行异步任务的处理
+`Dispatcher` 是 dubbo 中对 `IO` 请求的异步处理的实现方式
+
+`Dispatcher` 的作用是对 `ChannelHandler` 进行包装,包装后的 `ChannelHandler` 会把 `IO` 事件提交给线程池，进行异步任务的处理
+
+- [Dispatcher](#dispatcher)
+  - [Dispatcher 实现类](#dispatcher-%E5%AE%9E%E7%8E%B0%E7%B1%BB)
+  - [ChannelHandlers](#channelhandlers)
+  - [AllChannelHandler](#allchannelhandler)
 
 ```java
 @SPI(AllDispatcher.NAME)
@@ -19,6 +26,14 @@ public interface Dispatcher {
 
 }
 ```
+
+## Dispatcher 实现类
+
+- AllDispatcher
+- ConnectionOrderedChannelHandler
+- DirectDispatcher
+- ExecutionDispatcher
+- MessageOnlyDispatcher
 
 ## ChannelHandlers
 
@@ -113,5 +128,4 @@ public class AllChannelHandler extends WrappedChannelHandler {
         }
     }
 }
-
 ```
