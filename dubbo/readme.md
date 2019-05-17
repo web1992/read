@@ -2,9 +2,9 @@
 
 - [incubator-dubbo](https://github.com/apache/incubator-dubbo)
 
-## index
+## Dubbo version
 
-`dubbo` 源码分析 版本: **2.7.1** 目前 `dubbo` 还在 `apache` 基金孵化 不同的版本之间的改动还是很大的
+`Dubbo` 版本: **2.7.1** 目前 `Dubbo` 还在 `apache` 基金孵化 不同的版本之间的改动还是很大的
 
 ```xml
 <dependency>
@@ -15,6 +15,8 @@
     <scope>import</scope>
 </dependency>
 ```
+
+## `Dubbo` 源码分析
 
 - [dubbo-channel-buffer.md](dubbo-channel-buffer.md)
 - [dubbo-input-output-stream.md](dubbo-input-output-stream.md)
