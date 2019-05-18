@@ -1,9 +1,5 @@
 # read 随笔
 
-## 技巧
-
-- [学习到底是什么（🚀 知乎）](https://zhuanlan.zhihu.com/p/27989078)
-
 ## 阅读笔记
 
 - [Java.I.O.NIO.and.NIO.2](nio/readme.md)
@@ -32,3 +28,7 @@
 - [https://github.com/doocs/advanced-java](https://github.com/doocs/advanced-java)
 - [https://github.com/jobbole/awesome-java-cn](https://github.com/jobbole/awesome-java-cn)
 - [https://github.com/CL0610/Java-concurrency](https://github.com/CL0610/Java-concurrency)
+
+## 技巧
+
+- [学习到底是什么（🚀 知乎）](https://zhuanlan.zhihu.com/p/27989078)
