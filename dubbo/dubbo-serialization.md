@@ -2,13 +2,44 @@
 
 这里简单分析下 `dubbo` 的序列化实现
 
+序列化的目的就是把 `Java` 对象按照一定的格式变成 byte 数据，然后写入到网络进行网络的传输。
+
 - [serialization](#serialization)
+  - [summary](#summary)
   - [interface](#interface)
   - [Hessian2Serialization](#hessian2serialization)
   - [ObjectOutput](#objectoutput)
   - [ObjectInput](#objectinput)
   - [ChannelBufferOutputStream](#channelbufferoutputstream)
   - [ChannelBufferInputStream](#channelbufferinputstream)
+
+## summary
+
+- Serialization
+
+> 实现了 `dubbo` 的自适应接口，可以进行不同的序列化协议实现的切换
+>
+> 同时定义了 `OutputStream` -> `ObjectOutput` 方法定义
+>
+> 和 `InputStream` -> `ObjectInput` 方法定义
+
+- ObjectOutput
+
+> 是对输出对象的抽象，比如可以是 `Hessian2ObjectOutput` `KryoObjectOutput`
+
+- ObjectInput
+
+> 是对输入对象的抽象，比如可以是 `Hessian2ObjectInput` `KryoObjectInput`
+
+- ChannelBufferOutputStream
+
+继承了 `OutputStream`,与 `ObjectOutput` 配合使用
+
+- ChannelBufferInputStream
+
+继承了 `InputStream`,与 `ObjectInput` 配合使用
+
+关于 `ChannelBufferInputStream` 和 `ChannelBufferOutputStream` 可参照 [dubbo-input-output-stream.md](dubbo-input-output-stream.md)
 
 ## interface
 
