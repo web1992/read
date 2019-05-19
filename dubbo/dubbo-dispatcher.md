@@ -5,9 +5,12 @@
 `Dispatcher` 的作用是对 `ChannelHandler` 进行包装,包装后的 `ChannelHandler` 会把 `IO` 事件提交给线程池，进行异步任务的处理
 
 - [Dispatcher](#dispatcher)
+  - [interface](#interface)
   - [Dispatcher 实现类](#dispatcher-%E5%AE%9E%E7%8E%B0%E7%B1%BB)
   - [ChannelHandlers](#channelhandlers)
   - [AllChannelHandler](#allchannelhandler)
+
+## interface
 
 ```java
 @SPI(AllDispatcher.NAME)
@@ -29,6 +32,8 @@ public interface Dispatcher {
 
 ## Dispatcher 实现类
 
+默认实现使用的实现类是 `AllDispatcher`
+
 - AllDispatcher
 - ConnectionOrderedChannelHandler
 - DirectDispatcher
@@ -40,7 +45,7 @@ public interface Dispatcher {
 ```java
 
 // NettyServer
-// 在 NettyServer 中吧 ChannelHandler 进行包装
+// 在 NettyServer 中把 ChannelHandler 进行包装
 public NettyServer(URL url, ChannelHandler handler) throws RemotingException {
     super(url, ChannelHandlers.wrap(handler, ExecutorUtil.setThreadName(url, SERVER_THREAD_POOL_NAME)));
 }
