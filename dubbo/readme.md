@@ -47,6 +47,7 @@
 - [ ] [dubbo-url.md](dubbo-url.md)
 - [ ] [dubbo-reset.md](dubbo-reset.md)
 - [ ] [dubbo-spring.md](dubbo-spring.md)
+- [ ] [dubbo-timer-task.md](dubbo-timer-task.md)
 
 ## 参考资料
 
