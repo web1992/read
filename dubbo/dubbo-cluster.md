@@ -12,3 +12,5 @@ public interface Directory<T> extends Node {
     List<Invoker<T>> list(Invocation invocation) throws RpcException;
 }
 ```
+
+## RegistryDirectory
