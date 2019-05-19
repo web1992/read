@@ -77,7 +77,7 @@ public interface Codec2 {
 
 ## ExchangeCodec
 
-`ExchangeCodec` 中 `encode` 方法负责编码  `Request` & `Response` 和 `String(telent)` 而 `decode` 负责解析协议的 `head` 部分
+`ExchangeCodec` 中 `encode` 方法负责编码 `Request` & `Response` 和 `String(telent)` 而 `decode` 负责解析协议的 `head` 部分
 
 `decodeBody` 方法负责解码 `body` 而 `decodeBody` 方法被 `DubboCodec` 类重写了 因此 `body` 的解析在 `DubboCodec#decodeBody` 方法中
 
@@ -95,7 +95,7 @@ protected static final byte FLAG_REQUEST = (byte) 0x80;
 protected static final byte FLAG_TWOWAY = (byte) 0x40;
 protected static final byte FLAG_EVENT = (byte) 0x20;
 protected static final int SERIALIZATION_MASK = 0x1f;
-````
+```
 
 > 表格化：
 
@@ -119,7 +119,7 @@ java nio 中的巧妙运用，可以参考这个文章: [nio-selection-key.md](.
 
 ### Magic number
 
-关于 `Magic number` 可以参考维基百科 [Magic number](https://en.wikipedia.org/wiki/Magic_number_(programming))
+关于 `Magic number` 可以参考维基百科 [Magic number](<https://en.wikipedia.org/wiki/Magic_number_(programming)>)
 
 `Magic number` 可以用来区分文件的类型如: `.zip` -> `(50 4B)` `.java` -> `(CAFEBABE)`
 
@@ -221,6 +221,13 @@ java nio 中的巧妙运用，可以参考这个文章: [nio-selection-key.md](.
 ### ExchangeCodec-encodeRequest
 
 ```java
+// 这里说下编码（写数据）的整体思路：
+// 先写入 body 再写 head
+// 由于 head 中需要写入数据长度,即 Data length 的值，因此需要先写 body 计算出 body 长度，再写入 head 中
+// 这里的实现是:
+// 在写入 body 数据之前保存 writeIndex
+// 接着改变 writeIndex 写入数据 body, 在写入body 之后，可以根据 writeIndex 计算出 body 的长度(Data length)
+// 获取 Data length 之后，改变 writeIndex 把长度写入到 head 中，这样 head 中就有了数据长度的信息
 protected void encodeRequest(Channel channel, ChannelBuffer buffer, Request req) throws IOException {
     // 获取 序列化对象
     Serialization serialization = getSerialization(channel);
@@ -251,9 +258,9 @@ protected void encodeRequest(Channel channel, ChannelBuffer buffer, Request req)
     // reqId 放在 head[4] 中，下面的就是这个操作
     Bytes.long2bytes(req.getId(), header, 4);
     // encode request data.
-    // 获取 写索引的位置
+    // 获取 写索引的位置,方便在计算出 data length 之后进行第二次写入
     int savedWriteIndex = buffer.writerIndex();
-    // 改变写索引的位置
+    // 改变写索引的位置，目的是为了写入 body
     buffer.writerIndex(savedWriteIndex + HEADER_LENGTH);
     // 把 ChannelBuffer 包装成 OutputStream
     ChannelBufferOutputStream bos = new ChannelBufferOutputStream(buffer);
@@ -271,7 +278,7 @@ protected void encodeRequest(Channel channel, ChannelBuffer buffer, Request req)
         // encodeRequestData 其实就是 RpcInvocation 进行序列化，进行网络传输
         encodeRequestData(channel, out, req.getData(), req.getVersion());
     }
-    out.flushBuffer();
+    out.flushBuffer();// 这里为什么不是在 head 写入之后，再执行 flush ?
     if (out instanceof Cleanable) {
         ((Cleanable) out).cleanup();
     }
@@ -283,7 +290,7 @@ protected void encodeRequest(Channel channel, ChannelBuffer buffer, Request req)
     checkPayload(channel, len);
     // 从协议的设计图中可知 head[12] 应该是存储数据的长度，这里写入数据长度信息
     Bytes.int2bytes(len, header, 12);
-    // write 更新写的索引
+    // write 更新写的索引, 写 head 此时 head 中已经有了 data length 信息
     buffer.writerIndex(savedWriteIndex);
     buffer.writeBytes(header); // write header.
     buffer.writerIndex(savedWriteIndex + HEADER_LENGTH + len);
@@ -596,4 +603,4 @@ else if (message instanceof String) {// 如果解码的结果对象是 String
 ## 好文链接
 
 - [dubbo-protocol](http://dubbo.incubator.apache.org/zh-cn/blog/dubbo-protocol.html)
-- [Magic number](https://en.wikipedia.org/wiki/Magic_number_(programming))
+- [Magic number](<https://en.wikipedia.org/wiki/Magic_number_(programming)>)
