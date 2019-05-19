@@ -1,8 +1,8 @@
 # ChannelBuffer
 
 > `org.apache.dubbo.remoting.transport.netty4.ChannelBuffer` 是参照 `Netty` 的 `ChannelBuffer` 的实现
-
-- Netty 3.0 `org.jboss.netty.buffer.ChannelBuffer`
+>
+> Netty 3.0 `org.jboss.netty.buffer.ChannelBuffer`
 
 ## uml
 
