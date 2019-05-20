@@ -11,15 +11,18 @@
     - [getDelay](#getdelay)
   - [DelayedWorkQueue](#delayedworkqueue)
     - [offer](#offer)
+  - [siftUp](#siftup)
+  - [ScheduledFutureTask-compareTo](#scheduledfuturetask-compareto)
     - [poll](#poll)
     - [take](#take)
+  - [siftDown](#siftdown)
 
 ## 简介
 
-1. `ScheduledThreadPoolExecutor` 支持周期性执行某一个任务
-2. 包装 `Runnable` `Callable` 为 ScheduledFutureTask
-3. 使用自定义的 `DelayedWorkQueue` 维护任务
-4. `ScheduledThreadPoolExecutor` = `ThreadPoolExecutor`+`ScheduledExecutorService`
+1. `ScheduledThreadPoolExecutor` 支持周期性执行任务
+2. 包装 `Runnable` `Callable` 为 `ScheduledFutureTask`
+3. 使用自定义的 `DelayedWorkQueue` 维护任务,同时实现了优先级排序的功能
+4. `ScheduledThreadPoolExecutor` = `ThreadPoolExecutor` + `ScheduledExecutorService`
 
 ![ScheduledThreadPoolExecutor](images/ScheduledThreadPoolExecutor.png)
 
@@ -223,10 +226,14 @@ public boolean offer(Runnable x) {
             queue[0] = e;
             setIndex(e, 0);
         } else {
-            siftUp(i, e);
+            siftUp(i, e);// 见下面的解释
         }
-        if (queue[0] == e) {
+        if (queue[0] == e) {// 如果是第一次插入数据
             leader = null;
+            // 这里去唤醒调用 take 方法
+            // take 方法可能在 offer 方法之前执行
+            // 此时 queue 为空 ,take 方法会执行 available.await(); 进行阻塞等待
+            // 这里的目的就是唤醒阻塞的线程(这个线程其实就是线程池中的 worker 线程)
             available.signal();
         }
     } finally {
@@ -236,55 +243,67 @@ public boolean offer(Runnable x) {
 }
 ```
 
-### poll
+## siftUp
 
 ```java
-public RunnableScheduledFuture<?> poll(long timeout, TimeUnit unit)
-    throws InterruptedException {
-    long nanos = unit.toNanos(timeout);
-    final ReentrantLock lock = this.lock;
-    lock.lockInterruptibly();
-    try {
-        for (;;) {
-            RunnableScheduledFuture<?> first = queue[0];
-            if (first == null) {// 数据中没有可执行的任务
-                if (nanos <= 0)// 等待了nanos 时间后，依然没可执行的任务，返回空
-                    return null;
-                else// 等待 timeout 时间后，继续执行 for 循环，就会再次 检查 first 是否有数据，如果没有继续等待
-                    nanos = available.awaitNanos(nanos);// 同时更新 nanos
-            } else {
-                // 走到这里，说明 queue 中肯定是有任务的
-                // 检查 delay 是否需要执行了,如果需要执行了
-                // 直接返回该任务(其实就是提交给线程池，进行任务执行)
-                long delay = first.getDelay(NANOSECONDS);
-                if (delay <= 0)
-                    return finishPoll(first);
-                if (nanos <= 0)// 看下面 nanos -= delay - timeLeft; 的处理
-                    return null;
-                first = null; // don't retain ref while waiting
-                if (nanos < delay || leader != null)
-                    nanos = available.awaitNanos(nanos);
-                else {
-                    Thread thisThread = Thread.currentThread();
-                    leader = thisThread;
-                    try {
-                        long timeLeft = available.awaitNanos(delay);
-                        nanos -= delay - timeLeft;
-                    } finally {
-                        if (leader == thisThread)
-                            leader = null;
-                    }
-                }
-            }
-        }
-    } finally {
-        if (leader == null && queue[0] != null)
-            available.signal();
-        lock.unlock();
+/**
+ * Sifts element added at bottom up to its heap-ordered spot.
+ * Call only when holding lock.
+ */
+// siftUp -> 向上筛选
+// k 是当前元素插入的位置,key 是当前插入的元素
+// 每次向 queue 中插入元素的时候，都会与 queue 的元素进行比较
+// 把比较小的元素移动到queue的头部(进行位置的交换)
+// 这里并不会对每个元素都进行比较，而是除 2 进行跳跃的数据对比（交换位置）
+private void siftUp(int k, RunnableScheduledFuture<?> key) {
+    while (k > 0) {
+        // 这个公式可以转化成 parent = (k - 1) / 2;
+        // 使用 >>> 代替 / 是因为位操纵较快
+        int parent = (k - 1) >>> 1;
+        RunnableScheduledFuture<?> e = queue[parent];
+        if (key.compareTo(e) >= 0)// 如果插入的数据比之前的数据大，就应该排在 queue 的末尾，结束循环
+            break;
+        queue[k] = e;
+        setIndex(e, k);
+        k = parent;
     }
+    queue[k] = key;// 把新的key 移动到合适的位置(其实由于k较小，所以放在queue 的头部)
+    setIndex(key, k);
 }
-
 ```
+
+## ScheduledFutureTask-compareTo
+
+```java
+// ScheduledFutureTask
+// 每个被提交到线程池中的任务，都会被包装成 ScheduledFutureTask
+// 这里重写了compareTo
+public int compareTo(Delayed other) {
+    if (other == this) // compare zero if same object
+        return 0;
+    if (other instanceof ScheduledFutureTask) {
+        ScheduledFutureTask<?> x = (ScheduledFutureTask<?>)other;
+        // time 是task 的执行时间，是通过 triggerTime 计算出来的
+        long diff = time - x.time;
+        if (diff < 0)// 时间较小的，向queue的头部靠近
+            return -1;
+        else if (diff > 0)
+            return 1;
+        else if (sequenceNumber < x.sequenceNumber)
+            // 如果时间相等，对比 进入queue的顺序，先进入queue的，向queue的头部靠近
+            return -1;
+        else
+            return 1;
+    }
+    // 延迟时间小的，排在前面
+    long diff = getDelay(NANOSECONDS) - other.getDelay(NANOSECONDS);
+    return (diff < 0) ? -1 : (diff > 0) ? 1 : 0;
+}
+```
+
+### poll
+
+可参考 `take` 方法的实现
 
 ### take
 
@@ -295,7 +314,7 @@ public RunnableScheduledFuture<?> take() throws InterruptedException {
     try {
         for (;;) {
             RunnableScheduledFuture<?> first = queue[0];
-            // 如果没有数据等待,如果其他线程执行了 offer 提交了任务
+            // 如果没有数据则等待,如果其他线程执行了 offer 提交了任务
             // 会执行 available.signal(); 唤醒 take （也就是线程池的线程）
             if (first == null)
                 available.await();
@@ -305,6 +324,10 @@ public RunnableScheduledFuture<?> take() throws InterruptedException {
                 if (delay <= 0)// 小于 0 说明时间到了,返回这个 Runnable
                     return finishPoll(first);// 这里保证了 queue 一定是有一个任务的
                 first = null; // don't retain ref while waiting
+                // worker 线程可能有多个，如果检测到其他线程竞争，则阻塞
+                // 会在 finally 中进行唤醒
+                // 或许你认为上面不是使用 lock 进行加锁了为什么还有其他线程竞争呢？
+                // 这是因为后面会执行 available.awaitNanos(delay) 是会释放锁的，因此其他线程也可获取锁
                 if (leader != null)
                     available.await();
                 else {
@@ -318,14 +341,14 @@ public RunnableScheduledFuture<?> take() throws InterruptedException {
                         available.awaitNanos(delay);
                     } finally {
                         if (leader == thisThread)
-                            leader = null;
+                            leader = null;// 这里设置为 null,后续在 finally 中唤醒其他线程
                     }
                 }
             }
         }
     } finally {
         if (leader == null && queue[0] != null)
-            available.signal();
+            available.signal();// 这里唤醒阻塞的线程
         lock.unlock();
     }
 }
@@ -352,5 +375,31 @@ private RunnableScheduledFuture<?> finishPoll(RunnableScheduledFuture<?> f) {
         siftDown(0, x);
     setIndex(f, -1);// 更新 heapIndex 方便后续排序使用
     return f;
+}
+```
+
+## siftDown
+
+```java
+/**
+ * Sifts element added at top down to its heap-ordered spot.
+ * Call only when holding lock.
+ */
+private void siftDown(int k, RunnableScheduledFuture<?> key) {
+    int half = size >>> 1;
+    while (k < half) {
+        int child = (k << 1) + 1;
+        RunnableScheduledFuture<?> c = queue[child];
+        int right = child + 1;
+        if (right < size && c.compareTo(queue[right]) > 0)
+            c = queue[child = right];
+        if (key.compareTo(c) <= 0)
+            break;
+        queue[k] = c;
+        setIndex(c, k);
+        k = child;
+    }
+    queue[k] = key;
+    setIndex(key, k);
 }
 ```
