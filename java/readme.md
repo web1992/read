@@ -57,7 +57,7 @@
 - [invocation-handler.md](invocation-handler.md)
 - [volatile.md](volatile.md)
 - [thread.md](thread.md)
-- [thread-local.md](thread-local.md)
+- [ ] [thread-local.md](thread-local.md)
 - [serializable.md](serializable.md)
 - [synchronized.md](synchronized.md)
 
