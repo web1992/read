@@ -8,7 +8,11 @@
 
 ## ThreadLocal-gc
 
-## ThreadLoclMap
+## ThreadLocalMap
+
+## InternalThreadLocal
+
+不得不说的  `InternalThreadLocal` Netty 中对 `java.lang.ThreadLocal` 的优化
 
 ## 参考资料
 
