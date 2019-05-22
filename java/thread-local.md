@@ -137,11 +137,12 @@ private T setInitialValue() {
 
 `ThreadLocalMap` 是 `ThreadLocal` 的内部类, `ThreadLocalMap` 使用 `hash` 算法,存储数据
 
-同一个业务 `ThreadLocal` 一般只有一个(如：一个存储用户信息，另一个存在数据库连接)
+一个业务对应一个`ThreadLocal` 如：一个存储用户信息，另一个存在数据库连接
 
 > 伪代码
 
 ```java
+// 用户信息
 private final static ThreadLocal<User> THREAD_LOCAL_FOR_USER = new ThreadLocal<User>() {
     @Override
     protected User initialValue() {
