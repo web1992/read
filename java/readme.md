@@ -10,8 +10,8 @@
 ## j.u.c
 
 - [ ] [aqs.md](aqs.md)
-- [X] [atomic.md](atomic.md)
-- [ ] [blocking-queue.md](blocking-queue.md)
+- [x] [atomic.md](atomic.md)
+- [x] [blocking-queue.md](blocking-queue.md)
 - [ ] [cas.md](cas.md)
 - [ ] [clh.md](clh.md)
 - [ ] [concurrency.md](concurrency.md)
@@ -20,7 +20,7 @@
 - [x] [count-down-latch.md](count-down-latch.md)
 - [ ] [cyclic-barrier.md](cyclic-barrier.md)
 - [ ] [deque.md](deque.md)
-- [ ] [executor.md](executor.md)
+- [x] [executor.md](executor.md)
 - [ ] [fork-join-pool.md](fork-join-pool.md)
 - [x] [future.md](future.md)
 - [ ] [lock.md](lock.md)
