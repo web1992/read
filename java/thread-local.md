@@ -161,7 +161,7 @@ private final static ThreadLocal<Connection> THREAD_LOCAL_FOR_CONNECTION= new Th
 
 而 `ThreadLocalMap` 每个线程 `Thread` 都会维护自己的 `map`
 
-当进行数据存在的时候，会把数据存在 `ThreadLocalMap` 中，这样就可以实现 `线程本地变量`。
+当进行数据存储的时候，会把数据存在 `ThreadLocalMap` 中，这样就可以实现 `线程本地变量`。
 
 ### ThreadLocalMap key
 
