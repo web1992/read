@@ -29,6 +29,8 @@ public static void int2bytes(int v, byte[] b, int off) {
 
 `b[off + 3] = (byte) v` (int -> byte)强制转化，就是只保留最低位的 8 个字节，高位的会被舍弃
 
+进行上面的四个步骤之后，一个 `int` 就被存储在一个长度为4的字节数组中了
+
 ![int-to-byte.png](images/int-to-byte.png)
 
 ## byte to int
