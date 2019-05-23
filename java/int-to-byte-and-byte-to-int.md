@@ -1,6 +1,6 @@
 # int to byte and byte to int
 
-这里看下 `(int -> byte)` 和 `(byte -> int)`的细节实现
+这里看下 `Java IO` 流处理 `(int -> byte)` 和 `(byte -> int)`的细节实现
 
 ## int to byte
 
