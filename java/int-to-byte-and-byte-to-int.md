@@ -5,11 +5,13 @@
 [org.apache.dubbo.common.io.Bytes#int2bytes](https://github.com/apache/incubator-dubbo/blob/master/dubbo-common/src/main/java/org/apache/dubbo/common/io/Bytes.java#L126)
 
 ```java
+// 这里用到了 无符号的右移 >>>
 public static void int2bytes(int v, byte[] b, int off) {
     b[off + 3] = (byte) v;
     b[off + 2] = (byte) (v >>> 8);
     b[off + 1] = (byte) (v >>> 16);
     b[off + 0] = (byte) (v >>> 24);
+    // b[off + 0] = (byte) ((v >> 24) & 0xFF);
 }
 ```
 

@@ -60,6 +60,7 @@
 - [ ] [thread-local.md](thread-local.md)
 - [ ] [serializable.md](serializable.md)
 - [ ] [synchronized.md](synchronized.md)
+- [x] [int-to-byte-and-byte-to-int.md](int-to-byte-and-byte-to-int.md)
 
 ## blog
 
