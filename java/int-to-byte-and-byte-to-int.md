@@ -2,6 +2,8 @@
 
 这里看下 `Java IO` 流处理 `(int -> byte)` 和 `(byte -> int)`的细节实现
 
+下面的代码片段来自 `org.apache.dubbo.common.io.Bytes`, 在 Java IO 包中也有类似的 代码,可参看 `java.io.Bits`
+
 ## int to byte
 
 [org.apache.dubbo.common.io.Bytes#int2bytes](https://github.com/apache/incubator-dubbo/blob/master/dubbo-common/src/main/java/org/apache/dubbo/common/io/Bytes.java#L126)
