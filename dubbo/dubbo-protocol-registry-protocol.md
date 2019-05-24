@@ -9,6 +9,7 @@
   - [doLocalExport](#dolocalexport)
   - [ExporterChangeableWrapper](#exporterchangeablewrapper)
   - [refer](#refer)
+  - [Cluster and Router and Directory](#cluster-and-router-and-directory)
 
 1. `RegistryProtocol` 是基于 SPI 机制加载的
 2. 调用 `DubboProtocol`
@@ -229,4 +230,30 @@ private <T> Invoker<T> doRefer(Cluster cluster, Registry registry, Class<T> type
     ProviderConsumerRegTable.registerConsumer(invoker, url, subscribeUrl, directory);
     return invoker;
 }
+```
+
+## Cluster and Router and Directory
+
+这里简单的说下 `Cluster` , `Router` , `Directory` 三者之间的关系
+
+`Directory` 中维护了 `RouterChain` 通过 `RouterChain` 来获取 `Router`
+
+`Cluster` 的作用是从  `List<Invoker>` 中选择一个 `Invoker` 进行调用，并返回结果
+
+而 `Cluster`  中的 `List<Invoker>` 则是通过 `Directory` 经过 `RouterChain` 执行 `route` 选择过滤出来的
+
+而最终被选择的 `Invoker` 还需要经过 `LoadBalance` 最终选择一个 `Invoker` 进行 `RPC` 调用
+
+具体的可以参考：
+
+- [dubbo-cluster.md](dubbo-cluster.md)
+- [dubbo-router.md](dubbo-router.md)
+- [dubbo-load-balance.md](dubbo-load-balance.md)
+
+因此一个 `RPC` 请求的最终路径是：
+
+```java
+Invoker -> Directory -> RouterChain -> Router -> LoadBalance -> Invoker
+// 第一个 Invoker 可以看做是对 List<Invoker> 一组 Invoker 的包装(如：FailoverClusterInvoker)
+// 而经过上面的过滤执行，最终会选择一个实际的 Invoker(DubboInvoker) 进行 RPC 调用
 ```
