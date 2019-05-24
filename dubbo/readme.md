@@ -49,6 +49,7 @@
 - [ ] [dubbo-spring.md](dubbo-spring.md)
 - [ ] [dubbo-timer-task.md](dubbo-timer-task.md)
 - [ ] [dubbo-rpc-context.md](dubbo-rpc-context.md)
+- [ ] [dubbo-annotation.md](dubbo-annotation.md)
 
 ## 参考资料
 

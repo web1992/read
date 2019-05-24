@@ -179,3 +179,54 @@ private <T> ExporterChangeableWrapper<T> doLocalExport(final Invoker<T> originIn
 ## refer
 
 当消费者启动的时候，会调用 `refer` 这个方法
+
+```java
+// refer 的主要作用是 customer 通过注册中心，获取服务列表，并建立 TCP 连接
+// 具体的逻辑在 doRefer 方法中
+public <T> Invoker<T> refer(Class<T> type, URL url) throws RpcException {
+    url = URLBuilder.from(url)
+            .setProtocol(url.getParameter(REGISTRY_KEY, DEFAULT_REGISTRY))
+            .removeParameter(REGISTRY_KEY)
+            .build();
+    // 获取注册中
+    Registry registry = registryFactory.getRegistry(url);
+    if (RegistryService.class.equals(type)) {
+        return proxyFactory.getInvoker((T) registry, type, url);
+    }
+    // group="a,b" or group="*"
+    // 查询 dubbo 服务分组的信息
+    Map<String, String> qs = StringUtils.parseQueryString(url.getParameterAndDecoded(REFER_KEY));
+    String group = qs.get(GROUP_KEY);
+    if (group != null && group.length() > 0) {
+        if ((COMMA_SPLIT_PATTERN.split(group)).length > 1 || "*".equals(group)) {
+            return doRefer(getMergeableCluster(), registry, type, url);
+        }
+    }
+    return doRefer(cluster, registry, type, url);
+}
+
+// RegistryDirectory 与 registry 进行关了，当 registry 注册服务之后
+// 会把可用的服务列表包装成功 List<Invoker> 存储在 RegistryDirectory 中
+// 而后调用 Invoker invoker = cluster.join(directory); 包装成 Invoker
+// 当后续 customer 进行服务调用的时候，会通过 Invoker 找到 directory，再找到 List<Invoker>
+// 从中选择一个 Invoker 进行RPC 调用
+// 此外 RegistryDirectory 中使用 RouterChain 获取 Router 实现路由方式的调用
+private <T> Invoker<T> doRefer(Cluster cluster, Registry registry, Class<T> type, URL url) {
+    RegistryDirectory<T> directory = new RegistryDirectory<T>(type, url);
+    directory.setRegistry(registry);
+    directory.setProtocol(protocol);
+    // all attributes of REFER_KEY
+    Map<String, String> parameters = new HashMap<String, String>(directory.getUrl().getParameters());
+    URL subscribeUrl = new URL(CONSUMER_PROTOCOL, parameters.remove(REGISTER_IP_KEY), 0, type.getName(), parameters);
+    if (!ANY_VALUE.equals(url.getServiceInterface()) && url.getParameter(REGISTER_KEY, true)) {
+        directory.setRegisteredConsumerUrl(getRegisteredConsumerUrl(subscribeUrl, url));
+        registry.register(directory.getRegisteredConsumerUrl());
+    }
+    directory.buildRouterChain(subscribeUrl);
+    directory.subscribe(subscribeUrl.addParameter(CATEGORY_KEY,
+            PROVIDERS_CATEGORY + "," + CONFIGURATORS_CATEGORY + "," + ROUTERS_CATEGORY));
+    Invoker invoker = cluster.join(directory);
+    ProviderConsumerRegTable.registerConsumer(invoker, url, subscribeUrl, directory);
+    return invoker;
+}
+```
