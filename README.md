@@ -29,6 +29,10 @@
 - [https://github.com/jobbole/awesome-java-cn](https://github.com/jobbole/awesome-java-cn)
 - [https://github.com/CL0610/Java-concurrency](https://github.com/CL0610/Java-concurrency)
 
+## 算法
+
+[​ 一致性哈希（Consistent hashing](https://coderxing.gitbooks.io/architecture-evolution/di-san-pian-ff1a-bu-luo/631-yi-zhi-xing-ha-xi.html)
+
 ## 技巧
 
 - [学习到底是什么（🚀 知乎）](https://zhuanlan.zhihu.com/p/27989078)
