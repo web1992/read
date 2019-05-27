@@ -30,9 +30,9 @@ public interface LoadBalance {
 轮询的负载策略,同时支持权重，即:`加权轮询`
 
 ```java
-
-// 1. 获取接口全路径+方法名，当做key
-// 2. 
+// 1. 获取接口全路径+方法名，当做key,进行缓存
+// 2. 通过维护一个权重，找到权重最大的那个 invoker,减少权重并返回 invoker
+// 3. List<Invoker> 的大小，会增大或者变小，变小意味着服务下线，需要把内存中的无用对象删除
 @Override
 protected <T> Invoker<T> doSelect(List<Invoker<T>> invokers, URL url, Invocation invocation) {
     String key = invokers.get(0).getUrl().getServiceKey() + "." + invocation.getMethodName();
@@ -46,9 +46,9 @@ protected <T> Invoker<T> doSelect(List<Invoker<T>> invokers, URL url, Invocation
     long now = System.currentTimeMillis();
     Invoker<T> selectedInvoker = null;
     WeightedRoundRobin selectedWRR = null;
-    // 这个for 循环的作用：
-    // 1. 找到计数器最大的那个 invoker
-    //    WeightedRoundRobin#current 为计数器
+    // 这个 for 循环的作用：
+    // 1. 找到权重最大的那个 invoker
+    //    WeightedRoundRobin#current 为权重
     // 2. 计算总的权重
     for (Invoker<T> invoker : invokers) {
         // 计算服务 key
@@ -65,17 +65,22 @@ protected <T> Invoker<T> doSelect(List<Invoker<T>> invokers, URL url, Invocation
             //weight changed
             weightedRoundRobin.setWeight(weight);
         }
-        // 获取&更新当前服务的查询次数
+        // 获取&更新当前服务的权重
         long cur = weightedRoundRobin.increaseCurrent();
-        weightedRoundRobin.setLastUpdate(now);// 更新查询时间
-        if (cur > maxCurrent) {// 如果当前的次数大于maxCurrent则更新
+        weightedRoundRobin.setLastUpdate(now);// 更新使用时间
+        // 下面的代码就是找到一个计权重最大的 invoker
+        if (cur > maxCurrent) {// 如果当前的权重大于 maxCurrent 则更新
             maxCurrent = cur;
-            selectedInvoker = invoker;// 更新当前cur 最大的invoker
+            selectedInvoker = invoker;// 更新当前 cur 最大的 invoker
             selectedWRR = weightedRoundRobin;
         }
         totalWeight += weight;
     }
     // 使用 updateLock 控制并发
+    // 服务存在上线，下线这个操作，因此 invokers 的size 不等于 size 的时候
+    // 服务可能下线了，那么久需要把 map 中的对象删除
+    // 检查那个超过 60 秒没有使用的，从内存中删除
+    // 避免内存泄露
     if (!updateLock.get() && invokers.size() != map.size()) {
         if (updateLock.compareAndSet(false, true)) {
             try {
@@ -99,15 +104,40 @@ protected <T> Invoker<T> doSelect(List<Invoker<T>> invokers, URL url, Invocation
     }
     if (selectedInvoker != null) {
         // 当前被选择的 invoker 减去总的权重
-        // 减少  current 的值
-        // 因为上面的 for 循环，总是找 技术最大的，这里把当前的计数器减去权重
-        // 那么下次for 循环就会找到一个计数器比较大的invoker
-        // 这样就实现了轮询的策略
-        selectedWRR.sel(totalWeight);
+        // 减少当前服务器权重的值
+        // 因为上面的 for 循环，总是找权重最大的，这里把当前的权重减去总的权重
+        // 那么下次for 循环就会找到一个权重比较大的invoker
+        // 这样就实现了轮询的策略（当前的权重weight 越大，那么current-减去总权重，剩余的值也就越大）
+        selectedWRR.sel(totalWeight);// 减少更新权重
         return selectedInvoker;
     }
     // should not happen here
     return invokers.get(0);// 保底
+}
+// 权重轮询
+protected static class WeightedRoundRobin {
+    private int weight;// 权重
+    private AtomicLong current = new AtomicLong(0);// 当前的权重
+    private long lastUpdate;
+    public int getWeight() {
+        return weight;
+    }
+    public void setWeight(int weight) {
+        this.weight = weight;
+        current.set(0);// 初始化的时候，权重设置成0
+    }
+    public long increaseCurrent() {// 增加权重
+        return current.addAndGet(weight);
+    }
+    public void sel(int total) {// 减少权重
+        current.addAndGet(-1 * total);
+    }
+    public long getLastUpdate() {
+        return lastUpdate;
+    }
+    public void setLastUpdate(long lastUpdate) {
+        this.lastUpdate = lastUpdate;
+    }
 }
 ```
 
