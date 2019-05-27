@@ -16,7 +16,7 @@ public interface LoadBalance {
 
 ## implement
 
-- ConsistentHashLoadBalance #一致的哈希
+- ConsistentHashLoadBalance #一致性的哈希
 - LeastActiveLoadBalance #最不活跃
 - RandomLoadBalance #随机(加权随机)
 - RoundRobinLoadBalance # 轮询(加权轮询)
@@ -25,6 +25,93 @@ public interface LoadBalance {
 
 ## ConsistentHashLoadBalance
 
+一致性哈希负载均衡，使用 `hash` 算法
+
+```java
+// 1. 计算hash值，进行缓存，同时使用虚拟节点，避免 hash 分布不均匀的情况
+// 2. 计算hash,从缓存中查找 invoker
+protected <T> Invoker<T> doSelect(List<Invoker<T>> invokers, URL url, Invocation invocation) {
+    String methodName = RpcUtils.getMethodName(invocation);
+    String key = invokers.get(0).getUrl().getServiceKey() + "." + methodName;
+    int identityHashCode = System.identityHashCode(invokers);
+    ConsistentHashSelector<T> selector = (ConsistentHashSelector<T>) selectors.get(key);
+    if (selector == null || selector.identityHashCode != identityHashCode) {
+        selectors.put(key, new ConsistentHashSelector<T>(invokers, methodName, identityHashCode));
+        selector = (ConsistentHashSelector<T>) selectors.get(key);
+    }
+    return selector.select(invocation);
+}
+
+//
+private static final class ConsistentHashSelector<T> {
+    private final TreeMap<Long, Invoker<T>> virtualInvokers;
+    private final int replicaNumber;
+    private final int identityHashCode;
+    private final int[] argumentIndex;
+    ConsistentHashSelector(List<Invoker<T>> invokers, String methodName, int identityHashCode) {
+        this.virtualInvokers = new TreeMap<Long, Invoker<T>>();
+        this.identityHashCode = identityHashCode;
+        URL url = invokers.get(0).getUrl();
+        this.replicaNumber = url.getMethodParameter(methodName, HASH_NODES, 160);
+        String[] index = COMMA_SPLIT_PATTERN.split(url.getMethodParameter(methodName, HASH_ARGUMENTS, "0"));
+        argumentIndex = new int[index.length];
+        for (int i = 0; i < index.length; i++) {
+            argumentIndex[i] = Integer.parseInt(index[i]);
+        }
+        for (Invoker<T> invoker : invokers) {
+            String address = invoker.getUrl().getAddress();
+            for (int i = 0; i < replicaNumber / 4; i++) {
+                byte[] digest = md5(address + i);
+                for (int h = 0; h < 4; h++) {
+                    long m = hash(digest, h);
+                    virtualInvokers.put(m, invoker);
+                }
+            }
+        }
+    }
+    public Invoker<T> select(Invocation invocation) {
+        String key = toKey(invocation.getArguments());
+        byte[] digest = md5(key);
+        return selectForKey(hash(digest, 0));
+    }
+    private String toKey(Object[] args) {
+        StringBuilder buf = new StringBuilder();
+        for (int i : argumentIndex) {
+            if (i >= 0 && i < args.length) {
+                buf.append(args[i]);
+            }
+        }
+        return buf.toString();
+    }
+    private Invoker<T> selectForKey(long hash) {
+        Map.Entry<Long, Invoker<T>> entry = virtualInvokers.ceilingEntry(hash);
+        if (entry == null) {
+            entry = virtualInvokers.firstEntry();
+        }
+        return entry.getValue();
+    }
+    private long hash(byte[] digest, int number) {
+        return (((long) (digest[3 + number * 4] & 0xFF) << 24)
+                | ((long) (digest[2 + number * 4] & 0xFF) << 16)
+                | ((long) (digest[1 + number * 4] & 0xFF) << 8)
+                | (digest[number * 4] & 0xFF))
+                & 0xFFFFFFFFL;
+    }
+    private byte[] md5(String value) {
+        MessageDigest md5;
+        try {
+            md5 = MessageDigest.getInstance("MD5");
+        } catch (NoSuchAlgorithmException e) {
+            throw new IllegalStateException(e.getMessage(), e);
+        }
+        md5.reset();
+        byte[] bytes = value.getBytes(StandardCharsets.UTF_8);
+        md5.update(bytes);
+        return md5.digest();
+    }
+}
+```
+
 ## RoundRobinLoadBalance
 
 轮询的负载策略,同时支持权重，即:`加权轮询`
@@ -32,7 +119,7 @@ public interface LoadBalance {
 ```java
 // 1. 获取接口全路径+方法名，当做key,进行缓存
 // 2. 通过维护一个权重，找到权重最大的那个 invoker,减少权重并返回 invoker
-// 3. List<Invoker> 的大小，会增大或者变小，变小意味着服务下线，需要把内存中的无用对象删除
+// 3. List<Invoker> 的大小，会增大或者变小。变小,意味着服务下线，需要把内存中的无用对象删除
 @Override
 protected <T> Invoker<T> doSelect(List<Invoker<T>> invokers, URL url, Invocation invocation) {
     String key = invokers.get(0).getUrl().getServiceKey() + "." + invocation.getMethodName();
