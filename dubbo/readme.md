@@ -50,7 +50,7 @@
 - [ ] [dubbo-timer-task.md](dubbo-timer-task.md)
 - [ ] [dubbo-rpc-context.md](dubbo-rpc-context.md)
 - [ ] [dubbo-annotation.md](dubbo-annotation.md)
-- [ ] [dubbo-load-balance.md](dubbo-load-balance.md)
+- [x] [dubbo-load-balance.md](dubbo-load-balance.md)
 
 ## 参考资料
 
