@@ -47,7 +47,7 @@ public interface LoadBalance {
 
 而 `ConsistentHashLoadBalance` 针对上线的问题进行了处理,使用 `identityHashCode`和`虚拟节点` 来解决上面的问题
 
-[​一致性哈希（Consistent hashing)](https://coderxing.gitbooks.io/architecture-evolution/di-san-pian-ff1a-bu-luo/631-yi-zhi-xing-ha-xi.html)
+[​一致性哈希 (Consistent hashing)](https://coderxing.gitbooks.io/architecture-evolution/di-san-pian-ff1a-bu-luo/631-yi-zhi-xing-ha-xi.html)
 
 ```java
 // 1. 计算hash值，进行缓存，同时使用虚拟节点，避免 hash 分布不均匀的情况
