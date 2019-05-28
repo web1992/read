@@ -1,12 +1,21 @@
 # LoadBalance
 
-`LoadBalance` 负载均衡。 `dubbo` 中的服务提供这可以有多个，为了使每个服务提供者
+`LoadBalance` 负载均衡。 `dubbo` 中的服务提供者可以有多个，为了使每个服务提供者
 
-收到的请求都是均匀的，引入负责均衡策略
+收到的请求都是均匀的(或者方便自己控制服务的流量)，引入负载均衡策略
+
+- [LoadBalance](#loadbalance)
+  - [interface](#interface)
+  - [implement](#implement)
+  - [ConsistentHashLoadBalance](#consistenthashloadbalance)
+  - [RoundRobinLoadBalance](#roundrobinloadbalance)
+  - [RandomLoadBalance](#randomloadbalance)
+  - [LeastActiveLoadBalance](#leastactiveloadbalance)
 
 ## interface
 
 ```java
+// 接口定义也很简单，目的就是从 List<Invoker<T>> 集合中，根据不同的策略，选取一个 Invoker
 @SPI(RandomLoadBalance.NAME)
 public interface LoadBalance {
     @Adaptive("loadbalance")
@@ -15,6 +24,8 @@ public interface LoadBalance {
 ```
 
 ## implement
+
+已经有的实现类:
 
 - ConsistentHashLoadBalance #一致性的哈希
 - LeastActiveLoadBalance #最不活跃
@@ -27,11 +38,21 @@ public interface LoadBalance {
 
 一致性哈希负载均衡，使用 `hash` 算法
 
-[​ 一致性哈希（Consistent hashing)](https://coderxing.gitbooks.io/architecture-evolution/di-san-pian-ff1a-bu-luo/631-yi-zhi-xing-ha-xi.html)
+> 一致性哈希算法，主要是用来解决分布式缓存的问题，具体可参照下面的链接
+>
+> 这里简单的说明下使用 hash 在分布式系统中的问题：
+>
+> 1. 当分布式系统中的节点变化的时候，需要重新进行hash
+> 2. 当分布式的节点较少时，可能存在 hash 不均匀的情况，导致某一个节点压力巨大
+
+而 `ConsistentHashLoadBalance` 针对上线的问题进行了处理,使用 `identityHashCode`和`虚拟节点` 来解决上面的问题
+
+[​一致性哈希（Consistent hashing)](https://coderxing.gitbooks.io/architecture-evolution/di-san-pian-ff1a-bu-luo/631-yi-zhi-xing-ha-xi.html)
 
 ```java
 // 1. 计算hash值，进行缓存，同时使用虚拟节点，避免 hash 分布不均匀的情况
 // 2. 计算hash,从缓存中查找 invoker
+// 3. 使用对象的 identityHashCode 来检查 invokers 的变化（服务上线，下线）重新生成hash
 protected <T> Invoker<T> doSelect(List<Invoker<T>> invokers, URL url, Invocation invocation) {
     String methodName = RpcUtils.getMethodName(invocation);
     String key = invokers.get(0).getUrl().getServiceKey() + "." + methodName;
@@ -301,3 +322,87 @@ protected int getWeight(Invoker<?> invoker, Invocation invocation) {
 ```
 
 ## LeastActiveLoadBalance
+
+`最不活跃`的负载均衡策略
+
+```java
+// 1. 统计索引invoker 的调用次数 active
+// 2. 如果存在 active 次数相同的 Invoker 那么就根据权重进行随机
+protected <T> Invoker<T> doSelect(List<Invoker<T>> invokers, URL url, Invocation invocation) {
+    // Number of invokers
+    int length = invokers.size();
+    // The least active value of all invokers
+    int leastActive = -1;
+    // The number of invokers having the same least active value (leastActive)
+    int leastCount = 0;
+    // The index of invokers having the same least active value (leastActive)
+    int[] leastIndexes = new int[length];
+    // the weight of every invokers
+    int[] weights = new int[length];
+    // The sum of the warmup weights of all the least active invokes
+    int totalWeight = 0;
+    // The weight of the first least active invoke
+    int firstWeight = 0;
+    // Every least active invoker has the same weight value?
+    boolean sameWeight = true;
+    // Filter out all the least active invokers
+    // 下面的for找到一个active 最小的 ivoker
+    // 如果存在两个相等的 invoker
+    // 那么放入数组中，进行跟进权重，继续随机
+    for (int i = 0; i < length; i++) {
+        Invoker<T> invoker = invokers.get(i);
+        // Get the active number of the invoke active= 方法执行的次数
+        int active = RpcStatus.getStatus(invoker.getUrl(), invocation.getMethodName()).getActive();
+        // Get the weight of the invoke configuration. The default value is 100.
+        int afterWarmup = getWeight(invoker, invocation);
+        // save for later use
+        weights[i] = afterWarmup;
+        // If it is the first invoker or the active number of the invoker is less than the current least active number
+        if (leastActive == -1 || active < leastActive) {
+            // Reset the active number of the current invoker to the least active number
+            leastActive = active;
+            // Reset the number of least active invokers
+            leastCount = 1;
+            // Put the first least active invoker first in leastIndexes
+            leastIndexes[0] = i;
+            // Reset totalWeight
+            totalWeight = afterWarmup;
+            // Record the weight the first least active invoker
+            firstWeight = afterWarmup;
+            // Each invoke has the same weight (only one invoker here)
+            sameWeight = true;
+            // If current invoker's active value equals with leaseActive, then accumulating.
+        } else if (active == leastActive) {// 存在调试次数相同的 Invoker
+            // Record the index of the least active invoker in leastIndexes order
+            leastIndexes[leastCount++] = i;// 放入数组中，后续进行权重随机使用
+            // Accumulate the total weight of the least active invoker
+            totalWeight += afterWarmup;
+            // If every invoker has the same weight?
+            if (sameWeight && i > 0
+                    && afterWarmup != firstWeight) {
+                sameWeight = false;
+            }
+        }
+    }
+    // Choose an invoker from all the least active invokers
+    if (leastCount == 1) {// 没有 active 相同的
+        // If we got exactly one invoker having the least active value, return this invoker directly.
+        return invokers.get(leastIndexes[0]);
+    }
+    if (!sameWeight && totalWeight > 0) {
+        // If (not every invoker has the same weight & at least one invoker's weight>0), select randomly based on 
+        // totalWeight.
+        int offsetWeight = ThreadLocalRandom.current().nextInt(totalWeight);
+        // Return a invoker based on the random value.
+        for (int i = 0; i < leastCount; i++) {
+            int leastIndex = leastIndexes[i];
+            offsetWeight -= weights[leastIndex];
+            if (offsetWeight < 0) {
+                return invokers.get(leastIndex);
+            }
+        }
+    }
+    // If all invokers have the same weight value or totalWeight=0, return evenly.
+    return invokers.get(leastIndexes[ThreadLocalRandom.current().nextInt(leastCount)]);
+}
+```
