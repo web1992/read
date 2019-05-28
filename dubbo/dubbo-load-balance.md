@@ -27,6 +27,8 @@ public interface LoadBalance {
 
 一致性哈希负载均衡，使用 `hash` 算法
 
+[​ 一致性哈希（Consistent hashing)](https://coderxing.gitbooks.io/architecture-evolution/di-san-pian-ff1a-bu-luo/631-yi-zhi-xing-ha-xi.html)
+
 ```java
 // 1. 计算hash值，进行缓存，同时使用虚拟节点，避免 hash 分布不均匀的情况
 // 2. 计算hash,从缓存中查找 invoker
@@ -42,7 +44,7 @@ protected <T> Invoker<T> doSelect(List<Invoker<T>> invokers, URL url, Invocation
     return selector.select(invocation);
 }
 
-//
+// 对 Invoker 进行hash 计算，进行缓存
 private static final class ConsistentHashSelector<T> {
     private final TreeMap<Long, Invoker<T>> virtualInvokers;
     private final int replicaNumber;
@@ -52,6 +54,7 @@ private static final class ConsistentHashSelector<T> {
         this.virtualInvokers = new TreeMap<Long, Invoker<T>>();
         this.identityHashCode = identityHashCode;
         URL url = invokers.get(0).getUrl();
+        // 副本数量,默认为160
         this.replicaNumber = url.getMethodParameter(methodName, HASH_NODES, 160);
         String[] index = COMMA_SPLIT_PATTERN.split(url.getMethodParameter(methodName, HASH_ARGUMENTS, "0"));
         argumentIndex = new int[index.length];
@@ -60,6 +63,7 @@ private static final class ConsistentHashSelector<T> {
         }
         for (Invoker<T> invoker : invokers) {
             String address = invoker.getUrl().getAddress();
+            // 为每个 invoker 生成 160 个副本
             for (int i = 0; i < replicaNumber / 4; i++) {
                 byte[] digest = md5(address + i);
                 for (int h = 0; h < 4; h++) {
@@ -83,9 +87,12 @@ private static final class ConsistentHashSelector<T> {
         }
         return buf.toString();
     }
+    // 从虚拟节点中查找 invoker
     private Invoker<T> selectForKey(long hash) {
+        // ceilingEntry 找到一个大于等于 hash 的 Map.Entry
+        // 可以参考上面一致性hash 的文章
         Map.Entry<Long, Invoker<T>> entry = virtualInvokers.ceilingEntry(hash);
-        if (entry == null) {
+        if (entry == null) {// 没有找到使用第一个
             entry = virtualInvokers.firstEntry();
         }
         return entry.getValue();
