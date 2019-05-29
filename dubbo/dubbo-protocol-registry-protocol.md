@@ -253,7 +253,7 @@ private <T> Invoker<T> doRefer(Cluster cluster, Registry registry, Class<T> type
 因此一个 `RPC` 请求的最终路径是：
 
 ```java
-Invoker -> Directory -> RouterChain -> Router -> LoadBalance -> Invoker
+Proxy -> Invoker -> Directory -> RouterChain -> Router -> LoadBalance -> Invoker
 // 第一个 Invoker 可以看做是对 List<Invoker> 一组 Invoker 的包装(如：FailoverClusterInvoker)
 // 而经过上面的过滤执行，最终会选择一个实际的 Invoker(DubboInvoker) 进行 RPC 调用
 ```

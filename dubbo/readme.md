@@ -51,6 +51,7 @@
 - [ ] [dubbo-rpc-context.md](dubbo-rpc-context.md)
 - [ ] [dubbo-annotation.md](dubbo-annotation.md)
 - [x] [dubbo-load-balance.md](dubbo-load-balance.md)
+- [ ] [dubbo-dynamic-configuration.md](dubbo-dynamic-configuration.md)
 
 ## 参考资料
 
