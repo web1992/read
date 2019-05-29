@@ -1,5 +1,14 @@
 # Router
 
+`Router` dubbo 服务动态路由的实现
+
+- [Router](#router)
+  - [Router interface](#router-interface)
+  - [Router implement](#router-implement)
+  - [Router init](#router-init)
+  - [RouterFactory](#routerfactory)
+  - [TagRouter](#tagrouter)
+
 ## Router interface
 
 ```java
@@ -63,6 +72,8 @@ private RouterChain(URL url) {
 
 ![RouterFactory](./images/dubbo-RouterFactory.png)
 
+`Router` 在一个 `RPC` 调用链的位置，可参考：[dubbo-protocol-registry-protocol.md](dubbo-protocol-registry-protocol.md#cluster-and-router-and-directory)
+
 ## RouterFactory
 
 ```java
@@ -73,7 +84,24 @@ public interface RouterFactory {
 }
 ```
 
+旧的 Router
+
 - MockRouterFactory -> MockInvokersSelector
+- ConditionRouterFactory -> ConditionRouter
+- ScriptRouterFactory -> ScriptRouter
+
+新的 Router
+
 - TagRouterFactory -> TagRouter
 - AppRouterFactory -> AppRouter
 - ServiceRouterFactory -> ServiceRouter
+
+可动态修改的 Router
+
+- ListenableRouter
+
+`ServiceRouter` 和 `AppRouter` 继承了 `ListenableRouter` 实现了动态修改路由的功能
+
+可参考 [dubbo-dynamic-configuration.md](dubbo-dynamic-configuration.md)
+
+## TagRouter
