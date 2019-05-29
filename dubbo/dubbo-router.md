@@ -10,10 +10,13 @@
   - [Router init](#router-init)
   - [RouterFactory](#routerfactory)
   - [TagRouter](#tagrouter)
+  - [AppRouter](#approuter)
+  - [ServiceRouter](#servicerouter)
 
 ## Router interface
 
 ```java
+// 接口定义
 public interface Router extends Comparable<Router> {
 
     int DEFAULT_PRIORITY = Integer.MAX_VALUE;
@@ -92,7 +95,7 @@ public interface RouterFactory {
 - ConditionRouterFactory -> ConditionRouter
 - ScriptRouterFactory -> ScriptRouter
 
-新的 Router
+dubbo 2.7 新的 Router
 
 - TagRouterFactory -> TagRouter
 - AppRouterFactory -> AppRouter
@@ -107,3 +110,7 @@ public interface RouterFactory {
 可参考 [dubbo-dynamic-configuration.md](dubbo-dynamic-configuration.md)
 
 ## TagRouter
+
+## AppRouter
+
+## ServiceRouter
