@@ -1,6 +1,8 @@
 # Router
 
-`Router` dubbo 服务动态路由的实现
+`Router` `dubbo` 服务动态路由的实现
+
+`dubbo` `2.7` 版本中对 `Router` 进行了增强，可参考 [http://dubbo.apache.org/zh-cn/blog/dubbo-27-features.html](http://dubbo.apache.org/zh-cn/blog/dubbo-27-features.html)
 
 - [Router](#router)
   - [Router interface](#router-interface)
