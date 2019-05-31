@@ -10,6 +10,7 @@
   - [Router init](#router-init)
   - [RouterFactory](#routerfactory)
   - [TagRouter](#tagrouter)
+  - [config demo](#config-demo)
   - [AppRouter](#approuter)
   - [ServiceRouter](#servicerouter)
   - [参考](#%E5%8F%82%E8%80%83)
@@ -213,6 +214,10 @@ public <T> List<Invoker<T>> route(List<Invoker<T>> invokers, URL url, Invocation
     }
 }
 ```
+
+## config demo
+
+![dubbo-router-tag](./images/dubbo-router-tag.png)
 
 ## AppRouter
 
