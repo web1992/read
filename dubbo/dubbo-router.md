@@ -12,6 +12,7 @@
   - [TagRouter](#tagrouter)
   - [AppRouter](#approuter)
   - [ServiceRouter](#servicerouter)
+  - [参考](#%E5%8F%82%E8%80%83)
 
 ## Router interface
 
@@ -216,3 +217,7 @@ public <T> List<Invoker<T>> route(List<Invoker<T>> invokers, URL url, Invocation
 ## AppRouter
 
 ## ServiceRouter
+
+## 参考
+
+- [routing rule](http://dubbo.apache.org/zh-cn/docs/user/demos/routing-rule.html)
