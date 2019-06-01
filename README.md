@@ -20,6 +20,6 @@
 
 [​一致性哈希（Consistent hashing)](https://coderxing.gitbooks.io/architecture-evolution/di-san-pian-ff1a-bu-luo/631-yi-zhi-xing-ha-xi.html)
 
-## 技
+## other
 
 - [学习到底是什么（🚀 知乎）](https://zhuanlan.zhihu.com/p/27989078)
