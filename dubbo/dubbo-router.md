@@ -12,6 +12,7 @@
   - [TagRouter](#tagrouter)
   - [AppRouter](#approuter)
   - [ServiceRouter](#servicerouter)
+  - [参考](#%E5%8F%82%E8%80%83)
 
 ## Router interface
 
@@ -139,7 +140,7 @@ addresses: [ip3, ip4]
 ...
 ```
 
-上面动态配置的 tag 会通过配置中心服务(比如 zookeeper)，同步到 customer,
+上面动态配置的 tag 会配置在配置中心服务(比如 zookeeper)
 
 customer 在选择服务进行调用的时候，会对 tag 进行对比
 
@@ -148,6 +149,8 @@ customer 在选择服务进行调用的时候，会对 tag 进行对比
 ```java
 RpcContext.getContext().setAttachment(TAG_KEY,"test-tag");
 ```
+
+> 核心代码
 
 ```java
 @Override
@@ -213,6 +216,14 @@ public <T> List<Invoker<T>> route(List<Invoker<T>> invokers, URL url, Invocation
 }
 ```
 
+> 通过流程图来解释
+
+![dubbo-router-tag](./images/dubbo-router-tag.png)
+
 ## AppRouter
 
 ## ServiceRouter
+
+## 参考
+
+- [routing rule](http://dubbo.apache.org/zh-cn/docs/user/demos/routing-rule.html)
