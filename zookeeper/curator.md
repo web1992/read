@@ -10,4 +10,24 @@ Apache Curator is a Java/JVM client library for Apache ZooKeeper, a distributed 
 
 ## Distributed Lock
 
+分布式的锁
+
 ## Leader Election
+
+分布式 Leader 选举 （Master 选举）
+
+## Distributed Atomic Integer
+
+分布式的计数器
+
+## Distributed Barrier
+
+分布式的 Barrier
+
+## ZKPaths and EnsurePath
+
+`ZKPaths` `EnsurePath` 工具类
+
+### TestingServer TestIngCluster
+
+单元测试使用,单机个集群服务器
