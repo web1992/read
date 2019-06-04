@@ -10,6 +10,7 @@
   - [Router init](#router-init)
   - [RouterFactory](#routerfactory)
   - [TagRouter](#tagrouter)
+  - [ConditionRouter](#conditionrouter)
   - [AppRouter](#approuter)
   - [ServiceRouter](#servicerouter)
   - [参考](#%E5%8F%82%E8%80%83)
@@ -220,6 +221,8 @@ public <T> List<Invoker<T>> route(List<Invoker<T>> invokers, URL url, Invocation
 
 ![dubbo-router-tag](./images/dubbo-router-tag.png)
 
+## ConditionRouter
+
 ## AppRouter
 
 ## ServiceRouter
@@ -227,3 +230,4 @@ public <T> List<Invoker<T>> route(List<Invoker<T>> invokers, URL url, Invocation
 ## 参考
 
 - [routing rule](http://dubbo.apache.org/zh-cn/docs/user/demos/routing-rule.html)
+- [router guide](http://dubbo.apache.org/zh-cn/docs/source_code_guide/router.html)
