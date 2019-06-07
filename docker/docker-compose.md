@@ -2,6 +2,8 @@
 
 A docker-compose.yml file is a YAML file that defines how Docker containers should behave in production.
 
+> docker-compose.yml
+
 ```yml
 version: "3"
 services:
@@ -20,6 +22,5 @@ services:
       - "4000:80"
     networks:
       - webnet
-networks:
-  webnet:yml
+networks: webnet:yml
 ```

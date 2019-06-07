@@ -67,3 +67,9 @@ Redis
 ls
 # app.py  Dockerfile  requirements.txt
 ```
+
+## build
+
+```sh
+docker build --tag=mydocker001 .
+```
