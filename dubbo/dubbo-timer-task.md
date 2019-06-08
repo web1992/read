@@ -108,14 +108,14 @@ public void run() {
             processCancelledTasks();// 处理取消的任务，就是把 cancelledTimeouts 中的任务删除了
             HashedWheelBucket bucket =
                     wheel[idx];
-            transferTimeoutsToBuckets();// 把任务放入到 bucket 中
+            transferTimeoutsToBuckets();// 把新增的任务放入到 bucket 中
             bucket.expireTimeouts(deadline);// 执行bucket 中的任务
             tick++;
         }
     } while (WORKER_STATE_UPDATER.get(HashedWheelTimer.this) == WORKER_STATE_STARTED);
+    // 下面的方法只有在定时器停止的时候，才会执行
     // Fill the unprocessedTimeouts so we can return them from stop() method.
     for (HashedWheelBucket bucket : wheel) {
-        // 把需要清除的任务放入到 unprocessedTimeouts 队列
         bucket.clearTimeouts(unprocessedTimeouts);
     }
     for (; ; ) {
@@ -161,11 +161,14 @@ private long waitForNextTick() {
     }
 }
 
-//
+// 把 timeouts 队列中的任务放入到 bucket 中
+// 根据 deadline 和 tickDuration 来计算任务在
+// bucket 中的位置
 private void transferTimeoutsToBuckets() {
     // transfer only max. 100000 timeouts per tick to prevent a thread to stale the workerThread when it just
     // adds new timeouts in a loop.
     for (int i = 0; i < 100000; i++) {
+        // 从 timeouts 中 获取任务
         HashedWheelTimeout timeout = timeouts.poll();
         if (timeout == null) {
             // all processed
@@ -173,15 +176,57 @@ private void transferTimeoutsToBuckets() {
         }
         if (timeout.state() == HashedWheelTimeout.ST_CANCELLED) {
             // Was cancelled in the meantime.
+            // 任务取消了，不执行
             continue;
         }
+        // 下面的代码整体思路是根据 deadline,tickDuration,tick,wheel
+        // 来确定当前的这个定时任务的在 bucket 合适的位置
         long calculated = timeout.deadline / tickDuration;
+        // 根据 deadline 和已经 tick 的次数，计算剩余剩下的tick 次数
         timeout.remainingRounds = (calculated - tick) / wheel.length;
         // Ensure we don't schedule for past.
         final long ticks = Math.max(calculated, tick);
+        // 计算出定时任务在 bucket 的位置
         int stopIndex = (int) (ticks & mask);
         HashedWheelBucket bucket = wheel[stopIndex];
-        bucket.addTimeout(timeout);
+        bucket.addTimeout(timeout);// 加入 bucket
+    }
+}
+// 执行到期的任务
+void expireTimeouts(long deadline) {
+     HashedWheelTimeout timeout = head;
+     // process all timeouts
+     while (timeout != null) {
+         HashedWheelTimeout next = timeout.next;
+         if (timeout.remainingRounds <= 0) {
+             next = remove(timeout);
+             if (timeout.deadline <= deadline) {
+                 timeout.expire();// 执行任务
+             } else {
+                 // The timeout was placed into a wrong slot. This should never happen.
+                 throw new IllegalStateException(String.format(
+                         "timeout.deadline (%d) > deadline (%d)", timeout.deadline, deadline));
+             }
+         } else if (timeout.isCancelled()) {
+             next = remove(timeout);
+         } else {
+             timeout.remainingRounds--;
+         }
+         timeout = next;
+     }
+}
+// expire 执行到期的任务
+// HashedWheelTimer#HashedWheelTimeout#expire
+public void expire() {
+    if (!compareAndSetState(ST_INIT, ST_EXPIRED)) {
+        return;
+    }
+    try {
+        task.run(this);// 执行任务
+    } catch (Throwable t) {
+        if (logger.isWarnEnabled()) {
+            logger.warn("An exception was thrown by " + TimerTask.class.getSimpleName() + '.', t);
+        }
     }
 }
 ```
