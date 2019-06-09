@@ -183,10 +183,13 @@ private void transferTimeoutsToBuckets() {
         // 来确定当前的这个定时任务的在 bucket 合适的位置
         long calculated = timeout.deadline / tickDuration;
         // 根据 deadline 和已经 tick 的次数，计算剩余剩下的tick 次数
+        // remainingRounds = 根据剩余的 tick 次数，计算出剩余的 tick 回合(一轮)
         timeout.remainingRounds = (calculated - tick) / wheel.length;
         // Ensure we don't schedule for past.
         final long ticks = Math.max(calculated, tick);
         // 计算出定时任务在 bucket 的位置
+        // mask 默认是 511
+        // ticks & mask 结果是在 0-511 之间,相当于计算索引
         int stopIndex = (int) (ticks & mask);
         HashedWheelBucket bucket = wheel[stopIndex];
         bucket.addTimeout(timeout);// 加入 bucket
