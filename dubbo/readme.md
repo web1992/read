@@ -4,13 +4,13 @@
 
 ## Dubbo version
 
-`Dubbo` 版本: **2.7.1** 目前 `Dubbo` 还在 `apache` 基金孵化 不同的版本之间的改动还是很大的
+`Dubbo` 版本: **2.7.2** 目前 `Dubbo` 还在 `apache` 基金孵化 不同的版本之间的改动还是很大的
 
 ```xml
 <dependency>
     <groupId>org.apache.dubbo</groupId>
     <artifactId>dubbo-bom</artifactId>
-    <version>2.7.1</version>
+    <version>2.7.2</version>
     <type>pom</type>
     <scope>import</scope>
 </dependency>
@@ -42,15 +42,15 @@
 - [x] [dubbo-thread-pool.md](dubbo-thread-pool.md)
 - [x] [dubbo-transporter.md](dubbo-transporter.md)
 - [x] [dubbo-router.md](dubbo-router.md)
+- [x] [dubbo-load-balance.md](dubbo-load-balance.md)
+- [x] [dubbo-timer-task.md](dubbo-timer-task.md)
 - [ ] [dubbo-rpc.md](dubbo-rpc.md)
 - [ ] [dubbo-cluster.md](dubbo-cluster.md)
 - [ ] [dubbo-url.md](dubbo-url.md)
 - [ ] [dubbo-reset.md](dubbo-reset.md)
-- [ ] [dubbo-spring.md](dubbo-spring.md)
-- [x] [dubbo-timer-task.md](dubbo-timer-task.md)
 - [ ] [dubbo-rpc-context.md](dubbo-rpc-context.md)
 - [ ] [dubbo-annotation.md](dubbo-annotation.md)
-- [x] [dubbo-load-balance.md](dubbo-load-balance.md)
+- [ ] [dubbo-spring.md](dubbo-spring.md)
 - [ ] [dubbo-dynamic-configuration.md](dubbo-dynamic-configuration.md)
 
 ## 参考资料
