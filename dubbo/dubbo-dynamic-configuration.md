@@ -2,7 +2,7 @@
 
 ## configcenter
 
-配置中心，配置提供了动态修改服务配置的功能（入口）,可与 `dubbo-admin` 配合使用
+配置中心提供了动态修改服务配置的功能（入口，可与 `dubbo-admin` 配合使用
 
 ## useage
 
