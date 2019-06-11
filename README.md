@@ -2,10 +2,10 @@
 
 ## 阅读笔记
 
+- [Dubbo 源码相关](dubbo/readme.md)
+- [Netty 源码相关](netty/readme.md)
+- [Java 基础](java/readme.md)
 - [Java.I.O.NIO.and.NIO.2](nio/readme.md)
-- [Netty in action](netty/readme.md)
-- [dubbo](dubbo/readme.md)
-- [java 基础](java/readme.md)
 
 ## 设计模式
 
