@@ -38,7 +38,7 @@ private void addFirst0(AbstractChannelHandlerContext newCtx) {
 
 ## addLast
 
-已 `addLast` 方法为例子:
+以 `addLast` 方法为例子:
 
 ```java
 // addLast 会把 channelHadler 调用 newContext
