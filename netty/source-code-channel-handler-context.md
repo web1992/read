@@ -112,7 +112,13 @@ pipeline.fireChannelRead(byteBuf);
 从上图可以看下目前这个 `ctx` 链
 
 ```java
-HeadContext -> DeafultChannelHandlerContext(ObjectDecoder) -> DeafultChannelHandlerContext(NettyHandler) -> TailContext
+HeadContext
+↓
+DeafultChannelHandlerContext(ObjectDecoder)
+↓
+DeafultChannelHandlerContext(NettyHandler)
+↓
+TailContext
 ```
 
 > 相关代码
