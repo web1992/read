@@ -77,10 +77,12 @@ java 的 nio 中，`SelectionKey`用四个标识来表示可进行`某一事件`
 
 从表格中可看到：
 
-    - OP_READ    的1在第一位
-    - OP_WRITE   的1在第三位
-    - OP_CONNECT 的1在第四位
-    - OP_ACCEPT  的1在第五位
+```txt
+OP_READ    的1在第一位
+OP_WRITE   的1在第三位
+OP_CONNECT 的1在第四位
+OP_ACCEPT  的1在第五位
+```
 
 `OP_READ & OP_WRITE` 二进制的&结果（二进制`00000000`,十进制是零）
 
