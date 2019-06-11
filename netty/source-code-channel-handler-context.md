@@ -1,5 +1,14 @@
 # ChannelHandlerContext
 
+- [ChannelHandlerContext](#channelhandlercontext)
+  - [Summary](#summary)
+  - [addLast](#addlast)
+  - [DefaultChannelHandlerContext](#defaultchannelhandlercontext)
+  - [ChannelPipeline and Channel](#channelpipeline-and-channel)
+  - [Netty in action](#netty-in-action)
+
+## Summary
+
 `ChannelHandlerContext` 在 `Netty` 中负责包装 `ChannelHandler`
 
 被 `DefaultChannelPipeline` 引用 `head` 和 `tail`
