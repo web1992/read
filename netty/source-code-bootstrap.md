@@ -2,10 +2,12 @@
 
 - [Bootstrap and ServerBootstrap](#bootstrap-and-serverbootstrap)
   - [ServerBootstrap](#serverbootstrap)
-    - [初始化-group](#%E5%88%9D%E5%A7%8B%E5%8C%96-group)
+    - [EventLoopGroup init](#eventloopgroup-init)
     - [channelFactory](#channelfactory)
     - [init](#init)
   - [bind](#bind)
+    - [Channel init](#channel-init)
+    - [SocketAddress bind](#socketaddress-bind)
   - [childHandler](#childhandler)
   - [Bootstrap](#bootstrap)
   - [group](#group)
@@ -16,7 +18,7 @@
 
 ## ServerBootstrap
 
-服务器`ServerBootstrap`初始化过程
+服务器 `ServerBootstrap` 初始化过程
 
 类的继承关系
 
@@ -24,14 +26,22 @@
 
 下面从这几点来分析：
 
-1. [初始化-group](#初始化-group)
-2. [初始化 channelFactory](#channelFactory)
+1. [init group](#初始化-group)
+2. [init channelFactory](#channelFactory)
 3. [init](#init)
 4. [bind](#bind)
 
-### 初始化-group
+### EventLoopGroup init
+
+`EventLoopGroup` 是 `Netty` 中线程模型的实现 `EventLoopGroup` 包含了多个 `NioEventLoop`
+
+`EventLoopGroup` 提供了 `next` 方法，方便按照轮询的方式从一组 `NioEventLoop` 中选择一个 `NioEventLoop` 去处理 `IO` 事件
+
+> 可以把 `NioEventLoop` 理解为 `Thread` 把 `EventLoopGroup` 理解成 `Thread[]` 数组
 
 ```java
+// parentGroup for server
+// childGroup for client
 public ServerBootstrap group(EventLoopGroup parentGroup, EventLoopGroup childGroup) {
         super.group(parentGroup);
         if (childGroup == null) {
@@ -100,7 +110,46 @@ p.addLast(new ChannelInitializer<Channel>() {
 
 ## bind
 
-把打开的 channel 绑定到 SocketAddress 地址
+`bind` 方法调用如下：
+
+```java
+ChannelFuture future = bootstrap.bind(new InetSocketAddress(8081));
+```
+
+bind 主要有两个步骤：第一个执行 `Channel` 的初始化 第二个是执行 `SocketAddress` 的绑定。
+
+### Channel init
+
+`Channel` 的初始的代码如下：
+
+```java
+// ServerBootstrap -> init
+// ServerBootstrapAcceptor 主要是执行 childHandler 的初始化
+// 而 childHandler 一般是用来实现用户的自定义的逻辑的
+// 可以看下面的 childHandler 的介绍
+p.addLast(new ChannelInitializer<Channel>() {
+    @Override
+    public void initChannel(final Channel ch) throws Exception {
+        final ChannelPipeline pipeline = ch.pipeline();
+        ChannelHandler handler = config.handler();
+        if (handler != null) {
+            pipeline.addLast(handler);
+        }
+        ch.eventLoop().execute(new Runnable() {
+            @Override
+            public void run() {
+                // 在 pipeline 中添加 ServerBootstrapAcceptor
+                pipeline.addLast(new ServerBootstrapAcceptor(
+                        ch, currentChildGroup, currentChildHandler, currentChildOptions, currentChildAttrs));
+            }
+        });
+    }
+});
+```
+
+### SocketAddress bind
+
+把 `Channel` 绑定到 `SocketAddress` 地址
 
 ```java
 // 这里把注册事件，通过 pipeline 进行异步的注册
@@ -125,7 +174,38 @@ private static void doBind0(
 
 ## childHandler
 
-`childHandler` 这个在`ServerBootstrap`中是必须设置的，相当于处理客户端的请求。
+`childHandler` 这个在`ServerBootstrap`中是必须设置的，相当自定义 `pipeline` 的组装入口
+
+`childHandler` 在组装 `bootstrap` 的时候被调用如下:
+
+```java
+bootstrap.group(group).channel(NioServerSocketChannel.class).childHandler(new ChannelInitializerImpl());
+```
+
+而 `ChannelInitializerImpl` 则是在 `channelRead` 事件发生的时候才会被加入到 `pipeline` 中的,代码如下:
+
+```java
+// ServerBootstrap -> ServerBootstrapAcceptor -> channelRead
+child.pipeline().addLast(childHandler);
+```
+
+一个经典的 ChannelInitializerImpl 实现如下：
+
+```java
+/**
+ * ChannelInitializerImpl 可以实现自己的 pipeline 的组装
+ */
+final class ChannelInitializerImpl extends ChannelInitializer<Channel> {
+    @Override
+    protected void initChannel(Channel ch) throws Exception {
+        ChannelPipeline pipeline = ch.pipeline();
+        // ObjectDecoder 负责把 byte 转化成 java 对象
+        pipeline.addLast(new ObjectDecoder(new MyClassResolver()));
+        // NettyHandler 处理业务逻辑
+        pipeline.addLast(new NettyHandler());
+    }
+}
+```
 
 ## Bootstrap
 
