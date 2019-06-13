@@ -1,15 +1,15 @@
 # ByteToMessageDecoder
 
 - [ByteToMessageDecoder](#bytetomessagedecoder)
-  - [读事件流程](#%E8%AF%BB%E4%BA%8B%E4%BB%B6%E6%B5%81%E7%A8%8B)
+  - [pipeline read IO](#pipeline-read-io)
   - [channelRead](#channelread)
   - [callDecode](#calldecode)
   - [LengthFieldBasedFrameDecoder](#lengthfieldbasedframedecoder)
-  - [继承关系图](#%E7%BB%A7%E6%89%BF%E5%85%B3%E7%B3%BB%E5%9B%BE)
-    - [LengthFieldBasedFrameDecoder 构造参数](#lengthfieldbasedframedecoder-%E6%9E%84%E9%80%A0%E5%8F%82%E6%95%B0)
+  - [UML](#uml)
+    - [LengthFieldBasedFrameDecoder init](#lengthfieldbasedframedecoder-init)
     - [demo](#demo)
     - [LengthFieldBasedFrameDecoder#decode](#lengthfieldbasedframedecoderdecode)
-  - [ObjectDecoder 实现](#objectdecoder-%E5%AE%9E%E7%8E%B0)
+  - [ObjectDecoder implement](#objectdecoder-implement)
 
 Netty 中负责把字节流转化成一个具体对象的基类
 
@@ -21,7 +21,7 @@ If a custom frame decoder is required, then one needs to be careful when impleme
 
 To check for complete frames without modifying the reader index, use methods like ByteBuf.getInt(int). One MUST use the reader index when using methods like `ByteBuf.getInt(int)`. For example `calling in.getInt(0)` is assuming the frame starts at the beginning of the buffer, which is not always the case. Use `in.getInt(in.readerIndex())` instead.
 
-## 读事件流程
+## pipeline read IO
 
 读事件是在`NioEventLoop`的`processSelectedKey`中进行触发的
 
@@ -229,7 +229,7 @@ proprietary client-server protocols.
 一个通过长度来动态解析`ByteBuf` 的`解码器`,在解码一个二进制消息时,而这个消息有一个整数字段来代表消息体或者整个消息，十分有用。
 `LengthFieldBasedFrameDecoder`提供了很多参数来配置消息满足不同的协议。通常在客户端-服务器这种协议下使用。
 
-## 继承关系图
+## UML
 
 ![LengthFieldBasedFrameDecoder](./images/LengthFieldBasedFrameDecoder.png)
 
@@ -240,9 +240,9 @@ proprietary client-server protocols.
 `ByteToMessageDecoder`提供了`protected abstract void decode(ChannelHandlerContext ctx, ByteBuf in, List<Object> out)`
 方法，提供了一个钩子，方便子类进行不同的实现
 
-### LengthFieldBasedFrameDecoder 构造参数
+### LengthFieldBasedFrameDecoder init
 
-理解了`LengthFieldBasedFrameDecoder`参数的作用，其实就明白了的实现
+理解了`LengthFieldBasedFrameDecoder`参数的作用，其实就明白了它的实现
 
 ```java
     private final ByteOrder byteOrder;
@@ -418,7 +418,7 @@ BEFORE DECODE (16 bytes)                       AFTER DECODE (13 bytes)
     }
 ```
 
-## ObjectDecoder 实现
+## ObjectDecoder implement
 
 `ObjectDecoder` 是 netty 实现的 java 序列化，可与`ObjectEncoder`一起使用
 
