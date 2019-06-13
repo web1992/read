@@ -10,11 +10,11 @@
     - [SocketAddress bind](#socketaddress-bind)
   - [childHandler](#childhandler)
   - [Bootstrap](#bootstrap)
-  - [group](#group)
-  - [channel](#channel)
-  - [handler](#handler)
-  - [connect](#connect)
-  - [Resolve](#resolve)
+    - [group](#group)
+    - [channel](#channel)
+    - [handler](#handler)
+    - [connect](#connect)
+    - [Resolve](#resolve)
 
 ## ServerBootstrap
 
@@ -211,21 +211,39 @@ final class ChannelInitializerImpl extends ChannelInitializer<Channel> {
 
 客户端`Bootstrap`初始化过程
 
-## group
+### group
 
 这里的 group 同样也管理这一组`EventLoop`,`Bootstrap`少了`childGroup`这个参数，
 因为`Bootstrap`是连接到服务器的，不需要用另一个 Group 线程组，来管理来自客户端的连接.
 
-## channel
+### channel
 
 `NioSocketChannel` 这个最终也会被`EventLoop`进行关联,这个过程与`ServerBootstrap`的初始化一样
 
-## handler
+### handler
 
-处理服务器发送来的数据
+`handler` 用来用户方便添加自己的 `pipeline`
 
-## connect
+```java
+bootstrap.group(group).channel(NioSocketChannel.class).handler(new ChannelInitializerImpl());
+```
+
+```java
+/**
+ * 实现自定义的 pipeline 的组装
+ */
+final class ChannelInitializerImpl extends ChannelInitializer<Channel> {
+    @Override
+    protected void initChannel(Channel ch) throws Exception {
+        ChannelPipeline pipeline = ch.pipeline();
+        pipeline.addLast(new ObjectEncoder());
+        //pipeline.addLast(new ClazzToByteEncoder());
+    }
+}
+```
+
+### connect
 
 连接到指定的 IP 地址
 
-## Resolve
+### Resolve
