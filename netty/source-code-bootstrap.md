@@ -247,3 +247,5 @@ final class ChannelInitializerImpl extends ChannelInitializer<Channel> {
 连接到指定的 IP 地址
 
 ### Resolve
+
+负责 `DNS` 解析
