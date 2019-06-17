@@ -52,6 +52,7 @@
 - [ ] [dubbo-annotation.md](dubbo-annotation.md)
 - [ ] [dubbo-spring.md](dubbo-spring.md)
 - [ ] [dubbo-dynamic-configuration.md](dubbo-dynamic-configuration.md)
+- [ ] [dubbo-async.md](dubbo-async.md)
 
 ## 参考资料
 
