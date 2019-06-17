@@ -2,7 +2,7 @@
 
 - [MessageToMessageCodec](#messagetomessagecodec)
   - [Decoder&Encoder](#decoderencoder)
-  - [作用](#%E4%BD%9C%E7%94%A8)
+  - [usage](#usage)
   - [demo](#demo)
 
 ## Decoder&Encoder
@@ -15,7 +15,7 @@
 - `StringDecoder`
 - `StringEncoder`
 
-## 作用
+## usage
 
 `StringDecoder`,`StringEncoder` 可以再 netty 中进行基于`String`类型的数据通信
 

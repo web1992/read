@@ -1,6 +1,6 @@
 # Dubbo
 
-- [incubator-dubbo](https://github.com/apache/incubator-dubbo)
+- [incubator-dubbo](https://github.com/apache/dubbo)
 
 ## Dubbo version
 
