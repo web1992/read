@@ -12,6 +12,11 @@
 
 `org.apache.dubbo.rpc.proxy.InvokerInvocationHandler`
 
+```java
+// Result#recreate
+return invoker.invoke(new RpcInvocation(method, args)).recreate();
+```
+
 ## RpcResult
 
 `org.apache.dubbo.rpc.RpcResult`
