@@ -44,6 +44,7 @@
 - [x] [dubbo-router.md](dubbo-router.md)
 - [x] [dubbo-load-balance.md](dubbo-load-balance.md)
 - [x] [dubbo-timer-task.md](dubbo-timer-task.md)
+- [x] [dubbo-async.md](dubbo-async.md)
 - [ ] [dubbo-rpc.md](dubbo-rpc.md)
 - [ ] [dubbo-cluster.md](dubbo-cluster.md)
 - [ ] [dubbo-url.md](dubbo-url.md)
@@ -52,7 +53,6 @@
 - [ ] [dubbo-annotation.md](dubbo-annotation.md)
 - [ ] [dubbo-spring.md](dubbo-spring.md)
 - [ ] [dubbo-dynamic-configuration.md](dubbo-dynamic-configuration.md)
-- [ ] [dubbo-async.md](dubbo-async.md)
 
 ## 参考资料
 
