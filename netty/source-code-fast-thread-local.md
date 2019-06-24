@@ -20,6 +20,47 @@
 
 ## FastThreadLocal get
 
+```java
+public final V get() {
+        InternalThreadLocalMap threadLocalMap = InternalThreadLocalMap.get();
+        Object v = threadLocalMap.indexedVariable(index);
+        if (v != InternalThreadLocalMap.UNSET) {
+            return (V) v;
+        }
+
+        V value = initialize(threadLocalMap);
+        registerCleaner(threadLocalMap);
+        return value;
+}
+```
+
 ## FastThreadLocal initialize
 
+```java
+private V initialize(InternalThreadLocalMap threadLocalMap) {
+    V v = null;
+    try {
+        v = initialValue();
+    } catch (Exception e) {
+        PlatformDependent.throwException(e);
+    }
+    threadLocalMap.setIndexedVariable(index, v);
+    addToVariablesToRemove(threadLocalMap, this);
+    return v;
+}
+```
+
 ## FastThreadLocal set
+
+```java
+public final void set(V value) {
+    if (value != InternalThreadLocalMap.UNSET) {
+        InternalThreadLocalMap threadLocalMap = InternalThreadLocalMap.get();
+        if (setKnownNotUnset(threadLocalMap, value)) {
+            registerCleaner(threadLocalMap);
+        }
+    } else {
+        remove();
+    }
+}
+```

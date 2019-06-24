@@ -10,6 +10,7 @@
     - [ThreadLocalMap key](#ThreadLocalMap-key)
     - [ThreadLocalMap value](#ThreadLocalMap-value)
   - [io.netty.util.concurrent.FastThreadLocal](#ionettyutilconcurrentFastThreadLocal)
+  - [nextHashCode](#nextHashCode)
   - [参考资料](#%E5%8F%82%E8%80%83%E8%B5%84%E6%96%99)
 
 ## Example
@@ -176,6 +177,8 @@ ThreadLocalMap 的 value 是要存在的信息如，用户信息，数据库连�
 不得不说的 `io.netty.util.concurrent.FastThreadLocal` Netty 中对 `java.lang.ThreadLocal` 的优化
 
 - [source-code-fast-thread-local.md](../netty/source-code-fast-thread-local.md)
+
+## nextHashCode
 
 ## 参考资料
 
