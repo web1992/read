@@ -69,8 +69,15 @@ public final void await() throws InterruptedException {
     // 尝试去释放锁
     int savedState = fullyRelease(node);
     int interruptMode = 0;
+    // 如果不是在 queue 中 就进入阻塞
+    // 如果不在queue中，即使被唤醒了，也在此进入阻塞
+    // 这里需要与 signal 方法一起看
+    // signal 会把 firstWaiter 放入 queue 中，同时返回 前一个node
+    // 同时执行 unpark 前一个node关联的线程  唤醒阻塞的线程
     while (!isOnSyncQueue(node)) {
         LockSupport.park(this);
+        // 这里在被唤醒之后才会执行
+        // 当 interruptMode 不等于 0 的时候，结束循环
         if ((interruptMode = checkInterruptWhileWaiting(node)) != 0)
             break;
     }
@@ -157,6 +164,9 @@ public final void signal() {
     if (first != null)
         doSignal(first);
 }
+// 唤醒线程
+// 从 ConditionObject 中的 firstWaiter(Node) 开始
+// transferForSignal 会把 firstWaiter 放入到 AbstractQueuedSynchronizer 维护的 queue 中
 private void doSignal(Node first) {
     do {
         if ( (firstWaiter = first.nextWaiter) == null)
@@ -164,6 +174,29 @@ private void doSignal(Node first) {
         first.nextWaiter = null;
     } while (!transferForSignal(first) &&
              (first = firstWaiter) != null);
+}
+// 在执行 signal 方法的时候
+// 执行 enq 进入前到queue 中
+final boolean transferForSignal(Node node) {
+    /*
+     * If cannot change waitStatus, the node has been cancelled.
+     */
+    if (!compareAndSetWaitStatus(node, Node.CONDITION, 0))
+        return false;
+    /*
+     * Splice onto queue and try to set waitStatus of predecessor to
+     * indicate that thread is (probably) waiting. If cancelled or
+     * attempt to set waitStatus fails, wake up to resync (in which
+     * case the waitStatus can be transiently and harmlessly wrong).
+     */
+    Node p = enq(node);
+    // node 进入queue 之后，会返回它前面的Node
+    int ws = p.waitStatus;
+    // ws > 0 说明 线程已经取消了 就唤醒这个线程
+    //
+    if (ws > 0 || !compareAndSetWaitStatus(p, ws, Node.SIGNAL))
+        LockSupport.unpark(node.thread);
+    return true;
 }
 ```
 
