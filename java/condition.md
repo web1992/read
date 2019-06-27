@@ -14,7 +14,7 @@
 
 Condition factors out the Object monitor methods (wait, notify and notifyAll) into distinct objects to give the effect of having multiple wait-sets per object, by combining them with the use of arbitrary Lock implementations. Where a Lock replaces the use of synchronized methods and statements, a Condition replaces the use of the Object monitor methods.
 
-`Condition` 类提供了类似 `Object` 类中的 `wait`, `notify` and `notifyAll` 方法，用来替换 `Object` 类，配合 `Lock` 类实现线程之间的通信[`synchronized`](synchronized.md)
+`Condition` 类提供了类似 `Object` 类中的 `wait`, `notify` and `notifyAll` 方法，用来替换 `Object` 类，配合 `Lock` 类实现线程之间的通信(阻塞，唤醒)[`synchronized`](synchronized.md)
 
 ## Condition interface
 
@@ -55,10 +55,16 @@ public class ConditionObject implements Condition, java.io.Serializable {
 
 ## AbstractQueuedSynchronizer.ConditionObject.await
 
-`await` 会释放 `Condition` 对应 `lock` 的锁，让其他程序获取锁
+> 语义：
+
+执行 `await` 方法会阻塞当前线程（当前线程必须持有锁）
+
+当执行 signal 或者 signalAll 或者线程被 interrupted 中断之后线程再次被唤醒
 
 Causes the current thread to wait until it is signalled or interrupted.
 The lock associated with this `Condition` is atomically released and the current thread becomes disabled for thread scheduling purposes and lies dormant until one of four things happens:
+
+4 种情况下，执行 `await` 的线程会被唤醒
 
 - Some other thread invokes the `signal()` method for this `Condition` and the current thread happens to be chosen as the thread to be awakened; `or`
 - Some other thread invokes the `signalAll()` method for this `Condition`; `or`
