@@ -1,4 +1,4 @@
-# read 随笔
+# read
 
 ## 阅读笔记
 
@@ -11,14 +11,10 @@
 
 - [软件开发设计模式](design-patterns/readme.md)
 
-## books
-
-- [https://github.com/yuanliangding/books](https://github.com/yuanliangding/books)
-- [计算机技术书籍（GitHub）](https://github.com/yuanliangding/books)
 
 ## 算法
 
-[​一致性哈希（Consistent hashing)](https://coderxing.gitbooks.io/architecture-evolution/di-san-pian-ff1a-bu-luo/631-yi-zhi-xing-ha-xi.html)
+[一致性哈希（Consistent hashing)](https://coderxing.gitbooks.io/architecture-evolution/di-san-pian-ff1a-bu-luo/631-yi-zhi-xing-ha-xi.html)
 
 ## other
 
