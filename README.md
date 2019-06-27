@@ -14,7 +14,6 @@
 ## books
 
 - [https://github.com/yuanliangding/books](https://github.com/yuanliangding/books)
-- [计算机技术书籍（GitHub）](https://github.com/yuanliangding/books)
 
 ## 算法
 
