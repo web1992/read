@@ -1,9 +1,9 @@
 # Collection
 
-- [Collection](#collection)
-  - [Link](#link)
-  - [Collection Implementations](#collection-implementations)
-  - [Concurrent Collections interfaces](#concurrent-collections-interfaces)
+- [Collection](#Collection)
+  - [Link](#Link)
+  - [Collection Implementations](#Collection-Implementations)
+  - [Concurrent Collections interfaces](#Concurrent-Collections-interfaces)
     - [implementation](#implementation)
 
 ## Link

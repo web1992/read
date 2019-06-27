@@ -1,17 +1,27 @@
 # AQS
 
+- [AQS](#AQS)
+  - [AbstractQueuedSynchronizer](#AbstractQueuedSynchronizer)
+  - [实例分析](#%E5%AE%9E%E4%BE%8B%E5%88%86%E6%9E%90)
+  - [waitStatus](#waitStatus)
+    - [CANCELLED](#CANCELLED)
+    - [SIGNAL](#SIGNAL)
+    - [PROPAGATE](#PROPAGATE)
+  - [AbstractQueuedSynchronizer queue and state](#AbstractQueuedSynchronizer-queue-and-state)
+  - [参考](#%E5%8F%82%E8%80%83)
+
 ## AbstractQueuedSynchronizer
 
 `java.util.concurrent.locks.AbstractQueuedSynchronizer`
 
 1. `AbstractQueuedSynchronizer` 是一个模板抽象类,封装了算法细节,暴露了很多 `protected` 方法方便子类重写
-2. `AbstractQueuedSynchronizer` 是基于 FIFO 队列实现的
-3. `AbstractQueuedSynchronizer` 中使用 volatile int state 来`计数`
-4. `AbstractQueuedSynchronizer` 可以实现可以重入锁(or 不可重入锁)的语义，如 ReentrantLock
-5. `AbstractQueuedSynchronizer` 可以实现共享锁，排他锁的语义，如 ReentrantReadWriteLock
+2. `AbstractQueuedSynchronizer` 是基于 `FIFO` 队列实现的
+3. `AbstractQueuedSynchronizer` 中使用 `volatile int state` 来`计数`
+4. `AbstractQueuedSynchronizer` 可以实现可以重入锁(或者不可重入锁)的语义，如 `ReentrantLock`
+5. `AbstractQueuedSynchronizer` 可以实现共享锁，排他锁的语义，如 `ReentrantReadWriteLock`
 6. `AbstractQueuedSynchronizer` 可以实现公平锁，非公平锁的语义
 
-## 源码分析
+## 实例分析
 
 - [count-down-latch.md](count-down-latch.md)
 - [reentrant-lock.md](reentrant-lock.md)
@@ -38,7 +48,7 @@ static final int CONDITION = -2;
 static final int PROPAGATE = -3;
 ```
 
-## CANCELLED
+### CANCELLED
 
 线程获取锁失败，比如：线程执行了 `interrupt` 方法,或者获取锁超时，此时正在阻塞的线程就会被唤醒，进入 `CANCELLED` 状态
 
@@ -50,13 +60,38 @@ static final int PROPAGATE = -3;
 
 类似的 `CountDownLatch.await` 其实也是获取锁的过程，获取锁失败，也会进入到 `SIGNAL` 状态
 
-## CONDITION
-
-当一个线程执行 `Condition#await` 进入阻塞状态的试试，会进入 `CONDITION` 状态
-
-## PROPAGATE
+### PROPAGATE
 
 TODO
+
+## AbstractQueuedSynchronizer queue and state
+
+AbstractQueuedSynchronizer 最重要的几个变量
+
+`Node head` 和 `Node tail` 用来组成 FIFO queue
+
+`int state` 变量用来对获取锁的线程计数
+
+此外它们都是用 `volatile` 来修饰的
+
+```java
+/**
+ * Head of the wait queue, lazily initialized.  Except for
+ * initialization, it is modified only via method setHead.  Note:
+ * If head exists, its waitStatus is guaranteed not to be
+ * CANCELLED.
+ */
+private transient volatile Node head;
+/**
+ * Tail of the wait queue, lazily initialized.  Modified only via
+ * method enq to add new wait node.
+ */
+private transient volatile Node tail;
+/**
+ * The synchronization state.
+ */
+private volatile int state;
+```
 
 ## 参考
 

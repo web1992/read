@@ -1,5 +1,15 @@
 # Condition
 
+- [Condition](#Condition)
+
+  - [Condition interface](#Condition-interface)
+  - [ConditionObject](#ConditionObject)
+  - [AbstractQueuedSynchronizer.ConditionObject.await](#AbstractQueuedSynchronizerConditionObjectawait)
+  - [AbstractQueuedSynchronizer.fullyRelease](#AbstractQueuedSynchronizerfullyRelease)
+  - [AbstractQueuedSynchronizer.ConditionObject.signal](#AbstractQueuedSynchronizerConditionObjectsignal)
+  - [AbstractQueuedSynchronizer.ConditionObject.signalAll](#AbstractQueuedSynchronizerConditionObjectsignalAll)
+  - [link](#link)
+
 - [Condition (from oracle doc)](https://docs.oracle.com/javase/7/docs/api/java/util/concurrent/locks/Condition.html)
 
 Condition factors out the Object monitor methods (wait, notify and notifyAll) into distinct objects to give the effect of having multiple wait-sets per object, by combining them with the use of arbitrary Lock implementations. Where a Lock replaces the use of synchronized methods and statements, a Condition replaces the use of the Object monitor methods.
@@ -31,8 +41,8 @@ public interface Condition {
 // 操作 queue 的方法有：
 //  addConditionWaiter
 //  unlinkCancelledWaiters
-// ConditionObject 使用 Node 来组成 queue
-// 并使用 firstWaiter 和 lastWaiter 来维护queue 中第一个和最后一个元素
+// ConditionObject 使用 firstWaiter 和 lastWaiter
+// 来记录 queue 中第一个和最后一个元素(而queue 则是在 AbstractQueuedSynchronizer 中)
 public class ConditionObject implements Condition, java.io.Serializable {
     private static final long serialVersionUID = 1173984872572414699L;
     /** First node of condition queue. */
@@ -58,6 +68,7 @@ The lock associated with this `Condition` is atomically released and the current
 > 看下 `await` 方法的源码实现
 
 ```java
+// AbstractQueuedSynchronizer.ConditionObject
 public final void await() throws InterruptedException {
     // 检测当前线程是否被 interrupted 了
     if (Thread.interrupted())
@@ -70,22 +81,32 @@ public final void await() throws InterruptedException {
     int savedState = fullyRelease(node);
     int interruptMode = 0;
     // 如果不是在 queue 中 就进入阻塞
-    // 如果不在queue中，即使被唤醒了，也在此进入阻塞
-    // 这里需要与 signal 方法一起看
+    // 如果不在queue中，即使被唤醒了，也再次进入阻塞
+    // 这里需要与 signal 方法一起看(Node 其实是在执行signal的时候 执行 enq(node) 方法进入aqs 队列中的)
     // signal 会把 firstWaiter 放入 queue 中，同时返回 前一个node
-    // 同时执行 unpark 前一个node关联的线程  唤醒阻塞的线程
+    // 同时执行 unpark（唤醒） 前一个node关联的线程  唤醒阻塞的线程
     while (!isOnSyncQueue(node)) {
+        // 如果不在 queue 中，那么就再次阻塞
         LockSupport.park(this);
         // 这里在被唤醒之后才会执行
         // 当 interruptMode 不等于 0 的时候，结束循环
+        // checkInterruptWhileWaiting 会检测线程的状态 是否执行了中断操作
         if ((interruptMode = checkInterruptWhileWaiting(node)) != 0)
             break;
     }
+    // acquireQueued 会去尝试获取锁，这个方法返回true 标识线程被标记为中断状态
+    // thread.interrupt 会把线程标记为中断的状态
+    // acquireQueued 方法会阻塞线程，但是当线程唤醒的时候可能有二种情况：
+    // 1. 执行了 unpark 方法，正常的唤醒
+    // 2. 执行了 thread.interrupt 方法
     if (acquireQueued(node, savedState) && interruptMode != THROW_IE)
+        // 更新次线程为中断状态
         interruptMode = REINTERRUPT;
     if (node.nextWaiter != null) // clean up if cancelled
         unlinkCancelledWaiters();
-    if (interruptMode != 0)
+    if (interruptMode != 0)// 针对 THROW_IE 和 REINTERRUPT 进行处理
+        // 如果是 THROW_IE 则抛出 InterruptedException 异常
+        // 如果是 REINTERRUPT 执行 Thread.currentThread().interrupt();
         reportInterruptAfterWait(interruptMode);
 }
 
@@ -158,7 +179,7 @@ final int fullyRelease(Node node) {
 
 ```java
 public final void signal() {
-    if (!isHeldExclusively())
+    if (!isHeldExclusively())// 判断获取锁的线程是否是当前线程
         throw new IllegalMonitorStateException();
     Node first = firstWaiter;
     if (first != null)
