@@ -20,11 +20,15 @@
 
 ![design pattern](./images/design-pattern.png)
 
-- Creational patterns
-- Structural patterns
-- Behavioral patterns
-- Concurrency patterns
-- architectural design pattern
+| 分 类             | 描 述     |
+| ----------------- | --------- |
+| Creational        | 创造      |
+| Structural        | 结构      |
+| Behavioral        | 行为      |
+| Functional        | 实用      |
+| Concurrency       | 并发      |
+| Architectural     | 建筑      |
+| Cloud Distributed | 云 分布式 |
 
 ## 列表
 
