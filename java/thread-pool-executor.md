@@ -2,41 +2,42 @@
 
 > 目录
 
-- [ThreadPoolExecutor](#threadpoolexecutor)
-  - [ExecutorService类图](#executorservice%E7%B1%BB%E5%9B%BE)
+- [ThreadPoolExecutor](#ThreadPoolExecutor)
+  - [ExecutorService 类图](#ExecutorService-%E7%B1%BB%E5%9B%BE)
   - [设计目的](#%E8%AE%BE%E8%AE%A1%E7%9B%AE%E7%9A%84)
   - [构造参数](#%E6%9E%84%E9%80%A0%E5%8F%82%E6%95%B0)
-    - [Core and maximum pool sizes](#core-and-maximum-pool-sizes)
-    - [On-demand construction](#on-demand-construction)
-    - [Creating new threads](#creating-new-threads)
-    - [Keep-alive times](#keep-alive-times)
-    - [Queuing](#queuing)
-      - [SynchronousQueue](#synchronousqueue)
-      - [LinkedBlockingQueue](#linkedblockingqueue)
-      - [ArrayBlockingQueue](#arrayblockingqueue)
-    - [Rejected tasks](#rejected-tasks)
-    - [Rejected demo](#rejected-demo)
-  - [Hook methods](#hook-methods)
-  - [Queue maintenance](#queue-maintenance)
-  - [Finalization](#finalization)
-  - [runState](#runstate)
-  - [Method List](#method-list)
+    - [Core and maximum pool sizes](#Core-and-maximum-pool-sizes)
+    - [On-demand construction](#On-demand-construction)
+    - [Creating new threads](#Creating-new-threads)
+    - [Keep-alive times](#Keep-alive-times)
+    - [Queuing](#Queuing)
+      - [SynchronousQueue](#SynchronousQueue)
+      - [LinkedBlockingQueue](#LinkedBlockingQueue)
+      - [ArrayBlockingQueue](#ArrayBlockingQueue)
+    - [Rejected tasks](#Rejected-tasks)
+    - [Rejected demo](#Rejected-demo)
+  - [Hook methods](#Hook-methods)
+  - [Queue maintenance](#Queue-maintenance)
+  - [Finalization](#Finalization)
+  - [runState](#runState)
+  - [Method List](#Method-List)
     - [execute](#execute)
-    - [runWorker](#runworker)
-    - [getTask](#gettask)
-  - [Worker](#worker)
-  - [Executors](#executors)
-    - [newFixedThreadPool](#newfixedthreadpool)
-    - [newSingleThreadExecutor](#newsinglethreadexecutor)
-    - [newCachedThreadPool](#newcachedthreadpool)
+    - [runWorker](#runWorker)
+    - [getTask](#getTask)
+  - [Worker](#Worker)
+  - [Executors](#Executors)
+    - [newFixedThreadPool](#newFixedThreadPool)
+    - [newSingleThreadExecutor](#newSingleThreadExecutor)
+    - [newCachedThreadPool](#newCachedThreadPool)
   - [参考](#%E5%8F%82%E8%80%83)
 
-## ExecutorService类图
+## ExecutorService 类图
 
 ![ThreadPoolExecutor](./images/ThreadPoolExecutor.png)
 
 ## 设计目的
 
+- 避免频繁的创建和销毁线程
 - (周期性的)执行异步任务(主要)
 - 维护线程资源
 - 统计信息
@@ -49,11 +50,11 @@
 
 线程池大小策略
 
-| 线程数                                                         | 策略         |
-| -------------------------------------------------------------- | ------------ |
-| 当前线程数 < `corePoolSize`                                    | 创建新的线程 |
-| `corePoolSize`  < 当前线程数 < `maximumPoolSize` & queue.isFll | 创建新的线程 |
-| `corePoolSize` = `maximumPoolSize`                             | 线程固定大小 |
+| 线程数                                                        | 策略         |
+| ------------------------------------------------------------- | ------------ |
+| 当前线程数 < `corePoolSize`                                   | 创建新的线程 |
+| `corePoolSize` < 当前线程数 < `maximumPoolSize` & queue.isFll | 创建新的线程 |
+| `corePoolSize` = `maximumPoolSize`                            | 线程固定大小 |
 
 ### On-demand construction
 
@@ -73,8 +74,8 @@ thread 构造策略,使用 `ThreadFactory` 来指定线程的 Group,名称，优
 
 | case                      | action                                                                                                                                                                                    |
 | ------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| pool size < corePoolSize  | adding a new thread       创建新的线程                                                                                                                                                    |
-| pool size >= corePoolSize | queuing a request    进入队列                                                                                                                                                             |
+| pool size < corePoolSize  | adding a new thread 创建新的线程                                                                                                                                                          |
+| pool size >= corePoolSize | queuing a request 进入队列                                                                                                                                                                |
 | queue is full             | If a request cannot be queued, a new thread is created unless this would exceed maximumPoolSize, in which case, the task will be rejected. There are three general strategies for queuing |
 
 > strategies for queuing
@@ -101,8 +102,8 @@ thread 构造策略,使用 `ThreadFactory` 来指定线程的 Group,名称，优
 
 **Bounded queues**. A bounded queue (for example, an `ArrayBlockingQueue`) helps prevent resource exhaustion when used with finite `maximumPoolSizes`, but can be more difficult to tune and control. Queue sizes and maximum pool sizes may be traded off for each other: Using large queues and small pools minimizes CPU usage, OS resources, and context-switching overhead, but can lead to artificially low throughput. If tasks frequently block (for example if they are I/O bound), a system may be able to schedule time for more threads than you otherwise allow. Use of small queues generally requires larger pool sizes, which keeps CPUs busier but may encounter unacceptable scheduling overhead, which also decreases throughput.
 
-有边界的队列，队列的大小和线程池的大小会相互影响，如果使用大队列&小线程池组合，可以减少 CPU,OS 资源的使用，线程切换，但是也可能导致低的吞吐量，如：任务经常阻塞(CPU一直在睡觉，CPU 得不到充分的利用)。
-如果使用小队列&大线程池组合，那么 CPU 会频繁的进行线程切换(CPU 都在进行线程切换了，没时间做其他事情了)，也会导致吞吐量的下降。
+有边界的队列，队列的大小和线程池的大小会相互影响，如果使用`大队列`&`小线程池`组合，可以减少 CPU,OS 资源的使用，线程切换，但是也可能导致低的吞吐量，如：任务经常阻塞(CPU 一直在睡觉，CPU 得不到充分的利用)。
+如果使用`小队列`&`大线程池`组合，那么 CPU 会频繁的进行线程切换(CPU 都在进行线程切换了，没时间做其他事情了)，也会导致吞吐量的下降。
 
 ### Rejected tasks
 
@@ -152,7 +153,7 @@ public static void main(String[] args) throws InterruptedException {
 - afterExecute
 - onShutdown
 - terminated
-  
+
 ## Queue maintenance
 
 Method `getQueue()` 为了调试设计,其他忽用
@@ -432,15 +433,15 @@ try {
 
 `Executors` 中一些常用方法的说明，如果理解这些方法的`作用`和`不同点`，可以避免使用中的坑
 
-如 `newFixedThreadPool` 和 `newSingleThreadExecutor`都使用  `LinkedBlockingQueue` 来存储多余的任务
+如 `newFixedThreadPool` 和 `newSingleThreadExecutor`都使用 `LinkedBlockingQueue` 来存储多余的任务
 
 如果线程处理的速度小于任务创建的速度，那么无法处理的任务都会放入 `Queue` 中,随着队列的无限增大会导致内存资源耗尽
 
-下面 `Executors` 提供的几个方法，底层的Queue都是没有边界的，使用时候请注意内存泄露
+下面 `Executors` 提供的几个方法，底层的 Queue 都是没有边界的，使用时候请注意内存泄露
 
 `ThreadPoolExecutor` 使用 `BlockingQueue` 来存储多余的任务，那为什么不使用`ArrayList`,`LinkedList`呢？
 
-> `ArrayList`,`LinkedList` 不是线程安全，如过使用这些来存储任务，会增加API的设计难度，而 `BlockingQueue` 天生为多线程而生
+> `ArrayList`,`LinkedList` 不是线程安全，如过使用这些来存储任务，会增加 API 的设计难度，而 `BlockingQueue` 天生为多线程而生
 
 ### newFixedThreadPool
 
