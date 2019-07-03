@@ -5,3 +5,13 @@
 ## Chapter List
 
 - [Chapter 01](redis-in-action-chapter-01.md)
+
+## Other
+
+- zset
+- set
+- hashset
+- intset
+- list
+- ziplist
+- linklist
