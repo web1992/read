@@ -13,7 +13,7 @@
 
 - 使用 limit & offset 进行优化
 
-可以记录上次查询的问题，只查询上次记录位置之后的数据
+可以记录上次查询的位置，只查询上次记录位置之后的数据
 
 ```sql
 select film.film_id,film_desc  from film where film_id> 50 limit 10;

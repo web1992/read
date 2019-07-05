@@ -2,15 +2,17 @@
 
 ## 目录
 
-- [MySQL 优化](#优化)
-- [MySQL 原理](#原理)
+- [MySQL 相关博文](#MySQL-%E7%9B%B8%E5%85%B3%E5%8D%9A%E6%96%87)
+  - [目录](#%E7%9B%AE%E5%BD%95)
+  - [优化](#%E4%BC%98%E5%8C%96)
+  - [原理](#%E5%8E%9F%E7%90%86)
 
 ## 优化
 
 - [MySQL 索引原理及慢查询优化](http://tech.meituan.com/mysql-index.html)
-- [MySQL 随机IO&顺序IO](http://blog.csdn.net/dba_waterbin/article/details/8937441)
+- [MySQL 随机 IO&顺序 IO](http://blog.csdn.net/dba_waterbin/article/details/8937441)
 - [MySQL `limit`优化](https://stackoverflow.com/questions/4481388/why-does-mysql-higher-limit-offset-slow-the-query-down)
-- [MySQL `limit`优化(late-row-lookups详解)](https://explainextended.com/2009/10/23/mysql-order-by-limit-performance-late-row-lookups/)
+- [MySQL `limit`优化(late-row-lookups 详解)](https://explainextended.com/2009/10/23/mysql-order-by-limit-performance-late-row-lookups/)
 - [MySQL (`order by`) 优化](http://www.cnblogs.com/cchust/p/5304594.html)
 - [MySQL (`join`)左、右、内、链接](https://www.techonthenet.com/mysql/joins.php)
 - [MySQL (`group by` 优化,Loose Index Scan)](https://dev.mysql.com/doc/refman/5.7/en/group-by-optimization.html)
@@ -19,7 +21,7 @@
 - [MySQL (`explain`中`extra`列的含义`中文`)](http://www.jianshu.com/p/ea3fc71fdc45)
 - [MySQL (`explain`中`extra`列的含义`中文`)](http://ustb80.blog.51cto.com/6139482/1064261)
 - [MySQL (order by 优化)](https://dev.mysql.com/doc/refman/5.7/en/order-by-optimization.html)
-- [MySQL join  temporary table 优化](https://dev.mysql.com/doc/refman/5.7/en/where-optimization.html)
+- [MySQL join temporary table 优化](https://dev.mysql.com/doc/refman/5.7/en/where-optimization.html)
 - [MySQL Optimization Using filesort 优化](https://dev.mysql.com/doc/refman/5.7/en/order-by-optimization.html#order-by-filesort)
 - [MySQL Tracing the Optimizer 优化跟踪](https://dev.mysql.com/doc/internals/en/optimizer-tracing.html)
 
