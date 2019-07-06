@@ -4,6 +4,8 @@
 
 - 使用`limit` 进行分页查询的时候，当遇到偏移量（如：limit 50000,10）很大的时候，性能会很差，因为`mysql`会扫描丢弃大量无用的行
 
+> 使用延迟查询
+
 ```sql
     select film_id,film_desc
     from film inner join(
