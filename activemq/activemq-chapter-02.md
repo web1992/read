@@ -55,7 +55,7 @@ the message, including `text` and `binary` data as well as information in the he
 | ----------- | ---------------------------------------------------------------------------------------------------------------------- |
 | Literals    | Booleans TRUE/FALSE; numbers such as 5, -10, +34; numbers with decimal or scientific notation such as 43.3E7, +10.5239 |
 | Identifiers | A header or property field                                                                                             |
-| Operators   | AND, OR, LIKE, BETWEEN, =, <>, <, >, <=, =>, +, -, *, /, IS NULL, IS NOT NULL                                          |
+| Operators   | AND, OR, LIKE, BETWEEN, =, <>, <, >, <=, =>, +, -, \*, /, IS NULL, IS NOT NULL                                         |
 
 ## MESSAGE BODY
 
@@ -70,7 +70,8 @@ JMS defines six Java types for the message body
 
 ## JMS domains
 
-point-to-point and publish/subscribe
+- point-to-point
+- publish/subscribe
 
 ### point-to-point
 
@@ -120,8 +121,7 @@ that represent an interaction with the JMS provider.
 
 ### Destination
 
-The `Destination` object encapsulates(包囊) the provider-specific address to `which messages
-are sent and from which messages are consumed`. Although destinations are created
+The `Destination` object encapsulates(包囊) the provider-specific address to `which messages are sent and from which messages are consumed`. Although destinations are created
 using the Session object, their lifetime matches the connection from which the session was created.
 
 Temporary destinations are unique to the connection that was used to create

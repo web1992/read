@@ -10,23 +10,25 @@ This chapter covers
 
 ## index
 
-- 01 [connecting-to-activemq](#connecting-to-activemq)
-- 02 [understanding-connector-uris](#understanding-connector-uris)
-- 03 [transport-connectors](#transport-connectors)
-- 04 [configuring-transport-connectors](#configuring-transport-connectors)
-- 05 [transmission-control-protocol-tcp](#transmission-control-protocol-tcp)
-- 06 [new-i/o-api-protocol-nio](#new-i/o-api-protocol-nio)
-- 07 [user-datagram-protocol-udp](#user-datagram-protocol-udp)
-- 08 [comparing-the-tcp-and-udp-transports](#comparing-the-tcp-and-udp-transports)
-- 09 [secure-sockets-layer-protocol-ssl](#secure-sockets-layer-protocol-ssl)
-- 10 [enabling-and-disabling-ssl-ciphers](#enabling-and-disabling-ssl-ciphers)
-- 11 [hypertext-transfer-protocol-http/https](#hypertext-transfer-protocol-http/https)
-- 12 [connecting-to-activemq-inside-the-virtual-machine-vm-connector](#connecting-to-activemq-inside-the-virtual-machine-vm-connector)
-- 13 [network-connectors](#network-connectors)
-- 14 [static-networks](#static-networks)
-- 15 [dynamic-networks](#dynamic-networks)
-- 16 [failover-protocol](#failover-protocol)
-- 17 [summary-of-network-protocols-used-for-client-broker-communication](#summary-of-network-protocols-used-for-client-broker-communication)
+- [Chapter 4](#Chapter-4)
+  - [Connecting to ActiveMQ](#Connecting-to-ActiveMQ)
+  - [index](#index)
+  - [Understanding connector URIs](#Understanding-connector-URIs)
+  - [Transport connectors](#Transport-connectors)
+    - [Configuring transport connectors](#Configuring-transport-connectors)
+    - [Transmission Control Protocol (TCP)](#Transmission-Control-Protocol-TCP)
+    - [New IO API protocol (NIO)](#New-IO-API-protocol-NIO)
+    - [User Datagram Protocol (UDP)](#User-Datagram-Protocol-UDP)
+  - [Comparing the TCP and UDP transports](#Comparing-the-TCP-and-UDP-transports)
+    - [Secure Sockets Layer Protocol (SSL)](#Secure-Sockets-Layer-Protocol-SSL)
+    - [ENABLING AND DISABLING SSL CIPHERS](#ENABLING-AND-DISABLING-SSL-CIPHERS)
+    - [Hypertext Transfer Protocol (HTTPHTTPS)](#Hypertext-Transfer-Protocol-HTTPHTTPS)
+    - [Connecting to ActiveMQ inside the virtual machine (VM connector)](#Connecting-to-ActiveMQ-inside-the-virtual-machine-VM-connector)
+  - [Network connectors](#Network-connectors)
+    - [Static networks](#Static-networks)
+    - [Dynamic networks](#Dynamic-networks)
+  - [FAILOVER PROTOCOL](#FAILOVER-PROTOCOL)
+  - [Summary of network protocols used for client-broker communication](#Summary-of-network-protocols-used-for-client-broker-communication)
 
 ## Understanding connector URIs
 
@@ -61,12 +63,10 @@ The preceding snippet defines four transport connectors. Upon starting up
 ActiveMQ using such a configuration file,
 
 ```java
-ActiveMQConnectionFactory factory =
-new ActiveMQConnectionFactory("tcp://localhost:61616");
+ActiveMQConnectionFactory factory = new ActiveMQConnectionFactory("tcp://localhost:61616");
 Connection connection = factory.createConnection();
 connection.start();
-Session session =
-connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
+Session session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
 ```
 
 ### Transmission Control Protocol (TCP)
@@ -83,8 +83,7 @@ ActiveMQ clients to be developed for various programming environments.
 
 ```xml
 <transportConnectors>
-<transportConnector name="tcp"
-uri="tcp://localhost:61616?trace=true"/>
+<transportConnector name="tcp" uri="tcp://localhost:61616?trace=true"/>
 </transportConnectors>
 ```
 

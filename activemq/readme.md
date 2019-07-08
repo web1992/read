@@ -9,12 +9,12 @@
 - reliability (可靠性)
 - security
 
-- [ActiveMQ in action](#activemq-in-action)
-  - [Chapter list](#chapter-list)
-    - [Part 1](#part-1)
-    - [Part 2](#part-2)
-    - [Part 3](#part-3)
-    - [Part 4](#part-4)
+- [ActiveMQ in action](#ActiveMQ-in-action)
+  - [Chapter list](#Chapter-list)
+    - [Part 1](#Part-1)
+    - [Part 2](#Part-2)
+    - [Part 3](#Part-3)
+    - [Part 4](#Part-4)
 
 ## Chapter list
 
