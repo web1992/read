@@ -38,8 +38,8 @@ otherwise, return false.
 
 ## Buffer rewind()
 
-Rewind and then return this buffer. The position is set to 0
-and the mark is discarded.
+Rewind and then return this buffer. The `position` is set to 0
+and the `mark` is discarded.
 
 ## Buffer mark()
 
