@@ -1,5 +1,17 @@
 # Chapter 7 Channels
 
+- [Chapter 7 Channels](#Chapter-7-Channels)
+  - [Introducing Channels](#Introducing-Channels)
+  - [Scatter/Gather I/O](#ScatterGather-IO)
+  - [File Channels](#File-Channels)
+  - [Locking Files](#Locking-Files)
+  - [Socket Channels](#Socket-Channels)
+  - [Understanding Nonblocking Mode](#Understanding-Nonblocking-Mode)
+  - [Exploring Server Socket Channels](#Exploring-Server-Socket-Channels)
+  - [Exploring Socket Channels](#Exploring-Socket-Channels)
+  - [Exploring Datagram Channels](#Exploring-Datagram-Channels)
+  - [Pipe](#Pipe)
+
 ## Introducing Channels
 
 A channel is an object that represents an open connection to a hardware
