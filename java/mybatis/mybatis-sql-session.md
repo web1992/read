@@ -2,4 +2,4 @@
 
 ## SqlSessionFactoryBean
 
-Spring with mybatis
+Spring with mybatis `org.mybatis.spring.SqlSessionFactoryBean`
