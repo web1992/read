@@ -1,1 +1,7 @@
 # SqlSessionFactoryBean
+
+## dataSource
+
+## configLocation
+
+## mapperLocations
