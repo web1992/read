@@ -2,19 +2,20 @@
 
 The document version of spring reference is [4.3.x](https://docs.spring.io/spring/docs/4.3.x/).
 
->I. Overview of Spring Framework
+> I. Overview of Spring Framework
 
 - 1 Getting Started with Spring [Link→](spring-reference-001.md)
 - 2 Introduction to the Spring Framework [Link→](spring-reference-001.md)
 
 > II. What’s New in Spring Framework 4.x
 
-- 3 New Features and Enhancements in Spring  Framework 4.0
-- 4 New Features and Enhancements in Spring  Framework 4.1
-- 5 New Features and Enhancements in Spring  Framework 4.2
-- 6 New Features and Enhancements in Spring  Framework 4.3
+- 3 New Features and Enhancements in Spring Framework 4.0
+- 4 New Features and Enhancements in Spring Framework 4.1
+- 5 New Features and Enhancements in Spring Framework 4.2
+- 6 New Features and Enhancements in Spring Framework 4.3
 
 > III. Core Technologies
+
 - 7 The IoC container [Link→](spring-reference-007.md)
 - 8 Resources [Link→](spring-reference-008.md)
 - 9 Validation, Data Binding, and Type Conversion
@@ -30,6 +31,7 @@ The document version of spring reference is [4.3.x](https://docs.spring.io/sprin
 - 16 Further Resources [Link→](spring-reference-016.md)
 
 > V. Data Access
+
 - 17 Transaction Management [Link→](spring-reference-017.md)
 - 18 DAO support [Link→](spring-reference-018.md)
 - 19 Data access with JDBC [Link→](spring-reference-019.md)
@@ -37,6 +39,7 @@ The document version of spring reference is [4.3.x](https://docs.spring.io/sprin
 - 21 Marshalling XML using O/X Mappers [Link→](spring-reference-021.md)
 
 > VI. The Web
+
 - 22 Web MVC framework [Link→](spring-reference-022.md)
 - 23 View technologies [Link→](spring-reference-023.md)
 - 24 Integrating with other web frameworks [Link→](spring-reference-024.md)
