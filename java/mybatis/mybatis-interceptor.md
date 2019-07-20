@@ -1,24 +1,32 @@
 # Interceptor
 
+- [Interceptor](#Interceptor)
+  - [plugins](#plugins)
+  - [Plugin](#Plugin)
+    - [wrap](#wrap)
+    - [invoke](#invoke)
+  - [@Intercepts](#Intercepts)
+  - [@Signature](#Signature)
+  - [link](#link)
+
 `mybatis` 使用 `Interceptor` 来完成对特定类方法执行的拦截，实现方式是通过 `proxy` 代理拦截指定类的方法的执行
 
-省去你自己实现 `proxy`.
+省去你自己实现 `proxy` 的麻烦
 
 ## plugins
 
-目前 mybatis 拦截的类有下面几个
+目前 mybatis 拦截的`类`和类中的`方法`有下面几个
 
 - `Executor` (update, query, flushStatements, commit, rollback, getTransaction, close, isClosed)
 - `ParameterHandler` (getParameterObject, setParameters)
 - `ResultSetHandler` (handleResultSets, handleOutputParameters)
 - `StatementHandler` (prepare, parameterize, batch, update, query)
 
-
 ## Plugin
 
 ```java
 // Plugin 类实现了 InvocationHandler
-// Plugin 的主要方式是 wrap 和 invoke
+// Plugin 的主要方法是 wrap 和 invoke
 public class Plugin implements InvocationHandler {
     // ...
 }
@@ -34,7 +42,7 @@ public static Object wrap(Object target, Interceptor interceptor) {
   Class<?> type = target.getClass();
   Class<?>[] interfaces = getAllInterfaces(type, signatureMap);
   if (interfaces.length > 0) {
-    // 生成 代理
+    // 生成代理
     return Proxy.newProxyInstance(
         type.getClassLoader(),
         interfaces,
@@ -63,7 +71,7 @@ private static Class<?>[] getAllInterfaces(Class<?> type, Map<Class<?>, Set<Meth
 ### invoke
 
 ```java
-// 如果 类和方法在 signatureMap 中，那么就执行 interceptor
+// 如果类和方法在 signatureMap 中，那么就执行 interceptor
 @Override
 public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
   try {
