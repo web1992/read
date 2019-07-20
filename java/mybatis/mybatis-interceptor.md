@@ -17,10 +17,10 @@
 
 目前 mybatis 拦截的`类`和类中的`方法`有下面几个
 
-- `Executor` (update, query, flushStatements, commit, rollback, getTransaction, close, isClosed)
-- `ParameterHandler` (getParameterObject, setParameters)
-- `ResultSetHandler` (handleResultSets, handleOutputParameters)
-- `StatementHandler` (prepare, parameterize, batch, update, query)
+- `Executor` (`update`, `query`, `flushStatements`, `commit`, `rollback`, `getTransaction`, `close`, `isClosed`)
+- `ParameterHandler` (`getParameterObject`, `setParameters`)
+- `ResultSetHandler` (`handleResultSets`, `handleOutputParameters`)
+- `StatementHandler` (`prepare`, `parameterize`, `batch`, `update`, `query`)
 
 ## Plugin
 
