@@ -37,4 +37,12 @@ public void postProcessBeanDefinitionRegistry(BeanDefinitionRegistry registry) t
 }
 ```
 
+## basePackage
+
+`basePackage` 参数
+
+`annotationClass` 和 `markerInterface` 来控制 `basePackage` 那些类需要被当做 `mapper`
+
+如果都为空，那么 `basePackage` 下面所以的 `interface` 都被当做 `mapper`
+
 ## ClassPathMapperScanner
