@@ -1,6 +1,6 @@
 # MapperScannerConfigurer
 
-## MapperScannerConfigurer
+## MapperScannerConfigurer class
 
 ```java
 public class MapperScannerConfigurer implements BeanDefinitionRegistryPostProcessor, InitializingBean, ApplicationContextAware, BeanNameAware {
@@ -37,7 +37,7 @@ public void postProcessBeanDefinitionRegistry(BeanDefinitionRegistry registry) t
 }
 ```
 
-## basePackage
+## basePackage markerInterface annotationClass
 
 `basePackage` 参数
 
