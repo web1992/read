@@ -15,6 +15,10 @@
 - [ ] [mybatis-statement-handler.md](mybatis-statement-handler.md)
 - [ ] [mybatis-xml-statement-builder.md](mybatis-xml-statement-builder.md)
 
+## exe
+
+[exe](./images/mybatis-exe.draw.png)
+
 ## Link
 
 - [http://www.mybatis.org/mybatis-3/getting-started.html](http://www.mybatis.org/mybatis-3/getting-started.html)
