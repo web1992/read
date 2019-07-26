@@ -15,9 +15,9 @@
 - [ ] [mybatis-statement-handler.md](mybatis-statement-handler.md)
 - [ ] [mybatis-xml-statement-builder.md](mybatis-xml-statement-builder.md)
 
-## exe
+## mybatis exe
 
-[exe](./images/mybatis-exe.draw.png)
+![exe](./images/mybatis-exe.draw.png)
 
 ## Link
 
