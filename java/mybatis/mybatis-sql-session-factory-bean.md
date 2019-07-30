@@ -112,13 +112,17 @@
       }
     }
 
+    // <property name="mapperLocations" value="classpath*:cn/web1992/*/dal/dao/*.xml" />
+    // 比如上面的配置，那么就会寻找 classpath cn.web1992.*.dal.dao 的xml 文件
+    // 进行 mapper 的解析
     if (!isEmpty(this.mapperLocations)) {
-      for (Resource mapperLocation : this.mapperLocations) {
+      for (Resource mapperLocation : this.mapperLocations) {// 循环
         if (mapperLocation == null) {
           continue;
         }
 
         try {
+          // 处理 Mapper
           XMLMapperBuilder xmlMapperBuilder = new XMLMapperBuilder(mapperLocation.getInputStream(),
               configuration, mapperLocation.toString(), configuration.getSqlFragments());
           xmlMapperBuilder.parse();
@@ -158,4 +162,65 @@ XMLMapperBuilder xmlMapperBuilder = new XMLMapperBuilder(mapperLocation.getInput
         <!-- 这里解析mapper -->
         <property name="mapperLocations" value="classpath*:cn/web1992/*/dal/dao/*.xml" />
     </bean>
+```
+
+## XMLMapperBuilder
+
+`parse` & configurationElement
+
+```java
+  public void parse() {
+    if (!configuration.isResourceLoaded(resource)) {
+      configurationElement(parser.evalNode("/mapper"));
+      configuration.addLoadedResource(resource);
+      bindMapperForNamespace();
+    }
+
+    parsePendingResultMaps();
+    parsePendingChacheRefs();
+    parsePendingStatements();
+  }
+
+
+  private void configurationElement(XNode context) {
+    try {
+      String namespace = context.getStringAttribute("namespace");
+      builderAssistant.setCurrentNamespace(namespace);
+      cacheRefElement(context.evalNode("cache-ref"));
+      cacheElement(context.evalNode("cache"));
+      parameterMapElement(context.evalNodes("/mapper/parameterMap"));
+      resultMapElements(context.evalNodes("/mapper/resultMap"));
+      sqlElement(context.evalNodes("/mapper/sql"));
+      buildStatementFromContext(context.evalNodes("select|insert|update|delete"));
+    } catch (Exception e) {
+      throw new RuntimeException("Error parsing Mapper XML. Cause: " + e, e);
+    }
+  }
+```
+
+> UserDao.xml
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.web1992.mybatiss.dal.dao.UserDao">
+
+    <!-- mapper *. xml 文件需要通过 maven 插件复制到 classes 目录下面，才能被找到 -->
+    <resultMap id="BaseResultMap" type="cn.web1992.mybatiss.dal.domain.User">
+        <id column="id"  property="id"/>
+        <result column="name" property="name"/>
+    </resultMap>
+    <insert id="add">
+        insert into t_user (id,name) values(#{id},#{name})
+    </insert>
+
+    <select id="get" resultType="cn.web1992.mybatiss.dal.domain.User">
+        select * from t_user where id =#{id};
+    </select>
+
+    <update id="update" parameterType="cn.web1992.mybatiss.dal.domain.User">
+        update  t_user set `name`=#{name} where id=#{id};
+    </update>
+
+</mapper>
 ```
