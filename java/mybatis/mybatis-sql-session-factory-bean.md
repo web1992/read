@@ -1,14 +1,57 @@
 # SqlSessionFactoryBean
 
+- [SqlSessionFactoryBean](#sqlsessionfactorybean)
+  - [UML](#uml)
+  - [buildSqlSessionFactory](#buildsqlsessionfactory)
+  - [XMLMapperBuilder](#xmlmapperbuilder)
+  - [SqlSessionFactory](#sqlsessionfactory)
+
 ## UML
 
 ![SqlSessionFactoryBean](./images/SqlSessionFactoryBean.png)
 
-## buildSqlSessionFactory
+这里的关注点是 `SqlSessionFactoryBean` 实现了 `FactoryBean` 接口,实现了 `getObject` 方法,这个 spring 就又了 实例，后续再 `SqlSessionDaoSupport` 中使用 `set` 方法注入 `SqlSessionFactory`.
+
+`MapperFactoryBean` 继承了 `SqlSessionDaoSupport`,通过 `getObject` 方法实现 `mapper` 与 `sqlSession` 的关系
 
 ```java
-// 01. 解析 configuration
-// 02. 解析 objectFactory
+// SqlSessionFactoryBean
+public SqlSessionFactory getObject() throws Exception {
+  if (this.sqlSessionFactory == null) {
+    afterPropertiesSet();
+  }
+  return this.sqlSessionFactory;
+}
+// SqlSessionDaoSupport
+// 使用 setSqlSessionFactory 和 setSqlSessionTemplate 注入
+public void setSqlSessionFactory(SqlSessionFactory sqlSessionFactory) {
+    if (!this.externalSqlSession) {
+      this.sqlSession = new SqlSessionTemplate(sqlSessionFactory);
+    }
+}
+public void setSqlSessionTemplate(SqlSessionTemplate sqlSessionTemplate){
+    this.sqlSession = sqlSessionTemplate;
+    this.externalSqlSession = true;
+}
+
+// MapperFactoryBean
+public T getObject() throws Exception {
+    return getSqlSession().getMapper(this.mapperInterface);
+}
+// DefaultSqlSession
+public <T> T getMapper(Class<T> type) {
+    return configuration.<T>getMapper(type, this);
+}
+```
+
+## buildSqlSessionFactory
+
+`SqlSessionFactoryBean` 的核心方法是 `buildSqlSessionFactory` 它做了下面的几个事情
+
+```java
+// 核心就是根据 SqlSessionFactoryBean 的配置，解析参数赋值
+// 01. configuration
+// 02. objectFactory
 // 03. objectWrapperFactory
 // 04. typeAliasesPackage
 // 05. typeAliases
