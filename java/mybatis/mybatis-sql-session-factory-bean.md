@@ -49,7 +49,7 @@ public <T> T getMapper(Class<T> type) {
 `SqlSessionFactoryBean` 的核心方法是 `buildSqlSessionFactory` 它做了下面的几个事情
 
 ```java
-// 核心就是根据 SqlSessionFactoryBean 的配置，解析参数赋值
+// 主要逻辑就是根据 SqlSessionFactoryBean 的配置，解析参数赋值
 // 01. configuration
 // 02. objectFactory
 // 03. objectWrapperFactory
