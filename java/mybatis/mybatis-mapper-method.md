@@ -95,7 +95,7 @@ public Object execute(Object[] args) {
       // 1. ResultHandler,RowBounds
       executeWithResultHandler(args);
     } else if (returnsMany) {
-      // 2. Collection Array
+      // 2. Collection,Array
       result = executeForMany(args);
     } else if (returnsMap) {
       // 3. Map

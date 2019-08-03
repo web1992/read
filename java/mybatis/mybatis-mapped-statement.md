@@ -31,3 +31,5 @@ public final class MappedStatement {
   // ...
 }
 ```
+
+![MappedStatement](./images/mybatis-ms.png)
