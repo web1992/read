@@ -11,9 +11,10 @@
 - [ ] [mybatis-pooled-data-source.md](mybatis-pooled-data-source.md)
 - [ ] [mybatis-spring.md](mybatis-spring.md)
 - [ ] [mybatis-sql-session.md](mybatis-sql-session.md)
-- [ ] [mybatis-sql-session-factory-bean.md](mybatis-sql-session-factory-bean.md)
+- [x] [mybatis-sql-session-factory-bean.md](mybatis-sql-session-factory-bean.md)
 - [ ] [mybatis-statement-handler.md](mybatis-statement-handler.md)
 - [ ] [mybatis-xml-statement-builder.md](mybatis-xml-statement-builder.md)
+- [x] [mybatis-mapper-method.md](mybatis-mapper-method.md)
 
 ## mybatis exe
 

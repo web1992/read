@@ -3,10 +3,10 @@
 ## init
 
 ```java
-// 1.
-// 2.
-// 3.
-// 4.
+// 1. set commandName
+// 2. set Map
+// 3. sql 类型
+// 4. ？
 public MapperMethod(Class<?> declaringInterface, Method method, SqlSession sqlSession) {
     paramNames = new ArrayList<String>();
     paramPositions = new ArrayList<Integer>();
@@ -17,7 +17,7 @@ public MapperMethod(Class<?> declaringInterface, Method method, SqlSession sqlSe
     this.declaringInterface = declaringInterface;
     this.objectFactory = config.getObjectFactory();
     setupFields();// this.commandName = declaringInterface.getName() + "." + method.getName();
-    setupMethodSignature();
+    setupMethodSignature();// Map,RowBounds,ResultHandler
     setupCommandType();// UNKNOWN, INSERT, UPDATE, DELETE, SELECT;
     validateStatement();
 }
