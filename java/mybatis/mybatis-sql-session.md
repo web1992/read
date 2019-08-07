@@ -58,3 +58,17 @@ public DefaultSqlSession(Configuration configuration, Executor executor) {
 ## delete
 
 ## select
+
+```java
+ public <E> List<E> selectList(String statement, Object parameter, RowBounds rowBounds) {
+    try {
+      MappedStatement ms = configuration.getMappedStatement(statement);
+      List<E> result = executor.<E>query(ms, wrapCollection(parameter), rowBounds, Executor.NO_RESULT_HANDLER);
+      return result;
+    } catch (Exception e) {
+      throw ExceptionFactory.wrapException("Error querying database.  Cause: " + e, e);
+    } finally {
+      ErrorContext.instance().reset();
+    }
+  }
+```
