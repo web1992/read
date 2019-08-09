@@ -14,7 +14,7 @@ public class Plugin implements InvocationHandler {
     this.interceptor = interceptor;
     this.signatureMap = signatureMap;
   }
-
+  // 生成代理
   public static Object wrap(Object target, Interceptor interceptor) {
     Map<Class<?>, Set<Method>> signatureMap = getSignatureMap(interceptor);
     Class<?> type = target.getClass();
