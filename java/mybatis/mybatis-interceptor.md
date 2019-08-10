@@ -1,12 +1,12 @@
 # Interceptor
 
-- [Interceptor](#Interceptor)
+- [Interceptor](#interceptor)
   - [plugins](#plugins)
-  - [Plugin](#Plugin)
+  - [Plugin](#plugin)
     - [wrap](#wrap)
     - [invoke](#invoke)
-  - [@Intercepts](#Intercepts)
-  - [@Signature](#Signature)
+  - [@Intercepts](#intercepts)
+  - [@Signature](#signature)
   - [link](#link)
 
 `mybatis` 使用 `Interceptor` 来完成对特定类方法执行的拦截，实现方式是通过 `proxy` 代理拦截指定类的方法的执行

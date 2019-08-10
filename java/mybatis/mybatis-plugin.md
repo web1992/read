@@ -1,5 +1,11 @@
 # Plugin
 
+- [Plugin](#plugin)
+  - [Plugin class](#plugin-class)
+  - [demo](#demo)
+  - [InterceptorChain](#interceptorchain)
+  - [Configuration](#configuration)
+
 ## Plugin class
 
 ```java
