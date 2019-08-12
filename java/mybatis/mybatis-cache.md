@@ -112,6 +112,24 @@ public String toString() {
 }
 ```
 
+## Cache
+
+- FifoCache
+- LoggingCache
+- LruCache
+- ScheduledCache
+- SerializedCache
+- SoftCache
+- SynchronizedCache
+- TransactionalCache
+- WeakCache
+
+## PerpetualCache
+
+> 永久的缓存
+
+## 参考
+
 > mybatis 缓存
 
 - [https://www.cnblogs.com/jtlgb/p/6037945.html](https://www.cnblogs.com/jtlgb/p/6037945.html)
