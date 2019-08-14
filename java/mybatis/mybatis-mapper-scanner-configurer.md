@@ -131,5 +131,5 @@ public Set<BeanDefinitionHolder> doScan(String... basePackages) {
 ```java
 public T getObject() throws Exception {
     return getSqlSession().getMapper(this.mapperInterface);
-  }
+}
 ```
