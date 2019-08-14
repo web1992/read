@@ -4,24 +4,29 @@
 
 - [mybatis spring config](#mybatis-spring-config)
   - [MapperScannerConfigurer](#mapperscannerconfigurer)
-    - [MapperScannerConfigurer uml](#mapperscannerconfigurer-uml)
+    - [MapperScannerConfigurer UML](#mapperscannerconfigurer-uml)
     - [postProcessBeanDefinitionRegistry](#postprocessbeandefinitionregistry)
     - [basePackage markerInterface annotationClass](#basepackage-markerinterface-annotationclass)
   - [ClassPathMapperScanner](#classpathmapperscanner)
     - [doScan](#doscan)
   - [MapperFactoryBean](#mapperfactorybean)
-    - [MapperFactoryBean uml](#mapperfactorybean-uml)
+    - [MapperFactoryBean UML](#mapperfactorybean-uml)
     - [getObject](#getobject)
 
 ## MapperScannerConfigurer
 
-### MapperScannerConfigurer uml
+### MapperScannerConfigurer UML
 
 ![MapperScannerConfigurer](./images/mybatis-mapper-scanner-configurer.png)
 
 ```java
-public class MapperScannerConfigurer implements BeanDefinitionRegistryPostProcessor, InitializingBean, ApplicationContextAware, BeanNameAware {
-// ...
+public class MapperScannerConfigurer
+implements
+BeanDefinitionRegistryPostProcessor,
+InitializingBean,
+ApplicationContextAware,
+BeanNameAware {
+  // ...
 }
 ```
 
@@ -122,7 +127,7 @@ public Set<BeanDefinitionHolder> doScan(String... basePackages) {
 
 ## MapperFactoryBean
 
-### MapperFactoryBean uml
+### MapperFactoryBean UML
 
 ![MapperFactoryBean](./images/mybatis-mapper-factory-bean.png)
 
