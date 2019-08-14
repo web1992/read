@@ -34,7 +34,6 @@ public Executor newExecutor(Transaction transaction, ExecutorType executorType) 
 ```java
 // BaseExecutor
 // 创建 cacheKey
-// 
 public CacheKey createCacheKey(MappedStatement ms, Object parameterObject, RowBoundsrowBounds, BoundSql boundSql) {
   if (closed) throw new ExecutorException("Executor was closed.");
   CacheKey cacheKey = new CacheKey();
