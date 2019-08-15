@@ -33,7 +33,7 @@ BeanNameAware {
 | spring interface                    | desc                              |
 | ----------------------------------- | --------------------------------- |
 | BeanDefinitionRegistryPostProcessor | postProcessBeanDefinitionRegistry |
-| InitializingBean                    | 检查 bean properties              |
+| InitializingBean                    | afterPropertiesSet                |
 | ApplicationContextAware             | setApplicationContext             |
 | BeanNameAware                       | setBeanName                       |
 
