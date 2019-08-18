@@ -122,6 +122,7 @@ public String toString() {
 - SynchronizedCache
 - TransactionalCache
 - WeakCache
+- PerpetualCache
 
 ## PerpetualCache
 

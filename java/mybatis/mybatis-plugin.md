@@ -178,7 +178,6 @@ public class InterceptorChain {
 > Mybatis 中的 Configuration 会进行 plugin 的解析和初始化
 
 ```java
-
 // 初始化  InterceptorChain 所有的  Interceptor 都会放入到 InterceptorChain 中
 protected final InterceptorChain interceptorChain = new InterceptorChain();
 
