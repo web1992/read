@@ -1,5 +1,7 @@
 # Spring IOC
 
+## spring-framework-reference
+
 This chapter covers the Spring Framework implementation of the Inversion of Control (`IoC`)  principle.
 IoC is also known as dependency injection (`DI`). It is a process whereby objects define their
 dependencies, that is, the other objects they work with, only through constructor arguments, arguments
@@ -11,3 +13,8 @@ mechanism such as the Service Locator pattern__.
 
 > Spring 会搜集所有的`Bean`，在使用`Bean`创建对象的时候，会注入这个`Bean`所依赖的对象，而无需你自己去`new`对象
 > Spring 容器帮你做了这个new 这个步骤
+
+In Spring, the objects that form the backbone of your application and that are managed by the Spring IoC
+container are called beans. A bean is an object that is instantiated, assembled, and otherwise managed
+by a Spring IoC container. Otherwise, a bean is simply one of many objects in your application. Beans,
+and the dependencies among them, are reflected in the configuration metadata used by a container.
