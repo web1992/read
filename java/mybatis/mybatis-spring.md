@@ -25,3 +25,5 @@
 ## SqlSessionFactoryBean
 
 `org.mybatis.spring.SqlSessionFactoryBean`
+
+## AbstractRoutingDataSource
