@@ -4,9 +4,9 @@
 
 - [ ] [mybatis-cache.md](mybatis-cache.md)
 - [ ] [mybatis-configuration.md](mybatis-configuration.md)
-- [ ] [mybatis-executor.md](mybatis-executor.md)
+- [x] [mybatis-executor.md](mybatis-executor.md)
 - [x] [mybatis-interceptor.md](mybatis-interceptor.md)
-- [ ] [mybatis-mapper-proxy.md](mybatis-mapper-proxy.md)
+- [x] [mybatis-mapper-proxy.md](mybatis-mapper-proxy.md)
 - [x] [mybatis-mapper-scanner-configurer.md](mybatis-mapper-scanner-configurer.md)
 - [ ] [mybatis-pooled-data-source.md](mybatis-pooled-data-source.md)
 - [ ] [mybatis-spring.md](mybatis-spring.md)

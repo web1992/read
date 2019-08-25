@@ -22,3 +22,23 @@ private void parseConfiguration(XNode root) {
     }
 }
 ```
+
+## Configuration construct
+
+```java
+public Configuration() {
+  typeAliasRegistry.registerAlias("JDBC", JdbcTransactionFactory.class.getName());
+  typeAliasRegistry.registerAlias("MANAGED", ManagedTransactionFactory.class.getName());
+  typeAliasRegistry.registerAlias("JNDI", JndiDataSourceFactory.class.getName());
+  typeAliasRegistry.registerAlias("POOLED", PooledDataSourceFactory.class.getName());
+  typeAliasRegistry.registerAlias("UNPOOLED", UnpooledDataSourceFactory.class.getName());
+
+  typeAliasRegistry.registerAlias("PERPETUAL", PerpetualCache.class.getName());
+  typeAliasRegistry.registerAlias("FIFO", FifoCache.class.getName());
+  typeAliasRegistry.registerAlias("LRU", LruCache.class.getName());
+  typeAliasRegistry.registerAlias("SOFT", SoftCache.class.getName());
+  typeAliasRegistry.registerAlias("WEAK", WeakCache.class.getName());
+
+  typeAliasRegistry.registerAlias("VENDOR", VendorDatabaseIdProvider.class.getName());
+}
+```
