@@ -41,7 +41,7 @@ public <E> List<E> query(MappedStatement ms, Object parameterObject, RowBounds r
   Cache cache = ms.getCache();
   if (cache != null) {
     flushCacheIfRequired(ms);
-    if (ms.isUseCache() && resultHandler == null) { 
+    if (ms.isUseCache() && resultHandler == null) {
       ensureNoOutParams(ms, key, parameterObject, boundSql);
       cache.getReadWriteLock().readLock().lock();
       try {
@@ -126,5 +126,17 @@ public <E> List<E> doQuery(MappedStatement ms, Object parameter, RowBounds rowBo
   } finally {
     closeStatement(stmt);
   }
+}
+```
+
+## ReuseExecutor doQuery
+
+```java
+@Override
+public <E> List<E> doQuery(MappedStatement ms, Object parameter, RowBounds rowBounds, ResultHandler resultHandler, BoundSql boundSql) throws SQLException {
+  Configuration configuration = ms.getConfiguration();
+  StatementHandler handler = configuration.newStatementHandler(wrapper, ms, parameter, rowBounds, resultHandler, boundSql);
+  Statement stmt = prepareStatement(handler, ms.getStatementLog());
+  return handler.query(stmt, resultHandler);
 }
 ```
