@@ -10,13 +10,23 @@
 
 ## Live template
 
+> 效果图
+
 ![main.gif](./images/main.gif)
+
+> 配置
+
+![live-template-config.png](./images/live-template-config.png)
 
 ## Hot reload
 
 ### Tomcat Hot reload
 
-### Java Appliaction Hot reload
+### Java Application Hot reload
+
+> main 方法启动程序的热加载
+
+![hot-reload-main.gif](./images/hot-reload-main.gif)
 
 ## Git Version Control
 
@@ -28,7 +38,7 @@
 
 ![git-merge.gif](./images/git-merge.gif)
 
-### ChanngeList
+### Change List
 
 ### Log
 
