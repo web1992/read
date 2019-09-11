@@ -1,13 +1,37 @@
 # idea
 
-## 工程导入
+## Project import
 
-## live templte
+> 工程导入
+
+## keyboard-shortcuts
+
+> 快捷键
+
+## Live template
 
 ![main.gif](./images/main.gif)
 
-## git
+## Hot reload
 
-### git merge
+### Tomcat Hot reload
 
-### Version Control
+### Java Appliaction Hot reload
+
+## Git Version Control
+
+### Git commit
+
+![git-commit.png](./images/git-commit.png)
+
+### Git merge
+
+![git-merge.gif](./images/git-merge.gif)
+
+### ChanngeList
+
+### Log
+
+![git-log.png](./images/git-log.png)
+
+### Console
