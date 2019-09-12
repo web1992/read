@@ -28,6 +28,8 @@
 
 ![hot-reload-main.gif](./images/hot-reload-main.gif)
 
+> 注意 这种方式功能比较简单，只支持`语句`，不支持方法的新增和删除(当新增或者删除方法的时候，依然需要重启)
+
 ## Git Version Control
 
 ### Git commit
