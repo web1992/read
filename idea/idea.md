@@ -1,14 +1,18 @@
 # idea
 
+> idea 提供效率的方法
+
 ## Project import
 
 > 工程导入
 
-## keyboard-shortcuts
+## Keyboard shortcuts
 
 > 快捷键
 
-## tool
+## Custom Tool bar
+
+> 自定义工具栏
 
 ![idea-tool-bar.png](./images/idea-tool-bar.png)
 
