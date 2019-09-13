@@ -46,7 +46,17 @@
 
 ![git-log.png](./images/git-log.png)
 
+![git-log.gif](./images/git-log.gif)
+
 ### Console
+
+> git 命令的输入，学习 git 命令的好地方
+
+```log
+22:55:17.183: [dubbos] git -c core.quotepath=false -c log.showSignature=false fetch origin --progress --prune
+22:55:53.124: [dubbos] git -c core.quotepath=false -c log.showSignature=false rm --cached -f -- web/src/main/java/cn/web1992/web/service/HelloServiceImpl.java web/src/main/java/cn/web1992/web/service/HelloService.java
+22:55:53.138: [dubbos] git -c core.quotepath=false -c log.showSignature=false checkout HEAD -- web/src/main/java/cn/web1992/web/service/HelloServiceImpl.java web/src/main/java/cn/web1992/web/service/HelloService.java
+```
 
 ## Plugin
 
