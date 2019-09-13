@@ -8,6 +8,10 @@
 
 > 快捷键
 
+## tool
+
+![idea-tool-bar.png](./images/idea-tool-bar.png)
+
 ## Live template
 
 > 效果图
