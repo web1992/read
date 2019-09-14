@@ -69,3 +69,10 @@
 ## Plugin
 
 > 插件
+
+- MyBatis Log Plugin
+- Free Mybatis plugin
+- Lombok
+- Alibaba Java Coding Guidelines
+- Key promoter
+- JRebel
