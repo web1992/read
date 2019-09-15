@@ -30,6 +30,16 @@
 
 ### Tomcat Hot reload
 
+> Tomcat 热加载
+
+#### 配置
+
+![tomcat-hot-reload.gif](./images/tomcat-hot-reload.gif)
+
+#### Demo
+
+![tomcat-hot-reload-demo.gif](./images/tomcat-hot-reload-demo.gif)
+
 ### Java Application Hot reload
 
 > main 方法启动程序的热加载
