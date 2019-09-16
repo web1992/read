@@ -1,5 +1,23 @@
 # idea
 
+- [idea](#idea)
+  - [Project import](#project-import)
+  - [Keyboard shortcuts](#keyboard-shortcuts)
+  - [Custom Tool bar](#custom-tool-bar)
+  - [Live template](#live-template)
+  - [Hot reload](#hot-reload)
+    - [Tomcat Hot reload](#tomcat-hot-reload)
+      - [config](#config)
+      - [Demo](#demo)
+    - [Java Application Hot reload](#java-application-hot-reload)
+  - [Git Version Control](#git-version-control)
+    - [Git commit](#git-commit)
+    - [Git merge](#git-merge)
+    - [Change List](#change-list)
+    - [Log](#log)
+    - [Console](#console)
+  - [Plugin](#plugin)
+
 > idea 提供效率的方法
 
 ## Project import
@@ -32,7 +50,7 @@
 
 > Tomcat 热加载
 
-#### 配置
+#### config
 
 ![tomcat-hot-reload.gif](./images/tomcat-hot-reload.gif)
 
