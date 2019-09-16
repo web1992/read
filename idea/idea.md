@@ -1,7 +1,8 @@
 # idea
 
+> idea 提供效率的方法
+
 - [idea](#idea)
-  - [Project import](#project-import)
   - [Keyboard shortcuts](#keyboard-shortcuts)
   - [Custom Tool bar](#custom-tool-bar)
   - [Live template](#live-template)
@@ -18,25 +19,19 @@
     - [Git Console](#git-console)
   - [Plugin](#plugin)
 
-> idea 提供效率的方法
-
-## Project import
-
-> 工程导入
-
 ## Keyboard shortcuts
 
 > 快捷键
 
 ## Custom Tool bar
 
-> 自定义工具栏
+> 自定义工具栏,把常用的功能放在工具类顶部
 
 ![idea-tool-bar.png](./images/idea-tool-bar.png)
 
 ## Live template
 
-> 效果图
+> 可以快速的生成`代码块`，如生成`main`函数，`System.out.println();` 语句
 
 ![main.gif](./images/main.gif)
 
@@ -45,6 +40,8 @@
 ![live-template-config.png](./images/live-template-config.png)
 
 ## Hot reload
+
+> 在不重启应用的情况下，实现代码的修改立即生效
 
 ### Tomcat Hot reload
 
@@ -74,11 +71,17 @@
 
 ### Git merge
 
+> 在 `idea` 中快速的合并冲突的代码
+
 ![git-merge.gif](./images/git-merge.gif)
 
 ### Git Change List
 
+> 文件修改的记录的列表，可以方便的进行分组，防止代码误提交
+
 ### Git Log
+
+> 方便的查看工程的提交记录，文件的提交记录，
 
 ![git-log.png](./images/git-log.png)
 
