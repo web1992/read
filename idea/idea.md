@@ -11,6 +11,7 @@
       - [config](#config)
       - [Demo](#demo)
     - [Java Application Hot reload](#java-application-hot-reload)
+  - [Custom IntelliJ IDEA VM options](#custom-intellij-idea-vm-options)
   - [Git Version Control](#git-version-control)
     - [Git commit](#git-commit)
     - [Git merge](#git-merge)
@@ -23,22 +24,22 @@
 
 > 快捷键
 
-| Keyboard shortcuts | desc                                             |
-| ------------------ | ------------------------------------------------ |
-| Ctrl + F           | 文本内容搜索 (在文件内搜索)                      |
-| Ctrl + Shift + F   | 文本内容搜索 (在工程内搜索) Find in Path         |
-| Ctrl + R           | 文本内容替换                                     |
-| Ctrl + E           | 最近的文件                                       |
-| Ctrl + Shift + E   | 最近修改的文件                                   |
-| Ctrl + N           | 文件（类）搜索                                   |
-| Ctrl + O           | 重写父类的方法 如 `toStirng`,`equals`            |
-| Ctrl + I           | 实现没有实现的方法，适合在接口新增方法的时候使用 |
-| Ctrl + B           | 查找地定义可以在，`变量`，`方法`，`类`，`接口`上使用     |
-| Ctrl + Alt + B     | 查找接口的实现类                                 |
-| Ctrl + G           | 在文件内跳转到指定的行                           |
-| Alt + F7           | 查询方法引用，可以使用 Ctrl + B                  |
-| Shift + F6         | 重命名                                           |
-| Ctrl + Q           | 查询类，方法上面的文档注释                       |
+| Keyboard shortcuts | desc                                                 |
+| ------------------ | ---------------------------------------------------- |
+| Ctrl + F           | 文本内容搜索 (在文件内搜索)                          |
+| Ctrl + Shift + F   | 文本内容搜索 (在工程内搜索) Find in Path             |
+| Ctrl + R           | 文本内容替换                                         |
+| Ctrl + E           | 最近的文件                                           |
+| Ctrl + Shift + E   | 最近修改的文件                                       |
+| Ctrl + N           | 文件（类）搜索                                       |
+| Ctrl + O           | 重写父类的方法 如 `toStirng`,`equals`                |
+| Ctrl + I           | 实现没有实现的方法，适合在接口新增方法的时候使用     |
+| Ctrl + B           | 查找地定义可以在，`变量`，`方法`，`类`，`接口`上使用 |
+| Ctrl + Alt + B     | 查找接口的实现类                                     |
+| Ctrl + G           | 在文件内跳转到指定的行                               |
+| Alt + F7           | 查询方法引用，可以使用 Ctrl + B                      |
+| Shift + F6         | 重命名                                               |
+| Ctrl + Q           | 查询类，方法上面的文档注释                           |
 
 ## Custom Tool bar
 
@@ -81,6 +82,33 @@
 ![hot-reload-main.gif](./images/hot-reload-main.gif)
 
 > 注意 这种方式功能比较简单，只支持`语句`，不支持方法的新增和删除(当新增或者删除方法的时候，依然需要重启)
+
+## Custom IntelliJ IDEA VM options
+
+> idea jvm 优化
+
+```jvm
+# custom IntelliJ IDEA VM options
+
+-Xms3072m
+-Xmx3072m
+-Xmn1024m
+-XX:ReservedCodeCacheSize=240m
+-XX:+UseConcMarkSweepGC
+-XX:SoftRefLRUPolicyMSPerMB=50
+-ea
+-Dsun.io.useCanonCaches=false
+-Djava.net.preferIPv4Stack=true
+-Djdk.http.auth.tunneling.disabledSchemes=""
+-XX:+HeapDumpOnOutOfMemoryError
+-XX:-OmitStackTraceInFastThrow
+
+-verbose:gc
+-XX:+PrintGCDetails
+-XX:+PrintGCDateStamps
+-Xloggc:E:\\gcc.log
+
+```
 
 ## Git Version Control
 
