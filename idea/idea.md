@@ -23,6 +23,27 @@
 
 > 快捷键
 
+```key
+
+Ctrl + F
+Ctrl + Shift + F
+Ctrl + R
+Ctrl + E
+Ctrl + Shift + E
+Ctrl + N
+
+Ctrl + O
+Ctrl + I
+Ctrl + B
+Ctrl + Alt + B
+Ctrl + G
+
+Alt + F7
+Shift + F6
+
+Ctrl + Q
+```
+
 ## Custom Tool bar
 
 > 自定义工具栏,把常用的功能放在工具类顶部
