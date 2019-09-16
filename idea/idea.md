@@ -39,6 +39,8 @@
 
 ![live-template-config.png](./images/live-template-config.png)
 
+> 此外还可以通过 `File > Export Settings > Live templates` 把自己的代码块进行`备份`和`共享`
+
 ## Hot reload
 
 > 在不重启应用的情况下，实现代码的修改立即生效
