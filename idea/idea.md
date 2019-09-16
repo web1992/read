@@ -99,7 +99,7 @@ git -c core.quotepath=false -c log.showSignature=false reset --soft 452ad5264bb5
 
 ## Plugin
 
-> 插件
+> 插件推荐
 
 - MyBatis Log Plugin
 - Free Mybatis plugin
