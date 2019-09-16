@@ -13,9 +13,9 @@
   - [Git Version Control](#git-version-control)
     - [Git commit](#git-commit)
     - [Git merge](#git-merge)
-    - [Change List](#change-list)
-    - [Log](#log)
-    - [Console](#console)
+    - [Git Change List](#git-change-list)
+    - [Git Log](#git-log)
+    - [Git Console](#git-console)
   - [Plugin](#plugin)
 
 > idea 提供效率的方法
@@ -76,15 +76,15 @@
 
 ![git-merge.gif](./images/git-merge.gif)
 
-### Change List
+### Git Change List
 
-### Log
+### Git Log
 
 ![git-log.png](./images/git-log.png)
 
 ![git-log.gif](./images/git-log.gif)
 
-### Console
+### Git Console
 
 > git 命令的输入，学习 git 命令的好地方
 
