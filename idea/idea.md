@@ -1,6 +1,6 @@
 # idea
 
-> idea 提供效率的方法
+> idea 提高效率的方法
 
 - [idea](#idea)
   - [Keyboard shortcuts](#keyboard-shortcuts)
