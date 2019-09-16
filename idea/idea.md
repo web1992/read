@@ -23,26 +23,22 @@
 
 > 快捷键
 
-```key
-
-Ctrl + F
-Ctrl + Shift + F
-Ctrl + R
-Ctrl + E
-Ctrl + Shift + E
-Ctrl + N
-
-Ctrl + O
-Ctrl + I
-Ctrl + B
-Ctrl + Alt + B
-Ctrl + G
-
-Alt + F7
-Shift + F6
-
-Ctrl + Q
-```
+| Keyboard shortcuts | desc                                             |
+| ------------------ | ------------------------------------------------ |
+| Ctrl + F           | 文本内容搜索 (在文件内搜索)                      |
+| Ctrl + Shift + F   | 文本内容搜索 (在工程内搜索) Find in Path         |
+| Ctrl + R           | 文本内容替换                                     |
+| Ctrl + E           | 最近的文件                                       |
+| Ctrl + Shift + E   | 最近修改的文件                                   |
+| Ctrl + N           | 文件（类）搜索                                   |
+| Ctrl + O           | 重写父类的方法 如 `toStirng`,`equals`            |
+| Ctrl + I           | 实现没有实现的方法，适合在接口新增方法的时候使用 |
+| Ctrl + B           | 查找地定义可以在，`变量`，`方法`，`类`，`接口`上使用     |
+| Ctrl + Alt + B     | 查找接口的实现类                                 |
+| Ctrl + G           | 在文件内跳转到指定的行                           |
+| Alt + F7           | 查询方法引用，可以使用 Ctrl + B                  |
+| Shift + F6         | 重命名                                           |
+| Ctrl + Q           | 查询类，方法上面的文档注释                       |
 
 ## Custom Tool bar
 
