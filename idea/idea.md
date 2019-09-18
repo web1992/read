@@ -7,6 +7,7 @@
   - [Custom Tool bar](#custom-tool-bar)
   - [Live template](#live-template)
   - [Debug](#debug)
+    - [Tomcat Remote Debug](#tomcat-remote-debug)
   - [Hot reload](#hot-reload)
     - [Tomcat Hot reload](#tomcat-hot-reload)
       - [config](#config)
@@ -62,6 +63,8 @@
 > 此外还可以通过 `File > Export Settings > Live templates` 把自己的代码块进行`备份`和`共享`
 
 ## Debug
+
+### Tomcat Remote Debug
 
 ## Hot reload
 
