@@ -34,7 +34,7 @@
 | Ctrl + E           | 最近的文件                                           |
 | Ctrl + Shift + E   | 最近修改的文件                                       |
 | Ctrl + N           | 文件（类）搜索                                       |
-| Ctrl + O           | 重写父类的方法 如 `toStirng`,`equals`                |
+| Ctrl + O           | 重写父类的方法 如 `toString`,`equals`                |
 | Ctrl + I           | 实现没有实现的方法，适合在接口新增方法的时候使用     |
 | Ctrl + B           | 查找地定义可以在，`变量`，`方法`，`类`，`接口`上使用 |
 | Ctrl + Alt + B     | 查找接口的实现类                                     |
