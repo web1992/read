@@ -6,6 +6,7 @@
   - [Keyboard shortcuts](#keyboard-shortcuts)
   - [Custom Tool bar](#custom-tool-bar)
   - [Live template](#live-template)
+  - [Debug](#debug)
   - [Hot reload](#hot-reload)
     - [Tomcat Hot reload](#tomcat-hot-reload)
       - [config](#config)
@@ -15,6 +16,7 @@
   - [Git Version Control](#git-version-control)
     - [Git commit](#git-commit)
     - [Git merge](#git-merge)
+    - [Git Cherry pick](#git-cherry-pick)
     - [Git Change List](#git-change-list)
     - [Git Log](#git-log)
     - [Git Console](#git-console)
@@ -58,6 +60,8 @@
 ![live-template-config.png](./images/live-template-config.png)
 
 > 此外还可以通过 `File > Export Settings > Live templates` 把自己的代码块进行`备份`和`共享`
+
+## Debug
 
 ## Hot reload
 
@@ -121,6 +125,8 @@
 > 在 `idea` 中快速的合并冲突的代码
 
 ![git-merge.gif](./images/git-merge.gif)
+
+### Git Cherry pick
 
 ### Git Change List
 
