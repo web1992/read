@@ -14,3 +14,7 @@
 [spring-generic-application-context.md](spring-generic-application-context.md)
 [spring-generic-bean-definition.md](spring-generic-bean-definition.md)
 [spring-ioc.md](spring-ioc.md)
+
+## 参考
+
+- [https://github.com/seaswalker/spring-analysis](https://github.com/seaswalker/spring-analysis)
