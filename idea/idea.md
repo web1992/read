@@ -1,6 +1,6 @@
 # idea
 
-> idea 提高效率的方法
+> 高效率 idea
 
 - [idea](#idea)
   - [Keyboard shortcuts](#keyboard-shortcuts)
@@ -43,6 +43,8 @@
 | Alt + F7           | 查询方法引用，可以使用 Ctrl + B                      |
 | Shift + F6         | 重命名                                               |
 | Ctrl + Q           | 查询类，方法上面的文档注释                           |
+
+此外可以在 `Help > KeyMp Reference` 找到快捷列表
 
 ## Custom Tool bar
 
