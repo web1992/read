@@ -4,6 +4,7 @@
 
 - [CompletableFuture](#completablefuture)
   - [Summary](#summary)
+  - [AsynchronousCompletionTask](#asynchronouscompletiontask)
   - [CompletionStage](#completionstage)
     - [completedFuture](#completedfuture)
     - [thenApply](#thenapply)
@@ -23,6 +24,10 @@
 
 1. 异步的执行任务，同时提供了同步(`non-async`)和异步(`async`)的方法
 2. 默认使用的是 `ForkJoinPool`,可以指定自定义的 `Executor`(默认是一个任务一个线程)
+
+## AsynchronousCompletionTask
+
+> 所有的任务都会被 `AsynchronousCompletionTask` 包装，方便调试和追踪问题
 
 ## CompletionStage
 
