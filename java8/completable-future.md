@@ -8,7 +8,8 @@
   - [CompletionStage](#completionstage)
     - [Method List](#method-list)
   - [CompletableFuture Method](#completablefuture-method)
-    - [CompletableFuture-join](#completablefuture-join)
+    - [CompletableFuture join](#completablefuture-join)
+  - [Customer Thread Pool Size](#customer-thread-pool-size)
     - [CompletableFuture-getNow](#completablefuture-getnow)
     - [CompletableFuture- completedFuture](#completablefuture--completedfuture)
   - [Link](#link)
@@ -55,7 +56,37 @@
 
 ## CompletableFuture Method
 
-### CompletableFuture-join
+### CompletableFuture join
+
+```java
+public List<String> findPricesFuture(String product) {
+    List<CompletableFuture<String>> priceFutures =
+            shops.stream()
+            .map(shop -> CompletableFuture.supplyAsync(() -> shop.getName() + " price is "
+                    + shop.getPrice(product), executor))
+            .collect(Collectors.toList());
+    // List ComplateableFuature -> List
+    List<String> prices = priceFutures.stream()
+            .map(CompletableFuture::join)
+            .collect(Collectors.toList());
+    return prices;
+}
+```
+
+> Why Stream's laziness causes a sequential computation and
+how to avoid it
+
+![java8-complate-future-stream.png](./images/java8-complate-future-stream.png)
+
+## Customer Thread Pool Size
+
+```java
+Nthreads = NCPU * UCPU * (1 + W/C)
+```
+
+- NCPU is the number of cores, available through Runtime.getRuntime().availableProcessors()
+- UCPU is the target CPU utilization (between 0 and 1), and
+- W/C is the ratio of wait time to compute time
 
 ### CompletableFuture-getNow
 
