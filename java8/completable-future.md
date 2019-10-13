@@ -9,9 +9,9 @@
     - [Method List](#method-list)
   - [CompletableFuture Method](#completablefuture-method)
     - [CompletableFuture join](#completablefuture-join)
-  - [Customer Thread Pool Size](#customer-thread-pool-size)
     - [CompletableFuture-getNow](#completablefuture-getnow)
     - [CompletableFuture- completedFuture](#completablefuture--completedfuture)
+  - [Customer Thread Pool Size](#customer-thread-pool-size)
   - [Link](#link)
 
 ## New Further
@@ -78,6 +78,10 @@ how to avoid it
 
 ![java8-complate-future-stream.png](./images/java8-complate-future-stream.png)
 
+### CompletableFuture-getNow
+
+### CompletableFuture- completedFuture
+
 ## Customer Thread Pool Size
 
 ```java
@@ -87,10 +91,6 @@ Nthreads = NCPU * UCPU * (1 + W/C)
 - NCPU is the number of cores, available through Runtime.getRuntime().availableProcessors()
 - UCPU is the target CPU utilization (between 0 and 1), and
 - W/C is the ratio of wait time to compute time
-
-### CompletableFuture-getNow
-
-### CompletableFuture- completedFuture
 
 ## Link
 
