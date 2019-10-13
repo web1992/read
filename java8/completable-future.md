@@ -1,24 +1,31 @@
 # CompletableFuture
 
-![CompletableFuture](./images/CompletableFuture.png)
-
 - [CompletableFuture](#completablefuture)
+  - [New Further](#new-further)
+  - [UML](#uml)
   - [Summary](#summary)
   - [AsynchronousCompletionTask](#asynchronouscompletiontask)
   - [CompletionStage](#completionstage)
-    - [completedFuture](#completedfuture)
-    - [thenApply](#thenapply)
-    - [thenApplyAsync](#thenapplyasync)
-    - [thenAccept](#thenaccept)
-    - [thenAcceptAsync](#thenacceptasync)
-    - [applyToEither](#applytoeither)
-    - [thenCombine](#thencombine)
-    - [thenCompose](#thencompose)
-    - [anyOf](#anyof)
-    - [allOf](#allof)
+    - [Method List](#method-list)
+  - [CompletableFuture Method](#completablefuture-method)
     - [CompletableFuture-join](#completablefuture-join)
     - [CompletableFuture-getNow](#completablefuture-getnow)
+    - [CompletableFuture- completedFuture](#completablefuture--completedfuture)
   - [Link](#link)
+
+## New Further
+
+> 对 `Further` 进行扩展
+
+- Combining two asynchronous computations in one—both when they’re independent and when the second depends on the result of the first
+- Waiting for the completion of all tasks performed by a set of Futures
+- Waiting for the completion of only the quickest task in a set of Futures (possibly because they’re trying to calculate the same value in different ways) and retrieving its result
+- Programmatically completing a Future (that is, by manually providing the result of the asynchronous operation)
+- Reacting to a Future completion (that is, being notified when the completion happens and then having the ability to perform a further action using the result of the Future, instead of being blocked waiting for its result)
+
+## UML
+
+![CompletableFuture](./images/CompletableFuture.png)
 
 ## Summary
 
@@ -31,29 +38,28 @@
 
 ## CompletionStage
 
-### completedFuture
+### Method List
 
-### thenApply
+| Method          | Desc |
+| --------------- | ---- |
+| exceptionally   |      |
+| thenApply       |      |
+| thenApplyAsync  |      |
+| thenAccept      |      |
+| thenAcceptAsync |      |
+| applyToEither   |      |
+| thenCombine     |      |
+| thenCompose     |      |
+| anyOf           |      |
+| allOf           |      |
 
-### thenApplyAsync
-
-### thenAccept
-
-### thenAcceptAsync
-
-### applyToEither
-
-### thenCombine
-
-### thenCompose
-
-### anyOf
-
-### allOf
+## CompletableFuture Method
 
 ### CompletableFuture-join
 
 ### CompletableFuture-getNow
+
+### CompletableFuture- completedFuture
 
 ## Link
 
