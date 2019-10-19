@@ -9,3 +9,7 @@
 - [table.md](table.md)
 - [tokudb.md](tokudb.md)
 - [mysql-transaction.md](mysql-transaction.md)
+
+## 优化
+
+- [https://tech.meituan.com/2014/06/30/mysql-index.html](https://tech.meituan.com/2014/06/30/mysql-index.html)
