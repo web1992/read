@@ -1,7 +1,7 @@
 # RegistryProtocol
 
 - [RegistryProtocol](#registryprotocol)
-  - [成员变量](#%E6%88%90%E5%91%98%E5%8F%98%E9%87%8F)
+  - [成员变量](#%e6%88%90%e5%91%98%e5%8f%98%e9%87%8f)
   - [export](#export)
   - [registryUrl](#registryurl)
   - [providerUrl](#providerurl)

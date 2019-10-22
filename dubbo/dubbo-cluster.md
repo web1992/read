@@ -1,12 +1,12 @@
 # Cluster
 
-- [Cluster](#Cluster)
+- [Cluster](#cluster)
   - [uml](#uml)
   - [interface](#interface)
-  - [FailoverCluster](#FailoverCluster)
-  - [MergeableCluster](#MergeableCluster)
-  - [Directory](#Directory)
-  - [RegistryDirectory](#RegistryDirectory)
+  - [FailoverCluster](#failovercluster)
+  - [MergeableCluster](#mergeablecluster)
+  - [Directory](#directory)
+  - [RegistryDirectory](#registrydirectory)
 
 ## uml
 

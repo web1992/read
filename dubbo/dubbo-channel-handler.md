@@ -1,10 +1,10 @@
 # ChannelHandler
 
 - [ChannelHandler](#channelhandler)
-  - [设计模式](#%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F)
+  - [设计模式](#%e8%ae%be%e8%ae%a1%e6%a8%a1%e5%bc%8f)
   - [demo](#demo)
-  - [常见的 handler](#%E5%B8%B8%E8%A7%81%E7%9A%84-handler)
-  - [dubbo handler 链](#dubbo-handler-%E9%93%BE)
+  - [常见的 handler](#%e5%b8%b8%e8%a7%81%e7%9a%84-handler)
+  - [dubbo handler 链](#dubbo-handler-%e9%93%be)
   - [DecodeHandler](#decodehandler)
   - [AllChannelHandler](#allchannelhandler)
   - [HeaderExchangeHandler](#headerexchangehandler)
