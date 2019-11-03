@@ -9,6 +9,22 @@
   - 2 依赖于接口而不是实现
   - 3 高内聚，低耦合
 
+## 设计理念
+
+- [云原生的设计理念](https://jimmysong.io/kubernetes-handbook/cloud-native/cloud-native-philosophy.html)
+
+下面的设计理念来自上面的 `云原生的设计理念`,在日常的软件开发中可以有所应用。
+
+面向分布式设计（Distribution）：容器、微服务、API 驱动的开发；
+面向配置设计（Configuration）：一个镜像，多个环境配置；
+面向韧性设计（Resistancy）：故障容忍和自愈；
+面向弹性设计（Elasticity）：弹性扩展和对环境变化（负载）做出响应；
+面向交付设计（Delivery）：自动拉起，缩短交付时间；
+面向性能设计（Performance）：响应式，并发和资源高效利用；
+面向自动化设计（Automation）：自动化的 DevOps；
+面向诊断性设计（Diagnosability）：集群级别的日志、metric 和追踪；
+面向安全性设计（Security）：安全端点、API Gateway、端到端加密；
+
 ## 分类总结
 
 下面的图片是来自 `wiki` 的图片。并对设计模式进行了分类
