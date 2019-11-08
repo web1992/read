@@ -1,5 +1,7 @@
 # iterm
 
+- [https://iterm2.com/documentation-shell-integration.html](https://iterm2.com/documentation-shell-integration.html)
+
 ```sh
 The next time you log in, shell integration will be enabled.
 
