@@ -1,6 +1,7 @@
 # Abstract factory pattern
 
 - [Abstract factory pattern](https://en.wikipedia.org/wiki/Abstract_factory_pattern)
+- [抽象工厂](https://blog.csdn.net/wfg18801733667/article/details/60954744)
 
 ## Definition
 

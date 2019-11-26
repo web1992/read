@@ -2,7 +2,7 @@
 
 [Factory method pattern](https://en.wikipedia.org/wiki/Factory_method_pattern)
 
-## The Factory Method design pattern describes how to solve such problems:
+## The Factory Method design pattern describes how to solve such problems
 
 - Define a separate operation (factory method) for creating an object.
 - Create an object by calling a factory method.
