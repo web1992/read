@@ -28,7 +28,7 @@ protected void registerBeanPostProcessors(ConfigurableListableBeanFactory beanFa
 }
 ```
 
-## PostProcessorRegistrationDelegate.registerBeanPostProcessors
+### PostProcessorRegistrationDelegate.registerBeanPostProcessors
 
 ```java
 public static void registerBeanPostProcessors(
@@ -100,3 +100,7 @@ registerBeanPostProcessors(beanFactory, internalPostProcessors);
 beanFactory.addBeanPostProcessor(new ApplicationListenerDetector(applicationContext));
 }
 ```
+
+### beanFactory.getBean
+
+在 `registerBeanPostProcessors` 方法中调用了 `BeanFactory` 的 `getBean` 方法,那么 `BeanFactory` 中的 `bean` 是从哪里来的呢？
