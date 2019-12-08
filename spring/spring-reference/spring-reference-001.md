@@ -1,6 +1,11 @@
-# 总结
+# spring-reference-001
 
-- 1 Spring bom
+- [spring-reference-001](#spring-reference-001)
+  - [spring bom](#spring-bom)
+  - [spring log](#spring-log)
+  - [spring 应用场景](#spring-%e5%ba%94%e7%94%a8%e5%9c%ba%e6%99%af)
+
+## spring bom
 
 > 更方便快捷的引入Spring的依赖（jar）[bom(Bill Of Materials)](https://docs.spring.io/spring/docs/4.3.x/spring-framework-reference/htmlsingle/#overview-maven-bom)
 
@@ -18,7 +23,7 @@
 </dependencyManagement>
 ```
 
-- 2 Spring log
+## spring log
 
 > [日志框架 use logback](https://docs.spring.io/spring/docs/4.3.x/spring-framework-reference/htmlsingle/#overview-logging-slf4j)
 
@@ -37,8 +42,8 @@
 </dependencies>
 ```
 
-- 3 Spring 应用场景
+## spring 应用场景
 
 [Usage scenarios](https://docs.spring.io/spring/docs/4.3.x/spring-framework-reference/htmlsingle/#overview-usagescenarios)
 
-![](./images/overview-full.png)
+![spring overview](../images/overview-full.png)
