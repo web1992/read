@@ -25,3 +25,7 @@ public static void main(String[] args) {
     }
 }
 ```
+
+> 初始化过程
+
+![pring-init](../images/spring-init.png)
