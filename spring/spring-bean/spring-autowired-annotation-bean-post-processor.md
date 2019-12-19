@@ -66,6 +66,21 @@ public PropertyValues postProcessPropertyValues(
 }
 ```
 
+## buildAutowiringMetadata
+
+```java
+
+// 使用反射 获取字段上的注解信息
+// AutowiredFieldElement
+ReflectionUtils.doWithLocalFields
+
+
+// 使用反射 获取方法上的注解信息
+// AutowiredMethodElement
+ReflectionUtils.doWithLocalMethods
+
+```
+
 ## InjectionMetadata
 
 `findAutowiringMetadata`
