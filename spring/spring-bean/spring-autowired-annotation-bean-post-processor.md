@@ -2,12 +2,13 @@
 
 - [AutowiredAnnotationBeanPostProcessor](#autowiredannotationbeanpostprocessor)
   - [Class define](#class-define)
+  - [InstantiationAwareBeanPostProcessorAdapter](#instantiationawarebeanpostprocessoradapter)
   - [AutowiredAnnotationBeanPostProcessor.init](#autowiredannotationbeanpostprocessorinit)
   - [AutowiredAnnotationBeanPostProcessor.postProcessPropertyValues](#autowiredannotationbeanpostprocessorpostprocesspropertyvalues)
   - [AutowiredAnnotationBeanPostProcessor.buildAutowiringMetadata](#autowiredannotationbeanpostprocessorbuildautowiringmetadata)
   - [InjectionMetadata](#injectionmetadata)
   - [InjectedElement.inject](#injectedelementinject)
-  - [DependencyDescriptor.resolveCandidate](#dependencydescriptorresolvecandidate)
+  - [ConfigurableListableBeanFactory.resolveDependency](#configurablelistablebeanfactoryresolvedependency)
 
 ## Class define
 
@@ -17,6 +18,10 @@ implements MergedBeanDefinitionPostProcessor, PriorityOrdered, BeanFactoryAware 
 
 }
 ```
+
+## InstantiationAwareBeanPostProcessorAdapter
+
+`InstantiationAwareBeanPostProcessorAdapter` 适配器
 
 ## AutowiredAnnotationBeanPostProcessor.init
 
@@ -124,9 +129,11 @@ else {
 }
 ```
 
-## DependencyDescriptor.resolveCandidate
+## ConfigurableListableBeanFactory.resolveDependency
 
 ```java
+// resolveDependency -> doResolveDependency -> resolveCandidate
+// org.springframework.beans.factory.config.DependencyDescriptor.resolveCandidate
 public Object resolveCandidate(String beanName, Class<?> requiredType, BeanFactory beanFactory)
    throws BeansException {
    return beanFactory.getBean(beanName);
