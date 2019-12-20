@@ -1,6 +1,15 @@
 # AutowiredAnnotationBeanPostProcessor
 
-## Class
+- [AutowiredAnnotationBeanPostProcessor](#autowiredannotationbeanpostprocessor)
+  - [Class define](#class-define)
+  - [AutowiredAnnotationBeanPostProcessor.init](#autowiredannotationbeanpostprocessorinit)
+  - [AutowiredAnnotationBeanPostProcessor.postProcessPropertyValues](#autowiredannotationbeanpostprocessorpostprocesspropertyvalues)
+  - [AutowiredAnnotationBeanPostProcessor.buildAutowiringMetadata](#autowiredannotationbeanpostprocessorbuildautowiringmetadata)
+  - [InjectionMetadata](#injectionmetadata)
+  - [InjectedElement.inject](#injectedelementinject)
+  - [DependencyDescriptor.resolveCandidate](#dependencydescriptorresolvecandidate)
+
+## Class define
 
 ```java
 public class AutowiredAnnotationBeanPostProcessor extends InstantiationAwareBeanPostProcessorAdapter
@@ -12,6 +21,11 @@ implements MergedBeanDefinitionPostProcessor, PriorityOrdered, BeanFactoryAware 
 ## AutowiredAnnotationBeanPostProcessor.init
 
 ```java
+// AutowiredAnnotationBeanPostProcessor 在初始的时候
+// 把 Autowired Value Inject 三个注解放入到 Set<Annotation> autowiredAnnotationTypes 中
+// 在后续执行 buildAutowiringMetadata 的时候会找被它们三个[注解标注]的方法和字段
+// 最后执行 InjectionMetadata.inject 方法进行依赖的注入
+// 而后通过 beanFactory.resolveDependency 寻找需要注入的对象
 public AutowiredAnnotationBeanPostProcessor() {
    this.autowiredAnnotationTypes.add(Autowired.class);
    this.autowiredAnnotationTypes.add(Value.class);
@@ -26,27 +40,7 @@ public AutowiredAnnotationBeanPostProcessor() {
 }
 ```
 
-## setAutowiredAnnotationType
-
-```java
-/**
- * Set the 'autowired' annotation type, to be used on constructors, fields,
- * setter methods, and arbitrary config methods.
- * <p>The default autowired annotation types are the Spring-provided
- * {@link Autowired @Autowired} and {@link Value @Value} annotations as well
- * as JSR-330's {@link javax.inject.Inject @Inject} annotation, if available.
- * <p>This setter property exists so that developers can provide their own
- * (non-Spring-specific) annotation type to indicate that a member is supposed
- * to be autowired.
- */
-public void setAutowiredAnnotationType(Class<? extends Annotation> autowiredAnnotationType) {
-   Assert.notNull(autowiredAnnotationType, "'autowiredAnnotationType' must not be null");
-   this.autowiredAnnotationTypes.clear();
-   this.autowiredAnnotationTypes.add(autowiredAnnotationType);
-}
-```
-
-## postProcessPropertyValues
+## AutowiredAnnotationBeanPostProcessor.postProcessPropertyValues
 
 ```java
 @Override
@@ -66,19 +60,16 @@ public PropertyValues postProcessPropertyValues(
 }
 ```
 
-## buildAutowiringMetadata
+## AutowiredAnnotationBeanPostProcessor.buildAutowiringMetadata
 
 ```java
-
-// 使用反射 获取字段上的注解信息
-// AutowiredFieldElement
+// 省略其他代码...
+// 使用反射 生成 AutowiredFieldElement
 ReflectionUtils.doWithLocalFields
 
-
-// 使用反射 获取方法上的注解信息
-// AutowiredMethodElement
+// 省略其他代码...
+// 使用反射 生成 AutowiredMethodElement
 ReflectionUtils.doWithLocalMethods
-
 ```
 
 ## InjectionMetadata
@@ -95,6 +86,7 @@ public void inject(Object target, @Nullable String beanName, @Nullable PropertyV
       if (logger.isDebugEnabled()) {
         logger.debug("Processing injected element of bean '" + beanName + "': " + element);
       }
+      // AutowiredFieldElement or AutowiredMethodElement
       element.inject(target, beanName, pvs);
     }
   }
@@ -112,6 +104,7 @@ protected void inject(Object target, @Nullable String requestingBeanName, @Nulla
 if (this.isField) {
   Field field = (Field) this.member;
   ReflectionUtils.makeAccessible(field);
+  // 字段注入
   field.set(target, getResourceToInject(target, requestingBeanName));
 }
 else {
@@ -121,11 +114,21 @@ else {
   try {
     Method method = (Method) this.member;
     ReflectionUtils.makeAccessible(method);
+    // 方法注入
     method.invoke(target, getResourceToInject(target, requestingBeanName));
   }
   catch (InvocationTargetException ex) {
     throw ex.getTargetException();
   }
 }
+}
+```
+
+## DependencyDescriptor.resolveCandidate
+
+```java
+public Object resolveCandidate(String beanName, Class<?> requiredType, BeanFactory beanFactory)
+   throws BeansException {
+   return beanFactory.getBean(beanName);
 }
 ```
