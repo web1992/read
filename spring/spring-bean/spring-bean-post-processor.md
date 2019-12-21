@@ -8,6 +8,7 @@
   - [The load method PostProcessorRegistrationDelegate](#the-load-method-postprocessorregistrationdelegate)
     - [PostProcessorRegistrationDelegate.registerBeanPostProcessors](#postprocessorregistrationdelegateregisterbeanpostprocessors)
     - [beanFactory.getBean](#beanfactorygetbean)
+  - [<h2 id="demo-for-beanpostprocessor-4">Demo for BeanPostProcessor</h2>](#h2-id%22demo-for-beanpostprocessor-4%22demo-for-beanpostprocessorh2)
 
 ## where load BeanPostProcessor
 
@@ -65,3 +66,5 @@ public static void registerBeanPostProcessors(ConfigurableListableBeanFactory be
 ### beanFactory.getBean
 
 在 `registerBeanPostProcessors` 方法中调用了 `BeanFactory` 的 `getBean` 方法,那么 `BeanFactory` 中的 `bean` 是从哪里来的呢？
+
+## ## Demo for BeanPostProcessor

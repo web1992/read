@@ -7,6 +7,7 @@
   - [The hook method postProcessBeforeInitialization and postProcessAfterInitialization](#the-hook-method-postprocessbeforeinitialization-and-postprocessafterinitialization)
   - [The load method PostProcessorRegistrationDelegate](#the-load-method-postprocessorregistrationdelegate)
     - [PostProcessorRegistrationDelegate-registerBeanPostProcessors](#postprocessorregistrationdelegate-registerbeanpostprocessors)
+  - [Demo for BeanFactoryPostProcessor](#demo-for-beanfactorypostprocessor)
   - [BeanDefinitionRegistry](#beandefinitionregistry)
 
 ## When load BeanFactoryPostProcessor
@@ -57,5 +58,9 @@ ConfigurableListableBeanFactory beanFactory, AbstractApplicationContext applicat
 
 }
 ```
+
+## Demo for BeanFactoryPostProcessor
+
+`BeanFactoryPostProcessor` 实例
 
 ## BeanDefinitionRegistry
