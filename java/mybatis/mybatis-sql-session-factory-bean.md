@@ -1,18 +1,29 @@
 # SqlSessionFactoryBean
 
 - [SqlSessionFactoryBean](#sqlsessionfactorybean)
+  - [Class define](#class-define)
   - [UML](#uml)
   - [buildSqlSessionFactory](#buildsqlsessionfactory)
   - [XMLMapperBuilder](#xmlmapperbuilder)
   - [SqlSessionFactory](#sqlsessionfactory)
+  - [SqlSession](#sqlsession)
+
+## Class define
+
+```java
+public class SqlSessionFactoryBean implements FactoryBean<SqlSessionFactory>, InitializingBean, ApplicationListener<ApplicationEvent> {
+
+}
+```
 
 ## UML
 
 ![SqlSessionFactoryBean](./images/SqlSessionFactoryBean.png)
 
-这里的关注点是 `SqlSessionFactoryBean` 实现了 `FactoryBean` 接口,实现了 `getObject` 方法,这个 spring 就又了 实例，后续再 `SqlSessionDaoSupport` 中使用 `set` 方法注入 `SqlSessionFactory`.
+首先 `SqlSessionFactoryBean` 实现了 `FactoryBean` 接口，根据签名可知,它的作用是生成 `SqlSessionFactory` 对象
 
-`MapperFactoryBean` 继承了 `SqlSessionDaoSupport`,通过 `getObject` 方法实现 `mapper` 与 `sqlSession` 的关系
+在执行  `getObject` 方法的时候,会进行 `SqlSessionFactory` 的初始化操作
+
 
 ```java
 // SqlSessionFactoryBean
@@ -22,29 +33,11 @@ public SqlSessionFactory getObject() throws Exception {
   }
   return this.sqlSessionFactory;
 }
-// SqlSessionDaoSupport
-// 使用 setSqlSessionFactory 和 setSqlSessionTemplate 注入
-public void setSqlSessionFactory(SqlSessionFactory sqlSessionFactory) {
-    if (!this.externalSqlSession) {
-      this.sqlSession = new SqlSessionTemplate(sqlSessionFactory);
-    }
-}
-public void setSqlSessionTemplate(SqlSessionTemplate sqlSessionTemplate){
-    this.sqlSession = sqlSessionTemplate;
-    this.externalSqlSession = true;
-}
-
-// MapperFactoryBean
-public T getObject() throws Exception {
-    return getSqlSession().getMapper(this.mapperInterface);
-}
-// DefaultSqlSession
-public <T> T getMapper(Class<T> type) {
-    return configuration.<T>getMapper(type, this);
-}
 ```
 
 ## buildSqlSessionFactory
+
+[SqlSessionFactoryBean.buildSqlSessionFactory](https://github.com/mybatis/spring/blob/master/src/main/java/org/mybatis/spring/SqlSessionFactoryBean.java#L489)
 
 `SqlSessionFactoryBean` 的核心方法是 `buildSqlSessionFactory` 它做了下面的几个事情
 
@@ -158,5 +151,67 @@ public interface SqlSessionFactory {
   SqlSession openSession(ExecutorType execType, TransactionIsolationLevel level);
   SqlSession openSession(ExecutorType execType, Connection connection);
   Configuration getConfiguration();
+}
+```
+
+## SqlSession
+
+```java
+public interface SqlSession {
+
+  <T> T selectOne(String statement);
+
+  <T> T selectOne(String statement, Object parameter);
+
+  <E> List<E> selectList(String statement);
+
+  <E> List<E> selectList(String statement, Object parameter);
+
+
+  <E> List<E> selectList(String statement, Object parameter, RowBounds rowBounds);
+
+  <K, V> Map<K, V> selectMap(String statement, String mapKey);
+
+  <K, V> Map<K, V> selectMap(String statement, Object parameter, String mapKey);
+
+  <K, V> Map<K, V> selectMap(String statement, Object parameter, String mapKey, RowBounds rowBounds);
+
+  void select(String statement, Object parameter, ResultHandler handler);
+
+  void select(String statement, ResultHandler handler);
+
+  void select(String statement, Object parameter, RowBounds rowBounds, ResultHandler handler);
+
+  int insert(String statement);
+
+  int insert(String statement, Object parameter);
+
+  int update(String statement);
+
+  int update(String statement, Object parameter);
+
+  int delete(String statement);
+
+  int delete(String statement, Object parameter);
+
+  void commit();
+
+  void commit(boolean force);
+
+  void rollback();
+
+  void rollback(boolean force);
+
+  public List<BatchResult> flushStatements();
+
+  void close();
+
+  void clearCache();
+
+  Configuration getConfiguration();
+
+  <T> T getMapper(Class<T> type);
+
+  Connection getConnection();
 }
 ```
