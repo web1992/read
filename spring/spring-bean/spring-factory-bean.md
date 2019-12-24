@@ -7,6 +7,8 @@
 
 ## Class Interface
 
+> `FactoryBean` 用例创建 bean 对象，支持泛型
+
 ```java
 public interface FactoryBean<T> {
 
@@ -24,8 +26,13 @@ public interface FactoryBean<T> {
 
 ## Demo for FactoryBean
 
-- SqlSessionFactoryBean
+一些应用实例
+
+- [SqlSessionFactoryBean](../java/../../java/mybatis/mybatis-sql-session-factory-bean.md)
 - MapperFactoryBean
+- org.apache.dubbo.config.spring.ServiceBean
+- org.apache.dubbo.config.spring.ReferenceBean
+- org.apache.dubbo.config.spring.ConfigCenterBean
 
 ## Reference List
 
