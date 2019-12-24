@@ -10,6 +10,8 @@
 
 ## AbstractBeanDefinition
 
+## RootBeanDefinition.beanClass
+
 ## BeanDefinition define
 
 ```java
