@@ -29,7 +29,7 @@ public interface FactoryBean<T> {
 一些应用实例
 
 - [SqlSessionFactoryBean](../java/../../java/mybatis/mybatis-sql-session-factory-bean.md)
-- MapperFactoryBean
+- [MapperFactoryBean](../../java/mybatis/mybatis-mapper-factory-bean.md)
 - org.apache.dubbo.config.spring.ServiceBean
 - org.apache.dubbo.config.spring.ReferenceBean
 - org.apache.dubbo.config.spring.ConfigCenterBean
