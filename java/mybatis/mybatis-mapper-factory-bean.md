@@ -31,6 +31,8 @@ public class MapperFactoryBean<T> extends SqlSessionDaoSupport implements Factor
 
 ## ClassPathMapperScanner.doScan
 
+负责扫描所有的 `Mapper` 并注册 `BeanDefinition`
+
 在 `ClassPathMapperScanner.doScan` 方法中有下面的代码
 
 ```java
