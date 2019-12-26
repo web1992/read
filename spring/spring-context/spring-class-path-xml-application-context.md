@@ -1,9 +1,14 @@
 # ClassPathXmlApplicationContext
 
 - [ClassPathXmlApplicationContext](#classpathxmlapplicationcontext)
+  - [UML](#uml)
   - [start](#start)
   - [spring load bean](#spring-load-bean)
   - [spring bean init](#spring-bean-init)
+
+## UML
+
+![ClassPathXmlApplicationContext](../images/spring-ClassPathXmlApplicationContext.png)
 
 ## start
 
