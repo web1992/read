@@ -17,7 +17,7 @@ public interface ApplicationContext extends EnvironmentCapable, ListableBeanFact
 
 ![ClassPathXmlApplicationContext](../images/spring-ClassPathXmlApplicationContext.png)
 
-## refresh
+## AbstractApplicationContext.refresh
 
 `refresh` 可以认为是 `Spring` 容器的启动的入口,类似 `Java` 的 `main` 方法
 
