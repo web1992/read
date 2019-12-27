@@ -10,6 +10,28 @@
 
 ## AbstractBeanDefinition
 
+## AbstractBeanDefinition.getBeanClass
+
+```java
+/**
+ * Return the class of the wrapped bean, if already resolved.
+ * @return the bean class, or {@code null} if none defined
+ * @throws IllegalStateException if the bean definition does not define a bean class,
+ * or a specified bean class name has not been resolved into an actual Class
+ */
+public Class<?> getBeanClass() throws IllegalStateException {
+   Object beanClassObject = this.beanClass;
+   if (beanClassObject == null) {
+      throw new IllegalStateException("No bean class specified on bean definition");
+   }
+   if (!(beanClassObject instanceof Class)) {
+      throw new IllegalStateException(
+            "Bean class name [" + beanClassObject + "] has not been resolved into an actual Class");
+   }
+   return (Class<?>) beanClassObject;
+}
+```
+
 ## RootBeanDefinition.beanClass
 
 ## BeanDefinition define
