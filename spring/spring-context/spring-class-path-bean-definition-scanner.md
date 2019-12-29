@@ -4,4 +4,6 @@
 
 可以参考 `mybatis` [org.mybatis.spring.mapper.ClassPathMapperScanner](../java/../../java/mybatis/mybatis-mapper-factory-bean.md) 的实现，看懂了这个，就明白了这个类的作用
 
+## init
+
 ## AnnotatedBeanDefinitionReader
