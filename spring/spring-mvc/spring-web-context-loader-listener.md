@@ -5,6 +5,7 @@
   - [ContextLoaderListener.initWebApplicationContext](#contextloaderlistenerinitwebapplicationcontext)
   - [ContextLoader.properties](#contextloaderproperties)
   - [ContextLoaderListener.configureAndRefreshWebApplicationContext](#contextloaderlistenerconfigureandrefreshwebapplicationcontext)
+  - [XmlWebApplicationContext](#xmlwebapplicationcontext)
 
 - `org.springframework.web.context.ContextLoaderListener`
 - `org.springframework.web.context.support.XmlWebApplicationContext`
@@ -110,3 +111,7 @@ protected void configureAndRefreshWebApplicationContext(ConfigurableWebApplicati
 `refresh` 方法可以参考： [ApplicationContext](../spring-context/spring-application-context.md)
 
 `spring` 的启动方法调用顺序v图可以参考 [spring-bean-load.png](../images/spring-bean-load.png)
+
+## XmlWebApplicationContext
+
+`XmlWebApplicationContext` 的主要作用是重写了 `loadBeanDefinitions` 和 `getDefaultConfigLocations` 方法，实现从 `/WEB-INF/` 目录加载 `bean`
