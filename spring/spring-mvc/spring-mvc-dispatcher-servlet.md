@@ -50,7 +50,7 @@ public abstract class HttpServletBean extends HttpServlet implements Environment
 - `DispatcherServlet` 侧重 `spring mvc` 相关的默认配置
 - `FrameworkServlet` 侧重 `WebApplicationContext` 的初始化工作
 
-可以从 java docs 找到很详细的解释
+可以从 java docs 找到很详细的解释,`DispatcherServlet` 的默认配置可以参考 [DispatcherServlet.properties](#dispatcherservletproperties)
 
 ## FrameworkServlet.initWebApplicationContext
 
