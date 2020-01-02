@@ -5,13 +5,12 @@
 - [DispatcherServlet](#dispatcherservlet)
   - [Class define](#class-define)
     - [DispatcherServlet vs FrameworkServlet](#dispatcherservlet-vs-frameworkservlet)
+  - [FrameworkServlet.initServletBean](#frameworkservletinitservletbean)
   - [FrameworkServlet.initWebApplicationContext](#frameworkservletinitwebapplicationcontext)
     - [FrameworkServlet.createWebApplicationContext](#frameworkservletcreatewebapplicationcontext)
   - [DispatcherServlet.properties](#dispatcherservletproperties)
-  - [FrameworkServlet.initServletBean](#frameworkservletinitservletbean)
   - [FrameworkServlet.service](#frameworkservletservice)
   - [FrameworkServlet.processRequest](#frameworkservletprocessrequest)
-  - [HttpMethod](#httpmethod)
   - [DispatcherServlet.doService](#dispatcherservletdoservice)
   - [DispatcherServlet.doDispatch](#dispatcherservletdodispatch)
   - [DispatcherServlet.checkMultipart](#dispatcherservletcheckmultipart)
@@ -22,6 +21,7 @@
   - [HandlerExecutionChain.applyPostHandle](#handlerexecutionchainapplyposthandle)
   - [DispatcherServlet.processHandlerException](#dispatcherservletprocesshandlerexception)
   - [HandlerMethod](#handlermethod)
+  - [HttpMethod](#httpmethod)
 
 ## Class define
 
@@ -52,15 +52,28 @@ public abstract class HttpServletBean extends HttpServlet implements Environment
 
 可以从 java docs 找到很详细的解释,`DispatcherServlet` 的默认配置可以参考 [DispatcherServlet.properties](#dispatcherservletproperties)
 
+## FrameworkServlet.initServletBean
+
+> 在 `servlet` 启动的时候 进行 `appliaction context` 的初始化
+
+```java
+// 方法调用链
+GenericServlet.init -> FrameworkServlet.initServletBean -> FrameworkServlet.initWebApplicationContext
+```
+
 ## FrameworkServlet.initWebApplicationContext
 
 `servlet` 中 `WebApplicationContext` 的初始化，首先会从 `ServletContext` 查询是否已经存在了 `WebApplicationContext`,如果不存在就会进行创建新的 `WebApplicationContext`
 
 ### FrameworkServlet.createWebApplicationContext
 
+`createWebApplicationContext` 的方法逻辑比较简单就是创建 `XmlWebApplicationContext` 并调用 `refresh` 方法，初始化 `spring` 容器
+
+当通过 `Servlet` 初始化 `spring` 之后，就可以对外提供 `http` 服务了，下面就是与 `http` 相关的内容：
+
 ## DispatcherServlet.properties
 
-> spring 中一些默认的配置
+> spring mvc 中一些默认的配置
 
 ```properties
 # Default implementation classes for DispatcherServlet's strategy interfaces.
@@ -100,15 +113,11 @@ org.springframework.web.servlet.FlashMapManager=org.springframework.web.servlet.
 - [DefaultRequestToViewNameTranslator]
 - [InternalResourceViewResolver]
 
-## FrameworkServlet.initServletBean
-
 ## FrameworkServlet.service
 
 ## FrameworkServlet.processRequest
 
 `doGet` `doPost` `doPut` `doDelete` `doOptions` `doTrace`
-
-## HttpMethod
 
 ## DispatcherServlet.doService
 
@@ -129,3 +138,5 @@ org.springframework.web.servlet.FlashMapManager=org.springframework.web.servlet.
 ## DispatcherServlet.processHandlerException
 
 ## HandlerMethod
+
+## HttpMethod
