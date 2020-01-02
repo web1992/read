@@ -4,7 +4,10 @@
 
 - [DispatcherServlet](#dispatcherservlet)
   - [Class define](#class-define)
+    - [DispatcherServlet vs FrameworkServlet](#dispatcherservlet-vs-frameworkservlet)
   - [FrameworkServlet.initWebApplicationContext](#frameworkservletinitwebapplicationcontext)
+    - [FrameworkServlet.createWebApplicationContext](#frameworkservletcreatewebapplicationcontext)
+  - [DispatcherServlet.properties](#dispatcherservletproperties)
   - [FrameworkServlet.initServletBean](#frameworkservletinitservletbean)
   - [FrameworkServlet.service](#frameworkservletservice)
   - [FrameworkServlet.processRequest](#frameworkservletprocessrequest)
@@ -22,7 +25,80 @@
 
 ## Class define
 
+下面是 `DispatcherServlet` 类的定义和继承关系
+
+```java
+public class DispatcherServlet extends FrameworkServlet {
+
+}
+public abstract class FrameworkServlet extends HttpServletBean implements ApplicationContextAware {
+
+}
+public abstract class HttpServletBean extends HttpServlet implements EnvironmentCapable, EnvironmentAware {
+
+}
+```
+
+`DispatcherServlet` 处理 `http` 请求, `FrameworkServlet` 是一个抽象类，负责与 `spring`  容器集成，提供查询 `spring  bean` 的功能
+
+当 `DispatcherServlet` 接受到 http 请求的时候，查找根据`请求路径`查找到具体的 `Contoller` 进行方法的调用(具体的调用会在后面解释)
+
+### DispatcherServlet vs FrameworkServlet
+
+`DispatcherServlet` 与 `FrameworkServlet` 的区别：
+
+- `DispatcherServlet` 侧重 `spring mvc` 相关的默认配置
+- `FrameworkServlet` 侧重 `WebApplicationContext` 的初始化工作
+
+可以从 java docs 找到很详细的解释
+
 ## FrameworkServlet.initWebApplicationContext
+
+`servlet` 中 `WebApplicationContext` 的初始化，首先会从 `ServletContext` 查询是否已经存在了 `WebApplicationContext`,如果不存在就会进行创建新的 `WebApplicationContext`
+
+### FrameworkServlet.createWebApplicationContext
+
+## DispatcherServlet.properties
+
+> spring 中一些默认的配置
+
+```properties
+# Default implementation classes for DispatcherServlet's strategy interfaces.
+# Used as fallback when no matching beans are found in the DispatcherServlet context.
+# Not meant to be customized by application developers.
+
+org.springframework.web.servlet.LocaleResolver=org.springframework.web.servlet.i18n.AcceptHeaderLocaleResolver
+
+org.springframework.web.servlet.ThemeResolver=org.springframework.web.servlet.theme.FixedThemeResolver
+
+org.springframework.web.servlet.HandlerMapping=org.springframework.web.servlet.handler.BeanNameUrlHandlerMapping,\
+   org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping
+
+org.springframework.web.servlet.HandlerAdapter=org.springframework.web.servlet.mvc.HttpRequestHandlerAdapter,\
+   org.springframework.web.servlet.mvc.SimpleControllerHandlerAdapter,\
+   org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter
+
+org.springframework.web.servlet.HandlerExceptionResolver=org.springframework.web.servlet.mvc.method.annotation.ExceptionHandlerExceptionResolver,\
+   org.springframework.web.servlet.mvc.annotation.ResponseStatusExceptionResolver,\
+   org.springframework.web.servlet.mvc.support.DefaultHandlerExceptionResolver
+
+org.springframework.web.servlet.RequestToViewNameTranslator=org.springframework.web.servlet.view.DefaultRequestToViewNameTranslator
+
+org.springframework.web.servlet.ViewResolver=org.springframework.web.servlet.view.InternalResourceViewResolver
+
+org.springframework.web.servlet.FlashMapManager=org.springframework.web.servlet.support.SessionFlashMapManager
+```
+
+- [BeanNameUrlHandlerMapping]
+- [RequestMappingHandlerMapping]
+- [HttpRequestHandlerAdapter]
+- [SimpleControllerHandlerAdapter]
+- [RequestMappingHandlerAdapter]
+- [ExceptionHandlerExceptionResolver]
+- [ResponseStatusExceptionResolver]
+- [DefaultHandlerExceptionResolver]
+- [DefaultRequestToViewNameTranslator]
+- [InternalResourceViewResolver]
 
 ## FrameworkServlet.initServletBean
 
