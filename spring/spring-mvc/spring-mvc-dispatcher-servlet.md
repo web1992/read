@@ -1,5 +1,13 @@
 # DispatcherServlet
 
+首先说下什么是 [Servlet](https://www.cnblogs.com/whgk/p/6399262.html) ?
+
+Java Servlet 是运行在 Web 服务器或应用服务器上的程序，它是作为来自 Web 浏览器或其他 HTTP 客户端的请求和 HTTP 服务器上的数据库或应用程序之间的中间层
+
+简单理解就是：从 `http` 访问 `Servlet`,通过 `Servlet` 访问 MySQL(数据库),`Servlet` 作为通过 `web` 访问应用数据的 `中间人`
+
+而 `Servlet` 只是一个规范，具体的实现有 `Tomcat` 就是可以 `Servlet` 容器，把所有所有的 `web` 请求交给 `Servlet` 
+
 > `DispatcherServlet` 会拦截所有 `url-pattern` 配置的路径的请求，把这写请求转发个具体的 Controller 进行处理,是整个 `spring mvc` 的 `入口`
 
 - [DispatcherServlet](#dispatcherservlet)
