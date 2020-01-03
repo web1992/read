@@ -4,7 +4,7 @@
 
 Java Servlet 是运行在 Web 服务器或应用服务器上的程序，它是作为来自 Web 浏览器或其他 HTTP 客户端的请求和 HTTP 服务器上的数据库或应用程序之间的中间层
 
-简单理解就是：从 `http` 访问 `Servlet`,通过 `Servlet` 访问 MySQL(数据库),`Servlet` 作为通过 `web` 访问应用数据的 `中间人`
+简单理解就是：从 `http` 访问 `Servlet`。通过 `Servlet` 访问 java 代码，从而访问MySQL(数据库),`Servlet` 作为通过 `web` 访问应用数据的 `中间人`
 
 而 `Servlet` 只是一个规范，具体的实现有 `Tomcat` 就是可以 `Servlet` 容器，把所有所有的 `web` 请求交给 `Servlet` 
 
@@ -122,6 +122,29 @@ org.springframework.web.servlet.FlashMapManager=org.springframework.web.servlet.
 - [InternalResourceViewResolver]
 
 ## FrameworkServlet.service
+
+在 `web.xml` 中配置了 `DispatcherServlet` 之后，所有的  `web http` 请求都会给到 `FrameworkServlet` 的 `service` 方法, `service` 方法就是 `Spring web` 的请求的入口
+
+> 一个 `Servlet` 配置代码片段如下
+
+```xml
+ <!-- servlet 文件配置 -->
+ <servlet>
+     <servlet-name>dispatcherServlet</servlet-name>
+     <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
+     <init-param>
+         <param-name>contextConfigLocation</param-name>
+         <param-value>classpath:spring/spring-servlet.xml</param-value>
+     </init-param>
+     <load-on-startup>1</load-on-startup>
+ </servlet>
+ <servlet-mapping>
+     <servlet-name>dispatcherServlet</servlet-name>
+     <url-pattern>/</url-pattern>
+ </servlet-mapping>
+```
+
+![spring-servlet.png](../images/spring-servlet.png)
 
 ## FrameworkServlet.processRequest
 
