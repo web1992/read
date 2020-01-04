@@ -17,6 +17,7 @@ Java Servlet 是运行在 Web 服务器或应用服务器上的程序，它是�
   - [FrameworkServlet.initWebApplicationContext](#frameworkservletinitwebapplicationcontext)
     - [FrameworkServlet.createWebApplicationContext](#frameworkservletcreatewebapplicationcontext)
   - [DispatcherServlet.properties](#dispatcherservletproperties)
+  - [DispatcherServlet.initStrategies](#dispatcherservletinitstrategies)
   - [FrameworkServlet.service](#frameworkservletservice)
   - [FrameworkServlet.processRequest](#frameworkservletprocessrequest)
   - [DispatcherServlet.doService](#dispatcherservletdoservice)
@@ -120,6 +121,24 @@ org.springframework.web.servlet.FlashMapManager=org.springframework.web.servlet.
 - [DefaultHandlerExceptionResolver]
 - [DefaultRequestToViewNameTranslator]
 - [InternalResourceViewResolver]
+
+## DispatcherServlet.initStrategies
+
+```java
+// initMultipartResolver initLocaleResolver initThemeResolver
+// 这三方法会先去 spring 容器查询Bean，如果查询不到，那么就用默认的
+protected void initStrategies(ApplicationContext context) {
+ initMultipartResolver(context);// 文件上传
+ initLocaleResolver(context);// 国际化
+ initThemeResolver(context);
+ initHandlerMappings(context);// url 与 Controller 的映射处理类
+ initHandlerAdapters(context);
+ initHandlerExceptionResolvers(context);
+ initRequestToViewNameTranslator(context);
+ initViewResolvers(context);
+ initFlashMapManager(context);
+}
+```
 
 ## FrameworkServlet.service
 
