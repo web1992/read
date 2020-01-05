@@ -4,13 +4,13 @@
 
 Java Servlet 是运行在 Web 服务器或应用服务器上的程序，它是作为来自 Web 浏览器或其他 HTTP 客户端的请求和 HTTP 服务器上的数据库或应用程序之间的中间层
 
-简单理解就是：从 `http` 访问 `Servlet`。通过 `Servlet` 访问 java 代码，从而访问MySQL(数据库),`Servlet` 作为通过 `web` 访问应用数据的 `中间人`
+简单理解就是：`http` 通过 `Servlet` 访问 java 代码，从而访问MySQL(数据库),`Servlet` 作为通过 `web` 访问应用数据的 `中间人`
 
-而 `Servlet` 只是一个规范，具体的实现有 `Tomcat` 就是可以 `Servlet` 容器，把所有所有的 `web` 请求交给 `Servlet` 
+而 `Servlet` 只是一个规范，具体的实现有 `Tomcat`, `Tomcat` 就是可以运行 `Servlet` 容器，把所有所有的 `http` 请求交给 `Servlet` 
 
-> `DispatcherServlet` 会拦截所有 `url-pattern` 配置的路径的请求，把这写请求转发个具体的 Controller 进行处理,是整个 `spring mvc` 的 `入口`
+`DispatcherServlet` 会拦截所有 `url-pattern` 配置的路径的请求，把这写请求转发个具体的 Controller 进行处理,是整个 `spring mvc` 的 `入口`
 
-> 概要
+> **概要**
 
 | Part              | 描述                                    |
 | ----------------- | --------------------------------------- |
@@ -155,8 +155,8 @@ protected void initStrategies(ApplicationContext context) {
  initMultipartResolver(context);// 文件上传
  initLocaleResolver(context);// 国际化
  initThemeResolver(context);
- initHandlerMappings(context);// url 与 Controller 的映射处理类
- initHandlerAdapters(context);
+ initHandlerMappings(context);// 可以理解就是初始化 RequestMappingHandlerMapping 类
+ initHandlerAdapters(context);// 可以理解就是初始化 RequestMappingHandlerAdapter 类
  initHandlerExceptionResolvers(context);
  initRequestToViewNameTranslator(context);
  initViewResolvers(context);
@@ -269,6 +269,25 @@ public final class RequestMappingInfo implements RequestCondition<RequestMapping
  private final ProducesRequestCondition producesCondition;
 
  private final RequestConditionHolder customConditionHolder;
+}
+```
+
+```java
+// RequestMappingInfojava 构造
+protected RequestMappingInfo createRequestMappingInfo(
+      RequestMapping requestMapping, @Nullable RequestCondition<?> customCondition) {
+   RequestMappingInfo.Builder builder = RequestMappingInfo
+         .paths(resolveEmbeddedValuesInPatterns(requestMapping.path()))
+         .methods(requestMapping.method())
+         .params(requestMapping.params())
+         .headers(requestMapping.headers())
+         .consumes(requestMapping.consumes())
+         .produces(requestMapping.produces())
+         .mappingName(requestMapping.name());
+   if (customCondition != null) {
+      builder.customCondition(customCondition);
+   }
+   return builder.options(this.config).build();
 }
 ```
 
