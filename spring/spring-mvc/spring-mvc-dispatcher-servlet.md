@@ -19,15 +19,13 @@ Java Servlet 是运行在 Web 服务器或应用服务器上的程序，它是�
   - [DispatcherServlet.properties](#dispatcherservletproperties)
   - [DispatcherServlet.initStrategies](#dispatcherservletinitstrategies)
   - [FrameworkServlet.service](#frameworkservletservice)
-  - [FrameworkServlet.processRequest](#frameworkservletprocessrequest)
-  - [DispatcherServlet.doService](#dispatcherservletdoservice)
-  - [DispatcherServlet.doDispatch](#dispatcherservletdodispatch)
-  - [DispatcherServlet.checkMultipart](#dispatcherservletcheckmultipart)
   - [DispatcherServlet.getHandler](#dispatcherservletgethandler)
+  - [MappingRegistry](#mappingregistry)
+  - [RequestMappingInfo](#requestmappinginfo)
   - [DispatcherServlet.getHandlerAdapter](#dispatcherservletgethandleradapter)
-  - [DispatcherServlet.processDispatchResult](#dispatcherservletprocessdispatchresult)
-  - [HandlerExecutionChain.applyPreHandle](#handlerexecutionchainapplyprehandle)
-  - [HandlerExecutionChain.applyPostHandle](#handlerexecutionchainapplyposthandle)
+  - [RequestMappingHandlerAdapter](#requestmappinghandleradapter)
+  - [DispatcherServlet.checkMultipart](#dispatcherservletcheckmultipart)
+  - [HandlerInterceptor](#handlerinterceptor)
   - [DispatcherServlet.processHandlerException](#dispatcherservletprocesshandlerexception)
   - [HandlerMethod](#handlermethod)
   - [HttpMethod](#httpmethod)
@@ -111,16 +109,16 @@ org.springframework.web.servlet.ViewResolver=org.springframework.web.servlet.vie
 org.springframework.web.servlet.FlashMapManager=org.springframework.web.servlet.support.SessionFlashMapManager
 ```
 
-- [BeanNameUrlHandlerMapping]
-- [RequestMappingHandlerMapping]
-- [HttpRequestHandlerAdapter]
-- [SimpleControllerHandlerAdapter]
-- [RequestMappingHandlerAdapter]
-- [ExceptionHandlerExceptionResolver]
-- [ResponseStatusExceptionResolver]
-- [DefaultHandlerExceptionResolver]
-- [DefaultRequestToViewNameTranslator]
-- [InternalResourceViewResolver]
+- BeanNameUrlHandlerMapping
+- RequestMappingHandlerMapping
+- HttpRequestHandlerAdapter
+- SimpleControllerHandlerAdapter
+- RequestMappingHandlerAdapter
+- ExceptionHandlerExceptionResolver
+- ResponseStatusExceptionResolver
+- DefaultHandlerExceptionResolver
+- DefaultRequestToViewNameTranslator
+- InternalResourceViewResolver
 
 ## DispatcherServlet.initStrategies
 
@@ -165,25 +163,89 @@ protected void initStrategies(ApplicationContext context) {
 
 ![spring-servlet.png](../images/spring-servlet.png)
 
-## FrameworkServlet.processRequest
-
-`doGet` `doPost` `doPut` `doDelete` `doOptions` `doTrace`
-
-## DispatcherServlet.doService
-
-## DispatcherServlet.doDispatch
-
-## DispatcherServlet.checkMultipart
+`service` 会把 `doGet` `doPost` `doPut` `doDelete` `doOptions` `doTrace` 这几种方法都转发到 `processRequest` 方法 -> `doService` -> `doDispatch` -> `getHandler` -> `HandlerMethod` -> `Spring Controller` -> `Spring Service`
 
 ## DispatcherServlet.getHandler
 
+`getHandler` 方法就是从 `MappingRegistry` 方法获取 `HandlerMethod`
+
+## MappingRegistry
+
+`MappingRegistry` 注册所有 `url` 与 `Controller` 的对应关系,而 `MappingRegistry` 中存储的是 `RequestMappingInfo`
+
+```java
+private final Map<T, MappingRegistration<T>> registry = new HashMap<>();
+private final Map<T, HandlerMethod> mappingLookup = new LinkedHashMap<>();
+private final MultiValueMap<String, T> urlLookup = new LinkedMultiValueMap<>();
+private final Map<String, List<HandlerMethod>> nameLookup = new ConcurrentHashMap<>();
+private final Map<HandlerMethod, CorsConfiguration> corsLookup = new ConcurrentHashMap<>();
+private final ReentrantReadWriteLock readWriteLock = new ReentrantReadWriteLock();
+```
+
+## RequestMappingInfo
+
+```java
+public final class RequestMappingInfo implements RequestCondition<RequestMappingInfo> {
+
+ @Nullable
+ private final String name;
+
+ private final PatternsRequestCondition patternsCondition;
+
+ private final RequestMethodsRequestCondition methodsCondition;
+
+ private final ParamsRequestCondition paramsCondition;
+
+ private final HeadersRequestCondition headersCondition;
+
+ private final ConsumesRequestCondition consumesCondition;
+
+ private final ProducesRequestCondition producesCondition;
+
+ private final RequestConditionHolder customConditionHolder;
+}
+```
+
 ## DispatcherServlet.getHandlerAdapter
 
-## DispatcherServlet.processDispatchResult
+`getHandlerAdapter` 的主要作用就是获取 `RequestMappingHandlerAdapter` 对象
 
-## HandlerExecutionChain.applyPreHandle
+## RequestMappingHandlerAdapter
 
-## HandlerExecutionChain.applyPostHandle
+```java
+public class RequestMappingHandlerAdapter
+       extends AbstractHandlerMethodAdapter
+       implements BeanFactoryAware, InitializingBean {
+}
+
+public abstract class AbstractHandlerMethodAdapter
+       extends WebContentGenerator
+       implements HandlerAdapter, Ordered {
+
+}
+
+public abstract class WebContentGenerator
+       extends WebApplicationObjectSupport {
+
+}
+
+public abstract class WebApplicationObjectSupport
+       extends ApplicationObjectSupport
+       implements ServletContextAware {
+}
+```
+
+## DispatcherServlet.checkMultipart
+
+处理文件上传请求
+
+## HandlerInterceptor
+
+- HandlerExecutionChain
+  - applyPreHandle
+  - applyPostHandle
+  - afterCompletion
+  - processHandlerException
 
 ## DispatcherServlet.processHandlerException
 
