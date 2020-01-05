@@ -38,10 +38,14 @@ Java Servlet 是运行在 Web 服务器或应用服务器上的程序，它是�
 public class DispatcherServlet extends FrameworkServlet {
 
 }
-public abstract class FrameworkServlet extends HttpServletBean implements ApplicationContextAware {
+public abstract class FrameworkServlet
+       extends HttpServletBean
+       implements ApplicationContextAware {
 
 }
-public abstract class HttpServletBean extends HttpServlet implements EnvironmentCapable, EnvironmentAware {
+public abstract class HttpServletBean
+       extends HttpServlet
+       implements EnvironmentCapable, EnvironmentAware {
 
 }
 ```
