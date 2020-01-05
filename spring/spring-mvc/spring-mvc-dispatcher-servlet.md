@@ -16,7 +16,7 @@ Java Servlet 是运行在 Web 服务器或应用服务器上的程序，它是�
 | ----------------- | --------------------------------------- |
 | [Part 1](#part-1) | Spring Servlet 的定义和初始化           |
 | [Part 2](#part-2) | 从 Http 到 Spring Controller 的调用实现(过程) |
-| [Part 3](#part-3) | Spring  其他核心类                      |
+| [Part 3](#part-3) | Spring  其他功能                      |
 
 - [DispatcherServlet](#dispatcherservlet)
   - [Part 1](#part-1)
@@ -33,6 +33,7 @@ Java Servlet 是运行在 Web 服务器或应用服务器上的程序，它是�
     - [RequestMappingHandlerMapping](#requestmappinghandlermapping)
     - [MappingRegistry](#mappingregistry)
     - [RequestMappingInfo](#requestmappinginfo)
+    - [RequestMappingHandlerMapping init](#requestmappinghandlermapping-init)
     - [DispatcherServlet.getHandlerAdapter](#dispatcherservletgethandleradapter)
     - [RequestMappingHandlerAdapter](#requestmappinghandleradapter)
   - [Part 3](#part-3)
@@ -130,7 +131,9 @@ org.springframework.web.servlet.FlashMapManager=org.springframework.web.servlet.
 
 上面的类中 `RequestMappingHandlerMapping` 与 `RequestMappingHandlerAdapter` 是核心类
 
-`RequestMappingHandlerMapping` 负责 url 与 `Spring` `Controller` 方法的映射，找到对应的 `HandlerMethod`, `RequestMappingHandlerAdapter` 则是负责`参数解析`和调用(通过反射) `HandlerMethod` 中 `Controller` 的方法
+`RequestMappingHandlerMapping` 负责 url 与 `Spring` `Controller` 方法的映射，找到对应的 `HandlerMethod`
+
+`RequestMappingHandlerAdapter` 则是负责`参数解析`和调用(通过反射) `HandlerMethod` 中 `Controller` 的方法
 
 - BeanNameUrlHandlerMapping
 - **RequestMappingHandlerMapping**
@@ -191,7 +194,9 @@ protected void initStrategies(ApplicationContext context) {
 方法调用时序图：
 ![spring-servlet.png](../images/spring-servlet.png)
 
-`service` 会把 `doGet` `doPost` `doPut` `doDelete` `doOptions` `doTrace` 这几种方法都转发到 `processRequest` 方法 -> `doService` -> `doDispatch` -> `getHandler` -> `HandlerMethod` -> `Spring Controller` -> `Spring Service`
+`service` 会把 `doGet` `doPost` `doPut` `doDelete` `doOptions` `doTrace` 这几种方法都转发到 `processRequest` 方法 
+
+请求调用过程： `doService` -> `doDispatch` -> `getHandler` -> `HandlerMethod` -> `Spring Controller` -> `Spring Service`
 
 ### DispatcherServlet.getHandler
 
@@ -267,11 +272,17 @@ public final class RequestMappingInfo implements RequestCondition<RequestMapping
 }
 ```
 
+### RequestMappingHandlerMapping init
+
+知道了 `RequestMappingHandlerMapping` 中的 `mappingRegistry` 的初始化过程就知道了 Spring 中的 `Controller` 是如何注册的到 `mappingRegistry` 中的
+
 ### DispatcherServlet.getHandlerAdapter
 
 `getHandlerAdapter` 的主要作用就是获取 `RequestMappingHandlerAdapter` 对象
 
 ### RequestMappingHandlerAdapter
+
+> RequestMappingHandlerAdapter 的定义
 
 ```java
 public class RequestMappingHandlerAdapter
@@ -298,7 +309,7 @@ public abstract class WebApplicationObjectSupport
 
 ## Part 3
 
-`Spring`  其他核心类
+`Spring`  其他功能
 
 ### DispatcherServlet.checkMultipart
 
