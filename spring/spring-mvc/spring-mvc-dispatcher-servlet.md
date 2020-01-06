@@ -36,6 +36,7 @@ Java Servlet 是运行在 Web 服务器或应用服务器上的程序，它是�
     - [RequestMappingHandlerMapping init](#requestmappinghandlermapping-init)
     - [DispatcherServlet.getHandlerAdapter](#dispatcherservletgethandleradapter)
     - [RequestMappingHandlerAdapter](#requestmappinghandleradapter)
+    - [RequestMappingHandlerAdapter init](#requestmappinghandleradapter-init)
   - [Part 3](#part-3)
     - [DispatcherServlet.checkMultipart](#dispatcherservletcheckmultipart)
     - [HandlerInterceptor](#handlerinterceptor)
@@ -295,6 +296,16 @@ protected RequestMappingInfo createRequestMappingInfo(
 
 知道了 `RequestMappingHandlerMapping` 中的 `mappingRegistry` 的初始化过程就知道了 Spring 中的 `Controller` 是如何注册的到 `mappingRegistry` 中的
 
+`DispatcherServlet.initStrategies`
+   -> `DispatcherServlet.getDefaultStrategies`
+   -> `DispatcherServlet.createDefaultStrategy`
+
+```java
+protected Object createDefaultStrategy(ApplicationContext context, Class<?> clazz) {
+   return context.getAutowireCapableBeanFactory().createBean(clazz);
+}
+```
+
 ### DispatcherServlet.getHandlerAdapter
 
 `getHandlerAdapter` 的主要作用就是获取 `RequestMappingHandlerAdapter` 对象
@@ -325,6 +336,10 @@ public abstract class WebApplicationObjectSupport
        implements ServletContextAware {
 }
 ```
+
+### RequestMappingHandlerAdapter init
+
+`RequestMappingHandlerAdapter` 初始化过程与 `RequestMappingHandlerMapping` 初始化过程一样都是调用的 `context.getAutowireCapableBeanFactory().createBean(clazz)`  方法
 
 ## Part 3
 
