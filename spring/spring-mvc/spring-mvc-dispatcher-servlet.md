@@ -16,7 +16,7 @@ Java Servlet 是运行在 Web 服务器或应用服务器上的程序，它是�
 | ----------------- | --------------------------------------- |
 | [Part 1](#part-1) | Spring Servlet 的定义和初始化           |
 | [Part 2](#part-2) | 从 Http 到 Spring Controller 的调用实现(过程) |
-| [Part 3](#part-3) | Spring  其他功能                      |
+| [Part 3](#part-3) | Spring mvc 中的其他功能                      |
 
 - [DispatcherServlet](#dispatcherservlet)
   - [Part 1](#part-1)
@@ -385,6 +385,8 @@ afterPropertiesSet -> initControllerAdviceCache // ControllerAdvice 注解
    -> getDefaultInitBinderArgumentResolvers 
    -> getDefaultReturnValueHandlers // 比如 ModelAndView
 
+// 可以实现 HandlerMethodArgumentResolver 接口进行自定义的参数解析
+// 类似这中可扩展的设计在 Spring 中有很多，可以在后续的结构设计中进行类型的扩展设计，提供灵活性
 ```
 
 ## Part 3
