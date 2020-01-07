@@ -296,14 +296,52 @@ protected RequestMappingInfo createRequestMappingInfo(
 
 知道了 `RequestMappingHandlerMapping` 中的 `mappingRegistry` 的初始化过程就知道了 Spring 中的 `Controller` 是如何注册的到 `mappingRegistry` 中的
 
+或者说 `url` 是如果与 `Controller` 中的方法进行映射的
+
+`RequestMappingHandlerMapping` 的初始化是在下面的代码中：
+
 `DispatcherServlet.initStrategies`
    -> `DispatcherServlet.getDefaultStrategies`
    -> `DispatcherServlet.createDefaultStrategy`
 
 ```java
+// 进行 RequestMappingHandlerMapping 的初始化，注册成 Spring bean
 protected Object createDefaultStrategy(ApplicationContext context, Class<?> clazz) {
    return context.getAutowireCapableBeanFactory().createBean(clazz);
 }
+```
+
+```java
+// RequestMappingHandlerMapping 被 Spring 初始化的过程如下：
+afterPropertiesSet -> initHandlerMethods
+   -> detectHandlerMethods
+   -> MethodIntrospector.selectMethods
+   -> getMappingForMethod
+   -> createRequestMappingInfo
+   -> getCustomTypeCondition / getCustomMethodCondition
+   -> createRequestMappingInfo
+   -> RequestMappingInfo.Builder
+   -> builder.customCondition
+   -> build
+
+// 最后的 build 方法会生成 RequestMappingInfo 对象
+// 每个方法都有一个对应得 RequestMappingInfo 对象
+return new RequestMappingInfo(this.mappingName, patternsCondition,
+   new RequestMethodsRequestCondition(this.methods),
+   new ParamsRequestCondition(this.params),
+   new HeadersRequestCondition(this.headers),
+   new ConsumesRequestCondition(this.consumes, this.headers),
+   new ProducesRequestCondition(this.produces, this.headers, manager),
+   this.customCondition);
+// 生成 RequestMappingInfo 对象之后再注册到 MappingRegistry 中
+// 方法如下：
+// 这里的 mapping 就是 RequestMappingInfo 对象
+// 这里的 handler 其实是 bean 的名字
+// 比如有 @Controller("homeController") 这样一个bean
+// 那么 handler = homeController
+// method 是一个java.lang.reflect.Method 对象
+// 就是 Controller 中的某个方法（准备在后续被调用）
+this.mappingRegistry.register(mapping, handler, method);
 ```
 
 ### DispatcherServlet.getHandlerAdapter
@@ -312,7 +350,7 @@ protected Object createDefaultStrategy(ApplicationContext context, Class<?> claz
 
 ### RequestMappingHandlerAdapter
 
-> RequestMappingHandlerAdapter 的定义
+> `RequestMappingHandlerAdapter` 主要负责参数的解析和方法返回值得处理，`RequestMappingHandlerAdapter` 的定义
 
 ```java
 public class RequestMappingHandlerAdapter
@@ -340,6 +378,14 @@ public abstract class WebApplicationObjectSupport
 ### RequestMappingHandlerAdapter init
 
 `RequestMappingHandlerAdapter` 初始化过程与 `RequestMappingHandlerMapping` 初始化过程一样都是调用的 `context.getAutowireCapableBeanFactory().createBean(clazz)`  方法
+
+```java
+afterPropertiesSet -> initControllerAdviceCache // ControllerAdvice 注解
+   -> getDefaultArgumentResolvers // 如解析 RequestParam 注解
+   -> getDefaultInitBinderArgumentResolvers 
+   -> getDefaultReturnValueHandlers // 比如 ModelAndView
+
+```
 
 ## Part 3
 
