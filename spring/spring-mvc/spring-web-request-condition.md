@@ -12,12 +12,6 @@ public class HomeController {
 
     private static Logger LOG = LoggerFactory.getLogger(HomeController.class);
 
-    /**
-     * @param request  request
-     * @param response response
-     * @return
-     * @throws Exception
-     */
     @RequestMapping(value = {"/home"}, consumes = {"application/json"})
     @ResponseBody
     public String homeJson(HttpServletRequest request, HttpServletResponse response) throws Exception {
@@ -38,7 +32,7 @@ public class HomeController {
 
 但是它们的 `consumes` 属性不同（ `consumes` 属性会映射的其实就是 `http` 请求中的 `Content-Type`）
 
-执行下面的 cul 命令就会得到不同的结果：
+执行下面的 `curl` 命令就会得到不同的结果：
 
 ```sh
   # 命令
@@ -76,7 +70,23 @@ protected RequestMappingInfo createRequestMappingInfo(
    if (customCondition != null) {
       builder.customCondition(customCondition);// -> customConditionHolder
    }
-   return builder.options(this.config).build();
+   return builder.options(this.config).build();// build 方法如下
+}
+
+@Override
+public RequestMappingInfo build() {
+   ContentNegotiationManager manager = this.options.getContentNegotiationManager();
+   PatternsRequestCondition patternsCondition = new PatternsRequestCondition(
+         this.paths, this.options.getUrlPathHelper(), this.options.getPathMatcher(),
+         this.options.useSuffixPatternMatch(), this.options.useTrailingSlashMatch(),
+         this.options.getFileExtensions());
+   return new RequestMappingInfo(this.mappingName, patternsCondition,
+         new RequestMethodsRequestCondition(this.methods),
+         new ParamsRequestCondition(this.params),
+         new HeadersRequestCondition(this.headers),
+         new ConsumesRequestCondition(this.consumes, this.headers),
+         new ProducesRequestCondition(this.produces, this.headers, manager),
+         this.customCondition);
 }
 
 // 上面说过 RequestMappingHandlerMapping 在初始化的时候
@@ -84,8 +94,12 @@ protected RequestMappingInfo createRequestMappingInfo(
 @Override
 @Nullable
 public RequestMappingInfo getMatchingCondition(HttpServletRequest request) {
+   // 匹配支持的方法，如GET，POST
    RequestMethodsRequestCondition methods = this.methodsCondition.getMatchingCondition(request);
+   // @RequestMapping(value = {"/param"}, params = {"a=1"})
+   // 进行参数匹配
    ParamsRequestCondition params = this.paramsCondition.getMatchingCondition(request);
+   // 根据 Http 中的 headers 进行匹配，head 可以是你定义的 head
    HeadersRequestCondition headers = this.headersCondition.getMatchingCondition(request);
    // consumesCondition 根据 http 中 Content-Type 内容来匹配
    ConsumesRequestCondition consumes = this.consumesCondition.getMatchingCondition(request);
