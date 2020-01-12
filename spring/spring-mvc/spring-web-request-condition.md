@@ -77,16 +77,17 @@ public final class RequestMappingInfo implements RequestCondition<RequestMapping
 // RequestMappingInfo 是由 RequestMappingHandlerMapping 的 getMappingForMethod 方法创建的
 // getMappingForMethod 方法有二个参数 method 和 handlerType
 // method 的类型是 Method，handlerType 的类型是 Class
-// 这样也是 @RequestMapping 注解支持在 Class 上面的原因（看代码里面的注释）
+// 这也是 @RequestMapping 注解支持在 Class 上面的原因（看下面代码里面的注释）
 // RequestMappingHandlerMapping#getMappingForMethod
 protected RequestMappingInfo getMappingForMethod(Method method, Class<?> handlerType) {
-   // 获取 Method 上面的 @RequestMapping 信息并生成 RequestMappingInfo
+   // 获取 Method 上面的 @RequestMapping 信息并创建 RequestMappingInfo
    RequestMappingInfo info = createRequestMappingInfo(method);
    if (info != null) {
-       // 获取 Class 上面的 @RequestMapping 信息并生成 RequestMappingInfo
+       // 获取 Class 上面的 @RequestMapping 信息并创建 RequestMappingInfo
       RequestMappingInfo typeInfo = createRequestMappingInfo(handlerType);
       if (typeInfo != null) {
          // Method 上面 RequestMappingInfo 的 与 Class 上的RequestMappingInfo 条件进行组合
+         // 下面会对 combine 方法进行解释
          info = typeInfo.combine(info);
       }
    }
@@ -96,6 +97,8 @@ protected RequestMappingInfo getMappingForMethod(Method method, Class<?> handler
 // RequestMappingInfojava 构造
 // RequestMappingHandlerMapping 在初始化的时候，会扫描所有的 Controller 中的方法
 // 注册 url 与 RequestMappingInfo 关系
+// RequestMapping 注解会被解析
+// 在 build 的时候创建多个 RequestCondition 实例
 protected RequestMappingInfo createRequestMappingInfo(
       RequestMapping requestMapping, @Nullable RequestCondition<?> customCondition) {
    RequestMappingInfo.Builder builder = RequestMappingInfo
@@ -107,12 +110,13 @@ protected RequestMappingInfo createRequestMappingInfo(
          .produces(requestMapping.produces())// -> ProducesRequestCondition
          .mappingName(requestMapping.name());
    if (customCondition != null) {
+      // 自定义的 RequestCondition 的实现类
       builder.customCondition(customCondition);// -> customConditionHolder
    }
    return builder.options(this.config).build();// build 方法如下：
 }
 
-// build 方法中生成 多个 RequestCondition 对象
+// build 方法中生成多个 RequestCondition 对象
 @Override
 public RequestMappingInfo build() {
    ContentNegotiationManager manager = this.options.getContentNegotiationManager();
@@ -261,7 +265,7 @@ public String combine(HttpServletRequest request) throws Exception {
 }
 ```
 
-`RequestMethodsRequestCondition.combine`
+看下 `RequestMethodsRequestCondition.combine` 的逻辑
 
 ```java
 @Override
@@ -276,5 +280,33 @@ public RequestMethodsRequestCondition combine(RequestMethodsRequestCondition oth
    // 生产一个新的 RequestMethodsRequestCondition（也就是由 combine 组合生产的新对象）
    // 也就同时支持了 POST 和 GET
    return new RequestMethodsRequestCondition(set);
+}
+```
+
+`RequestMethodsRequestCondition.getMatchingCondition` 的逻辑
+
+```java
+public RequestMethodsRequestCondition getMatchingCondition(HttpServletRequest request) {
+// ...省略其他逻辑
+return matchRequestMethod(request.getMethod());
+}
+
+private RequestMethodsRequestCondition matchRequestMethod(String httpMethodValue) {
+// 把 GET，POST 字符串转换成 HttpMethod 对象
+HttpMethod httpMethod = HttpMethod.resolve(httpMethodValue);
+if (httpMethod != null) {
+   // getMethods 方法返回支持的方法列表
+   // 循环所有的支持方法列表，进行对比，如果有相等就返回一个新的 
+   // RequestMethodsRequestCondition 表示支持该方法的请求
+   for (RequestMethod method : getMethods()) {
+      if (httpMethod.matches(method.name())) {
+         return new RequestMethodsRequestCondition(method);
+      }
+   }
+   if (httpMethod == HttpMethod.HEAD && getMethods().contains(RequestMethod.GET)) {
+      return GET_CONDITION;
+   }
+}
+return null;
 }
 ```
