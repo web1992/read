@@ -6,6 +6,8 @@
   - [RequestMappingInfo init](#requestmappinginfo-init)
   - [Define of RequestCondition](#define-of-requestcondition)
   - [RequestCondition.combine](#requestconditioncombine)
+  - [RequestCondition.getMatchingCondition](#requestconditiongetmatchingcondition)
+  - [RequestCondition.compareTo](#requestconditioncompareto)
 
 要理解 `RequestCondition` 在 `Spring` 中的作用，先看下下面的 `Demo`
 
@@ -283,6 +285,8 @@ public RequestMethodsRequestCondition combine(RequestMethodsRequestCondition oth
 }
 ```
 
+## RequestCondition.getMatchingCondition
+
 `RequestMethodsRequestCondition.getMatchingCondition` 的逻辑
 
 ```java
@@ -310,3 +314,9 @@ if (httpMethod != null) {
 return null;
 }
 ```
+
+## RequestCondition.compareTo
+
+这简单的说下 `compareTo` 的作用： 如果一个请求匹配到了多个 `RequestCondition` ,那么我要用哪一个合适呢？因此 `RequestCondition` 提供了 `compareTo` 方法进行排序，有限使用第一个
+
+具体看 `RequestMappingInfoHandlerMapping.getMappingComparator` 方法的实现和调用链
