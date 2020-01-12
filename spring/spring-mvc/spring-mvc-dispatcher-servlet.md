@@ -195,7 +195,7 @@ protected void initStrategies(ApplicationContext context) {
 方法调用时序图：
 ![spring-servlet.png](../images/spring-servlet.png)
 
-`service` 会把 `doGet` `doPost` `doPut` `doDelete` `doOptions` `doTrace` 这几种方法都转发到 `processRequest` 方法 
+`service` 会把 `doGet` `doPost` `doPut` `doDelete` `doOptions` `doTrace` 这几种方法都转发到 `processRequest` 方法
 
 请求调用过程： `doService` -> `doDispatch` -> `getHandler` -> `HandlerMethod` -> `Spring Controller` -> `Spring Service`
 
