@@ -1,14 +1,15 @@
 # AQS
 
-- [AQS](#AQS)
-  - [AbstractQueuedSynchronizer](#AbstractQueuedSynchronizer)
-  - [实例分析](#%E5%AE%9E%E4%BE%8B%E5%88%86%E6%9E%90)
-  - [waitStatus](#waitStatus)
-    - [CANCELLED](#CANCELLED)
-    - [SIGNAL](#SIGNAL)
-    - [PROPAGATE](#PROPAGATE)
-  - [AbstractQueuedSynchronizer queue and state](#AbstractQueuedSynchronizer-queue-and-state)
-  - [参考](#%E5%8F%82%E8%80%83)
+- [AQS](#aqs)
+  - [AbstractQueuedSynchronizer](#abstractqueuedsynchronizer)
+  - [实例分析](#%e5%ae%9e%e4%be%8b%e5%88%86%e6%9e%90)
+  - [AbstractQueuedSynchronizer.Node](#abstractqueuedsynchronizernode)
+  - [Node.waitStatus](#nodewaitstatus)
+    - [CANCELLED](#cancelled)
+    - [SIGNAL](#signal)
+    - [PROPAGATE](#propagate)
+  - [AbstractQueuedSynchronizer queue and state](#abstractqueuedsynchronizer-queue-and-state)
+  - [参考](#%e5%8f%82%e8%80%83)
 
 ## AbstractQueuedSynchronizer
 
@@ -26,7 +27,26 @@
 - [count-down-latch.md](count-down-latch.md)
 - [reentrant-lock.md](reentrant-lock.md)
 
-## waitStatus
+## AbstractQueuedSynchronizer.Node
+
+```java
+// Node 的定义
+static final class Node {
+ static final Node SHARED = new Node();
+ static final Node EXCLUSIVE = null;
+ static final int CANCELLED =  1;
+ static final int SIGNAL    = -1;
+ static final int CONDITION = -2;
+ static final int PROPAGATE = -3;
+ volatile int waitStatus;
+ volatile Node prev;
+ volatile Node next;
+ volatile Thread thread;
+ Node nextWaiter;
+}
+```
+
+## Node.waitStatus
 
 ```java
 // Node
