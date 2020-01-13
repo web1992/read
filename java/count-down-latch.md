@@ -23,6 +23,10 @@
 - [java.util.concurrent.locks.AbstractQueuedSynchronizer](aqs.md)
 - [java.util.concurrent.locks.LockSupport](lock-support.md)
 
+`CountDownLatch` 内部也是基于 AQS 实现的，`await` 可以理解为线程去`竞争锁`,竞争失败就`阻塞`线程
+
+`countDown` 可以理解为线程去`释放锁`，并`唤醒`线程
+
 ## concept
 
 在下面的例子中，会把 `CountDownLatch` 当做 `计数器` 来解说
@@ -105,6 +109,8 @@ public final void acquireSharedInterruptibly(int arg)
         doAcquireSharedInterruptibly(arg);
 }
 // CountDownLatch
+// 在初始化的时候 设置了 state 的值，在没有执行 countDown 方法之前
+// state 一直是大于0，因此会执行 doAcquireSharedInterruptibly 方法
 protected int tryAcquireShared(int acquires) {
     // -1 表示还有其他线程在获取锁
     return (getState() == 0) ? 1 : -1;
@@ -139,8 +145,8 @@ private void doAcquireSharedInterruptibly(int arg)
             // 修改成功，才会阻塞当前线程(执行parkAndCheckInterrupt)
             if (shouldParkAfterFailedAcquire(p, node) &&
                 parkAndCheckInterrupt())// parkAndCheckInterrupt 这里使用 LockSupport.park 阻塞当前线程
-                throw new InterruptedException();// parkAndCheckInterrupt 在线程被 interrupt 之后就会抛出 InterruptedException 异常 
-        } 
+                throw new InterruptedException();// parkAndCheckInterrupt 在线程被 interrupt 之后就会抛出 InterruptedException 异常
+        }
     } finally {
         if (failed)
             cancelAcquire(node);// 如果线程被 interrupt 了，那么需要取消获取锁的请求
@@ -149,6 +155,14 @@ private void doAcquireSharedInterruptibly(int arg)
 
 // shouldParkAfterFailedAcquire 方法是在 for;; 循环中执行的，会被执行多次
 // shouldParkAfterFailedAcquire 方法的主要目的是设置 waitStatus = Node.SIGNAL
+// 这里的 pred 其实是当前线程的前前一个线程 （源码中有 Requires that pred == node.prev 这样的注释）
+// shouldParkAfterFailedAcquire 方法的作用就是把 pred 的 waitStatus 修改成 SIGNAL
+// 如果修改成功就 返回 true 阻塞当前线程(node 里面的线程)
+// 那么为什么要这样做呢？(修改 pred 的waitStatus=SIGNAL成功后,当前线程就可以阻塞了？)
+// 这里需要与 doReleaseShared 方法一起看
+// doReleaseShared 方法会从 head 开始，先判断 head.waitStatus =SIGNAL
+// 如果是ture，使用cas 修改head.waitStatus=0，如果修改成功那么就唤醒 head.next 后面的线程
+// head 是在queue 初始化的时候写死的一个对象，是没有关系 Thread 对象，具体参考 enq 方法的代码
 private static boolean shouldParkAfterFailedAcquire(Node pred, Node node) {
     int ws = pred.waitStatus;// 第一次 ws = 0
     if (ws == Node.SIGNAL)// 第一次中ws被设置了等于SIGNAL，第二次执行的时候返回true
@@ -206,6 +220,8 @@ private void setHeadAndPropagate(Node node, int propagate) {
 }
 
 // AbstractQueuedSynchronizer
+// addWaiter 把当前线程包装成 Node
+// 并放入到 queue 的末尾tail
 private Node addWaiter(Node mode) {
     // 把当前线程包装成 Node
     Node node = new Node(Thread.currentThread(), mode);
@@ -213,7 +229,7 @@ private Node addWaiter(Node mode) {
     Node pred = tail;// 队尾
     if (pred != null) {
         node.prev = pred;
-        // 队尾 不为空，说明有线程在排队，那么当前线程，也就是node 变成 tail
+        // 队尾 不为空，说明 FIFO 队列已经进行了初始化
         if (compareAndSetTail(pred, node)) {// 这里尝试变成tail,如果成功，就返回当前 Node
             pred.next = node;
             return node;
