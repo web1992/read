@@ -8,7 +8,7 @@
   - [example1](#example1)
   - [example2](#example2)
   - [example3](#example3)
-  - [参考](#%E5%8F%82%E8%80%83)
+  - [参考](#%e5%8f%82%e8%80%83)
 
 `CountDownLatch` 可用来实现线程之间的协作(或者理解为一个`计数器`)，如线程 A 等待线程 B,C,D 执行完成之后，再进行继续其他操作
 
@@ -70,13 +70,20 @@ public CountDownLatch(int count) {
     if (count < 0) throw new IllegalArgumentException("count < 0");
     this.sync = new Sync(count);
 }
+Sync(int count) {
+    setState(count);
+}
+// 设置 state 的值
+protected final void setState(int newState) {
+    state = newState;
+}
 ```
 
 ## await
 
 分析 `await` 为什么为使线程阻塞
 
-上面的 `await` 方法会使当前线程阻塞，而当前获取的方式一般是通过 `Thread.currentThread()` 方便的获取
+上面的 `await` 方法会使当前线程阻塞，而获取当前 `Thread` 的方式一般是通过 `Thread.currentThread()` 方法
 
 ```java
 // CountDownLatch
@@ -113,7 +120,7 @@ private void doAcquireSharedInterruptibly(int arg)
     final Node node = addWaiter(Node.SHARED);
     boolean failed = true;
     try {
-        for (;;) {
+        for (;;) {// 无限循环
             final Node p = node.predecessor();// 获取当前的节点的前一个节点
             if (p == head) {// 如果前一个节点为 head 说明只有一个线程在排队，进行尝试获取 计数器
                 int r = tryAcquireShared(arg);
@@ -132,13 +139,44 @@ private void doAcquireSharedInterruptibly(int arg)
             // 修改成功，才会阻塞当前线程(执行parkAndCheckInterrupt)
             if (shouldParkAfterFailedAcquire(p, node) &&
                 parkAndCheckInterrupt())// parkAndCheckInterrupt 这里使用 LockSupport.park 阻塞当前线程
-                throw new InterruptedException();
-        }
+                throw new InterruptedException();// parkAndCheckInterrupt 在线程被 interrupt 之后就会抛出 InterruptedException 异常 
+        } 
     } finally {
         if (failed)
-            cancelAcquire(node);
+            cancelAcquire(node);// 如果线程被 interrupt 了，那么需要取消获取锁的请求
     }
 }
+
+// shouldParkAfterFailedAcquire 方法是在 for;; 循环中执行的，会被执行多次
+// shouldParkAfterFailedAcquire 方法的主要目的是设置 waitStatus = Node.SIGNAL
+private static boolean shouldParkAfterFailedAcquire(Node pred, Node node) {
+    int ws = pred.waitStatus;// 第一次 ws = 0
+    if (ws == Node.SIGNAL)// 第一次中ws被设置了等于SIGNAL，第二次执行的时候返回true
+        /*
+         * This node has already set status asking a release
+         * to signal it, so it can safely park.
+         */
+        return true;
+    if (ws > 0) {// 第一次 ws = 0,不执行这里
+        /*
+         * Predecessor was cancelled. Skip over predecessors and
+         * indicate retry.
+         */
+        do {
+            node.prev = pred = pred.prev;
+        } while (pred.waitStatus > 0);
+        pred.next = node;
+    } else {// 第一次 ws = 0,执行了这里，设置waitStatus=SIGNAL
+        /*
+         * waitStatus must be 0 or PROPAGATE.  Indicate that we
+         * need a signal, but don't park yet.  Caller will need to
+         * retry to make sure it cannot acquire before parking.
+         */
+        compareAndSetWaitStatus(pred, ws, Node.SIGNAL);// 更新为 SIGNAL
+    }
+    return false;
+}
+
 // AbstractQueuedSynchronizer
 private void setHeadAndPropagate(Node node, int propagate) {
     Node h = head; // Record old head for check below
@@ -193,10 +231,10 @@ private Node enq(final Node node) {
     for (;;) {
         Node t = tail;// 第一次 tail 为空的时候，进行初始化 head 和 tail
         if (t == null) { // Must initialize
-            if (compareAndSetHead(new Node()))
-                tail = head;
+            if (compareAndSetHead(new Node()))// 设置 head
+                tail = head;// 第一次执行的时候 t=null 会再执行一次for循环，执行else分支代码
         } else {
-            node.prev = t;
+            node.prev = t;// 第二次执行for,设置 tail
             if (compareAndSetTail(t, node)) {
                 t.next = node;
                 return t;
@@ -219,13 +257,14 @@ public void countDown() {
 // AbstractQueuedSynchronizer
 public final boolean releaseShared(int arg) {
         if (tryReleaseShared(arg)) {// 尝试释放锁
-            doReleaseShared();// 返回 false 就不执行这个，存在其他线程已经执行了 countDown
+            doReleaseShared();// 返回 false 就不执行这个，存在其他线程已经执行了 countDown(没有再次执行的必要)
             return true;
         }
         return false;
 }
 // CountDownLatch
-// 只有在 state =0 的时候 tryReleaseShared 才返回true
+// 只有在 被修改为 state =0 的时候 tryReleaseShared 才返回true
+// 本身已经是 0 了，返回false
 // 才会执行 doReleaseShared 的代码，去真正的释放锁，唤醒线程
 protected boolean tryReleaseShared(int releases) {
             // Decrement count; signal when transition to zero
@@ -268,10 +307,8 @@ private void doReleaseShared() {
                          !compareAndSetWaitStatus(h, 0, Node.PROPAGATE))
                     continue;                // loop on failed CAS
             }
-            // h == head 这里　就是 if(true) 的写法
-            // 只有当上面的判断 h != null && h != tail 不成立了，才会执行下面的代码
-            // 比如 head 为空了，或者 head == tail 了
-            // head==tail 说明有线程出队列了，因此结束循环
+            // 在执行 unparkSuccessor 之后，之前阻塞的线程会被唤醒
+            // 而被唤醒的线程会执行 setHead 把自己作为 head
             if (h == head)                   // loop if head changed
                 break;
         }
@@ -305,6 +342,78 @@ private void unparkSuccessor(Node node) {
         }
         if (s != null)
             LockSupport.unpark(s.thread);// 唤醒线程
+}
+
+// 这时候再来看 doAcquireSharedInterruptibly 方法
+// 在执行 CountDownLatch.await 之后:
+// 之前线程在执行 await 的方法，然后执行到 parkAndCheckInterrupt 方法进行阻塞
+
+// 在执行 CountDownLatch.countDown 之后:
+// 进入 for (;;) 继续执行,主要是执行 setHeadAndPropagate 中的逻辑修改 queue 的 head
+private void doAcquireSharedInterruptibly(int arg)
+    throws InterruptedException {
+    final Node node = addWaiter(Node.SHARED);
+    boolean failed = true;
+    try {
+        for (;;) {
+            final Node p = node.predecessor();
+            if (p == head) {
+                // state 一定=0
+                // tryAcquireShared 只会返回1 和 -1
+                int r = tryAcquireShared(arg);
+                if (r >= 0) {// 这里一定执行
+                    setHeadAndPropagate(node, r);
+                    p.next = null; // help GC
+                    failed = false;
+                    return;
+                }
+            }
+            if (shouldParkAfterFailedAcquire(p, node) &&
+                parkAndCheckInterrupt())
+                throw new InterruptedException();
+        }
+    } finally {
+        if (failed)
+            cancelAcquire(node);
+    }
+}
+// CountDownLatch.tryAcquireShared
+protected int tryAcquireShared(int acquires) {
+    return (getState() == 0) ? 1 : -1;
+}
+// 把当前 node 设置成 head
+private void setHead(Node node) {
+    head = node;
+    node.thread = null;
+    node.prev = null;
+}
+// propagate 一定大于 0
+// 下面的 if 一定执行
+private void setHeadAndPropagate(Node node, int propagate) {
+    Node h = head; // Record old head for check below
+    setHead(node);
+    /*
+     * Try to signal next queued node if:
+     *   Propagation was indicated by caller,
+     *     or was recorded (as h.waitStatus either before
+     *     or after setHead) by a previous operation
+     *     (note: this uses sign-check of waitStatus because
+     *      PROPAGATE status may transition to SIGNAL.)
+     * and
+     *   The next node is waiting in shared mode,
+     *     or we don't know, because it appears null
+     *
+     * The conservatism in both of these checks may cause
+     * unnecessary wake-ups, but only when there are multiple
+     * racing acquires/releases, so most need signals now or soon
+     * anyway.
+     */
+    if (propagate > 0 || h == null || h.waitStatus < 0 ||
+        (h = head) == null || h.waitStatus < 0) {
+        Node s = node.next;
+        if (s == null || s.isShared())
+            doReleaseShared();
+    }
 }
 ```
 
