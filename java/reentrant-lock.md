@@ -4,11 +4,13 @@
   - [简介](#%e7%ae%80%e4%bb%8b)
   - [Lock interface](#lock-interface)
   - [ReentrantLock.lock 的实现](#reentrantlocklock-%e7%9a%84%e5%ae%9e%e7%8e%b0)
-  - [AbstractQueuedSynchronizer](#abstractqueuedsynchronizer)
   - [AbstractQueuedSynchronizer.tryAcquire](#abstractqueuedsynchronizertryacquire)
     - [AbstractQueuedSynchronizer.acquire](#abstractqueuedsynchronizeracquire)
     - [AbstractQueuedSynchronizer.acquireQueued](#abstractqueuedsynchronizeracquirequeued)
   - [ReentrantLock.unlock 的实现](#reentrantlockunlock-%e7%9a%84%e5%ae%9e%e7%8e%b0)
+  - [tryRelease](#tryrelease)
+  - [unparkSuccessor](#unparksuccessor)
+  - [waitStatus](#waitstatus)
   - [公平锁&非公平锁的实现](#%e5%85%ac%e5%b9%b3%e9%94%81%e9%9d%9e%e5%85%ac%e5%b9%b3%e9%94%81%e7%9a%84%e5%ae%9e%e7%8e%b0)
     - [NonfairSync](#nonfairsync)
     - [FairSync](#fairsync)
@@ -74,8 +76,6 @@ ReentrantLock.lock -> ReentrantLock.Sync.lock
 另一类是执行 `入队` 的操作
 
 这也是 `AbstractQueuedSynchronizer` 的核心思路：**在线程之间去竞争获取锁的时候，先尝试修改 `state` 字段的值，如果修改成功，获取锁就是成功的，该线程继续执行，失败就把当前线程放入队列，阻塞当前线程，等他其他线程唤醒**
-
-## AbstractQueuedSynchronizer
 
 以公平锁为例，看下 `tryAcquire` 方法的实现（属于修改 `state` 这一类的操作）
 
@@ -233,8 +233,111 @@ private Node enq(final Node node) {
 
 ## ReentrantLock.unlock 的实现
 
+`ReentrantLock.unlock` 方法调用链
+
+```java
+ReentrantLock.unlock
+  -> ReentrantLock.Sync.release
+  -> tryRelease
+  -> unparkSuccessor
+```
+
+## tryRelease
+
 ```java
 
+// 执行 release
+public void unlock() {
+    sync.release(1);
+}
+// 执行 tryRelease
+// 如果成功执行 unparkSuccessor
+public final boolean release(int arg) {
+    if (tryRelease(arg)) {
+        Node h = head;
+        if (h != null && h.waitStatus != 0)
+            unparkSuccessor(h);// 把队列的 head 给 unparkSuccessor 方法
+        return true;
+    }
+    return false;
+}
+// tryRelease 就是修改 state 的值(state-1)
+protected final boolean tryRelease(int releases) {
+    int c = getState() - releases;
+    if (Thread.currentThread() != getExclusiveOwnerThread())
+        throw new IllegalMonitorStateException();
+    boolean free = false;
+    if (c == 0) {
+        free = true;
+        setExclusiveOwnerThread(null);
+    }
+    setState(c);
+    return free;
+}
+// 这里修改 state 没有使用 CAS 是因为：
+// 当前线程肯定是获取锁成功的，其他线程肯定是阻塞状态
+// 不存在其他线程同时修改 state 的情况，因此直接修改是可以的
+protected final void setState(int newState) {
+    state = newState;
+}
+```
+
+## unparkSuccessor
+
+```java
+/**
+ * Wakes up node's successor, if one exists.
+ *
+ * @param node the node
+ */
+// unparkSuccessor 方法从 head 找到下一个node
+// 如果不为空存在就唤醒node 绑定的线程
+// 为空，从tail找到一个合适的 node 进行线程唤醒
+private void unparkSuccessor(Node node) {
+    /*
+     * If status is negative (i.e., possibly needing signal) try
+     * to clear in anticipation of signalling.  It is OK if this
+     * fails or if status is changed by waiting thread.
+     */
+    int ws = node.waitStatus;// 这里的 node 其实是 head
+    if (ws < 0)// 可能存在 waitStatus 小于0的情况，如果是修改为0
+        compareAndSetWaitStatus(node, ws, 0);
+    /*
+     * Thread to unpark is held in successor, which is normally
+     * just the next node.  But if cancelled or apparently null,
+     * traverse backwards from tail to find the actual
+     * non-cancelled successor.
+     */
+    Node s = node.next;
+    // 如果 head 的下一个 node 为空，从tail 找到一个进行锁的释放
+    if (s == null || s.waitStatus > 0) {// 大于 0 waitStatus=CANCELLED 取消状态
+        s = null;
+        // 从 tail 队尾开始寻找
+        for (Node t = tail; t != null && t != node; t = t.prev)
+            if (t.waitStatus <= 0)
+                s = t;
+    }
+    if (s != null)
+        LockSupport.unpark(s.thread);
+}
+```
+
+## waitStatus
+
+`waitStatus` 的值&含义
+
+```java
+/** waitStatus value to indicate thread has cancelled */
+static final int CANCELLED =  1;
+/** waitStatus value to indicate successor's thread needs unparking */
+static final int SIGNAL    = -1;
+/** waitStatus value to indicate thread is waiting on condition */
+static final int CONDITION = -2;
+/**
+ * waitStatus value to indicate the next acquireShared should
+ * unconditionally propagate
+ */
+static final int PROPAGATE = -3;
 ```
 
 ## 公平锁&非公平锁的实现
@@ -320,8 +423,20 @@ static final class FairSync extends Sync {
         return false;
     }
 }
-```
 
+// 1. 有线程在排队
+// 2. 排队的线程与当前线程不是同一个
+public final boolean hasQueuedPredecessors() {
+    // The correctness of this depends on head being initialized
+    // before tail and on head.next being accurate if the current
+    // thread is first in queue.
+    Node t = tail; // Read fields in reverse initialization order
+    Node h = head;
+    Node s;
+    return h != t &&
+        ((s = h.next) == null || s.thread != Thread.currentThread());
+}
+```
 
 ## demo
 
