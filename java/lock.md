@@ -1,11 +1,10 @@
 # Lock
 
 - [Lock](#lock)
-  - [好文连接](#%E5%A5%BD%E6%96%87%E8%BF%9E%E6%8E%A5)
+  - [好文连接](#%e5%a5%bd%e6%96%87%e8%bf%9e%e6%8e%a5)
   - [ReentrantLock](#reentrantlock)
   - [ReadWriteLock](#readwritelock)
   - [ReentrantReadWriteLock](#reentrantreadwritelock)
-  - [AbstractQueuedSynchronizer](#abstractqueuedsynchronizer)
 
 ## 好文连接
 
@@ -18,5 +17,3 @@
 ## ReadWriteLock
 
 ## ReentrantReadWriteLock
-
-## AbstractQueuedSynchronizer

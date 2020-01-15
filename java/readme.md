@@ -14,7 +14,7 @@
 
 ## j.u.c
 
-- [ ] [aqs.md](aqs.md)
+- [x] [aqs.md](aqs.md)
 - [x] [atomic.md](atomic.md)
 - [x] [blocking-queue.md](blocking-queue.md)
 - [ ] [cas.md](cas.md)
