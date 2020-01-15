@@ -8,6 +8,7 @@
     - [CANCELLED](#cancelled)
     - [SIGNAL](#signal)
     - [PROPAGATE](#propagate)
+    - [CONDITION](#condition)
   - [AbstractQueuedSynchronizer queue and state](#abstractqueuedsynchronizer-queue-and-state)
   - [参考](#%e5%8f%82%e8%80%83)
 
@@ -24,8 +25,8 @@
 
 ## 实例分析
 
-- [count-down-latch.md](count-down-latch.md)
-- [reentrant-lock.md](reentrant-lock.md)
+- [CountDownLatch](count-down-latch.md)
+- [ReentrantLock](reentrant-lock.md)
 
 ## AbstractQueuedSynchronizer.Node
 
@@ -82,7 +83,54 @@ static final int PROPAGATE = -3;
 
 ### PROPAGATE
 
-TODO
+`PROPAGATE` 状态在 `doReleaseShared` 方法中使用，表示 `waitStatus` 直接从 `0` 修改成 `PROPAGATE`
+
+`doReleaseShared` 的代码逻辑如下：
+
+```java
+private void doReleaseShared() {
+    for (;;) {
+        Node h = head;
+        if (h != null && h != tail) {
+            int ws = h.waitStatus;
+            if (ws == Node.SIGNAL) {
+                if (!compareAndSetWaitStatus(h, Node.SIGNAL, 0))
+                    continue;            // loop to recheck cases
+                unparkSuccessor(h);
+            }
+            else if (ws == 0 &&
+                     !compareAndSetWaitStatus(h, 0, Node.PROPAGATE))
+                continue;                // loop on failed CAS
+        }
+        if (h == head)                   // loop if head changed
+            break;
+    }
+}
+```
+
+### CONDITION
+
+`CONDITION` 表示进入了等待队列,在执行 `condition.await()` 之后会修改这个状态
+
+代码片段如下：
+
+```java
+private Node addConditionWaiter() {
+    Node t = lastWaiter;
+    // If lastWaiter is cancelled, clean out.
+    if (t != null && t.waitStatus != Node.CONDITION) {
+        unlinkCancelledWaiters();
+        t = lastWaiter;
+    }
+    Node node = new Node(Thread.currentThread(), Node.CONDITION);
+    if (t == null)
+        firstWaiter = node;
+    else
+        t.nextWaiter = node;
+    lastWaiter = node;
+    return node;
+}
+```
 
 ## AbstractQueuedSynchronizer queue and state
 
