@@ -4,6 +4,8 @@
   - [例子](#%e4%be%8b%e5%ad%90)
   - [CountDownLatch init](#countdownlatch-init)
   - [CountDownLatch await](#countdownlatch-await)
+  - [shouldParkAfterFailedAcquire](#shouldparkafterfailedacquire)
+  - [setHeadAndPropagate](#setheadandpropagate)
   - [CountDownLatch countDown](#countdownlatch-countdown)
   - [example1](#example1)
   - [example2](#example2)
@@ -46,28 +48,26 @@ public class CountDownLatchTest {
         // 这里进行初始化，参数是2,需要执行两次 countDown （计数器减少2，执行两次）
         // await 才会继续执行
         CountDownLatch cdl = new CountDownLatch(2);
+
         Runnable r = () -> {
             try {
                 TimeUnit.SECONDS.sleep(1);
                 System.out.println("sleep end");
-                //cdl.countDown();
-                //cdl.countDown();
+                cdl.countDown();
+                cdl.countDown();
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
         };
-        // 这里使用一个新的线程进行 countDown 操作
         // 主线程执行了 await，因此一直在阻塞
         new Thread(r).start();
         cdl.await();// 线程进行等待
-        System.out.println("end");
+        System.out.println("main end");
     }
 }
 ```
 
 ## CountDownLatch init
-
-`new CountDownLatch(2)`
 
 ```java
 // 在进行 new CountDownLatch 会创建一个 Sync 对象
@@ -121,13 +121,14 @@ protected int tryAcquireShared(int acquires) {
 ```java
 // AbstractQueuedSynchronizer
 // 下面的 for;; + shouldParkAfterFailedAcquire 方法实现了cas 语义
-// doAcquireSharedInterruptibly 主要做3件事：
+// doAcquireSharedInterruptibly 主要做4件事：
 // 1. 查询 state 的值
-//    执行 tryAcquireShared 尝试查询 state 的值是否为 0，state=0 表示没有其他线程持有锁了
+//    再次执行 tryAcquireShared 尝试查询 state 的值是否为 0，state=0 表示没有其他线程持有锁了
+// 2. [获取锁成功] 修改 head
 //    执行 setHeadAndPropagate 修改队列的 head（这里没有使用CAS进行修改head,下面会说明原因）
-// 2. 修改 head 的状态
+// 3. [获取锁失败] 修改 waitStatus
 //    shouldParkAfterFailedAcquire 方法会去修改 waitStatus = SIGNAL
-// 3. 阻塞线程
+// 4. [获取锁失败] 阻塞线程
 //    当上面的 tryAcquireShared 查询 state !=0
 //    说明有其他线程已经持有了锁，执行 shouldParkAfterFailedAcquire 和 parkAndCheckInterrupt 尝试阻塞
 //    而是否需要进入阻塞，要看是否存在其他线程已经释放锁的情况(后续会有说明)
@@ -168,6 +169,8 @@ private void doAcquireSharedInterruptibly(int arg)
 }
 ```
 
+## shouldParkAfterFailedAcquire
+
 先看 `tryAcquireShared` 执行失败之后, `shouldParkAfterFailedAcquire` 方法的逻辑：
 
 ```java
@@ -183,6 +186,9 @@ private void doAcquireSharedInterruptibly(int arg)
 // 在执行 shouldParkAfterFailedAcquire 的时候 waitStatus=0
 // 但是存在线程A正在修改 waitStatus 0 -> SIGNAL 准备进入阻塞状态的时候
 // 线程B执行了 doReleaseShared 已经释放了锁，修改 waitStatus=PROPAGATE,此时线程A其实是不需要进入阻塞状态了
+// 但是实际的逻辑有两种:(看下面的图片)
+// 第一种： waitStatus [0 ->PROPAGATE -> SIGNAL -> 0]
+// 第二种： waitStatus [0 -> SIGNAL ->0 ]
 private static boolean shouldParkAfterFailedAcquire(Node pred, Node node) {
     int ws = pred.waitStatus;// 第一次 ws = 0
     if (ws == Node.SIGNAL)// 第一次中 ws 被设置了等于 SIGNAL，第二次执行的时候返回 true
@@ -211,55 +217,23 @@ private static boolean shouldParkAfterFailedAcquire(Node pred, Node node) {
     }
     return false;
 }
-
-// 下面是线程入队的操作
-
-// AbstractQueuedSynchronizer
-// addWaiter 把当前线程包装成 Node
-// 并放入到 queue 的末尾tail
-private Node addWaiter(Node mode) {
-    // 把当前线程包装成 Node
-    Node node = new Node(Thread.currentThread(), mode);
-    // Try the fast path of enq; backup to full enq on failure
-    Node pred = tail;// 队尾
-    if (pred != null) {
-        node.prev = pred;
-        // 队尾 不为空，说明 FIFO 队列已经进行了初始化
-        if (compareAndSetTail(pred, node)) {// 这里尝试变成tail,如果成功，就返回当前 Node
-            pred.next = node;
-            return node;
-        }
-    }
-    enq(node);// 入队失败或者队尾不为空，那么执行入队操作
-    return node;
-}
-// AbstractQueuedSynchronizer
-private Node enq(final Node node) {
-    // 这里一个无限循环
-    // 也就是 cas 一直循环到设置成功
-    // 这里是有 cas 的目的是多线程的时候，会存在竞争，存在 head 或者tail 已经被其他线程初始化的情况
-    // cas 成功，结束循环
-    for (;;) {
-        Node t = tail;// 第一次 tail 为空的时候，进行初始化 head 和 tail
-        if (t == null) { // Must initialize
-            if (compareAndSetHead(new Node()))// 设置 head
-                tail = head;// 第一次执行的时候 t=null 会再执行一次for循环，执行else分支代码
-        } else {
-            node.prev = t;// 第二次执行for,设置 tail
-            if (compareAndSetTail(t, node)) {
-                t.next = node;
-                return t;
-            }
-        }
-    }
-}
 ```
 
-再看 `tryAcquireShared` 执行成功的逻辑
+第一种：
+
+![waitStatus](./images/asq-wait-status.png)
+
+第二种：
+
+![waitStatus](./images/asq-wait-status-2.png)
+
+## setHeadAndPropagate
+
+再看 `setHeadAndPropagate` 的逻辑
 
 ```java
 // AbstractQueuedSynchronizer
-// setHeadAndPropagate 方法没有使用
+// setHeadAndPropagate 在获取锁成功之后执行
 private void setHeadAndPropagate(Node node, int propagate) {
     Node h = head; // Record old head for check below
     setHead(node);
