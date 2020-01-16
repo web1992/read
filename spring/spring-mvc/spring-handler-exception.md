@@ -19,6 +19,7 @@ DispatcherServlet.doDispatch
 ## processHandlerException
 
 ```java
+//  DispatcherServlet
 // 下面的 handlerExceptionResolvers 就是上面的 DispatcherServlet.properties 的三个异常处理类
 protected ModelAndView processHandlerException(HttpServletRequest request, HttpServletResponse response,
          @Nullable Object handler, Exception ex) throws Exception {
@@ -130,6 +131,7 @@ public static List<ControllerAdviceBean> findAnnotatedBeans(ApplicationContext a
 找到有 `@ControllerAdvice` 注解的bean 之后，对其进行包装生成 `ExceptionHandlerMethodResolver` 对象
 
 ```java
+// ExceptionHandlerMethodResolver
 public ExceptionHandlerMethodResolver(Class<?> handlerType) {
     // 找到 handlerType 下面的所有方法
    for (Method method : MethodIntrospector.selectMethods(handlerType, EXCEPTION_HANDLER_METHODS)) {
@@ -139,7 +141,7 @@ public ExceptionHandlerMethodResolver(Class<?> handlerType) {
    }
 }
 
-//  
+//  ExceptionHandlerMethodResolver
 private List<Class<? extends Throwable>> detectExceptionMappings(Method method) {
    List<Class<? extends Throwable>> result = new ArrayList<>();
    detectAnnotationExceptionMappings(method, result);
@@ -155,6 +157,7 @@ private List<Class<? extends Throwable>> detectExceptionMappings(Method method) 
    }
    return result;
 }
+// ExceptionHandlerMethodResolver
 // 寻找 @ExceptionHandler 注解的类
 protected void detectAnnotationExceptionMappings(Method method, List<Class<? extends Throwable>> result) {
    ExceptionHandler ann = AnnotationUtils.findAnnotation(method, ExceptionHandler.class);
@@ -167,3 +170,39 @@ protected void detectAnnotationExceptionMappings(Method method, List<Class<? ext
 
 - `@ControllerAdvice` 作用在类上
 - `@ExceptionHandler` 作用在类的方法上
+
+## demo
+
+```java
+// 异常处理的demo
+@RestControllerAdvice
+public class ExceptionHandlerAdviceForRest {
+
+    // 对自定义异常的处理
+    @ExceptionHandler(RestException.class)
+    public String customGenericExceptionHandler(RestException exception) {
+        return "RestException " + exception.getMessage();
+    }
+
+    // 对 throwable 异常的的处理
+    @ExceptionHandler(Throwable.class)
+    public String throwable(Throwable exception) {
+        return "Throwable " + exception.getMessage();
+    }
+
+    /**
+     * 自定义异常 + ResponseStatus
+     * @param exception
+     * @return
+     * 可以使用 ResponseStatus 进行 http code 的自定义
+     */
+    @ExceptionHandler(UnauthorizedException.class)
+    //@ResponseStatus(value = HttpStatus.UNAUTHORIZED, reason = "UNAUTHORIZED")
+    @ResponseStatus(value = HttpStatus.UNAUTHORIZED)
+    public String unauthorized(UnauthorizedException exception) {
+        // 下面的 return 可以使用 reason = "UNAUTHORIZED" 覆盖
+        return "unauthorized " + exception.getMessage();
+    }
+
+}
+```
