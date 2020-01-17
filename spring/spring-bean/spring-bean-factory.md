@@ -61,6 +61,10 @@ synchronized (this.beanFactoryMonitor) {
 
 - [BeanFactory `VS` FactoryBean](spring-factory-bean.md)
 
+`BeanFactory` 是 `Spring` 中的 `bean` 容器，管理所有的 `Bean` 对象
+
+`FactoryBean` 用来创建 `bean` 对象，比如 `mybatis` 用 [MapperFactoryBean](.././../java/mybatis/mybatis-mapper-factory-bean.md) 来创建 `Mapper` 对象
+
 ## Reference
 
 - [https://www.cnblogs.com/aspirant/p/9082858.html](https://www.cnblogs.com/aspirant/p/9082858.html)
