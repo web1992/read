@@ -265,11 +265,7 @@ The value of a map key or value, or a set value, can also again be any of the fo
 
 > bean | ref | idref | list | set | map | props | value | null
 
-
 ## References to other beans (collaborators)
-
-
-
 
 ## Lazy-initialized beans
 
@@ -287,13 +283,11 @@ However, when a lazy-initialized bean is a dependency of a singleton bean that i
 
 ## Autowiring collaborators
 
-
-
 ### Autowiring modes
 
 [Link](https://docs.spring.io/spring/docs/4.3.x/spring-framework-reference/htmlsingle/#beans-factory-autowire)
 
-|Mode		|	Explanation |
+|Mode   |	Explanation |
 |-------	| ------------- |
 |no     	|  (Default) No autowiring. Bean references must be defined via a ref element. Changing the default setting is not recommended for larger deployments, because specifying collaborators explicitly gives greater control and clarity. To some extent, it documents the structure of a system.             |
 |byName	 	|   Autowiring by property name. Spring looks for a bean with the same name as the property that needs to be autowired. For example, if a bean definition is set to autowire by name, and it contains a master property (that is, it has a setMaster(..) method), Spring looks for a bean definition named master, and uses it to set the property.            |
@@ -348,6 +342,7 @@ public class CommandManager implements ApplicationContextAware {
 }
 
 ```
+
 ## Method injection
 
 [Link](https://docs.spring.io/spring/docs/4.3.x/spring-framework-reference/htmlsingle/#beans-factory-method-injection)
@@ -384,12 +379,10 @@ public class CommandManager implements ApplicationContextAware {
 ## Arbitrary method replacement
 
 
-
 ## Dependency Injection
 
 - Constructor-based dependency injection [Link](https://docs.spring.io/spring/docs/4.3.x/spring-framework-reference/htmlsingle/#beans-constructor-injection)
 - Setter-based dependency injection [Link](https://docs.spring.io/spring/docs/4.3.x/spring-framework-reference/htmlsingle/#beans-setter-injection)
-
 
 ## The singleton scope
 
@@ -517,9 +510,11 @@ public class AnotherExampleBean implements InitializingBean {
 but does not couple the code to Spring.
 
 ## Destruction callbacks
+
 ```xml
 <bean id="exampleInitBean" class="examples.ExampleBean" destroy-method="cleanup"/>
 ```
+
 ```java
 public class ExampleBean {
 
@@ -534,6 +529,7 @@ is exactly the same as:
 ```xml
 <bean id="exampleInitBean" class="examples.AnotherExampleBean"/>
 ```
+
 ```java
 public class AnotherExampleBean implements DisposableBean {
 
@@ -542,14 +538,12 @@ public class AnotherExampleBean implements DisposableBean {
     }
 }
 ```
-but does not couple the code to Spring.
 
+but does not couple the code to Spring.
 
 ## Default initialization and destroy methods
 
 You can configure the Spring container to look for named initialization and destroy callback method names on every bean. This means that you, as an application developer, can write your application classes and use an initialization callback called init(), without having to configure an init-method="init" attribute with each bean definition. The Spring IoC container calls that method when the bean is created (and in accordance with the standard lifecycle callback contract described previously). This feature also enforces a consistent naming convention for initialization and destroy method callbacks.
-
-
 
 ```xml
 <beans default-init-method="init">
@@ -559,7 +553,6 @@ You can configure the Spring container to look for named initialization and dest
     </bean>
 
 </beans>
-
 ```
 
 ## Combining lifecycle mechanisms
@@ -575,7 +568,6 @@ Methods annotated with @PreDestroy
 destroy() as defined by the DisposableBean callback interface
 A custom configured destroy() method
 
-
 ## ApplicationContextAware and BeanNameAware
 
 `org.springframework.context.ApplicationContextAware`
@@ -590,7 +582,6 @@ public interface BeanNameAware {
 
     void setBeanName(String name) throws BeansException;
 }
-
 ```
 
 Note again that usage of these interfaces ties your code to the Spring API and does not follow the Inversion of Control style. As such, they are recommended for `infrastructure` beans that require programmatic access to the container.
@@ -611,14 +602,13 @@ A bean definition can contain a lot of configuration information, including cons
     <property name="name" value="override"/>
     <!-- the age property value of 1 will be inherited from parent -->
 </bean>
-
 ```
+
 ## Customizing beans using a BeanPostProcessor
 
 `RequiredAnnotationBeanPostProcessor`
 
 [example](https://docs.spring.io/spring/docs/4.3.x/spring-framework-reference/htmlsingle/#beans-factory-extension-bpp-examples-hw)
-
 
 ## Customizing configuration metadata with a BeanFactoryPostProcessor
 
@@ -626,7 +616,6 @@ A bean definition can contain a lot of configuration information, including cons
 - `PropertyPlaceholderConfigurer`
 
 ## Example: the Class name substitution PropertyPlaceholderConfigurer
-
 
 ```XML
 <bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
@@ -642,7 +631,6 @@ A bean definition can contain a lot of configuration information, including cons
 </bean>
 
 <context:property-placeholder location="classpath:com/foo/jdbc.properties"/>
-
 ```
 
 ## Customizing instantiation logic with a FactoryBean
@@ -670,8 +658,8 @@ Class getObjectType(): returns the object type returned by the getObject() metho
     <context:annotation-config/>
 
 </beans>
-
 ```
+
 (The implicitly registered post-processors include `AutowiredAnnotationBeanPostProcessor`, `CommonAnnotationBeanPostProcessor`, `PersistenceAnnotationBeanPostProcessor`, as well as the aforementioned `RequiredAnnotationBeanPostProcessor`.)
 
 <context:annotation-config/> only looks for annotations on beans in the same application context in which it is defined. This means that, if you put <context:annotation-config/> in a WebApplicationContext for a DispatcherServlet, it only checks for @Autowired beans in your controllers, and not your services. See Section 22.2, “The DispatcherServlet” for more information.
@@ -713,8 +701,6 @@ public class MovieRecommender {
 
     // ...
 }
-
-
 ```
 
 The corresponding bean definitions appear as follows. The bean with qualifier value "main" is wired with the constructor argument that is qualified with the same value.
@@ -746,7 +732,6 @@ The corresponding bean definitions appear as follows. The bean with qualifier va
     <bean id="movieRecommender" class="example.MovieRecommender"/>
 
 </beans>
-
 ```
 
 ## @Resource
@@ -860,14 +845,12 @@ public static void main(String[] args) {
 
 ## Enabling component scanning with scan(String…​)
 
-
 ```java
 Configuration
 @ComponentScan(basePackages = "com.acme")
 public class AppConfig  {
     ...
 }
-
 ```
 
 > Experienced Spring users will be familiar with the XML declaration equivalent from Spring’s context: namespace
@@ -876,7 +859,6 @@ public class AppConfig  {
 <beans>
     <context:component-scan base-package="com.acme"/>
 </beans>
-
 ```
 
 Remember that @Configuration classes are meta-annotated with @Component, so they are candidates for component-scanning! In the example above, assuming that AppConfig is declared within the com.acme package (or any package underneath), it will be picked up during the call to scan(), and upon refresh() all its @Bean methods will be processed and registered as bean definitions within the container.
@@ -894,6 +876,7 @@ public class AppConfig {
     ...
 }
 ```
+
 and the equivalent using XML
 
 ```xml
@@ -908,7 +891,6 @@ and the equivalent using XML
 ```
 
 ## Support for web applications with AnnotationConfigWebApplicationContext
-
 
 ## Declaring a bean
 
@@ -943,7 +925,6 @@ public class MyConfiguration {
 
 ## Using the @Configuration annotation
 
-
 ## Environment abstraction
 
 The Environment is an abstraction integrated in the container that models two key aspects of the application environment: profiles and properties.
@@ -976,6 +957,7 @@ Properties play an important role in almost all applications, and may originate 
 </beans>
 
 ```
+
 ## Activating a profile
 
 Activating a profile can be done in several ways, but the most straightforward is to do it programmatically against the Environment API which is available via an ApplicationContext:
@@ -985,8 +967,8 @@ AnnotationConfigApplicationContext ctx = new AnnotationConfigApplicationContext(
 ctx.getEnvironment().setActiveProfiles("development");
 ctx.register(SomeConfig.class, StandaloneDataConfig.class, JndiDataConfig.class);
 ctx.refresh();
-
 ```
+
 Note that profiles are not an "either-or" proposition; it is possible to activate multiple profiles at once. Programmatically, simply provide multiple profile names to the setActiveProfiles() method, which accepts String…​ varargs:
 
 ```java
@@ -1012,20 +994,17 @@ public class DefaultDataConfig {
             .build();
     }
 }
-
 ```
 
 The name of the default profile can be changed using setDefaultProfiles() on the Environment or declaratively using the `spring.profiles.default` property
 
 ## PropertySource abstraction
 
-
 ```java
 ApplicationContext ctx = new GenericApplicationContext();
 Environment env = ctx.getEnvironment();
 boolean containsFoo = env.containsProperty("foo");
 System.out.println("Does my environment contain the 'foo' property? " + containsFoo);
-
 ```
 
 In the snippet above, we see a high-level way of asking Spring whether the foo property is defined for the current environment. To answer this question, the Environment object performs a search over a set of `PropertySource` objects. A `PropertySource` is a simple abstraction over any source of key-value pairs, and Spring’s `StandardEnvironment` is configured with two PropertySource objects — one representing the set of JVM system properties (a la `System.getProperties()`) and one representing the set of system environment variables (a la `System.getenv()`).
@@ -1035,7 +1014,6 @@ In the snippet above, we see a high-level way of asking Spring whether the foo p
 - JNDI environment variables ("java:comp/env/" entries)
 - JVM system properties ("-D" command-line arguments)
 - JVM system environment (operating system environment variables)
-
 
 ## PropertySource
 
@@ -1054,7 +1032,6 @@ public class AppConfig {
         return testBean;
     }
 }
-
 ```
 
 ```java
@@ -1072,21 +1049,16 @@ public class AppConfig {
         return testBean;
     }
 }
-
 ```
 
 Assuming that "my.placeholder" is present in one of the property sources already registered, e.g. system properties or environment variables, the placeholder will be resolved to the corresponding value. If not, then "`default/path`" will be used as a default. If no default is specified and a property cannot be resolved, an `IllegalArgumentException` will be thrown.
 
-
-
 > Placeholder resolution in statements
-
 
 ```xml
 <beans>
     <import resource="com/bank/service/${customer}-config.xml"/>
 </beans>
-
 ```
 
 ## Additional capabilities of the ApplicationContext
@@ -1135,17 +1107,14 @@ example
 
 ```xml
 <beans>
-
-    <!-- this MessageSource is being used in a web application -->
-    <bean id="messageSource" class="org.springframework.context.support.ResourceBundleMessageSource">
-        <property name="basename" value="exceptions"/>
-    </bean>
-
-    <!-- lets inject the above MessageSource into this POJO -->
-    <bean id="example" class="com.foo.Example">
-        <property name="messages" ref="messageSource"/>
-    </bean>
-
+<!-- this MessageSource is being used in a web application -->
+<bean id="messageSource" class="org.springframework.context.support.ResourceBundleMessageSource">
+    <property name="basename" value="exceptions"/>
+</bean>
+<!-- lets inject the above MessageSource into this POJO -->
+<bean id="example" class="com.foo.Example">
+    <property name="messages" ref="messageSource"/>
+</bean>
 </beans>
 
 ```
@@ -1185,7 +1154,6 @@ Ebagum lad, the 'userDao' argument is required, I say, required.
 
 Event handling in the ApplicationContext is provided through the ApplicationEvent class and ApplicationListener interface. If a bean that implements the ApplicationListener interface is deployed into the context, every time an ApplicationEvent gets published to the ApplicationContext, that bean is notified. Essentially, this is the standard Observer design pattern.
 
-
 - `ApplicationListener`
 - `ApplicationEvent`
 - `ContextRefreshedEvent`
@@ -1201,4 +1169,3 @@ Spring’s eventing mechanism is designed for simple communication between Sprin
 The BeanFactory provides the underlying basis for Spring’s IoC functionality but it is only used directly in integration with other third-party frameworks and is now largely historical in nature for most users of Spring. The BeanFactory and related interfaces, such as BeanFactoryAware, InitializingBean, DisposableBean, are still present in Spring for the purposes of backward compatibility with the large number of third-party frameworks that integrate with Spring. Often third-party components that can not use more modern equivalents such as @PostConstruct or @PreDestroy in order to avoid a dependency on JSR-250.
 
 This section provides additional background into the differences between the BeanFactory and ApplicationContext and how one might access the IoC container directly through a classic singleton lookup.
-
