@@ -53,9 +53,10 @@ this.config.setTrailingSlashMatch(this.useTrailingSlashMatch);
 this.config.setRegisteredSuffixPatternMatch(this.useRegisteredSuffixPatternMatch);
 this.config.setContentNegotiationManager(getContentNegotiationManager());
 
-// 调用父类 AbstractHandlerMethodMapping 
+// 调用父类 AbstractHandlerMethodMapping
 // 去遍历所有的 bean 对象，匹配那些 有Controller 和 RequestMapping 注解的bean
-// 进行初始化的注册工作
+// 进行初始化的注册工作（简单理解就是注册 DemoController 中的所有有 RequestMapping 注解的方法）
+// 等 http 请求到来的时候，就可以调用到具体的 DemoController 中的方法了
 super.afterPropertiesSet();
 }
 
