@@ -4,10 +4,11 @@
 
 - [@Configuration](#configuration)
   - [Define of Configuration](#define-of-configuration)
+  - [demo](#demo)
   - [AnnotationConfigApplicationContext](#annotationconfigapplicationcontext)
   - [ConfigurationClassPostProcessor](#configurationclasspostprocessor)
     - [postProcessBeanDefinitionRegistry](#postprocessbeandefinitionregistry)
-  - [ConfigurationClassParser](#configurationclassparser)
+  - [ConfigurationClassParser parse](#configurationclassparser-parse)
     - [doProcessConfigurationClass](#doprocessconfigurationclass)
   - [ConfigurationClass](#configurationclass)
 
@@ -25,6 +26,38 @@ public @interface Configuration {
 String value() default "";
 
 }
+```
+
+## demo
+
+```java
+// 用这个例子来分析 @Configuration 的解析过程
+AnnotationConfigApplicationContext ctx = new AnnotationConfigApplicationContext();
+     ctx.register(AppConfig.class);
+     ctx.refresh();
+     MyBean myBean = ctx.getBean(MyBean.class);
+     System.out.println(myBean);
+ }
+static class MyBean {
+     String name;
+     public MyBean(String name) {
+         System.out.println("MyBean init");
+         this.name = name;
+     }
+     @Override
+     public String toString() {
+         return "MyBean{" +
+                 "name='" + name + '\'' +
+                 '}';
+     }
+ }
+ @Configuration
+ static class AppConfig {
+     @Bean
+     MyBean getBean() {
+         return new MyBean("Spring");
+     }
+ }
 ```
 
 ## AnnotationConfigApplicationContext
@@ -68,7 +101,7 @@ this.resourceLoader, this.componentScanBeanNameGenerator, registry);
 
 会创建 `ConfigurationClassParser` 对象解析`@Configuration`的注解
 
-## ConfigurationClassParser
+## ConfigurationClassParser parse
 
 ```java
 do {
