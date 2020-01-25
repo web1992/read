@@ -51,7 +51,13 @@
 
 ## redis RDB
 
+二进制的文件的持久化，根据 redis 不同的对象使用不同的数据对象格式进行保存
+
 ## redis AOF
+
+基于 redis 命令的持久化文件，基于redis 命令会导致文件过大，redis 提了 AOF 重写功能，缩小文件的大小
+
+## redis 事件
 
 ## redis 排序
 
