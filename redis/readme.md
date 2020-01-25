@@ -46,6 +46,9 @@
 
 ## redis 数据库
 
+- 数据库切换
+- 过期建删除策略
+
 ## redis RDB
 
 ## redis AOF
