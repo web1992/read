@@ -59,6 +59,20 @@
 
 ## redis 事件
 
+- serverCron
+
 ## redis 排序
 
 ## redis bit array
+
+## redis 复制
+
+PSYNC 的实现
+
+- 设置主服务器的IP和端口
+- 建立套字节连接
+- 发送PING
+- 身份验证
+- 发生端口信息
+- 同步
+- 命令传播
