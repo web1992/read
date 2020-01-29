@@ -67,7 +67,7 @@
 
 ## redis 复制
 
-PSYNC 的实现
+PSYNC 的实现步骤
 
 - 设置主服务器的IP和端口
 - 建立套字节连接
@@ -76,3 +76,14 @@ PSYNC 的实现
 - 发生端口信息
 - 同步
 - 命令传播
+
+## redis Sentinel
+
+- Sentinel 用来进行 Redis  的故障转移
+- 如何检查服务的下线（每1秒发送一次 PING 命令）
+- 主观下线 （Sentinel 在指定的时间内没有收到 PING 回复）
+- 客观下线 （Sentinel 询问其他 Sentinel 是否需要下线此服务器）
+- 进行 Sentinel 选举，选择出一个领头的 Sentinel
+- 领头的 Sentinel 对下线的 Redis master 下线，找到一个新的 slave 当做master 并让其他savle 复制这个新的 master
+
+Sentinel 本质是一种特殊的 Redis 服务器
