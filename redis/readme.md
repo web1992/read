@@ -18,7 +18,7 @@
 - dict
   - dicEntry
   - dicht
-- intset
+- intset6
 - skiplist
 - ziplist
 - redisObject
@@ -87,3 +87,8 @@ PSYNC 的实现步骤
 - 领头的 Sentinel 对下线的 Redis master 下线，找到一个新的 slave 当做master 并让其他savle 复制这个新的 master
 
 Sentinel 本质是一种特殊的 Redis 服务器
+
+## redis 集群(Cluster)
+
+- 集群分槽 16384 个 slot（槽）
+- 集成也支持主从模式（集群的主从模式）
