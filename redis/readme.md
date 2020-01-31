@@ -92,3 +92,9 @@ Sentinel 本质是一种特殊的 Redis 服务器
 
 - 集群分槽 16384 个 slot（槽）
 - 集成也支持主从模式（集群的主从模式）
+
+## redis 发布和订阅
+
+- PUBLISH
+- SUBSCRIBE
+- PSUBSCRIBE
