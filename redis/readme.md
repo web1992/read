@@ -95,6 +95,35 @@ Sentinel 本质是一种特殊的 Redis 服务器
 
 ## redis 发布和订阅
 
-- PUBLISH
-- SUBSCRIBE
-- PSUBSCRIBE
+| 支持的命令      | 描述                                  |
+| --------------- | ------------------------------------- |
+| PUBLISH         | 发布                                  |
+| SUBSCRIBE       | 频道订阅                              |
+| UNSUBSCRIBE     | 取消订阅                              |
+| PSUBSCRIBE      | 模式订阅（支持通配符的订阅）          |
+| PSUNSUBCRIBE    | 取消订阅                              |
+| PUBSUB CHANNELS | 查询订阅信息(只会列出 SUBSCRIBE 订阅) |
+| PUBSUB NUMSUB   | 统计 SUBSCRIBE 订阅者的数量           |
+| PUBSUB NUMPAT   | 统计 PSUBSCRIBE 订阅者的数量          |
+
+```c
+struct redisServer{
+
+// 保存所有订阅的频道(字典)
+dict *pubsub_channels;
+
+// 保存所有模式的订阅关系（列表）
+// PSUBSCRIBE 命令
+// 的执行订阅信息就保存在这里
+list *pusbub_patterns;
+}
+
+typedef struct pubsubPattern{
+// 订阅模式的客户端
+redisClient *client;
+// 被订阅的模式
+robj *pattern;
+}
+```
+
+## redis 事务
