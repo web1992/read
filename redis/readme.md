@@ -1,14 +1,6 @@
 # redis 笔记
 
-## Other
-
-- zset
-- set
-- hashset
-- intset
-- list
-- ziplist
-- linklist
+《Redis 的设计与实现》笔记
 
 ## redis 的数据结构
 
