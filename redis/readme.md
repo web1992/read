@@ -57,6 +57,9 @@
 
 ## redis bit array
 
+- 用来进行数据统计使用
+- 汉明重量算法 统计
+
 ## redis 复制
 
 PSYNC 的实现步骤
