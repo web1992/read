@@ -127,3 +127,46 @@ robj *pattern;
 ```
 
 ## redis 事务
+
+事务提供了一种将多个命令请求打包，然后一次性，按顺序执行地执行多个命令的机制，并且在事务执行期间，
+服务器不会中断事务而改去执行其他客户端的命令请求，它会将事务中的所有命令都执行完毕，然后才去处理其他客户端的命令请求。
+
+| 事务命令 | 描述 |
+| -------- | ---- |
+| MULTI    |
+| EXEC     |
+| WATCH    |
+| DISCARD  |
+
+> 事务的实现
+
+1) 事务开始 MULTI 让客户端进入事务状态
+2) 命令入队
+3) 事务执行
+
+```c
+typedef struct redisClient{
+    // 事务状态
+    multiState mstate;
+} redisClient;
+
+typedef struct multiState{
+    // 事务队列，FIFO顺序
+    multiCmd *commands;
+    // 已入队命令技术
+    int count;
+} multiState;
+
+typedef struct multiCmd{
+    // 参数
+    robj **argv;
+    // 参数数量
+    int argc;
+    // 命令指针
+    struct redisCommand *cmd;
+} multiCmd;
+```
+
+> 事务的 ACDI
+
+在 Redis 中，事务总是具有原子性(Atomiccity)，一致性(Consistency)和隔离性(Isolation)，并且当 Redis 运行在某种特定的持久模式下时，事务也具有耐久性(Durablity)。
