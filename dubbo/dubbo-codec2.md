@@ -4,13 +4,14 @@
   - [简介](#%e7%ae%80%e4%bb%8b)
   - [Codec2 interface](#codec2-interface)
   - [ExchangeCodec](#exchangecodec)
-    - [Magic number](#magic-number)
-    - [ExchangeCodec-decode](#exchangecodec-decode)
+  - [Magic number](#magic-number)
+  - [Dubbo encode](#dubbo-encode)
     - [ExchangeCodec-encodeRequest](#exchangecodec-encoderequest)
     - [ExchangeCodec-encodeResponse](#exchangecodec-encoderesponse)
-  - [DubboCountCodec](#dubbocountcodec)
+    - [ExchangeCodec-decode](#exchangecodec-decode)
+  - [DubboCodec-decodeBody](#dubbocodec-decodebody)
   - [DubboCodec](#dubbocodec)
-    - [DubboCodec-decodeBody](#dubbocodec-decodebody)
+  - [DubboCountCodec](#dubbocountcodec)
   - [DecodeableRpcResult](#decodeablerpcresult)
   - [DecodeableRpcInvocation](#decodeablerpcinvocation)
   - [TelnetCodec](#telnetcodec)
@@ -117,106 +118,19 @@ Java 中的 true 和 false 只能表示两种结果，但是使用二进制，�
 
 java nio 中的巧妙运用，可以参考这个文章: [nio-selection-key.md](../java/nio-selection-key.md)
 
-### Magic number
+## Magic number
 
-关于 `Magic number` 可以参考维基百科 [Magic number](<https://en.wikipedia.org/wiki/Magic_number_(programming)>)
+要理解 `dubbo` 的协议就需要先了解一些关于 `Magic number` 的知识， 可以参考维基百科 [Magic number](<https://en.wikipedia.org/wiki/Magic_number_(programming)>)
 
 `Magic number` 可以用来区分文件的类型如: `.zip` -> `(50 4B)` `.java` -> `(CAFEBABE)`
 
-`dubbo` 中用二个 `MAGIC_HIGH` 和 `MAGIC_LOW` 来识别 `dubbo` 自定义的协议(如果在读取协议 `head` 时，遇到了上面的二个值，就认为是协议的开始，进行解码操作)
+`dubbo` 中用二个 `MAGIC_HIGH` 和 `MAGIC_LOW` 来识别 `dubbo` 自定义的协议(如果在读取协议 `head` 时，遇到了上面的二个值，就认为是协议的开始，进行解码操作，先解析head,再解析body)
 
-### ExchangeCodec-decode
+## Dubbo encode
 
-```java
-    @Override
-    public Object decode(Channel channel, ChannelBuffer buffer) throws IOException {
-        // 从 buffer 中读取 可读数据的长度
-        int readable = buffer.readableBytes();
-        // 初始化一个 HEADER_LENGTH 长度的 byte 数组，用来存储协议头
-        // Math.min 如果可读取的数据小于 HEADER_LENGTH，就读取部分数据，否则读取的数据长度为 HEADER_LENGTH
-        byte[] header = new byte[Math.min(readable, HEADER_LENGTH)];
-        // 读取数据
-        buffer.readBytes(header);
-        // 继续读取协议的其他部分
-        return decode(channel, buffer, readable, header);
-    }
+下面先看下 `dubbo` 是如何进行编码的（把一个对象转成 byte 数据进行网络传输）
 
-    // 这里读取协议的其他部分
-    @Override
-    protected Object decode(Channel channel, ChannelBuffer buffer, int readable, byte[] header) throws IOException {
-        // check magic number.
-        // 如果 readable > 0 那么 header[0] 就不会出现数组越界
-        // readable > 1 header[1] 也是同样的道理
-        // header[0] != MAGIC_HIGH ||  header[1] != MAGIC_LOW
-        // 说明协议不是 dubbo protocol (执行 TelnetCodec#decode 相关的解码操作)
-        if (readable > 0 && header[0] != MAGIC_HIGH
-                || readable > 1 && header[1] != MAGIC_LOW) {
-            int length = header.length;
-            // header.length < readable 数组的长度小于可读取的数据（其实数组就是放不下多余的数据）
-            // 使用 Bytes.copyOf 复制一个新的数组
-            if (header.length < readable) {
-                header = Bytes.copyOf(header, readable);
-                // 读取数据到 head 中，从 length 处开始读取
-                // 读取数据的长度 = readable - length （因为 readable 中存在有些数据已经被读取过了，不需要再次重复读取了）
-                buffer.readBytes(header, length, readable - length);
-            }
-            // 从 byte 数据中循环遍历找到新的 head 开始的索引位置
-            for (int i = 1; i < header.length - 1; i++) {
-                if (header[i] == MAGIC_HIGH && header[i + 1] == MAGIC_LOW) {
-                    // 更新 readIndex下次读取的位置，下一个读取从这个新的位置开始读取
-                    buffer.readerIndex(buffer.readerIndex() - header.length + i);
-                    // copy 一个新的数组，长度为 i
-                    // 这些 0 到 i 的数据会被 copy 到 header 中 进行 TelnetCodec#decode 操作
-                    //（会被认为是 telnet 协议进行解码）
-                    // 这里就使 dubbo 同时支持了 telnet 协议和自定义的 dubbo protocol
-                    header = Bytes.copyOf(header, i);
-                    break;
-                }
-            }
-            // 调用父类 TelnetCodec#decode,进行 telnet 协议解码
-            return super.decode(channel, buffer, readable, header);
-        }
-        // check length.
-        // 如果可读的数据小于 HEADER_LENGTH ，终止读取
-        if (readable < HEADER_LENGTH) {
-            return DecodeResult.NEED_MORE_INPUT;
-        }
-
-        // get data length.
-        // 从 header 数组的 12 位置开始读取数据，计算出数据的长度
-        int len = Bytes.bytes2int(header, 12);
-        // checkPayload 检查数据长度是否过长 默认 8M，超过会报错
-        checkPayload(channel, len);
-
-        // 可读取的数据太少，终止读取
-        int tt = len + HEADER_LENGTH;
-        if (readable < tt) {
-            return DecodeResult.NEED_MORE_INPUT;
-        }
-
-        // limit input stream.
-        // 把 ChannelBuffer 转化成 java.io.InputStream 方便在 decodeBody 进行反序列化操作
-        ChannelBufferInputStream is = new ChannelBufferInputStream(buffer, len);
-
-        try {
-            // 开始读取 body 实现在 DubboCodec#decodeBody
-            return decodeBody(channel, is, header);
-        } finally {
-            if (is.available() > 0) {
-                try {
-                    if (logger.isWarnEnabled()) {
-                        logger.warn("Skip input stream " + is.available());
-                    }
-                    StreamUtils.skipUnusedStream(is);
-                } catch (IOException e) {
-                    logger.warn(e.getMessage(), e);
-                }
-            }
-        }
-    }
-```
-
-🔗 [DubboCodec#decodeBody](#DubboCodec-decodeBody)
+dubbo 中编码操作有两种 `encodeRequest` 和 `encodeResponse`,而这个二种操作的细微区别就是 `encodeResponse` 多了设置 `status` 这一步骤
 
 ### ExchangeCodec-encodeRequest
 
@@ -256,7 +170,7 @@ protected void encodeRequest(Channel channel, ChannelBuffer buffer, Request req)
     // 从协议的设计图中可知 head[3] 应该是存储的 status 信息
     // encodeRequest 是请求编码,没有state,因此跳过 head[3]
     // reqId 放在 head[4] 中，下面的就是这个操作
-    Bytes.long2bytes(req.getId(), header, 4);
+    Bytes.long2bytes(req.getId(), header, 4);// 4*8 =32 与 RPC Request ID  Bit 那一列刚好对应
     // encode request data.
     // 获取 写索引的位置,方便在计算出 data length 之后进行第二次写入
     int savedWriteIndex = buffer.writerIndex();
@@ -389,39 +303,98 @@ protected void encodeResponse(Channel channel, ChannelBuffer buffer, Response re
 }
 ```
 
-## DubboCountCodec
-
-`DubboCountCodec` 对 `DubboCodec` 进行了简单的包装，重写了 `decode` 方法
-
-会返回 `MultiMessage` 可以同时解码出多个 `Object`
-
-## DubboCodec
-
-![DubboCodec](./images/dubbo-DubboCodec.png)
-
-DubboCodec 实现的方法：
-
-- `decodeBody`
-- `encodeResponseData`
-- `encodeRequestData`
-
-`encodeResponseData` 和 `encodeRequestData` 都有一个重载的方法，多了一个参数 `String version`
+### ExchangeCodec-decode
 
 ```java
-// DubboCodec
-public static final String DUBBO_VERSION = Version.getProtocolVersion();
+    @Override
+    public Object decode(Channel channel, ChannelBuffer buffer) throws IOException {
+        // 从 buffer 中读取 可读数据的长度
+        int readable = buffer.readableBytes();
+        // 初始化一个 HEADER_LENGTH 长度的 byte 数组，用来存储协议头
+        // Math.min 如果可读取的数据小于 HEADER_LENGTH，就读取部分数据，否则读取的数据长度为 HEADER_LENGTH
+        byte[] header = new byte[Math.min(readable, HEADER_LENGTH)];
+        // 读取数据
+        buffer.readBytes(header);
+        // 继续读取协议的其他部分
+        return decode(channel, buffer, readable, header);
+    }
 
-//  Version
-public static final String DEFAULT_DUBBO_PROTOCOL_VERSION = "2.0.2";
+    // 这里读取协议的其他部分
+    @Override
+    protected Object decode(Channel channel, ChannelBuffer buffer, int readable, byte[] header) throws IOException {
+        // check magic number.
+        // 如果 readable > 0 那么 header[0] 就不会出现数组越界
+        // readable > 1 header[1] 也是同样的道理
+        // header[0] != MAGIC_HIGH ||  header[1] != MAGIC_LOW
+        // 说明协议不是 dubbo protocol (执行 TelnetCodec#decode 相关的解码操作)
+        if (readable > 0 && header[0] != MAGIC_HIGH
+                || readable > 1 && header[1] != MAGIC_LOW) {
+            int length = header.length;
+            // header.length < readable 数组的长度小于可读取的数据（其实数组就是放不下多余的数据）
+            // 使用 Bytes.copyOf 复制一个新的数组
+            if (header.length < readable) {
+                header = Bytes.copyOf(header, readable);
+                // 读取数据到 head 中，从 length 处开始读取
+                // 读取数据的长度 = readable - length （因为 readable 中存在有些数据已经被读取过了，不需要再次重复读取了）
+                buffer.readBytes(header, length, readable - length);
+            }
+            // 从 byte 数据中循环遍历找到新的 head 开始的索引位置
+            for (int i = 1; i < header.length - 1; i++) {
+                if (header[i] == MAGIC_HIGH && header[i + 1] == MAGIC_LOW) {
+                    // 更新 readIndex下次读取的位置，下一个读取从这个新的位置开始读取
+                    buffer.readerIndex(buffer.readerIndex() - header.length + i);
+                    // copy 一个新的数组，长度为 i
+                    // 这些 0 到 i 的数据会被 copy 到 header 中 进行 TelnetCodec#decode 操作
+                    //（会被认为是 telnet 协议进行解码）
+                    // 这里就使 dubbo 同时支持了 telnet 协议和自定义的 dubbo protocol
+                    header = Bytes.copyOf(header, i);
+                    break;
+                }
+            }
+            // 调用父类 TelnetCodec#decode,进行 telnet 协议解码
+            return super.decode(channel, buffer, readable, header);
+        }
+        // check length.
+        // 如果可读的数据小于 HEADER_LENGTH ，终止读取
+        if (readable < HEADER_LENGTH) {
+            return DecodeResult.NEED_MORE_INPUT;
+        }
+
+        // get data length.
+        // 从 header 数组的 12 位置开始读取数据，计算出数据的长度
+        int len = Bytes.bytes2int(header, 12);
+        // checkPayload 检查数据长度是否过长 默认 8M，超过会报错
+        checkPayload(channel, len);
+
+        // 可读取的数据太少，终止读取
+        int tt = len + HEADER_LENGTH;
+        if (readable < tt) {
+            return DecodeResult.NEED_MORE_INPUT;
+        }
+
+        // limit input stream.
+        // 把 ChannelBuffer 转化成 java.io.InputStream 方便在 decodeBody 进行反序列化操作
+        ChannelBufferInputStream is = new ChannelBufferInputStream(buffer, len);
+
+        try {
+            // 开始读取 body 实现在 DubboCodec#decodeBody
+            return decodeBody(channel, is, header);
+        } finally {
+            if (is.available() > 0) {
+                try {
+                    if (logger.isWarnEnabled()) {
+                        logger.warn("Skip input stream " + is.available());
+                    }
+                    StreamUtils.skipUnusedStream(is);
+                } catch (IOException e) {
+                    logger.warn(e.getMessage(), e);
+                }
+            }
+        }
+    }
 ```
 
-`DubboCodec` 虽然是 `Codec2` 的子类，但是并没有实现 `Codec2` 的二个核心方法 `encode` 和 `decode`
-
-而实现了 `ExchangeCodec` 的 `decodeBody` 方法,`encode` 和 `decode` 方法继承自 `ExchangeCodec` 类
-
-下面看 `decodeBody` 的具体实现
-
-### DubboCodec-decodeBody
+## DubboCodec-decodeBody
 
 ```java
 // 1.获取 flag
@@ -430,7 +403,9 @@ public static final String DEFAULT_DUBBO_PROTOCOL_VERSION = "2.0.2";
 // 4.返回 Response/Request
 @Override
 protected Object decodeBody(Channel channel, InputStream is, byte[]header) throws IOException {
-    // header[2] = (byte) (FLAG_REQUEST | serialization.getContentTypeId()); 这个是 encode 里面的操作
+    // 首先我们知道: 一字节中有8位 1b = 8bit
+    // header[2] = (byte) (FLAG_REQUEST | serialization.getContentTypeId())
+    // 这个是 ExchangeCodec-encodeRequest 里面的操作
     // header[2] 就是利用二进制的 | 操作特性，同时把 flag 和 serialization id 用一个值存储（减少字节数）
     // 在 decode 的时候利用 & 计算出 serialization id
     // 例子：
@@ -441,7 +416,7 @@ protected Object decodeBody(Channel channel, InputStream is, byte[]header) throw
     // set request and serialization flag.
     byte flag = header[2], proto = (byte) (flag & SERIALIZATION_MASK);
     // get request id.
-    long id = Bytes.bytes2long(header, 4);
+    long id = Bytes.bytes2long(header, 4); // 4*8 =32 与 RPC Request ID  Bit 32 那一列刚好对应
     // flag & FLAG_REQUEST 这里因为存在 3 种 flag，而他们二进制的 1 都在不同的位置上
     // 因此 一种 flag 和另一种 flag 进行 & 运算 结果总是 0 (二进制 00000000)
     if ((flag & FLAG_REQUEST) == 0) {// 等于 0 说不不是 FLAG_REQUEST 就当做响应处理
@@ -539,6 +514,36 @@ protected Object decodeBody(Channel channel, InputStream is, byte[]header) throw
 ```
 
 上面说过 `dubbo` 的协议是 `head + body`,`decodeBody` 也就是从 `InputStream` 经过 `序列化` 解析出 `ObjectInput` 对象
+
+## DubboCodec
+
+![DubboCodec](./images/dubbo-DubboCodec.png)
+
+DubboCodec 实现的方法：
+
+- `decodeBody`
+- `encodeResponseData`
+- `encodeRequestData`
+
+`encodeResponseData` 和 `encodeRequestData` 都有一个重载的方法，多了一个参数 `String version`
+
+```java
+// DubboCodec
+public static final String DUBBO_VERSION = Version.getProtocolVersion();
+
+//  Version
+public static final String DEFAULT_DUBBO_PROTOCOL_VERSION = "2.0.2";
+```
+
+`DubboCodec` 虽然是 `Codec2` 的子类，但是并没有实现 `Codec2` 的二个核心方法 `encode` 和 `decode`
+
+而实现了 `ExchangeCodec` 的 `decodeBody` 方法,`encode` 和 `decode` 方法继承自 `ExchangeCodec` 类
+
+## DubboCountCodec
+
+`DubboCountCodec` 对 `DubboCodec` 进行了简单的包装，重写了 `decode` 方法
+
+会返回 `MultiMessage` 可以同时解码出多个 `Object`
 
 ## DecodeableRpcResult
 
