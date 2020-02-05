@@ -4,9 +4,11 @@
 
 Spring with mybatis `org.mybatis.spring.SqlSessionFactoryBean`
 
+`SqlSessionFactoryBean` 用来创建 `SqlSession` 对象
+
 ## interface SqlSession
 
-> SqlSession 的接口定义
+`SqlSession` 的接口定义
 
 ```java
 public interface SqlSession {
@@ -40,35 +42,6 @@ public interface SqlSession {
 }
 ```
 
-## DefaultSqlSession
+## Reference
 
-```java
-// 需要 Configuration 和 Executor
-public DefaultSqlSession(Configuration configuration, Executor executor) {
-    this.configuration = configuration;
-    this.executor = executor;
-    this.dirty = false;
-}
-```
-
-## insert
-
-## update
-
-## delete
-
-## select
-
-```java
- public <E> List<E> selectList(String statement, Object parameter, RowBounds rowBounds) {
-    try {
-      MappedStatement ms = configuration.getMappedStatement(statement);
-      List<E> result = executor.<E>query(ms, wrapCollection(parameter), rowBounds, Executor.NO_RESULT_HANDLER);
-      return result;
-    } catch (Exception e) {
-      throw ExceptionFactory.wrapException("Error querying database.  Cause: " + e, e);
-    } finally {
-      ErrorContext.instance().reset();
-    }
-  }
-```
+- [SqlSessionTemplate](./mybatis-sql-session-template.md)

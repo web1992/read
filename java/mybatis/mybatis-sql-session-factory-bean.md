@@ -8,9 +8,18 @@
   - [SqlSessionFactory](#sqlsessionfactory)
   - [SqlSession](#sqlsession)
 
+这里主要分析 `SqlSessionFactoryBean` 的定义，初始化和作用
+
 ## Class define
 
 ```java
+// 定义
+// 实现了 Spring 中的 FactoryBean 接口
+// 用来创建 SqlSessionFactory 对象
+// 下面列举了实现 Spring 中的接口的具体方法：
+// FactoryBean -> getObject getObjectType isSingleton 用来创建 SqlSessionFactory 对象
+// InitializingBean -> afterPropertiesSet 用来在 Bean 初始化之后进行校验和最终(二次)初始化
+// ApplicationListener -> onApplicationEvent 用来解决 Spring 的事件
 public class SqlSessionFactoryBean implements FactoryBean<SqlSessionFactory>, InitializingBean, ApplicationListener<ApplicationEvent> {
 
 }
@@ -24,7 +33,6 @@ public class SqlSessionFactoryBean implements FactoryBean<SqlSessionFactory>, In
 
 在执行  `getObject` 方法的时候,会进行 `SqlSessionFactory` 的初始化操作
 
-
 ```java
 // SqlSessionFactoryBean
 public SqlSessionFactory getObject() throws Exception {
@@ -32,6 +40,12 @@ public SqlSessionFactory getObject() throws Exception {
     afterPropertiesSet();
   }
   return this.sqlSessionFactory;
+}
+// SqlSessionFactoryBean
+public void afterPropertiesSet() throws Exception {
+  notNull(dataSource, "Property 'dataSource' is required");
+  notNull(sqlSessionFactoryBuilder, "Property 'sqlSessionFactoryBuilder' is required");
+  this.sqlSessionFactory = buildSqlSessionFactory();
 }
 ```
 
