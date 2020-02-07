@@ -17,6 +17,7 @@
   - [redis 集群(Cluster)](#redis-%e9%9b%86%e7%be%a4cluster)
   - [redis 发布和订阅](#redis-%e5%8f%91%e5%b8%83%e5%92%8c%e8%ae%a2%e9%98%85)
   - [redis 事务](#redis-%e4%ba%8b%e5%8a%a1)
+  - [redis 的Java 客户端](#redis-%e7%9a%84java-%e5%ae%a2%e6%88%b7%e7%ab%af)
 
 ## redis 相关的文章
 
@@ -185,3 +186,7 @@ typedef struct multiCmd{
 > 事务的 ACDI
 
 在 Redis 中，事务总是具有原子性(Atomiccity)，一致性(Consistency)和隔离性(Isolation)，并且当 Redis 运行在某种特定的持久模式下时，事务也具有耐久性(Durablity)。
+
+## redis 的Java 客户端
+
+- [jedis](jedis.md)
