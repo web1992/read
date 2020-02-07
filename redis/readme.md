@@ -3,6 +3,7 @@
 《Redis 的设计与实现》笔记
 
 - [redis 笔记](#redis-%e7%ac%94%e8%ae%b0)
+  - [redis 相关的文章](#redis-%e7%9b%b8%e5%85%b3%e7%9a%84%e6%96%87%e7%ab%a0)
   - [redis 的数据结构](#redis-%e7%9a%84%e6%95%b0%e6%8d%ae%e7%bb%93%e6%9e%84)
   - [redis 命令与对象类型](#redis-%e5%91%bd%e4%bb%a4%e4%b8%8e%e5%af%b9%e8%b1%a1%e7%b1%bb%e5%9e%8b)
   - [redis 数据库](#redis-%e6%95%b0%e6%8d%ae%e5%ba%93)
@@ -16,6 +17,10 @@
   - [redis 集群(Cluster)](#redis-%e9%9b%86%e7%be%a4cluster)
   - [redis 发布和订阅](#redis-%e5%8f%91%e5%b8%83%e5%92%8c%e8%ae%a2%e9%98%85)
   - [redis 事务](#redis-%e4%ba%8b%e5%8a%a1)
+
+## redis 相关的文章
+
+- [redis.md](redis.md)
 
 ## redis 的数据结构
 
