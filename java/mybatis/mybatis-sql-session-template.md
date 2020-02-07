@@ -242,6 +242,7 @@ public static SqlSession getSqlSession(SqlSessionFactory sessionFactory, Executo
       }
       holder = new SqlSessionHolder(session, executorType, exceptionTranslator);
       bindResource(sessionFactory, holder);
+      // 注册 SqlSessionSynchronization 也就是Spring事务回调
       registerSynchronization(new SqlSessionSynchronization(holder, sessionFactory));
       holder.setSynchronizedWithTransaction(true);
       holder.requested();
@@ -295,6 +296,8 @@ public static void closeSqlSession(SqlSession session, SqlSessionFactory session
 ```
 
 ### SqlSessionSynchronization
+
+`SqlSessionSynchronization` 事务回调，从下面的 javadoc 的描述可知，此类的作用是：释放资源，提交/回滚事务
 
 ```java
 /**
