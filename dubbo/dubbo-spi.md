@@ -11,6 +11,4 @@
 ++ <dubbo:protocol name="dubbo" threadpool="limited"/>
 ```
 
-请参考: `ExtensionLoader`
-
-- [ExtensionLoader](dubbo-extension-loader.md)
+请参考: [ExtensionLoader](dubbo-extension-loader.md)
