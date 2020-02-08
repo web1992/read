@@ -1,6 +1,6 @@
 # Dubbo
 
-- [incubator-dubbo](https://github.com/apache/dubbo)
+- [dubbo](https://github.com/apache/dubbo)
 
 ## Dubbo version
 
@@ -43,7 +43,7 @@
 - [x] [dubbo-transporter.md](dubbo-transporter.md)
 - [x] [dubbo-router.md](dubbo-router.md)
 - [x] [dubbo-load-balance.md](dubbo-load-balance.md)
-- [x] [dubbo-timer-task.md](dubbo-timer-task.md)
+- [x] [dubbo-hashed-wheel-timer.md](dubbo-hashed-wheel-timer.md)
 - [x] [dubbo-async.md](dubbo-async.md)
 - [ ] [dubbo-rpc.md](dubbo-rpc.md)
 - [ ] [dubbo-cluster.md](dubbo-cluster.md)
