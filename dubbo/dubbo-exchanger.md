@@ -166,117 +166,117 @@ HeaderExchangeHandler 重写了下面的几个方法:
 ### connected
 
 ```java
-    @Override
-    public void connected(Channel channel) throws RemotingException {
-        channel.setAttribute(KEY_READ_TIMESTAMP, System.currentTimeMillis());
-        channel.setAttribute(KEY_WRITE_TIMESTAMP, System.currentTimeMillis());
-        // 把当前的 channle 包装成 HeaderExchangeChannel
-        ExchangeChannel exchangeChannel = HeaderExchangeChannel.getOrAddChannel(channel);
-        try {
-            handler.connected(exchangeChannel);
-        } finally {
-            HeaderExchangeChannel.removeChannelIfDisconnected(channel);
-        }
+@Override
+public void connected(Channel channel) throws RemotingException {
+    channel.setAttribute(KEY_READ_TIMESTAMP, System.currentTimeMillis());
+    channel.setAttribute(KEY_WRITE_TIMESTAMP, System.currentTimeMillis());
+    // 把当前的 channle 包装成 HeaderExchangeChannel
+    ExchangeChannel exchangeChannel = HeaderExchangeChannel.getOrAddChannel(channel);
+    try {
+        handler.connected(exchangeChannel);
+    } finally {
+        HeaderExchangeChannel.removeChannelIfDisconnected(channel);
     }
+}
 ```
 
 ### disconnected
 
 ```java
-    @Override
-    public void disconnected(Channel channel) throws RemotingException {
-        channel.setAttribute(KEY_READ_TIMESTAMP, System.currentTimeMillis());
-        channel.setAttribute(KEY_WRITE_TIMESTAMP, System.currentTimeMillis());
-        // 把当前的 channle 包装成 HeaderExchangeChannel
-        ExchangeChannel exchangeChannel = HeaderExchangeChannel.getOrAddChannel(channel);
-        try {
-            handler.disconnected(exchangeChannel);
-        } finally {
-            DefaultFuture.closeChannel(channel);
-            HeaderExchangeChannel.removeChannelIfDisconnected(channel);
-        }
+@Override
+public void disconnected(Channel channel) throws RemotingException {
+    channel.setAttribute(KEY_READ_TIMESTAMP, System.currentTimeMillis());
+    channel.setAttribute(KEY_WRITE_TIMESTAMP, System.currentTimeMillis());
+    // 把当前的 channle 包装成 HeaderExchangeChannel
+    ExchangeChannel exchangeChannel = HeaderExchangeChannel.getOrAddChannel(channel);
+    try {
+        handler.disconnected(exchangeChannel);
+    } finally {
+        DefaultFuture.closeChannel(channel);
+        HeaderExchangeChannel.removeChannelIfDisconnected(channel);
     }
+}
 ```
 
 ### sent
 
 ```java
-    @Override
-    public void sent(Channel channel, Object message) throws RemotingException {
-        Throwable exception = null;
-        try {
-            channel.setAttribute(KEY_WRITE_TIMESTAMP, System.currentTimeMillis());
-            // 把当前的 channle 包装成 HeaderExchangeChannel
-            ExchangeChannel exchangeChannel = HeaderExchangeChannel.getOrAddChannel(channel);
-            try {
-                handler.sent(exchangeChannel, message);
-            } finally {
-                HeaderExchangeChannel.removeChannelIfDisconnected(channel);
-            }
-        } catch (Throwable t) {
-            exception = t;
-        }
-        if (message instanceof Request) {
-            Request request = (Request) message;
-            DefaultFuture.sent(channel, request);
-        }
-        if (exception != null) {
-            if (exception instanceof RuntimeException) {
-                throw (RuntimeException) exception;
-            } else if (exception instanceof RemotingException) {
-                throw (RemotingException) exception;
-            } else {
-                throw new RemotingException(channel.getLocalAddress(), channel.getRemoteAddress(),
-                        exception.getMessage(), exception);
-            }
-        }
-    }
+ @Override
+ public void sent(Channel channel, Object message) throws RemotingException {
+     Throwable exception = null;
+     try {
+         channel.setAttribute(KEY_WRITE_TIMESTAMP, System.currentTimeMillis());
+         // 把当前的 channle 包装成 HeaderExchangeChannel
+         ExchangeChannel exchangeChannel = HeaderExchangeChannel.getOrAddChannel(channel);
+         try {
+             handler.sent(exchangeChannel, message);
+         } finally {
+             HeaderExchangeChannel.removeChannelIfDisconnected(channel);
+         }
+     } catch (Throwable t) {
+         exception = t;
+     }
+     if (message instanceof Request) {
+         Request request = (Request) message;
+         DefaultFuture.sent(channel, request);
+     }
+     if (exception != null) {
+         if (exception instanceof RuntimeException) {
+             throw (RuntimeException) exception;
+         } else if (exception instanceof RemotingException) {
+             throw (RemotingException) exception;
+         } else {
+             throw new RemotingException(channel.getLocalAddress(), channel.getRemoteAddress(),
+                     exception.getMessage(), exception);
+         }
+     }
+ }
 ```
 
 ### received
 
 ```java
-    // 这里是在接收到消息时，根据消息类型，做不同的处理
-    // isEvent 设置 Channel 属性事件
-    // isTwoWay 消息需要执行回复，会执行 ExchangeHandler#reply 事件
-    // Request
-    // Response 会找到 Future 并设置结果，唤醒等待的线程
-    // String 支持 telnet
-    @Override
-    public void received(Channel channel, Object message) throws RemotingException {
-        channel.setAttribute(KEY_READ_TIMESTAMP, System.currentTimeMillis());
-        // 把当前的 channle 包装成 HeaderExchangeChannel
-        final ExchangeChannel exchangeChannel = HeaderExchangeChannel.getOrAddChannel(channel);
-        try {
-            if (message instanceof Request) {
-                // handle request.
-                Request request = (Request) message;
-                if (request.isEvent()) {
-                    handlerEvent(channel, request);
-                } else {
-                    if (request.isTwoWay()) {
-                        handleRequest(exchangeChannel, request);
-                    } else {
-                        handler.received(exchangeChannel, request.getData());
-                    }
-                }
-            } else if (message instanceof Response) {
-                handleResponse(channel, (Response) message);
-            } else if (message instanceof String) {
-                if (isClientSide(channel)) {
-                    Exception e = new Exception("Dubbo client can not supported string message: " + message + " in channel: " + channel + ", url: " + channel.getUrl());
-                    logger.error(e.getMessage(), e);
-                } else {
-                    String echo = handler.telnet(channel, (String) message);
-                    if (echo != null && echo.length() > 0) {
-                        channel.send(echo);
-                    }
-                }
+// 这里是在接收到消息时，根据消息类型，做不同的处理
+// isEvent 设置 Channel 属性事件
+// isTwoWay 消息需要执行回复，会执行 ExchangeHandler#reply 事件
+// Request
+// Response 会找到 Future 并设置结果，唤醒等待的线程
+// String 支持 telnet
+@Override
+public void received(Channel channel, Object message) throws RemotingException {
+    channel.setAttribute(KEY_READ_TIMESTAMP, System.currentTimeMillis());
+    // 把当前的 channle 包装成 HeaderExchangeChannel
+    final ExchangeChannel exchangeChannel = HeaderExchangeChannel.getOrAddChannel(channel);
+    try {
+        if (message instanceof Request) {
+            // handle request.
+            Request request = (Request) message;
+            if (request.isEvent()) {
+                handlerEvent(channel, request);
             } else {
-                handler.received(exchangeChannel, message);
+                if (request.isTwoWay()) {
+                    handleRequest(exchangeChannel, request);
+                } else {
+                    handler.received(exchangeChannel, request.getData());
+                }
             }
-        } finally {
-            HeaderExchangeChannel.removeChannelIfDisconnected(channel);
+        } else if (message instanceof Response) {
+            handleResponse(channel, (Response) message);
+        } else if (message instanceof String) {
+            if (isClientSide(channel)) {
+                Exception e = new Exception("Dubbo client can not supported string message: " + message + " in channel: " + channel + ", url: " + channel.getUrl());
+                logger.error(e.getMessage(), e);
+            } else {
+                String echo = handler.telnet(channel, (String) message);
+                if (echo != null && echo.length() > 0) {
+                    channel.send(echo);
+                }
+            }
+        } else {
+            handler.received(exchangeChannel, message);
         }
+    } finally {
+        HeaderExchangeChannel.removeChannelIfDisconnected(channel);
     }
+}
 ```

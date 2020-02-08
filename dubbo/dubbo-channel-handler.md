@@ -63,7 +63,6 @@ public static void main(String[] args){
   // A#say ...
   // B#say ...
 }
-
 ```
 
 而在 `dubbo` 中，对 `ChannelHandler` 进行了更多层的包装
@@ -105,6 +104,12 @@ Netty
                 -> DecodeHandler
                   -> HeaderExchangeHandler
                     -> DubboProtocol#requestHandler
+```
+
+```java
+// 在 DubboProtocol#createServer 有下面的这个方法
+// 与上面的各种 Handler 进行关联，形成调用链
+Exchangers.bind(url, this.requestHandler);
 ```
 
 > 注意: decoder 与 encoder 一次 IO 请求只会经过其中的一个
@@ -206,3 +211,15 @@ public void received(Channel channel, Object message) throwRemotingException {
 ![AllChannelHandler](images/dubbo-AllChannelHandler.png)
 
 ## HeaderExchangeHandler
+
+```java
+@Override
+public ExchangeClient connect(URL url, ExchangeHandler handler) throws RemotingException {
+    return new HeaderExchangeClient(Transporters.connect(url, new DecodeHandler(new HeaderExchangeHandler(handler))), true);
+}
+
+@Override
+public ExchangeServer bind(URL url, ExchangeHandler handler) throws RemotingException {
+    return new HeaderExchangeServer(Transporters.bind(url, new DecodeHandler(new HeaderExchangeHandler(handler))));
+}
+```
