@@ -119,6 +119,10 @@ public static void main(String[] args) throws Exception {
 
 ## sleep
 
+Sleep函数就是干这事的，他告诉操作系统“在未来的多少毫秒内我不参与CPU竞争”。
+
+Thread.Sleep(0)的作用，就是“触发操作系统立刻重新进行一次CPU竞争”
+
 ```java
 // use TimeUnit
 TimeUnit.MILLISECONDS.sleep(200);
@@ -240,3 +244,4 @@ class ThreadRun extends Thread {
 ## 好文连接
 
 - [Java 8 threads](http://winterbe.com/posts/2015/04/07/java8-concurrency-tutorial-thread-executor-examples/)
+- [Thread Sleep](https://blog.csdn.net/yb223731/article/details/94560006)
