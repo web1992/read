@@ -27,9 +27,7 @@
 
 ## Protocol
 
-`Protocol` 在 `dubbo` 中是一个十分重要的概念,`dubbo` 服务的，启动，初始，注册(发布)，订阅 等等，都是通过 `Protocol` 不同的实现类
-
-组合实现的，因此在了解 `dubbo` 的初始之前，需要对 `Protocol` 有一个概念。
+`Protocol` 在 `dubbo` 中是一个十分重要的概念,`dubbo` 服务的，启动，初始，注册(发布)，订阅 等等，都是通过 `Protocol` 不同的实现类组合实现的，因此在了解 `dubbo` 的初始之前，需要对 `Protocol` 有一个概念。
 
 ```java
 @SPI("dubbo")
@@ -206,67 +204,64 @@ Exporter<?> exporter = protocol.export(wrapperInvoker);
 `RegistryProtocol` 的`export`方法
 
 ```java
-  @Override
-    public <T> Exporter<T> export(final Invoker<T> originInvoker) throws RpcException {
-        URL registryUrl = getRegistryUrl(originInvoker);
-        // url to export locally
-        URL providerUrl = getProviderUrl(originInvoker);
-
-        // Subscribe the override data
-        // FIXME When the provider subscribes, it will affect the scene : a certain JVM exposes the service and call
-        //  the same service. Because the subscribed is cached key with the name of the service, it causes the
-        //  subscription information to cover.
-        final URL overrideSubscribeUrl = getSubscribedOverrideUrl(providerUrl);
-        final OverrideListener overrideSubscribeListener = new OverrideListener(overrideSubscribeUrl, originInvoker);
-        overrideListeners.put(overrideSubscribeUrl, overrideSubscribeListener);
-
-        providerUrl = overrideUrlWithConfig(providerUrl, overrideSubscribeListener);
-        //export invoker
-        // 进行服务的暴露
-        // 这里是使用 DubboProtocol 进行服务的暴露
-        final ExporterChangeableWrapper<T> exporter = doLocalExport(originInvoker, providerUrl);
-
-        // url to registry
-        final Registry registry = getRegistry(originInvoker);
-        final URL registeredProviderUrl = getRegisteredProviderUrl(providerUrl, registryUrl);
-        ProviderInvokerWrapper<T> providerInvokerWrapper = ProviderConsumerRegTable.registerProvider(originInvoker,
-                registryUrl, registeredProviderUrl);
-        //to judge if we need to delay publish
-        boolean register = registeredProviderUrl.getParameter("register", true);
-        if (register) {
-            // 这里进行服务的注册
-            register(registryUrl, registeredProviderUrl);
-            providerInvokerWrapper.setReg(true);
-        }
-
-        // Deprecated! Subscribe to override rules in 2.6.x or before.
-        registry.subscribe(overrideSubscribeUrl, overrideSubscribeListener);
-
-        exporter.setRegisterUrl(registeredProviderUrl);
-        exporter.setSubscribeUrl(overrideSubscribeUrl);
-        //Ensure that a new exporter instance is returned every time export
-        return new DestroyableExporter<>(exporter);
+@Override
+public <T> Exporter<T> export(final Invoker<T> originInvoker) throws RpcException {
+    URL registryUrl = getRegistryUrl(originInvoker);
+    // url to export locally
+    URL providerUrl = getProviderUrl(originInvoker);
+    // Subscribe the override data
+    // FIXME When the provider subscribes, it will affect the scene : a certain JVM exposes the service and call
+    //  the same service. Because the subscribed is cached key with the name of the service, it causes the
+    //  subscription information to cover.
+    final URL overrideSubscribeUrl = getSubscribedOverrideUrl(providerUrl);
+    final OverrideListener overrideSubscribeListener = new OverrideListener(overrideSubscribeUrl, originInvoker);
+    overrideListeners.put(overrideSubscribeUrl, overrideSubscribeListener);
+    providerUrl = overrideUrlWithConfig(providerUrl, overrideSubscribeListener);
+    //export invoker
+    // 进行服务的暴露
+    // 这里是使用 DubboProtocol 进行服务的暴露
+    final ExporterChangeableWrapper<T> exporter = doLocalExport(originInvoker, providerUrl);
+    // url to registry
+    final Registry registry = getRegistry(originInvoker);
+    final URL registeredProviderUrl = getRegisteredProviderUrl(providerUrl, registryUrl);
+    ProviderInvokerWrapper<T> providerInvokerWrapper = ProviderConsumerRegTable.registerProvider(originInvoker,
+            registryUrl, registeredProviderUrl);
+    //to judge if we need to delay publish
+    boolean register = registeredProviderUrl.getParameter("register", true);
+    if (register) {
+        // 这里进行服务的注册
+        register(registryUrl, registeredProviderUrl);
+        providerInvokerWrapper.setReg(true);
     }
+    // Deprecated! Subscribe to override rules in 2.6.x or before.
+    registry.subscribe(overrideSubscribeUrl, overrideSubscribeListener);
+    exporter.setRegisterUrl(registeredProviderUrl);
+    exporter.setSubscribeUrl(overrideSubscribeUrl);
+    //Ensure that a new exporter instance is returned every time export
+    return new DestroyableExporter<>(exporter);
+}
 ```
 
 `DubboProtocol`的代码片段：
 
 ```java
- @Override
-    public <T> Exporter<T> export(Invoker<T> invoker) throws RpcException {
-        URL url = invoker.getUrl();
-        // ...
-        // 在这里启动tcp服务
-        // 会调用 createServer 创建服务
-        openServer(url);
-        optimizeSerialization(url);
-        return exporter;
-    }
+@Override
+public <T> Exporter<T> export(Invoker<T> invoker) throws RpcException {
+    URL url = invoker.getUrl();
+    // ...
+    // 在这里启动tcp服务
+    // 会调用 createServer 创建服务
+    openServer(url);
+    optimizeSerialization(url);
+    return exporter;
+}
 ```
 
 `createServer` 方法中会使用 `server = Exchangers.bind(url, requestHandler);` 调用`Transporter`实现类`NettyTransporter`启动一个 `TCP` 服务
 
 > `ExchangeServer`和`Transporter`实现类的查找都是通过 `dubbo`的`SPI` 机制,`SPI` 的实现类，可以参考：[dubbo-extension-loader](dubbo-extension-loader.md)
+
+`dubbo` TCP 服务器的实现可以参考 [dubbo-transporter.md](dubbo-transporter.md)
 
 `NettyTransporter`的代码片段：
 
@@ -293,38 +288,34 @@ public class NettyTransporter implements Transporter {
 下面的代码是 `Netty` 启动的经典代码
 
 ```java
- @Override
-    protected void doOpen() throws Throwable {
-        bootstrap = new ServerBootstrap();
-
-        bossGroup = new NioEventLoopGroup(1, new DefaultThreadFactory("NettyServerBoss", true));
-        workerGroup = new NioEventLoopGroup(getUrl().getPositiveParameter(Constants.IO_THREADS_KEY, Constants.DEFAULT_IO_THREADS),
-                new DefaultThreadFactory("NettyServerWorker", true));
-
-        final NettyServerHandler nettyServerHandler = new NettyServerHandler(getUrl(), this);
-        channels = nettyServerHandler.getChannels();
-
-        bootstrap.group(bossGroup, workerGroup)
-                .channel(NioServerSocketChannel.class)
-                .childOption(ChannelOption.TCP_NODELAY, Boolean.TRUE)
-                .childOption(ChannelOption.SO_REUSEADDR, Boolean.TRUE)
-                .childOption(ChannelOption.ALLOCATOR, PooledByteBufAllocator.DEFAULT)
-                .childHandler(new ChannelInitializer<NioSocketChannel>() {
-                    @Override
-                    protected void initChannel(NioSocketChannel ch) throws Exception {
-                        NettyCodecAdapter adapter = new NettyCodecAdapter(getCodec(), getUrl(), NettyServer.this);
-                        ch.pipeline()//.addLast("logging",new LoggingHandler(LogLevel.INFO))//for debug
-                                .addLast("decoder", adapter.getDecoder())
-                                .addLast("encoder", adapter.getEncoder())
-                                .addLast("handler", nettyServerHandler);
-                    }
-                });
-        // bind
-        ChannelFuture channelFuture = bootstrap.bind(getBindAddress());
-        channelFuture.syncUninterruptibly();
-        channel = channelFuture.channel();
-
-    }
+@Override
+protected void doOpen() throws Throwable {
+    bootstrap = new ServerBootstrap();
+    bossGroup = new NioEventLoopGroup(1, new DefaultThreadFactory("NettyServerBoss", true));
+    workerGroup = new NioEventLoopGroup(getUrl().getPositiveParameter(Constants.IO_THREADS_KEY, Constants.DEFAULT_IO_THREADS),
+            new DefaultThreadFactory("NettyServerWorker", true));
+    final NettyServerHandler nettyServerHandler = new NettyServerHandler(getUrl(), this);
+    channels = nettyServerHandler.getChannels();
+    bootstrap.group(bossGroup, workerGroup)
+            .channel(NioServerSocketChannel.class)
+            .childOption(ChannelOption.TCP_NODELAY, Boolean.TRUE)
+            .childOption(ChannelOption.SO_REUSEADDR, Boolean.TRUE)
+            .childOption(ChannelOption.ALLOCATOR, PooledByteBufAllocator.DEFAULT)
+            .childHandler(new ChannelInitializer<NioSocketChannel>() {
+                @Override
+                protected void initChannel(NioSocketChannel ch) throws Exception {
+                    NettyCodecAdapter adapter = new NettyCodecAdapter(getCodec(), getUrl(), NettyServer.this);
+                    ch.pipeline()//.addLast("logging",new LoggingHandler(LogLevel.INFO))//for debug
+                            .addLast("decoder", adapter.getDecoder())
+                            .addLast("encoder", adapter.getEncoder())
+                            .addLast("handler", nettyServerHandler);
+                }
+            });
+    // bind
+    ChannelFuture channelFuture = bootstrap.bind(getBindAddress());
+    channelFuture.syncUninterruptibly();
+    channel = channelFuture.channel();
+}
 ```
 
 ### registry
@@ -408,7 +399,7 @@ public <T> Exporter<T> export(Invoker<T> invoker) throws RpcException {
 DubboExporter<?> exporter = (DubboExporter<?>) exporterMap.get(serviceKey);
 ```
 
-至此 `Invoker` 的`暴露`和`查找`，形成闭环
+至此 `Invoker` 的`暴露`和`查找调用`，形成闭环
 
 ## consumer init
 
@@ -467,20 +458,18 @@ public Object getObject() {
 `init`方法
 
 ```java
-    private void init() {
-        if (initialized) {
-            return;
-        }
-        initialized = true;
-        // 省略其它代码
-        // map 当前客户端的一些配置信息，如:接口类，版本，等
-        // 创建客户端代理
-        ref = createProxy(map);
-
-        ConsumerModel consumerModel = new ConsumerModel(getUniqueServiceName(), interfaceClass, ref, interfaceClass.getMethods(), attributes);
-        ApplicationModel.initConsumerModel(getUniqueServiceName(), consumerModel);
-    }
-
+ private void init() {
+     if (initialized) {
+         return;
+     }
+     initialized = true;
+     // 省略其它代码
+     // map 当前客户端的一些配置信息，如:接口类，版本，等
+     // 创建客户端代理
+     ref = createProxy(map);
+     ConsumerModel consumerModel = new ConsumerModel(getUniqueServiceName(), interfaceClass, ref, interfaceClass.getMethods(), attributes);
+     ApplicationModel.initConsumerModel(getUniqueServiceName(), consumerModel);
+ }
 ```
 
 `createProxy` 方法
