@@ -1,17 +1,15 @@
 # ThreadLocal
 
-- [ThreadLocal](#ThreadLocal)
-  - [Example](#Example)
-  - [initialValue](#initialValue)
+- [ThreadLocal](#threadlocal)
+  - [Example](#example)
+  - [initialValue](#initialvalue)
   - [set](#set)
   - [get](#get)
-  - [ThreadLocal-gc](#ThreadLocal-gc)
-  - [ThreadLocalMap](#ThreadLocalMap)
-    - [ThreadLocalMap key](#ThreadLocalMap-key)
-    - [ThreadLocalMap value](#ThreadLocalMap-value)
-  - [io.netty.util.concurrent.FastThreadLocal](#ionettyutilconcurrentFastThreadLocal)
-  - [nextHashCode](#nextHashCode)
-  - [参考资料](#%E5%8F%82%E8%80%83%E8%B5%84%E6%96%99)
+  - [ThreadLocalMap](#threadlocalmap)
+    - [ThreadLocalMap key](#threadlocalmap-key)
+    - [ThreadLocalMap value](#threadlocalmap-value)
+  - [io.netty.util.concurrent.FastThreadLocal](#ionettyutilconcurrentfastthreadlocal)
+  - [参考资料](#%e5%8f%82%e8%80%83%e8%b5%84%e6%96%99)
 
 ## Example
 
@@ -132,13 +130,34 @@ private T setInitialValue() {
 }
 ```
 
-## ThreadLocal-gc
-
 ## ThreadLocalMap
 
 `ThreadLocalMap` 是 `ThreadLocal` 的内部类, `ThreadLocalMap` 使用 `hash` 算法,存储数据
 
 一个业务对应一个`ThreadLocal` 如：一个存储用户信息，另一个存在数据库连接
+
+```java
+// Thread
+// Thread 中维护了一个 ThreadLocalMap
+// 这个map 的key 是 ThreadLocalMap
+// value 是 <T> 泛型，自定义类型
+class Thread implements Runnable {
+    /* ThreadLocal values pertaining to this thread. This map is maintained
+     * by the ThreadLocal class. */
+    ThreadLocal.ThreadLocalMap threadLocals = null;
+
+}
+// ThreadLocalMap
+ThreadLocalMap getMap(Thread t) {
+    return t.threadLocals;
+}
+
+// ThreadLocalMap
+void createMap(Thread t, T firstValue) {
+    // 创建 Map
+    t.threadLocals = new ThreadLocalMap(this, firstValue);
+}
+```
 
 > 伪代码
 
@@ -178,10 +197,9 @@ ThreadLocalMap 的 value 是要存在的信息如，用户信息，数据库连�
 
 - [source-code-fast-thread-local.md](../netty/source-code-fast-thread-local.md)
 
-## nextHashCode
-
 ## 参考资料
 
+- [ThreadLocal 源码分析](https://www.jianshu.com/p/80866ca6c424)
 - [threadLocal (简书)](https://www.jianshu.com/p/dde92ec37bd1)
 - [threadLocal 内存泄漏的原因](https://stackoverflow.com/questions/17968803/threadlocal-memory-leak)
 - [threadLocal 优化](https://www.cnblogs.com/zhjh256/p/6367928.html)
