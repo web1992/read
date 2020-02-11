@@ -10,6 +10,10 @@
 - [tokudb.md](tokudb.md)
 - [mysql-transaction.md](mysql-transaction.md)
 
-## 优化
+## 查询优化
+
+- 使用 force index 优化 possible_keys 选择的问题(所有太多 possible_keys 过程消耗时间也多)
+
+## 优化案例
 
 - [https://tech.meituan.com/2014/06/30/mysql-index.html](https://tech.meituan.com/2014/06/30/mysql-index.html)
