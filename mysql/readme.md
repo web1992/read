@@ -17,3 +17,22 @@
 ## 优化案例
 
 - [https://tech.meituan.com/2014/06/30/mysql-index.html](https://tech.meituan.com/2014/06/30/mysql-index.html)
+
+## optimizer_trace
+
+```sql
+set session optimizer_trace='enabled=on';
+select * from t_user;
+select * from information_schema.optimizer_trace\G;
+
+set session optimizer_trace='enabled=off';
+```
+
+## profile
+
+```sql
+set profiling=1;
+select * from t_user;
+show profiles;
+show profile for query 1;
+```
