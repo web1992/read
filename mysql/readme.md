@@ -36,3 +36,61 @@ select * from t_user;
 show profiles;
 show profile for query 1;
 ```
+
+使用缓存的查询
+
+```sql
++--------------------------------+----------+
+| Status                         | Duration |
++--------------------------------+----------+
+| starting                       | 0.000144 |
+| Waiting for query cache lock   | 0.000022 |
+| starting                       | 0.000014 |
+| checking query cache for query | 0.000058 |
+| checking permissions           | 0.000021 |
+| Opening tables                 | 0.000031 |
+| init                           | 0.000033 |
+| System lock                    | 0.000021 |
+| Waiting for query cache lock   | 0.000009 |
+| System lock                    | 0.000041 |
+| optimizing                     | 0.000060 |
+| statistics                     | 0.000043 |
+| preparing                      | 0.000030 |
+| executing                      | 0.000019 |
+| Sending data                   | 0.000087 |
+| end                            | 0.000011 |
+| query end                      | 0.000032 |
+| closing tables                 | 0.000012 |
+| freeing items                  | 0.000022 |
+| Waiting for query cache lock   | 0.000011 |
+| freeing items                  | 0.000030 |
+| Waiting for query cache lock   | 0.000015 |
+| freeing items                  | 0.000015 |
+| storing result in query cache  | 0.000016 |
+| cleaning up                    | 0.000035 |
++--------------------------------+----------+
+```
+
+为使用查询的缓存
+
+```sql
++----------------------+----------+
+| Status               | Duration |
++----------------------+----------+
+| starting             | 0.000075 |
+| checking permissions | 0.000025 |
+| Opening tables       | 0.000032 |
+| init                 | 0.000043 |
+| System lock          | 0.000031 |
+| optimizing           | 0.000020 |
+| statistics           | 0.000030 |
+| preparing            | 0.000025 |
+| executing            | 0.000015 |
+| Sending data         | 0.000133 |
+| end                  | 0.000028 |
+| query end            | 0.000027 |
+| closing tables       | 0.000028 |
+| freeing items        | 0.000037 |
+| cleaning up          | 0.000058 |
++----------------------+----------+
+```
