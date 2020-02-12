@@ -1,10 +1,34 @@
 # Plugin
 
 - [Plugin](#plugin)
+  - [Step 1](#step-1)
+  - [Step 2](#step-2)
+  - [Step 3](#step-3)
   - [Plugin class](#plugin-class)
   - [demo](#demo)
   - [InterceptorChain](#interceptorchain)
   - [Configuration](#configuration)
+
+`MyBatis` 中插件初始化和实现
+
+## Step 1
+
+`MyBatis` 在初始化的时候，解析 `xml` 中 `Interceptor`  并放入到 `interceptorChain` 中
+
+## Step 2
+
+```java
+// 应用 Interceptor
+// 支持下面四种类对象 ParameterHandler ResultSetHandler StatementHandler Executor
+parameterHandler = (ParameterHandler) interceptorChain.pluginAll(parameterHandler);
+resultSetHandler = (ResultSetHandler) interceptorChain.pluginAll(resultSetHandler);
+statementHandler = (StatementHandler) interceptorChain.pluginAll(statementHandler);
+executor = (Executor) interceptorChain.pluginAll(executor);
+```
+
+## Step 3
+
+调用 `plugin` 方法生成代理对象，可以使用已经提供的工具类 `Plugin.wrap(target, this);` 创建代理对象
 
 ## Plugin class
 
@@ -87,7 +111,6 @@ public class Plugin implements InvocationHandler {
   }
 
 }
-
 ```
 
 ## demo
@@ -155,6 +178,7 @@ public class ExecutorInterceptor implements Interceptor {
 ## InterceptorChain
 
 ```java
+// InterceptorChain
 public class InterceptorChain {
 
   private final List<Interceptor> interceptors = new ArrayList<Interceptor>();
@@ -178,6 +202,7 @@ public class InterceptorChain {
 > Mybatis 中的 Configuration 会进行 plugin 的解析和初始化
 
 ```java
+// Configuration
 // 初始化  InterceptorChain 所有的  Interceptor 都会放入到 InterceptorChain 中
 protected final InterceptorChain interceptorChain = new InterceptorChain();
 
@@ -189,11 +214,14 @@ public void addInterceptor(Interceptor interceptor) {
 // 下面的 newParameterHandler newResultSetHandler newStatementHandler newExecutor
 // 会调用 interceptorChain.pluginAll 方法对 调用 Interceptor 的plugin 方法
 // mybatis 提供了 Plugin.wrap(target, this); 工具方法，方便我们生成代理
+
+// ParameterHandler
 public ParameterHandler newParameterHandler(MappedStatement mappedStatement, Object parameterObject, BoundSql boundSql) {
   ParameterHandler parameterHandler = new DefaultParameterHandler(mappedStatement, parameterObject, boundSql);
   parameterHandler = (ParameterHandler) interceptorChain.pluginAll(parameterHandler);
   return parameterHandler;
 }
+// ResultSetHandler
 public ResultSetHandler newResultSetHandler(Executor executor, MappedStatement mappedStatement, RowBounds rowBounds, ParameterHandler parameterHandler,
     ResultHandler resultHandler, BoundSql boundSql) {
   ResultSetHandler resultSetHandler = mappedStatement.hasNestedResultMaps() ? new NestedResultSetHandler(executor, mappedStatement, parameterHandler, resultHandler, boundSql,
@@ -201,6 +229,7 @@ public ResultSetHandler newResultSetHandler(Executor executor, MappedStatement m
   resultSetHandler = (ResultSetHandler) interceptorChain.pluginAll(resultSetHandler);
   return resultSetHandler;
 }
+// StatementHandler
 public StatementHandler newStatementHandler(Executor executor, MappedStatement mappedStatement, Object parameterObject, RowBounds rowBounds,    ResultHandler resultHandler, BoundSql boundSql) {
   StatementHandler statementHandler = new RoutingStatementHandler(executor, mappedStatement, parameterObject, rowBounds, resultHandler, boundSql);
   statementHandler = (StatementHandler) interceptorChain.pluginAll(statementHandler);
@@ -209,6 +238,7 @@ public StatementHandler newStatementHandler(Executor executor, MappedStatement m
 public Executor newExecutor(Transaction transaction) {
   return newExecutor(transaction, defaultExecutorType);
 }
+// Executor
 public Executor newExecutor(Transaction transaction, ExecutorType executorType) {
   executorType = executorType == null ? defaultExecutorType : executorType;
   executorType = executorType == null ? ExecutorType.SIMPLE : executorType;
