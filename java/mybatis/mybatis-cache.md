@@ -133,3 +133,4 @@ public String toString() {
 > mybatis 缓存
 
 - [https://www.cnblogs.com/jtlgb/p/6037945.html](https://www.cnblogs.com/jtlgb/p/6037945.html)
+- [https://tech.meituan.com/2018/01/19/mybatis-cache.html](https://tech.meituan.com/2018/01/19/mybatis-cache.html)
