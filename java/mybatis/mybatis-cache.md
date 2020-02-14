@@ -1,8 +1,63 @@
 # mybatis cache
 
-## CachingExecutor
+- [mybatis cache](#mybatis-cache)
+  - [本地缓存](#%e6%9c%ac%e5%9c%b0%e7%bc%93%e5%ad%98)
+    - [BaseExecutor](#baseexecutor)
+  - [二级缓存](#%e4%ba%8c%e7%ba%a7%e7%bc%93%e5%ad%98)
+    - [CachingExecutor init](#cachingexecutor-init)
+    - [createCacheKey](#createcachekey)
+    - [CacheKey](#cachekey)
+  - [Cache](#cache)
+  - [参考](#%e5%8f%82%e8%80%83)
 
-## init
+`mybatis` 缓存有两种：基于 Session 的本地缓存和二级缓存
+
+下面的来自 `Mybatis` 官网中文文档：
+
+本地缓存
+
+Mybatis 使用到了两种缓存：本地缓存（local cache）和二级缓存（second level cache）。
+
+每当一个新 session 被创建，MyBatis 就会创建一个与之相关联的本地缓存。任何在 session 执行过的查询语句本身都会被保存在本地缓存中，那么，相同的查询语句和相同的参数所产生的更改就不会二度影响数据库了。本地缓存会被增删改、提交事务、关闭事务以及关闭 session 所清空。
+
+默认情况下，本地缓存数据可在整个 session 的周期内使用，这一缓存需要被用来解决循环引用错误和加快重复嵌套查询的速度，所以它可以不被禁用掉，但是你可以设置 localCacheScope=STATEMENT 表示缓存仅在语句执行时有效。
+
+注意，如果 localCacheScope 被设置为 SESSION，那么 MyBatis 所返回的引用将传递给保存在本地缓存里的相同对象。对返回的对象（例如 list）做出任何更新将会影响本地缓存的内容，进而影响存活在 session 生命周期中的缓存所返回的值。因此，不要对 MyBatis 所返回的对象作出更改，以防后患。
+
+## 本地缓存
+
+本地缓存(很多人都喜欢成为一级缓存)，这里说下为什么一级缓存是基于 `Session` 的: _因为 `SqlSession` 中的缓存是基于 `Executor`(`BaseExecutor`) 实现的_
+
+看下 `DefaultSqlSession` 的代码片段
+
+```java
+// Executor 是 DefaultSqlSession 的成员变量
+// 每一个 SqlSession 对象就有一个 Executor 对象
+// 因此不同的 SqlSession 对象缓存的内容是内部的，外部无法感知到
+public class DefaultSqlSession implements SqlSession {
+  private Configuration configuration;
+  private Executor executor;
+  // 省略其他代码
+}
+```
+
+### BaseExecutor
+
+本地缓存是基于 `BaseExecutor` 实现的,看下下面的代码片段
+
+```java
+// BaseExecutor
+public abstract class BaseExecutor implements Executor {
+  // 本地缓存
+  protected PerpetualCache localCache;
+}
+```
+
+## 二级缓存
+
+二级缓存是基于 `CachingExecutor` 实现的
+
+### CachingExecutor init
 
 ```java
 // org.apache.ibatis.session.Configuration
@@ -21,6 +76,7 @@ public Executor newExecutor(Transaction transaction, ExecutorType executorType) 
     } else {
       executor = new SimpleExecutor(this, transaction);
     }
+    // 如果打开了，进行包装
     if (cacheEnabled) {
       executor = new CachingExecutor(executor);
     }
@@ -29,7 +85,7 @@ public Executor newExecutor(Transaction transaction, ExecutorType executorType) 
 }
 ```
 
-## createCacheKey
+### createCacheKey
 
 ```java
 // BaseExecutor
@@ -64,7 +120,7 @@ public CacheKey createCacheKey(MappedStatement ms, Object parameterObject, RowBo
 }
 ```
 
-## CacheKey
+### CacheKey
 
 `CacheKey` 主要的方法就是 `update` 和 `equals`
 
@@ -123,10 +179,6 @@ public String toString() {
 - TransactionalCache
 - WeakCache
 - PerpetualCache
-
-## PerpetualCache
-
-> 永久的缓存
 
 ## 参考
 
