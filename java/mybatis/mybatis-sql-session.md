@@ -1,5 +1,17 @@
 # SqlSession
 
+看下 `SqlSession` 的时序图
+
+![SqlSession](./images/mybatis.png)
+
+需要了解的内容：
+
+- `SqlSession` 由 `SqlSessionFactory` 创建
+- `SqlSession` 的默认实现是 `DefaultSqlSession`
+- 在 mybatis-spring 中 使用 `SqlSessionTemplate` 进行 `DefaultSqlSession` 代理(包装)，缓存 `SqlSession` 到 `TransactionSynchronizationManager` 中
+- `SqlSessionTemplate` 是单例，线程安全的(因为实现了代理，会使用 `SqlSessionFactory` 创建新的 `SqlSession`)
+- `SqlSessionUtils` 缓存 `SqlSession` 的工具类
+
 ## SqlSessionFactoryBean
 
 Spring with mybatis `org.mybatis.spring.SqlSessionFactoryBean`

@@ -314,3 +314,4 @@ private static final class SqlSessionSynchronization extends TransactionSynchron
 ## Reference
 
 - [SqlSessionFactoryBean](./mybatis-sql-session-factory-bean.md)
+- [SqlSession](mybatis-sql-session.md)
