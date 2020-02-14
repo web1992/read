@@ -186,3 +186,4 @@ public String toString() {
 
 - [https://www.cnblogs.com/jtlgb/p/6037945.html](https://www.cnblogs.com/jtlgb/p/6037945.html)
 - [https://tech.meituan.com/2018/01/19/mybatis-cache.html](https://tech.meituan.com/2018/01/19/mybatis-cache.html)
+- [https://www.cnblogs.com/756623607-zhang/p/10291704.html](https://www.cnblogs.com/756623607-zhang/p/10291704.html)
