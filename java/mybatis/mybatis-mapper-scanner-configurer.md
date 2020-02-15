@@ -30,12 +30,12 @@ BeanNameAware {
 }
 ```
 
-| spring interface                    | desc                              |
-| ----------------------------------- | --------------------------------- |
-| BeanDefinitionRegistryPostProcessor | postProcessBeanDefinitionRegistry |
-| InitializingBean                    | afterPropertiesSet                |
-| ApplicationContextAware             | setApplicationContext             |
-| BeanNameAware                       | setBeanName                       |
+| spring interface                      | 主要实现的方法                    |
+| ------------------------------------- | --------------------------------- |
+| `BeanDefinitionRegistryPostProcessor` | postProcessBeanDefinitionRegistry |
+| `InitializingBean`                    | afterPropertiesSet                |
+| `ApplicationContextAware`             | setApplicationContext             |
+| `BeanNameAware`                       | setBeanName                       |
 
 ### postProcessBeanDefinitionRegistry
 

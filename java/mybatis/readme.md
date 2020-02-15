@@ -1,5 +1,7 @@
 # mybatis
 
+`mybatis` 源码学习
+
 ## index
 
 - [x] [mybatis-sql-session.md](mybatis-sql-session.md)
@@ -29,6 +31,16 @@
 ## mybatis 代码执行图
 
 ![exe](./images/mybatis-exe.draw.png)
+
+## mybatis 设计模式
+
+mybatis 中使用的设计模式：
+
+| 设计模式     | 实例类                               |
+| ------------ | ------------------------------------ |
+| 抽象工厂模式 | `TransactionFactory`                   |
+| 装饰器模式   | `CachingExecutor`,`SimpleExecutor`,`Cache` |
+| 代理         | `MapperProxy`,`Interceptor`,`SqlSessionTemplate`       |
 
 ## Link
 
