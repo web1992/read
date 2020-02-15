@@ -7,12 +7,14 @@
   - [XMLMapperBuilder](#xmlmapperbuilder)
   - [SqlSessionFactory](#sqlsessionfactory)
   - [SqlSession](#sqlsession)
+  - [Reference](#reference)
 
 这里主要分析 `SqlSessionFactoryBean` 的定义，初始化和作用
 
 ## Class define
 
 ```java
+// org.mybatis.spring.SqlSessionFactoryBean
 // 定义
 // 实现了 Spring 中的 FactoryBean 接口
 // 用来创建 SqlSessionFactory 对象
@@ -34,14 +36,14 @@ public class SqlSessionFactoryBean implements FactoryBean<SqlSessionFactory>, In
 在执行  `getObject` 方法的时候,会进行 `SqlSessionFactory` 的初始化操作
 
 ```java
-// SqlSessionFactoryBean
+// org.mybatis.spring.SqlSessionFactoryBean
 public SqlSessionFactory getObject() throws Exception {
   if (this.sqlSessionFactory == null) {
     afterPropertiesSet();
   }
   return this.sqlSessionFactory;
 }
-// SqlSessionFactoryBean
+// org.mybatis.spring.SqlSessionFactoryBean
 public void afterPropertiesSet() throws Exception {
   notNull(dataSource, "Property 'dataSource' is required");
   notNull(sqlSessionFactoryBuilder, "Property 'sqlSessionFactoryBuilder' is required");
@@ -146,7 +148,7 @@ private void configurationElement(XNode context) {
     </select>
 
     <update id="update" parameterType="cn.web1992.mybatiss.dal.domain.User">
-        update  t_user set `name`=#{name} where id=#{id};
+        update  t_user set name=#{name} where id=#{id};
     </update>
 
 </mapper>
@@ -229,3 +231,8 @@ public interface SqlSession {
   Connection getConnection();
 }
 ```
+
+## Reference
+
+- [mybatis-sql-session-template.md](mybatis-sql-session-template.md)
+- [mybatis-sql-session.md](mybatis-sql-session.md)
