@@ -1,6 +1,8 @@
 # mybatis
 
-`mybatis` 源码学习
+`mybatis` + `mybatis-spring` 源码学习
+
+`mybatis-spring` 是 `mybatis` 与 `Spring` 集成的模块
 
 ## index
 
