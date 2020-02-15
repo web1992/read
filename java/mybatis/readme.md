@@ -36,11 +36,11 @@
 
 mybatis 中使用的设计模式：
 
-| 设计模式     | 实例类                               |
-| ------------ | ------------------------------------ |
-| 抽象工厂模式 | `TransactionFactory`                   |
-| 装饰器模式   | `CachingExecutor`,`SimpleExecutor`,`Cache` |
-| 代理         | `MapperProxy`,`Interceptor`,`SqlSessionTemplate`       |
+| 设计模式     | 实例类                                           |
+| ------------ | ------------------------------------------------ |
+| 抽象工厂模式 | `TransactionFactory`                             |
+| 装饰器模式   | `CachingExecutor`,`SimpleExecutor`,`Cache`       |
+| 代理         | `MapperProxy`,`Interceptor`,`SqlSessionTemplate` |
 
 ## Link
 
