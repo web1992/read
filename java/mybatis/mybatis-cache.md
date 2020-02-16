@@ -53,6 +53,15 @@ public abstract class BaseExecutor implements Executor {
   // 本地缓存
   protected PerpetualCache localCache;
 }
+
+// PerpetualCache
+// PerpetualCache 底层是 HashMap 使用的内存缓存
+public class PerpetualCache implements Cache {
+
+  private String id;
+
+  private Map<Object, Object> cache = new HashMap<Object, Object>();
+}
 ```
 
 ## 二级缓存
