@@ -5,6 +5,7 @@
 - [Dubbo 源码相关](dubbo/readme.md)
 - [Spring 源码相关](spring/readme.md)
 - [Netty 源码相关](netty/readme.md)
+- [MyBatis 源码相关](java/mybatis/readme.md)
 - [Java 基础](java/readme.md)
 - [Java.I.O.NIO.and.NIO.2](nio/readme.md)
 
