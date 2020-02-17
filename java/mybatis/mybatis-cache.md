@@ -8,11 +8,12 @@
     - [createCacheKey](#createcachekey)
     - [CacheKey](#cachekey)
   - [Cache](#cache)
+  - [缓存创建](#%e7%bc%93%e5%ad%98%e5%88%9b%e5%bb%ba)
   - [参考](#%e5%8f%82%e8%80%83)
 
 `mybatis` 缓存有两种：基于 Session 的本地缓存和二级缓存
 
-下面的来自 `Mybatis` 官网中文文档：
+下面的来自 `Mybatis` 官网[中文文档](https://mybatis.org/mybatis-3/zh/sqlmap-xml.html#cache)
 
 本地缓存
 
@@ -36,6 +37,7 @@ Mybatis 使用到了两种缓存：本地缓存（local cache）和二级缓存�
 // Executor 是 DefaultSqlSession 的成员变量
 // 每一个 SqlSession 对象就有一个 Executor 对象
 // 因此不同的 SqlSession 对象缓存的内容是内部的，外部无法感知到
+// 因此一级缓存是 SqlSession 级别的
 public class DefaultSqlSession implements SqlSession {
   private Configuration configuration;
   private Executor executor;
@@ -87,7 +89,7 @@ public Executor newExecutor(Transaction transaction, ExecutorType executorType) 
     } else {
       executor = new SimpleExecutor(this, transaction);
     }
-    // 如果打开了，进行包装
+    // 如果打开了二级缓存，进行包装
     if (cacheEnabled) {
       executor = new CachingExecutor(executor);
     }
@@ -180,6 +182,8 @@ public String toString() {
 
 ## Cache
 
+`Cache` 中所有的实现类
+
 - FifoCache
 - LoggingCache
 - LruCache
@@ -190,6 +194,88 @@ public String toString() {
 - TransactionalCache
 - WeakCache
 - PerpetualCache
+
+## 缓存创建
+
+下面的 `xml` 的配置
+
+```xml
+<!-- XXXMapper.xml -->
+<cache size="" readOnly="" flushInterval="" eviction="" type=""/>
+```
+
+```java
+// MapperBuilderAssistant
+// 缓存对象创建
+public Cache useNewCache(Class<? extends Cache> typeClass,
+    Class<? extends Cache> evictionClass,
+    Long flushInterval,
+    Integer size,
+    boolean readWrite,
+    Properties props) {
+  // 底层是 PerpetualCache
+  typeClass = valueOrDefault(typeClass, PerpetualCache.class);
+  // LruCache 缓存的淘汰策略，默认1024对象超过之前的就会被删除
+  // 使用 LinkedHashMap 的 removeEldestEntry 方法
+  evictionClass = valueOrDefault(evictionClass, LruCache.class);
+  Cache cache = new CacheBuilder(currentNamespace)
+      .implementation(typeClass)
+      .addDecorator(evictionClass)
+      .clearInterval(flushInterval)
+      .size(size)
+      .readWrite(readWrite)
+      .properties(props)
+      .build();
+  configuration.addCache(cache);
+  currentCache = cache;
+  return cache;
+}
+
+public Cache build() {
+  setDefaultImplementations();
+  Cache cache = newBaseCacheInstance(implementation, id);
+  setCacheProperties(cache);
+  // issue #352, do not apply decorators to custom caches
+  if (cache.getClass().getName().startsWith("org.apache.ibatis")) {
+    for (Class<? extends Cache> decorator : decorators) {
+      cache = newCacheDecoratorInstance(decorator, cache);
+      setCacheProperties(cache);
+    }
+    // 使用装饰器进行装饰
+    cache = setStandardDecorators(cache);
+  }
+  return cache;
+}
+
+// 根据上面的 xml 配置,进行 Cache 的初始化
+// CacheBuilder
+private Cache setStandardDecorators(Cache cache) {
+  try {
+    MetaObject metaCache = MetaObject.forObject(cache);
+    if (size != null && metaCache.hasSetter("size")) {
+      metaCache.setValue("size", size);
+    }
+    if (clearInterval != null) {
+      // 是否需要定期删除缓存
+      cache = new ScheduledCache(cache);
+      ((ScheduledCache) cache).setClearInterval(clearInterval);
+    }
+    if (readWrite) {
+      // 是否序列化
+      cache = new SerializedCache(cache);
+    }
+    // 记录缓存命中日志打印
+    cache = new LoggingCache(cache);
+    // 锁，使用读写锁
+    // 因此二级Cache 是 Mapper 中的nameSpace 共享的
+    // 存在并发读写问题
+    cache = new SynchronizedCache(cache);
+    return cache;
+  } catch (Exception e) {
+    throw new CacheException("Error building standard cache decorators.  Cause: " + e, e);
+  }
+}
+```
 
 ## 参考
 
