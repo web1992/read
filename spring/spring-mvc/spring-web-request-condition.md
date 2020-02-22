@@ -142,8 +142,7 @@ public RequestMappingInfo build() {
 // 根据 request 匹配合适的 RequestCondition （匹配成功之后）创建 RequestMappingInfo 对象
 // 而 RequestMappingInfo 对象中包含了 Contoller 对象
 // 从而可以执行 Contoller 中的方法
-@Override
-@Nullable
+// RequestMappingInfo
 public RequestMappingInfo getMatchingCondition(HttpServletRequest request) {
    // 匹配支持的方法，如GET，POST
    RequestMethodsRequestCondition methods = this.methodsCondition.getMatchingCondition(request);
@@ -300,7 +299,7 @@ private RequestMethodsRequestCondition matchRequestMethod(String httpMethodValue
 HttpMethod httpMethod = HttpMethod.resolve(httpMethodValue);
 if (httpMethod != null) {
    // getMethods 方法返回支持的方法列表
-   // 循环所有的支持方法列表，进行对比，如果有相等就返回一个新的 
+   // 循环所有的支持方法列表，进行对比，如果有相等就返回一个新的
    // RequestMethodsRequestCondition 表示支持该方法的请求
    for (RequestMethod method : getMethods()) {
       if (httpMethod.matches(method.name())) {
@@ -317,6 +316,6 @@ return null;
 
 ## RequestCondition.compareTo
 
-这简单的说下 `compareTo` 的作用： 如果一个请求匹配到了多个 `RequestCondition` ,那么我要用哪一个合适呢？因此 `RequestCondition` 提供了 `compareTo` 方法进行排序，有限使用第一个
+这简单的说下 `compareTo` 的作用： 如果一个请求匹配到了多个 `RequestCondition` ,那么我要用哪一个合适呢？因此 `RequestCondition` 提供了 `compareTo` 方法进行排序，有序的使用第一个
 
 具体看 `RequestMappingInfoHandlerMapping.getMappingComparator` 方法的实现和调用链

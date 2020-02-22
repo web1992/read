@@ -382,7 +382,7 @@ public abstract class WebApplicationObjectSupport
 ```java
 afterPropertiesSet -> initControllerAdviceCache // ControllerAdvice 注解
    -> getDefaultArgumentResolvers // 如解析 RequestParam 注解
-   -> getDefaultInitBinderArgumentResolvers 
+   -> getDefaultInitBinderArgumentResolvers
    -> getDefaultReturnValueHandlers // 比如 ModelAndView
 
 // 可以实现 HandlerMethodArgumentResolver 接口进行自定义的参数解析
@@ -398,6 +398,27 @@ afterPropertiesSet -> initControllerAdviceCache // ControllerAdvice 注解
 处理文件上传请求
 
 ### HandlerInterceptor
+
+```java
+public interface HandlerInterceptor {
+
+   default boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler)
+         throws Exception {
+
+      return true;
+   }
+
+   default void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler,
+         @Nullable ModelAndView modelAndView) throws Exception {
+   }
+
+   default void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler,
+         @Nullable Exception ex) throws Exception {
+   }
+
+}
+
+```
 
 - HandlerExecutionChain
   - applyPreHandle
