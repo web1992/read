@@ -10,6 +10,7 @@
     - [beanFactory.getBean](#beanfactorygetbean)
   - [Demo for BeanPostProcessor](#demo-for-beanpostprocessor)
     - [InstantiationAwareBeanPostProcessor](#instantiationawarebeanpostprocessor)
+    - [CommonAnnotationBeanPostProcessor](#commonannotationbeanpostprocessor)
 
 ## where load BeanPostProcessor
 
@@ -71,3 +72,5 @@ public static void registerBeanPostProcessors(ConfigurableListableBeanFactory be
 ## Demo for BeanPostProcessor
 
 ### InstantiationAwareBeanPostProcessor
+
+### CommonAnnotationBeanPostProcessor
