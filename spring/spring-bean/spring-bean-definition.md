@@ -4,9 +4,15 @@
 
 ## Class implement BeanDefinition
 
+- AbstractBeanDefinition
+- AnnotatedBeanDefinition
+- AnnotatedGenericBeanDefinition
+- ChildBeanDefinition
+- ConfigurationClassBeanDefinition
 - GenericBeanDefinition
 - RootBeanDefinition
 - ChildBeanDefinition
+- ScannedGenericBeanDefinition
 
 ## AbstractBeanDefinition
 
@@ -15,7 +21,7 @@
 ```java
 /**
  * Return the class of the wrapped bean, if already resolved.
- * @return the bean class, or {@code null} if none defined
+ * @return the bean class, or {@code null} if none defined 
  * @throws IllegalStateException if the bean definition does not define a bean class,
  * or a specified bean class name has not been resolved into an actual Class
  */
