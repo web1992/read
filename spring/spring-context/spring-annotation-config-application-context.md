@@ -1,14 +1,26 @@
 # AnnotationConfigApplicationContext
 
+- [AnnotationConfigApplicationContext](#annotationconfigapplicationcontext)
+  - [AnnotationConfigApplicationContext init](#annotationconfigapplicationcontext-init)
+  - [ClassPathBeanDefinitionScanner](#classpathbeandefinitionscanner)
+    - [ClassPathBeanDefinitionScanner-doScan](#classpathbeandefinitionscanner-doscan)
+    - [AnnotationTypeFilter](#annotationtypefilter)
+  - [AbstractApplicationContext](#abstractapplicationcontext)
+    - [refresh](#refresh)
+
 ## AnnotationConfigApplicationContext init
 
 ```java
+// 最简单的用法例子
 // 创建 AnnotationConfigApplicationContext
 AnnotationConfigApplicationContext context;
 context = new AnnotationConfigApplicationContext();
+// 扫描
 context.scan("cn.web1992.spring.demo");
+//  刷新
 context.refresh();
 // do some thing ...
+// 执行 getBean 进行其他操作等等
 ```
 
 ```java
@@ -21,9 +33,42 @@ this.scanner = new ClassPathBeanDefinitionScanner(this);
 }
 ```
 
-## doScan
+## ClassPathBeanDefinitionScanner
 
-## AbstractTypeHierarchyTraversingFilter
+### ClassPathBeanDefinitionScanner-doScan
+
+```java
+public class ClassPathBeanDefinitionScanner extends ClassPathScanningCandidateComponentProvider {
+// ...
+}
+```
+
+### AnnotationTypeFilter
+
+```java
+// ClassPathScanningCandidateComponentProvider
+protected void registerDefaultFilters() {
+    // Component 这里对有Component的类进行注册
+    this.includeFilters.add(new AnnotationTypeFilter(Component.class));
+    ClassLoader cl = ClassPathScanningCandidateComponentProvider.class.getClassLoader();
+    try {
+    this.includeFilters.add(new AnnotationTypeFilter(
+    ((Class<? extends Annotation>) ClassUtils.forName("javax.annotation.ManagedBean", cl)), false));
+    logger.debug("JSR-250 'javax.annotation.ManagedBean' found and supported for component scanning");
+    }
+    catch (ClassNotFoundException ex) {
+    // JSR-250 1.1 API (as included in Java EE 6) not available - simply skip.
+    }
+    try {
+    this.includeFilters.add(new AnnotationTypeFilter(
+    ((Class<? extends Annotation>) ClassUtils.forName("javax.inject.Named", cl)), false));
+    logger.debug("JSR-330 'javax.inject.Named' annotation found and supported for component scanning");
+    }
+    catch (ClassNotFoundException ex) {
+    // JSR-330 API not available - simply skip.
+    }
+}
+```
 
 ## AbstractApplicationContext
 
