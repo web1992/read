@@ -4,11 +4,12 @@
 
 - [BeanPostProcessor](#beanpostprocessor)
   - [where load BeanPostProcessor](#where-load-beanpostprocessor)
-  - [The hook method postProcessBeanFactory](#the-hook-method-postprocessbeanfactory)
+  - [The hook method postProcessBeforeInitialization and postProcessAfterInitialization](#the-hook-method-postprocessbeforeinitialization-and-postprocessafterinitialization)
   - [The load method PostProcessorRegistrationDelegate](#the-load-method-postprocessorregistrationdelegate)
     - [PostProcessorRegistrationDelegate.registerBeanPostProcessors](#postprocessorregistrationdelegateregisterbeanpostprocessors)
     - [beanFactory.getBean](#beanfactorygetbean)
   - [Demo for BeanPostProcessor](#demo-for-beanpostprocessor)
+    - [InstantiationAwareBeanPostProcessor](#instantiationawarebeanpostprocessor)
 
 ## where load BeanPostProcessor
 
@@ -23,20 +24,20 @@ registerBeanPostProcessors(beanFactory);
 }
 ```
 
-## The hook method postProcessBeanFactory
+## The hook method postProcessBeforeInitialization and postProcessAfterInitialization
 
 ```java
-@FunctionalInterface
-public interface BeanFactoryPostProcessor {
- /**
-  * Modify the application context's internal bean factory after its standard
-  * initialization. All bean definitions will have been loaded, but no beans
-  * will have been instantiated yet. This allows for overriding or adding
-  * properties even to eager-initializing beans.
-  * @param beanFactory the bean factory used by the application context
-  * @throws org.springframework.beans.BeansException in case of errors
-  */
- void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory) throws BeansException;
+public interface BeanPostProcessor {
+
+@Nullable
+default Object postProcessBeforeInitialization(Object bean, String beanName) throws BeansException {
+    return bean;
+}
+
+@Nullable
+default Object postProcessAfterInitialization(Object bean, String beanName) throws BeansException {
+    return bean;
+}
 }
 ```
 
@@ -68,3 +69,5 @@ public static void registerBeanPostProcessors(ConfigurableListableBeanFactory be
 在 `registerBeanPostProcessors` 方法中调用了 `BeanFactory` 的 `getBean` 方法,那么 `BeanFactory` 中的 `bean` 是从哪里来的呢？
 
 ## Demo for BeanPostProcessor
+
+### InstantiationAwareBeanPostProcessor
