@@ -4,11 +4,10 @@
 
 - [BeanFactoryPostProcessor](#beanfactorypostprocessor)
   - [When load BeanFactoryPostProcessor](#when-load-beanfactorypostprocessor)
-  - [The hook method postProcessBeforeInitialization and postProcessAfterInitialization](#the-hook-method-postprocessbeforeinitialization-and-postprocessafterinitialization)
+  - [The hook method postProcessBeanFactory](#the-hook-method-postprocessbeanfactory)
   - [The load method PostProcessorRegistrationDelegate](#the-load-method-postprocessorregistrationdelegate)
     - [PostProcessorRegistrationDelegate-registerBeanPostProcessors](#postprocessorregistrationdelegate-registerbeanpostprocessors)
-  - [Demo for BeanFactoryPostProcessor](#demo-for-beanfactorypostprocessor)
-  - [BeanDefinitionRegistry](#beandefinitionregistry)
+  - [PropertyResourceConfigurer](#propertyresourceconfigurer)
 
 ## When load BeanFactoryPostProcessor
 
@@ -33,11 +32,6 @@
  * instantiation, violating the container and causing unintended side-effects.
  * If bean instance interaction is required, consider implementing
  * {@link BeanPostProcessor} instead.
- *
- * @author Juergen Hoeller
- * @since 06.07.2003
- * @see BeanPostProcessor
- * @see PropertyResourceConfigurer
  */
 ```
 
@@ -50,24 +44,23 @@ public void refresh() throws BeansException, IllegalStateException {
 // Invoke factory processors registered as beans in the context.
 invokeBeanFactoryPostProcessors(beanFactory)
 // ...
-
 }
 ```
 
-## The hook method postProcessBeforeInitialization and postProcessAfterInitialization
+## The hook method postProcessBeanFactory
 
 ```java
-public interface BeanPostProcessor {
-
-@Nullable
-default Object postProcessBeforeInitialization(Object bean, String beanName) throws BeansException {
-    return bean;
-}
-
-@Nullable
-default Object postProcessAfterInitialization(Object bean, String beanName) throws BeansException {
-    return bean;
-}
+@FunctionalInterface
+public interface BeanFactoryPostProcessor {
+ /**
+  * Modify the application context's internal bean factory after its standard
+  * initialization. All bean definitions will have been loaded, but no beans
+  * will have been instantiated yet. This allows for overriding or adding
+  * properties even to eager-initializing beans.
+  * @param beanFactory the bean factory used by the application context
+  * @throws org.springframework.beans.BeansException in case of errors
+  */
+ void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory) throws BeansException;
 }
 ```
 
@@ -88,8 +81,6 @@ ConfigurableListableBeanFactory beanFactory, AbstractApplicationContext applicat
 }
 ```
 
-## Demo for BeanFactoryPostProcessor
+## PropertyResourceConfigurer
 
-`BeanFactoryPostProcessor` 实例
-
-## BeanDefinitionRegistry
+`PropertyResourceConfigurer` Spring 实现 `${}` 占位符注入的 `BeanFactoryPostProcessor` 一种实现
