@@ -1,12 +1,12 @@
 # ScheduledThreadPoolExecutor
 
 - [ScheduledThreadPoolExecutor](#scheduledthreadpoolexecutor)
-  - [简介](#%E7%AE%80%E4%BB%8B)
+  - [简介](#%e7%ae%80%e4%bb%8b)
   - [java doc](#java-doc)
   - [scheduleAtFixedRate](#scheduleatfixedrate)
   - [scheduleWithFixedDelay](#schedulewithfixeddelay)
   - [ScheduledFutureTask](#scheduledfuturetask)
-    - [变量](#%E5%8F%98%E9%87%8F)
+    - [ScheduledFutureTask 中的变量](#scheduledfuturetask-%e4%b8%ad%e7%9a%84%e5%8f%98%e9%87%8f)
     - [run](#run)
     - [getDelay](#getdelay)
   - [DelayedWorkQueue](#delayedworkqueue)
@@ -16,6 +16,7 @@
     - [poll](#poll)
     - [take](#take)
   - [siftDown](#siftdown)
+  - [Demo for ScheduledThreadPoolExecutor](#demo-for-scheduledthreadpoolexecutor)
 
 ## 简介
 
@@ -114,7 +115,7 @@ public ScheduledFuture<?> scheduleWithFixedDelay(Runnable command,
 
 ![ScheduledFutureTask](images/ScheduledFutureTask.png)
 
-### 变量
+### ScheduledFutureTask 中的变量
 
 ```java
 /** Sequence number to break ties FIFO */
@@ -159,14 +160,15 @@ public boolean isPeriodic() {
     return period != 0;
 }
 
-// 如果 period > 0 认为是 scheduleAtFixedRate 类型的任务 tiem = tiem + period
-// 而 period < 0 认为是 scheduleWithFixedDelay 类型的任务 tiem = now() + period
+// 如果 period > 0 认为是 scheduleAtFixedRate 类型的任务 time = time + period
+// 而 period < 0 认为是 scheduleWithFixedDelay 类型的任务 time = now() + period
 // 在这些方法执行已经执行了 isPeriodic 方法 因此 period !=0
 private void setNextRunTime() {
     long p = period;
     if (p > 0)// scheduleAtFixedRate
         time += p;
     else
+        // (当前时间+p,因此会把任务执行消耗的时间也计算在内)
         time = triggerTime(-p);// scheduleWithFixedDelay
 }
 
@@ -328,7 +330,7 @@ public RunnableScheduledFuture<?> take() throws InterruptedException {
                 // 会在 finally 中进行唤醒
                 // 或许你认为上面不是使用 lock 进行加锁了为什么还有其他线程竞争呢？
                 // 这是因为后面会执行 available.awaitNanos(delay) 是会释放锁的，因此其他线程也可获取锁
-                if (leader != null)
+                if (leader != nul)
                     available.await();
                 else {
                     Thread thisThread = Thread.currentThread();
@@ -337,7 +339,7 @@ public RunnableScheduledFuture<?> take() throws InterruptedException {
                         // 等待 delay 纳秒时间，其实就是在 delay 纳秒之后返回 Runnable
                         // 然后提交给 queue 执行任务
                         // 这样就实现了 周期性任务 的执行
-                        // awaitNanos 方法会使当前线程阻塞，等待唤醒（不会占用CPU）
+                        // awaitNlanos 方法会使当前线程阻塞，等待唤醒（不会占用CPU）
                         available.awaitNanos(delay);
                     } finally {
                         if (leader == thisThread)
@@ -401,5 +403,59 @@ private void siftDown(int k, RunnableScheduledFuture<?> key) {
     }
     queue[k] = key;
     setIndex(key, k);
+}
+```
+
+## Demo for ScheduledThreadPoolExecutor
+
+```java
+public static void main(String[] args) {
+    ScheduledThreadPoolExecutor scheduledThreadPoolExecutor = new ScheduledThreadPoolExecutor(1);
+    long start = System.currentTimeMillis();
+    scheduledThreadPoolExecutor.execute(() -> {
+        System.out.println(Thread.currentThread().getName() + " execute run ...");
+    });
+    // 第一个任务如果在 1秒内没有完成
+    // 会等待第二个任务，直到第二个任务完成
+    // 同时执行的任务只有一个
+    // 如果执行的任务时，抛出了异常，该任务会终止
+    scheduledThreadPoolExecutor.scheduleWithFixedDelay(() -> {
+        System.out.println(Thread.currentThread().getName() + " scheduleWithFixedDelay task 1 run ... " + getSecond(start));
+        try {
+            TimeUnit.SECONDS.sleep(2);
+            //throw new RuntimeException("error");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }, 0, 1, TimeUnit.SECONDS);
+    // ScheduledThreadPoolExecutor scheduledThreadPoolExecutor2 = new ScheduledThreadPoolExecutor(1);
+    // scheduledThreadPoolExecutor2.scheduleWithFixedDelay(() -> {
+    // 如果使用同一个 ScheduledThreadPoolExecutor 执行二个 scheduleWithFixedDelay 任务
+    // 第一个任务执行时间过长，也会影响第二个任务的执行周期
+    scheduledThreadPoolExecutor.scheduleWithFixedDelay(() -> {
+        System.out.println(Thread.currentThread().getName() + " scheduleWithFixedDelay task 2 run ... " + getSecond(start));
+        try {
+            TimeUnit.SECONDS.sleep(1);
+            //throw new RuntimeException("error");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }, 0, 1, TimeUnit.SECONDS);
+    // 第一个任务如果在 1秒内没有完成
+    // 下一个任务，会继续执行
+    // 同时执行的任务会超过2个
+    // 如果执行的任务时，抛出了异常，该任务会终止
+    scheduledThreadPoolExecutor.scheduleAtFixedRate(() -> {
+        try {
+            TimeUnit.SECONDS.sleep(1);
+            //throw new RuntimeException("error");
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        System.out.println(Thread.currentThread().getName() + " scheduleAtFixedRate task run ...");
+    }, 0, 1, TimeUnit.SECONDS);
+}
+private static long getSecond(long start) {
+    return TimeUnit.MILLISECONDS.toSeconds(System.currentTimeMillis() - start);
 }
 ```
