@@ -1,24 +1,23 @@
 # @Configuration
 
-[ClassPathBeanDefinitionScanner 分析](.././spring-context/spring-class-path-bean-definition-scanner.md)
-
 - [@Configuration](#configuration)
-  - [具体流程](#%e5%85%b7%e4%bd%93%e6%b5%81%e7%a8%8b)
+  - [整体思路](#%e6%95%b4%e4%bd%93%e6%80%9d%e8%b7%af)
   - [Define of Configuration](#define-of-configuration)
   - [demo](#demo)
   - [AnnotationConfigApplicationContext](#annotationconfigapplicationcontext)
   - [ConfigurationClassPostProcessor](#configurationclasspostprocessor)
     - [postProcessBeanDefinitionRegistry](#postprocessbeandefinitionregistry)
-  - [ConfigurationClassParser parse](#configurationclassparser-parse)
-    - [doProcessConfigurationClass](#doprocessconfigurationclass)
-  - [enhanceConfigurationClasses](#enhanceconfigurationclasses)
-  - [ConfigurationClass](#configurationclass)
+    - [postProcessBeanFactory](#postprocessbeanfactory)
+    - [ConfigurationClassEnhancer](#configurationclassenhancer)
 
-## 具体流程
+## 整体思路
 
-1. 使用 `ConfigurationClassPostProcessor` 拦截 Spring 的 `BeanPostProcessor` 过程
-2. 使用 `CGLIB` 对 `@Configuration` 注解类进行代理增强，目的是拦截所有有 `@Bean` 注解的方法调用
-3. 解析类，扫描所有@Bean 方法的，创建 `ConfigurationClassBeanDefinition` 并执行 `registry.registerBeanDefinition` 注册 `BeanDef`
+1. 使用 `ConfigurationClassPostProcessor` 拦截 Spring 的 `postProcessBeanDefinitionRegistry`和 `postProcessBeanFactory` 两个方法
+2. 负责 `postProcessBeanDefinitionRegistry` 创建 `BeanDef`
+3. `postProcessBeanFactory` 负责使用 `CGLIB` 加强`BEAN`
+4. 解析类，扫描所有 `@Bean` 方法的，创建 `ConfigurationClassBeanDefinition` 并执行 `registry.registerBeanDefinition` 注册 `BeanDef`
+5. 使用 `CGLIB` 对 `@Configuration` 注解类进行代理增强,目的是拦截所有有 `@Bean` 注解的方法调用
+6. 注入 `BeanFactory` 当调用有 `@Bean` 注解的方法时，就去 `BeanFactory` 中执行 `getBean` 方法走 `Bean` 创建流程
 
 ## Define of Configuration
 
@@ -76,10 +75,10 @@ static class MyBean {
 
 ```java
 AnnotationConfigApplicationContext
--> new AnnotatedBeanDefinitionReader(this);
--> AnnotationConfigUtils.registerAnnotationConfigProcessors(this.registry);
--> registerAnnotationConfigProcessors
--> RootBeanDefinition def = new RootBeanDefinition(ConfigurationClassPostProcessor.class);
+  -> new AnnotatedBeanDefinitionReader(this);
+   -> AnnotationConfigUtils.registerAnnotationConfigProcessors(this.registry);
+    -> registerAnnotationConfigProcessors
+     -> RootBeanDefinition def = new RootBeanDefinition(ConfigurationClassPostProcessor.class);
 ```
 
 ## ConfigurationClassPostProcessor
@@ -92,6 +91,9 @@ public class ConfigurationClassPostProcessor implements BeanDefinitionRegistryPo
       PriorityOrdered, ResourceLoaderAware, BeanClassLoaderAware, EnvironmentAware {
 }
 // BeanDefinitionRegistryPostProcessor
+// 实现 BeanFactoryPostProcessor 就是为了执行 postProcessBeanFactory 方法
+// BeanDefinitionRegistryPostProcessor 但是会在上面的方法之前执行
+// 具体的逻辑代码在 PostProcessorRegistrationDelegate.invokeBeanFactoryPostProcessors 中
 public interface BeanDefinitionRegistryPostProcessor extends BeanFactoryPostProcessor {
     void postProcessBeanDefinitionRegistry(BeanDefinitionRegistry registry) throws BeansException;
 }
@@ -107,133 +109,26 @@ this.metadataReaderFactory, this.problemReporter, this.environment,
 this.resourceLoader, this.componentScanBeanNameGenerator, registry);
 ```
 
-会创建 `ConfigurationClassParser` 对象解析`@Configuration`的注解
+会创建 `ConfigurationClassParser` 对象解析`@Configuration`的注解,注册 `BeanDef`
 
-## ConfigurationClassParser parse
-
-```java
-do {
-    // 解析
-    // 验证
-   parser.parse(candidates);
-   parser.validate();
-   Set<ConfigurationClass> configClasses = new LinkedHashSet<>(parser.getConfigurationClasses());
-   configClasses.removeAll(alreadyParsed);
-   // Read the model and create bean definitions based on its content
-   if (this.reader == null) {
-      this.reader = new ConfigurationClassBeanDefinitionReader(
-            registry, this.sourceExtractor, this.resourceLoader, this.environment,
-            this.importBeanNameGenerator, parser.getImportRegistry());
-   }
-   this.reader.loadBeanDefinitions(configClasses);
-   alreadyParsed.addAll(configClasses);
-   candidates.clear();
-   if (registry.getBeanDefinitionCount() > candidateNames.length) {
-      String[] newCandidateNames = registry.getBeanDefinitionNames();
-      Set<String> oldCandidateNames = new HashSet<>(Arrays.asList(candidateNames));
-      Set<String> alreadyParsedClasses = new HashSet<>();
-      for (ConfigurationClass configurationClass : alreadyParsed) {
-         alreadyParsedClasses.add(configurationClass.getMetadata().getClassName());
-      }
-      for (String candidateName : newCandidateNames) {
-         if (!oldCandidateNames.contains(candidateName)) {
-            BeanDefinition bd = registry.getBeanDefinition(candidateName);
-            if (ConfigurationClassUtils.checkConfigurationClassCandidate(bd, this.metadataReaderFactory) &&
-                  !alreadyParsedClasses.contains(bd.getBeanClassName())) {
-               candidates.add(new BeanDefinitionHolder(bd, candidateName));
-            }
-         }
-      }
-      candidateNames = newCandidateNames;
-   }
-}
-while (!candidates.isEmpty());
-```
-
-### doProcessConfigurationClass
-
-```java
-// ConfigurationClassParser
-@Nullable
-protected final SourceClass doProcessConfigurationClass(ConfigurationClass configClass, SourceClass sourceClass)
-      throws IOException {
-   // Recursively process any member (nested) classes first
-   processMemberClasses(configClass, sourceClass);
-   // Process any @PropertySource annotations
-   for (AnnotationAttributes propertySource : AnnotationConfigUtils.attributesForRepeatable(
-         sourceClass.getMetadata(), PropertySources.class,
-         org.springframework.context.annotation.PropertySource.class)) {
-      if (this.environment instanceof ConfigurableEnvironment) {
-         processPropertySource(propertySource);
-      }
-      else {
-         logger.warn("Ignoring @PropertySource annotation on [" + sourceClass.getMetadata().getClassName() +
-               "]. Reason: Environment must implement ConfigurableEnvironment");
-      }
-   }
-   // Process any @ComponentScan annotations
-   Set<AnnotationAttributes> componentScans = AnnotationConfigUtils.attributesForRepeatable(
-         sourceClass.getMetadata(), ComponentScans.class, ComponentScan.class);
-   if (!componentScans.isEmpty() &&
-         !this.conditionEvaluator.shouldSkip(sourceClass.getMetadata(), ConfigurationPhase.REGISTER_BEAN)) {
-      for (AnnotationAttributes componentScan : componentScans) {
-         // The config class is annotated with @ComponentScan -> perform the scan immediately
-         Set<BeanDefinitionHolder> scannedBeanDefinitions =
-               this.componentScanParser.parse(componentScan, sourceClass.getMetadata().getClassName());
-         // Check the set of scanned definitions for any further config classes and parse recursively if needed
-         for (BeanDefinitionHolder holder : scannedBeanDefinitions) {
-            BeanDefinition bdCand = holder.getBeanDefinition().getOriginatingBeanDefinition();
-            if (bdCand == null) {
-               bdCand = holder.getBeanDefinition();
-            }
-            if (ConfigurationClassUtils.checkConfigurationClassCandidate(bdCand, this.metadataReaderFactory)) {
-               parse(bdCand.getBeanClassName(), holder.getBeanName());
-            }
-         }
-      }
-   }
-   // Process any @Import annotations
-   processImports(configClass, sourceClass, getImports(sourceClass), true);
-   // Process any @ImportResource annotations
-   AnnotationAttributes importResource =
-         AnnotationConfigUtils.attributesFor(sourceClass.getMetadata(), ImportResource.class);
-   if (importResource != null) {
-      String[] resources = importResource.getStringArray("locations");
-      Class<? extends BeanDefinitionReader> readerClass = importResource.getClass("reader");
-      for (String resource : resources) {
-         String resolvedResource = this.environment.resolveRequiredPlaceholders(resource);
-         configClass.addImportedResource(resolvedResource, readerClass);
-      }
-   }
-   // Process individual @Bean methods
-   Set<MethodMetadata> beanMethods = retrieveBeanMethodMetadata(sourceClass);
-   for (MethodMetadata methodMetadata : beanMethods) {
-      configClass.addBeanMethod(new BeanMethod(methodMetadata, configClass));
-   }
-   // Process default methods on interfaces
-   processInterfaces(configClass, sourceClass);
-   // Process superclass, if any
-   if (sourceClass.getMetadata().hasSuperClass()) {
-      String superclass = sourceClass.getMetadata().getSuperClassName();
-      if (superclass != null && !superclass.startsWith("java") &&
-            !this.knownSuperclasses.containsKey(superclass)) {
-         this.knownSuperclasses.put(superclass, configClass);
-         // Superclass found, return its annotation metadata and recurse
-         return sourceClass.getSuperClass();
-      }
-   }
-   // No superclass -> processing is complete
-   return null;
-}
-```
-
-## enhanceConfigurationClasses
+### postProcessBeanFactory
 
 `postProcessBeanFactory` -> `enhanceConfigurationClasses` -> `ConfigurationClassEnhancer.enhance`
 
 这里会对 `@Configuration` 使用 `CGLIB` 进行代理增强
 
+### ConfigurationClassEnhancer
+
 ```java
+// The callbacks to use. Note that these callbacks must be stateless.
+private static final Callback[] CALLBACKS = new Callback[] {
+ new BeanMethodInterceptor(),
+ new BeanFactoryAwareMethodInterceptor(),
+ NoOp.INSTANCE
+};
+
+// BeanFactoryAwareMethodInterceptor 负责注入 BeanFactory 对象
+// BeanMethodInterceptor 负责拦截方法调用，从 BeanFactory 加载创建 Bean 对象
 /**
  * Creates a new CGLIB {@link Enhancer} instance.
  */
@@ -248,16 +143,10 @@ private Enhancer newEnhancer(Class<?> configSuperClass, @Nullable ClassLoader cl
   enhancer.setCallbackTypes(CALLBACK_FILTER.getCallbackTypes());
   return enhancer;
 }
-```
 
-## ConfigurationClass
-
-```java
-/**
- * Represents a user-defined {@link Configuration @Configuration} class.
- * Includes a set of {@link Bean} methods, including all such methods
- * defined in the ancestry of the class, in a 'flattened-out' manner.
- */
-final class ConfigurationClass {
+// EnhancedConfiguration 目的就是集成 BeanFactoryAware
+// 通过 BeanFactoryAwareMethodInterceptor 调用 setBeanFactory 方法
+// 进行 BeanFactory 对象的注入
+public interface EnhancedConfiguration extends BeanFactoryAware {
 }
 ```

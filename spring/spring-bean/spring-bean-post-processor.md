@@ -16,7 +16,6 @@
     - [CommonAnnotationBeanPostProcessor](#commonannotationbeanpostprocessor)
     - [AutowiredAnnotationBeanPostProcessor](#autowiredannotationbeanpostprocessor)
     - [AbstractAutoProxyCreator](#abstractautoproxycreator)
-    - [ConfigurationClassPostProcessor](#configurationclasspostprocessor)
 
 ## Where load BeanPostProcessor
 
@@ -149,9 +148,3 @@ AbstractAutowireCapableBeanFactory.postProcessPropertyValues
 ### AbstractAutoProxyCreator
 
 `Spring` 中的代理也是通过 `BeanPostProcessor` 的实现类 `AbstractAutoProxyCreator` 来实现的。这个后续再看
-
-### ConfigurationClassPostProcessor
-
-`ConfigurationClassPostProcessor` 主要负责 `@Configuration` 注解的解析
-
-- [@Configuration](./../spring-annotation/spring-configuration.md)

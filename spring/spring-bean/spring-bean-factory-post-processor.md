@@ -7,7 +7,9 @@
   - [The hook method postProcessBeanFactory](#the-hook-method-postprocessbeanfactory)
   - [The load method PostProcessorRegistrationDelegate](#the-load-method-postprocessorregistrationdelegate)
     - [PostProcessorRegistrationDelegate-registerBeanPostProcessors](#postprocessorregistrationdelegate-registerbeanpostprocessors)
-  - [PropertyResourceConfigurer](#propertyresourceconfigurer)
+  - [Demo for BeanFactoryPostProcessor](#demo-for-beanfactorypostprocessor)
+    - [PropertyResourceConfigurer](#propertyresourceconfigurer)
+    - [ConfigurationClassPostProcessor](#configurationclasspostprocessor)
 
 ## When load BeanFactoryPostProcessor
 
@@ -81,6 +83,25 @@ ConfigurableListableBeanFactory beanFactory, AbstractApplicationContext applicat
 }
 ```
 
-## PropertyResourceConfigurer
+## Demo for BeanFactoryPostProcessor
+
+### PropertyResourceConfigurer
 
 `PropertyResourceConfigurer` Spring 实现 `${}` 占位符注入的 `BeanFactoryPostProcessor` 一种实现
+
+### ConfigurationClassPostProcessor
+
+`ConfigurationClassPostProcessor` 主要负责 `@Configuration` 注解的解析
+
+- [@Configuration](./../spring-annotation/spring-configuration.md)
+
+```java
+// ConfigurationClassPostProcessor
+public class ConfigurationClassPostProcessor implements BeanDefinitionRegistryPostProcessor,
+             PriorityOrdered, ResourceLoaderAware, BeanClassLoaderAware, EnvironmentAware {
+}
+// BeanFactoryPostProcessor
+public interface BeanDefinitionRegistryPostProcessor extends BeanFactoryPostProcessor {
+//
+}
+```
