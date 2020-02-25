@@ -3,6 +3,7 @@
 [ClassPathBeanDefinitionScanner 分析](.././spring-context/spring-class-path-bean-definition-scanner.md)
 
 - [@Configuration](#configuration)
+  - [具体流程](#%e5%85%b7%e4%bd%93%e6%b5%81%e7%a8%8b)
   - [Define of Configuration](#define-of-configuration)
   - [demo](#demo)
   - [AnnotationConfigApplicationContext](#annotationconfigapplicationcontext)
@@ -10,7 +11,14 @@
     - [postProcessBeanDefinitionRegistry](#postprocessbeandefinitionregistry)
   - [ConfigurationClassParser parse](#configurationclassparser-parse)
     - [doProcessConfigurationClass](#doprocessconfigurationclass)
+  - [enhanceConfigurationClasses](#enhanceconfigurationclasses)
   - [ConfigurationClass](#configurationclass)
+
+## 具体流程
+
+1. 使用 `ConfigurationClassPostProcessor` 拦截 Spring 的 `BeanPostProcessor` 过程
+2. 使用 `CGLIB` 对 `@Configuration` 注解类进行代理增强，目的是拦截所有有 `@Bean` 注解的方法调用
+3. 解析类，扫描所有@Bean 方法的，创建 `ConfigurationClassBeanDefinition` 并执行 `registry.registerBeanDefinition` 注册 `BeanDef`
 
 ## Define of Configuration
 
@@ -216,6 +224,29 @@ protected final SourceClass doProcessConfigurationClass(ConfigurationClass confi
    }
    // No superclass -> processing is complete
    return null;
+}
+```
+
+## enhanceConfigurationClasses
+
+`postProcessBeanFactory` -> `enhanceConfigurationClasses` -> `ConfigurationClassEnhancer.enhance`
+
+这里会对 `@Configuration` 使用 `CGLIB` 进行代理增强
+
+```java
+/**
+ * Creates a new CGLIB {@link Enhancer} instance.
+ */
+private Enhancer newEnhancer(Class<?> configSuperClass, @Nullable ClassLoader classLoader) {
+  Enhancer enhancer = new Enhancer();
+  enhancer.setSuperclass(configSuperClass);
+  enhancer.setInterfaces(new Class<?>[] {EnhancedConfiguration.class});
+  enhancer.setUseFactory(false);
+  enhancer.setNamingPolicy(SpringNamingPolicy.INSTANCE);
+  enhancer.setStrategy(new BeanFactoryAwareGeneratorStrategy(classLoader));
+  enhancer.setCallbackFilter(CALLBACK_FILTER);
+  enhancer.setCallbackTypes(CALLBACK_FILTER.getCallbackTypes());
+  return enhancer;
 }
 ```
 
