@@ -51,6 +51,8 @@ public void run() {
 }
 ```
 
+- [Thread run](https://www.cnblogs.com/waterystone/p/4920007.html)
+
 ## interrupt
 
 - [Interrupts](https://docs.oracle.com/javase/tutorial/essential/concurrency/interrupt.html)
