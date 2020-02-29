@@ -1,5 +1,22 @@
 # Spring boot AutoConfiguration
 
+`Spring` 自动配置原理
+
+- [Spring boot AutoConfiguration](#spring-boot-autoconfiguration)
+  - [AutoConfigurationPackages.Registrar](#autoconfigurationpackagesregistrar)
+  - [AutoConfigurationImportSelector](#autoconfigurationimportselector)
+    - [getAutoConfigurationEntry](#getautoconfigurationentry)
+    - [getCandidateConfigurations](#getcandidateconfigurations)
+  - [ConfigurationClassParser](#configurationclassparser)
+  - [ConfigurationClassBeanDefinitionReader](#configurationclassbeandefinitionreader)
+  - [ConditionEvaluator](#conditionevaluator)
+  - [SpringBootCondition and FilteringSpringBootCondition](#springbootcondition-and-filteringspringbootcondition)
+    - [OnBeanCondition](#onbeancondition)
+    - [OnClassCondition](#onclasscondition)
+    - [OnWebApplicationCondition](#onwebapplicationcondition)
+
+## AutoConfigurationPackages.Registrar
+
 ## AutoConfigurationImportSelector
 
 ### getAutoConfigurationEntry
@@ -18,6 +35,20 @@ protected List<String> getCandidateConfigurations(AnnotationMetadata metadata, A
 
 ## ConfigurationClassParser
 
+## ConfigurationClassBeanDefinitionReader
+
+```java
+loadBeanDefinitionsForBeanMethod
+      -> conditionEvaluator.shouldSkip
+      -> condition.matches
+```
+
 ## ConditionEvaluator
 
-## OnBeanCondition
+## SpringBootCondition and FilteringSpringBootCondition
+
+### OnBeanCondition
+
+### OnClassCondition
+
+### OnWebApplicationCondition
