@@ -78,6 +78,13 @@ public @interface AutoConfigurationPackage {
 
 ## AutoConfigurationImportSelector
 
+```java
+public class AutoConfigurationImportSelector implements DeferredImportSelector, BeanClassLoaderAware,
+             ResourceLoaderAware, BeanFactoryAware, EnvironmentAware, Ordered {
+
+}
+```
+
 ### getAutoConfigurationEntry
 
 ### getCandidateConfigurations
