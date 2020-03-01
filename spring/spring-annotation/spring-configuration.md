@@ -5,6 +5,7 @@
   - [Define of Configuration](#define-of-configuration)
   - [demo](#demo)
   - [AnnotationConfigApplicationContext](#annotationconfigapplicationcontext)
+  - [ConfigurationClassParser](#configurationclassparser)
   - [ConfigurationClassPostProcessor](#configurationclasspostprocessor)
     - [postProcessBeanDefinitionRegistry](#postprocessbeandefinitionregistry)
     - [postProcessBeanFactory](#postprocessbeanfactory)
@@ -81,6 +82,8 @@ AnnotationConfigApplicationContext
      -> RootBeanDefinition def = new RootBeanDefinition(ConfigurationClassPostProcessor.class);
 ```
 
+## ConfigurationClassParser
+
 ## ConfigurationClassPostProcessor
 
 > `ConfigurationClassPostProcessor` 的定义,本质是一个 `BeanFactoryPostProcessor`
@@ -118,6 +121,14 @@ this.resourceLoader, this.componentScanBeanNameGenerator, registry);
 这里会对 `@Configuration` 使用 `CGLIB` 进行代理增强
 
 ### ConfigurationClassEnhancer
+
+这里说下为什么对 `@Bean` 注解的方法进行代理增强，引用存在内部的方法调用，比如 `this.getBeanMethod`
+
+如果不进行代理，那么会再次执行这个方法，创建一个新的对象，而这个对象不是由 `Spring` 容器维护的。为了解决内部调用
+
+的问题，因此引入了 `CGLIB` 增强，对这个方法进行拦截，都去执行 `getBean` 方法，从容器中获取 `Bean` 对象
+
+可以通过 `@Configuration` 中的 `proxyBeanMethods=false` 关闭这个代理增强
 
 ```java
 // The callbacks to use. Note that these callbacks must be stateless.
