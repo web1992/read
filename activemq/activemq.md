@@ -2,21 +2,29 @@
 
 ## Index (目录)
 
-- [01 getting-started 入门](#01-getting-started)
-- [02 spring-support spring 支持](#02-spring-support)
-- [03 persistence 数据持久](#03-persistence)
-- [04 clustering-masterslave 集群](#04-clustering-masterslave)
-- [05 failover 灾备](#05-failover)
-- [06 message-groups and exclusive-consumer 消息分组（有序）](#06-message-groups-and-exclusive-consumer)
+- [activemq](#activemq)
+  - [Index (目录)](#index-%e7%9b%ae%e5%bd%95)
+  - [用例(use case)](#%e7%94%a8%e4%be%8buse-case)
+  - [01 getting-started](#01-getting-started)
+  - [02 spring-support](#02-spring-support)
+  - [03 persistence](#03-persistence)
+  - [04 clustering-masterslave](#04-clustering-masterslave)
+  - [05 failover](#05-failover)
+  - [06 message-groups and exclusive-consumer](#06-message-groups-and-exclusive-consumer)
+  - [博客](#%e5%8d%9a%e5%ae%a2)
 
 ## 用例(use case)
 
-- [01 如何入门?](#01-getting-started)
-- [02 如何与 spring 集成?](#02-spring-support)
-- [03 如何持久化 activemq?](#03-persistence)
-- [04 如何集群 activemq?](#04-clustering-masterslave)
-- [05 如何进行灾备?](#05-failover)
-- [06 多个消费者(consumer)，如何保证消息的顺序?](#06-message-groups-and-exclusive-consumer)
+- [activemq](#activemq)
+  - [Index (目录)](#index-%e7%9b%ae%e5%bd%95)
+  - [用例(use case)](#%e7%94%a8%e4%be%8buse-case)
+  - [01 getting-started](#01-getting-started)
+  - [02 spring-support](#02-spring-support)
+  - [03 persistence](#03-persistence)
+  - [04 clustering-masterslave](#04-clustering-masterslave)
+  - [05 failover](#05-failover)
+  - [06 message-groups and exclusive-consumer](#06-message-groups-and-exclusive-consumer)
+  - [博客](#%e5%8d%9a%e5%ae%a2)
 
 ## 01 getting-started
 
@@ -50,3 +58,8 @@ producers
 consumers
 
 destinations
+
+## 博客
+
+- https://blog.csdn.net/qq_17089617/article/details/80838795
+
