@@ -61,5 +61,6 @@ destinations
 
 ## 博客
 
-- https://blog.csdn.net/qq_17089617/article/details/80838795
-
+- [ActiveMQ](https://blog.csdn.net/qq_17089617/article/details/80838795)
+- [ActiveMQ 消息发送](https://www.iteye.com/blog/shift-alt-ctrl-2034440)
+- [ActiveMQ 消息接收](https://www.iteye.com/blog/shift-alt-ctrl-2035321)
