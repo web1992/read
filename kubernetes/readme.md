@@ -35,4 +35,6 @@
 
 ### Node
 
+![k8s-node](./images/k8s-node.png)
+
 ### Pod
