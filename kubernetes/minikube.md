@@ -18,4 +18,6 @@ minikube start --image-mirror-country cn \
 minikube dashboard
 ```
 
+效果图:
+
 ![minikube.png](./images/minikube.png)

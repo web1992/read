@@ -1,10 +1,20 @@
 # Kubernetes
 
-- [https://kubernetes.io/docs/concepts/overview/what-is-kubernetes/](https://kubernetes.io/docs/concepts/overview/what-is-kubernetes/)
-- [https://kubernetes.io/docs/concepts/architecture](https://kubernetes.io/docs/concepts/architecture)
-- [kubernetes.md](kubernetes.md)
+- [Kubernetes](#kubernetes)
+  - [Kubernetes 设计目的](#kubernetes-%e8%ae%be%e8%ae%a1%e7%9b%ae%e7%9a%84)
+  - [核心功能](#%e6%a0%b8%e5%bf%83%e5%8a%9f%e8%83%bd)
+  - [kubernets 架构](#kubernets-%e6%9e%b6%e6%9e%84)
+    - [Master](#master)
+    - [Node](#node)
+    - [Pod](#pod)
+    - [Sidecar](#sidecar)
+  - [kubernets 资源](#kubernets-%e8%b5%84%e6%ba%90)
+  - [kubernets 控制运行](#kubernets-%e6%8e%a7%e5%88%b6%e8%bf%90%e8%a1%8c)
+  - [Links](#links)
 
-## 自动化容器编排平台
+## Kubernetes 设计目的
+
+自动化容器编排平台
 
 - 部署
 - 弹性
@@ -61,3 +71,28 @@ InitContainer 在其他容器启动之前启动
 - 适配器容器
 
 设计模式的本质：解耦和重用
+
+## kubernets 资源
+
+- label
+- annotations
+- OwnerReference
+
+- Spec
+- Status
+- Metadata
+  - Labels
+  - Annotations
+  - OwnerReference
+
+## kubernets 控制运行
+
+status -> spec
+
+![k8s-controller.png](./images/k8s-controller.png)
+
+## Links
+
+- [https://kubernetes.io/docs/concepts/overview/what-is-kubernetes/](https://kubernetes.io/docs/concepts/overview/what-is-kubernetes/)
+- [https://kubernetes.io/docs/concepts/architecture](https://kubernetes.io/docs/concepts/architecture)
+- [kubernetes.md](kubernetes.md)
