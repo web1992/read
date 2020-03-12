@@ -38,3 +38,26 @@
 ![k8s-node](./images/k8s-node.png)
 
 ### Pod
+
+Pod 解决的核心问题：容器之间高效的共享某些`资源`和`数据`
+
+- 共享网络 Infra container
+- 共享存储 Volumes shared-data
+
+例子：War + Tomcat 应用部署
+
+InitContainer(复制war) + Volumes(共享war) + Tomcat(使用war)
+
+InitContainer 在其他容器启动之前启动
+
+### Sidecar
+
+容器的设计模式
+
+场景：
+
+- 应用日志收集
+- 代理容器
+- 适配器容器
+
+设计模式的本质：解耦和重用
