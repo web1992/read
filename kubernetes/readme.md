@@ -7,6 +7,10 @@
     - [Master](#master)
     - [Node](#node)
     - [Pod](#pod)
+    - [Deployment](#deployment)
+  - [Job CronJob](#job-cronjob)
+  - [Daemon Set](#daemon-set)
+  - [ConfigMap](#configmap)
     - [Sidecar](#sidecar)
   - [kubernets 资源](#kubernets-%e8%b5%84%e6%ba%90)
   - [kubernets 控制运行](#kubernets-%e6%8e%a7%e5%88%b6%e8%bf%90%e8%a1%8c)
@@ -59,6 +63,25 @@ Pod 解决的核心问题：容器之间高效的共享某些`资源`和`数据`
 InitContainer(复制war) + Volumes(共享war) + Tomcat(使用war)
 
 InitContainer 在其他容器启动之前启动
+
+### Deployment
+
+- 维护pod 数量
+- Pod 的更新升级
+- ReplicaSet
+
+## Job CronJob 
+
+## Daemon Set
+
+## ConfigMap
+
+- Secret
+- ServiceAccount
+- Ressource
+- Qos
+- SecuityContext
+- InitContainer
 
 ### Sidecar
 
