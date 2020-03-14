@@ -7,13 +7,17 @@
     - [Master](#master)
     - [Node](#node)
     - [Pod](#pod)
-    - [Deployment](#deployment)
-  - [Job CronJob](#job-cronjob)
-  - [Daemon Set](#daemon-set)
-  - [ConfigMap](#configmap)
+    - [Pod 类型](#pod-%e7%b1%bb%e5%9e%8b)
+      - [Deployment](#deployment)
+      - [Service](#service)
+      - [NameSpace](#namespace)
+      - [Job CronJob](#job-cronjob)
+      - [Daemon Set](#daemon-set)
+    - [ConfigMap](#configmap)
     - [Sidecar](#sidecar)
   - [kubernets 资源](#kubernets-%e8%b5%84%e6%ba%90)
   - [kubernets 控制运行](#kubernets-%e6%8e%a7%e5%88%b6%e8%bf%90%e8%a1%8c)
+  - [Volumes](#volumes)
   - [Links](#links)
 
 ## Kubernetes 设计目的
@@ -64,17 +68,29 @@ InitContainer(复制war) + Volumes(共享war) + Tomcat(使用war)
 
 InitContainer 在其他容器启动之前启动
 
-### Deployment
+### Pod 类型
+
+#### Deployment
 
 - 维护pod 数量
 - Pod 的更新升级
 - ReplicaSet
 
-## Job CronJob 
+#### Service
 
-## Daemon Set
+- ClusterIP
+- NodePort
+- LoadBalancer
 
-## ConfigMap
+#### NameSpace
+
+一个集群内部的逻辑隔离（鉴权。资源控制）
+
+#### Job CronJob
+
+#### Daemon Set
+
+### ConfigMap
 
 - Secret
 - ServiceAccount
@@ -113,6 +129,16 @@ InitContainer 在其他容器启动之前启动
 status -> spec
 
 ![k8s-controller.png](./images/k8s-controller.png)
+
+## Volumes
+
+Pod Volumes
+
+- 数据不丢失
+- 数据共享
+
+Persistent Volumes (PV)
+Persistent Volumes Cliam (PVC)
 
 ## Links
 
