@@ -21,3 +21,7 @@ field.setAccessible(true);
 ## 实现
 
 基于CPU的`cmpxchg`指令
+
+## Link
+
+- [Unsafe](https://tech.meituan.com/2019/02/14/talk-about-java-magic-class-unsafe.html)
