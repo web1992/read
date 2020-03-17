@@ -7,6 +7,7 @@
 > 下面的源码基于 `jdk1.8.0_221`
 
 - [ConcurrentHashMap](#concurrenthashmap)
+  - [Node](#node)
   - [Api 操作](#api-%e6%93%8d%e4%bd%9c)
     - [Put](#put)
       - [tabAt](#tabat)
@@ -18,10 +19,30 @@
     - [Remove](#remove)
     - [Transfer](#transfer)
   - [数据结构](#%e6%95%b0%e6%8d%ae%e7%bb%93%e6%9e%84)
-    - [Node](#node)
+    - [Node](#node-1)
     - [TreeNode](#treenode)
     - [TreeBin](#treebin)
     - [ForwardingNode](#forwardingnode)
+
+## Node
+
+`Node` 的几种类型
+
+- Node
+- TreeNode
+- TreeBins
+- ForwardingNodes
+- ReservationNode
+
+下面的注释来自 javadoc
+
+ The types `TreeBin`, `ForwardingNode`, and
+ `ReservationNode` do not hold normal user `keys`, `values`, or
+ `hashes`, and are readily distinguishable during search etc
+ because they have `negative hash` fields and `null key` and `value`
+ fields. (These special nodes are either uncommon or transient,
+ so the impact of carrying around some unused fields is
+ insignificant.)
 
 ## Api 操作
 
@@ -99,7 +120,7 @@ for (Node<K,V>[] tab = table;;) {
                     }
                 }
             }
-        }
+        }// synchronized end
         // 注意这块代码是在 synchronized 外执行的，并没有加锁
         // 因此 treeifyBin 中使用了CAS
         if (binCount != 0) {
@@ -119,15 +140,22 @@ return null;
 #### tabAt
 
 ```java
+// getObjectVolatile 方法的含义：
+// 获取obj对象中offset偏移地址对应的object型field的值,支持volatile load语义。
 static final <K,V> Node<K,V> tabAt(Node<K,V>[] tab, int i) {
+    // ((long)i << ASHIFT) + ABASE 是用来计算 offset 的
+    // getObjectVolatile 用来获取offest 位置的值
     return (Node<K,V>)U.getObjectVolatile(tab, ((long)i << ASHIFT) + ABASE);
 }
 
-//  ABASE 和 的定义 ASHIFT
+// ABASE 和 的定义 ASHIFT
+Class<?> ak = Node[].class;
 ABASE = U.arrayBaseOffset(ak); //返回数组中第一个元素的偏移地址
 int scale = U.arrayIndexScale(ak);// 返回数组中一个元素占用的大小
 if ((scale & (scale - 1)) != 0)
     throw new Error("data type scale not a power of two");
+// 00000000 00000000 00000000 00000011
+// 31-29=2
 ASHIFT = 31 - Integer.numberOfLeadingZeros(scale);
 // numberOfLeadingZeros
 // 该方法的作用是返回无符号整型i的最高非零位前面的0的个数
@@ -144,7 +172,70 @@ static final <K,V> boolean casTabAt(Node<K,V>[] tab, int i,
 
 #### helpTransfer
 
+`ConcurrentHashMap` 内部数组的数据结构
+
+![concurrent-hash-map-node.png](./images/concurrent-hash-map-node.png)
+
+```java
+/**
+ * Helps transfer if a resize is in progress.
+ */
+ // tab 是 ConcurrentHashMap 底层的数组
+ // f 是通过key的hash 计算出来，已经存在的元素
+final Node<K,V>[] helpTransfer(Node<K,V>[] tab, Node<K,V> f) {
+    Node<K,V>[] nextTab; int sc;
+    if (tab != null && (f instanceof ForwardingNode) &&
+        (nextTab = ((ForwardingNode<K,V>)f).nextTable) != null) {
+        int rs = resizeStamp(tab.length);
+        while (nextTab == nextTable && table == tab &&
+               (sc = sizeCtl) < 0) {
+            if ((sc >>> RESIZE_STAMP_SHIFT) != rs || sc == rs + 1 ||
+                sc == rs + MAX_RESIZERS || transferIndex <= 0)
+                break;
+            if (U.compareAndSwapInt(this, SIZECTL, sc, sc + 1)) {
+                transfer(tab, nextTab);
+                break;
+            }
+        }
+        return nextTab;
+    }
+    return table;
+}
+```
+
 #### treeifyBin
+
+```java
+/**
+ * Replaces all linked nodes in bin at given index unless table is
+ * too small, in which case resizes instead.
+ */
+private final void treeifyBin(Node<K,V>[] tab, int index) {
+    Node<K,V> b; int n, sc;
+    if (tab != null) {
+        if ((n = tab.length) < MIN_TREEIFY_CAPACITY)// MIN_TREEIFY_CAPACITY=64
+            tryPresize(n << 1);
+        else if ((b = tabAt(tab, index)) != null && b.hash >= 0) {
+            synchronized (b) {
+                if (tabAt(tab, index) == b) {
+                    TreeNode<K,V> hd = null, tl = null;
+                    for (Node<K,V> e = b; e != null; e = e.next) {
+                        TreeNode<K,V> p =
+                            new TreeNode<K,V>(e.hash, e.key, e.val,
+                                              null, null);
+                        if ((p.prev = tl) == null)
+                            hd = p;
+                        else
+                            tl.next = p;
+                        tl = p;
+                    }
+                    setTabAt(tab, index, new TreeBin<K,V>(hd));
+                }
+            }
+        }
+    }
+}
+```
 
 #### addCount
 
