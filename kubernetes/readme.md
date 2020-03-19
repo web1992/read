@@ -17,7 +17,9 @@
     - [Sidecar](#sidecar)
   - [kubernets 资源](#kubernets-%e8%b5%84%e6%ba%90)
   - [kubernets 控制运行](#kubernets-%e6%8e%a7%e5%88%b6%e8%bf%90%e8%a1%8c)
-  - [Volumes](#volumes)
+  - [Pod Volumes](#pod-volumes)
+  - [Pod 配置管理](#pod-%e9%85%8d%e7%bd%ae%e7%ae%a1%e7%90%86)
+  - [Pod 健康监控](#pod-%e5%81%a5%e5%ba%b7%e7%9b%91%e6%8e%a7)
   - [Links](#links)
 
 ## Kubernetes 设计目的
@@ -130,15 +132,43 @@ status -> spec
 
 ![k8s-controller.png](./images/k8s-controller.png)
 
-## Volumes
-
-Pod Volumes
+## Pod Volumes
 
 - 数据不丢失
 - 数据共享
 
 Persistent Volumes (PV)
 Persistent Volumes Cliam (PVC)
+
+## Pod 配置管理
+
+| 配置类型                                   | 描述     |
+| ------------------------------------------ | -------- |
+| ConfigMap                                  | 可变配置 |
+| Secret                                     | 敏感信息 |
+| ServiceAccount                             | 身份认证 |
+| Spec.Containers[].Resource.limits/requests | 资源配置 |
+| Spec.Contaniers[].SecutiryContext          | 安全管控 |
+| Spec.InitContainers                        | 前置校验 |
+
+- ConfigMap 环境编码，命令行参数等等
+
+## Pod 健康监控
+
+- Liveness
+- Readiness
+
+探测方式：
+
+- HttpGet
+- Exec
+- TcoSocket  ip+port
+
+探测结果：
+
+- Success
+- Failure
+- Unknown
 
 ## Links
 
