@@ -20,6 +20,10 @@
   - [Pod Volumes](#pod-volumes)
   - [Pod 配置管理](#pod-%e9%85%8d%e7%bd%ae%e7%ae%a1%e7%90%86)
   - [Pod 健康监控](#pod-%e5%81%a5%e5%ba%b7%e7%9b%91%e6%8e%a7)
+  - [Pod 调度](#pod-%e8%b0%83%e5%ba%a6)
+    - [Pod 与 Pod](#pod-%e4%b8%8e-pod)
+    - [Pod 与 Node](#pod-%e4%b8%8e-node)
+    - [Node 标记/容忍](#node-%e6%a0%87%e8%ae%b0%e5%ae%b9%e5%bf%8d)
   - [Links](#links)
 
 ## Kubernetes 设计目的
@@ -169,6 +173,26 @@ Persistent Volumes Cliam (PVC)
 - Success
 - Failure
 - Unknown
+  
+## Pod 调度
+
+### Pod 与 Pod
+
+- 亲和调度 PodAffinity
+- Pod反亲和调度 PodAntiAffinity
+
+Operator: In/NotIn/Exists/DoesNotExist
+
+### Pod 与 Node
+
+- NodeSelector
+- NodeAffinity
+
+Operator: In/NotIn/Exists/DoesNotExist/Gl/Lt
+
+### Node 标记/容忍
+
+限制调度到某些 Node 上面
 
 ## Links
 
