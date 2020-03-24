@@ -153,3 +153,4 @@ final Node<K,V>[] resize() {
 ## Links
 
 - [https://segmentfault.com/a/1190000015812438](https://segmentfault.com/a/1190000015812438)
+- [https://www.jianshu.com/p/ee0de4c99f87](https://www.jianshu.com/p/ee0de4c99f87)
