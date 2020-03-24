@@ -62,4 +62,94 @@ final Node<K,V> getNode(int hash, Object key) {
 }
 ```
 
+## inti and resize
+
+`HashMap` 是延迟初始化的，在 `put` 之后进行初始化操作的
+
+```java
+// put -> resize
+final Node<K,V>[] resize() {
+    Node<K,V>[] oldTab = table;
+    // hashmap 无参数初始化的时候 oldCap 和 oldThr 都是0
+    // 使用有参数初始化 hashmap 那么 threshold 不为0
+    int oldCap = (oldTab == null) ? 0 : oldTab.length;
+    // threshold -> The next size value at which to resize (capacity * load factor).
+    int oldThr = threshold;// 默认的数组大小，默认是0
+    int newCap, newThr = 0;
+    if (oldCap > 0) {// 扩容走这里
+        if (oldCap >= MAXIMUM_CAPACITY) {
+            // 超过最大容量，调整 threshold 结束
+            threshold = Integer.MAX_VALUE;
+            return oldTab;
+        }
+        else if ((newCap = oldCap << 1) < MAXIMUM_CAPACITY &&// newCap 加倍
+                 oldCap >= DEFAULT_INITIAL_CAPACITY)// 如果旧的容量小于16，newThr 加倍
+            newThr = oldThr << 1; // double threshold
+    }
+    else if (oldThr > 0) // initial capacity was placed in threshold 扩容走这里/指定初始容量也走这里
+        newCap = oldThr;
+    else {               // zero initial threshold signifies using defaults
+        // 初始化走这里
+        newCap = DEFAULT_INITIAL_CAPACITY;// 默认数组大小是16
+        newThr = (int)(DEFAULT_LOAD_FACTOR * DEFAULT_INITIAL_CAPACITY);// - 0.75*16=12.0
+    }
+    if (newThr == 0) {// 指定了初始容量，走这个逻辑，重新计算下一次扩容的容量
+        float ft = (float)newCap * loadFactor;
+        newThr = (newCap < MAXIMUM_CAPACITY && ft < (float)MAXIMUM_CAPACITY ?
+                  (int)ft : Integer.MAX_VALUE);
+    }
+    threshold = newThr;
+    @SuppressWarnings({"rawtypes","unchecked"})
+    Node<K,V>[] newTab = (Node<K,V>[])new Node[newCap];// 创建新数组
+    table = newTab;
+    if (oldTab != null) {// 扩容，需要重新计算hash
+        for (int j = 0; j < oldCap; ++j) {// 遍历旧数组大小
+            Node<K,V> e;
+            if ((e = oldTab[j]) != null) {// 找到那些不为 null 的数组元素
+                oldTab[j] = null;
+                if (e.next == null)// 如果这个位置上的元素上只有一个元素(没有hash冲突)
+                    newTab[e.hash & (newCap - 1)] = e;// 直接把这个元素重新进行hash,放到新数组的位置上即可
+                else if (e instanceof TreeNode)
+                    ((TreeNode<K,V>)e).split(this, newTab, j, oldCap);// 如果是树数据结构
+                else { // preserve order 保证顺序
+                    Node<K,V> loHead = null, loTail = null;
+                    Node<K,V> hiHead = null, hiTail = null;
+                    Node<K,V> next;
+                    do {
+                        next = e.next;
+                        if ((e.hash & oldCap) == 0) {
+                            if (loTail == null)
+                                loHead = e;
+                            else
+                                loTail.next = e;
+                            loTail = e;
+                        }
+                        else {
+                            if (hiTail == null)
+                                hiHead = e;
+                            else
+                                hiTail.next = e;
+                            hiTail = e;
+                        }
+                    } while ((e = next) != null);
+                    if (loTail != null) {
+                        loTail.next = null;
+                        newTab[j] = loHead;
+                    }
+                    if (hiTail != null) {
+                        hiTail.next = null;
+                        newTab[j + oldCap] = hiHead;
+                    }
+                }
+            }
+        }
+    }
+    return newTab;
+}
+```
+
 ## put
+
+## Links
+
+- [https://segmentfault.com/a/1190000015812438](https://segmentfault.com/a/1190000015812438)
