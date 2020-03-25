@@ -123,7 +123,7 @@ final Node<K,V>[] resize() {
                     ((TreeNode<K,V>)e).split(this, newTab, j, oldCap);// 如果是树数据结构
                 else { // preserve order 保证顺序
                     // 代码执行到这里，说明 e 这个 Node 已经是链表了
-                    // 那么需要把这个链表进行 拆分
+                    // 那么需要把这个链表进行拆分和元素移动
                     // 具体的细节和做法，在后面详细解释
                     Node<K,V> loHead = null, loTail = null;
                     Node<K,V> hiHead = null, hiTail = null;
@@ -169,7 +169,7 @@ final Node<K,V>[] resize() {
 
 ![move element](./images/hashmap-element-move.png)
 
-如上图所示，移动前后元素位置和链表的对比(这里是数据扩容之后，元素移动之后的结果)
+如上图所示，移动前后元素位置和链表的对比(这里是数据扩容之后，链表拆分&元素移动之后的结果)
 
 一部分元素依然在索引为2的位置，另一部分则移动到了索引为10的位置上
 
