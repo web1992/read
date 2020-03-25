@@ -16,6 +16,7 @@ jdk 1.8 `HashMap` 分析
   - [get](#get)
   - [init and resize](#init-and-resize)
   - [move element](#move-element)
+  - [e.hash & oldCap](#ehash--oldcap)
   - [j + oldCap](#j--oldcap)
   - [put](#put)
   - [Links](#links)
@@ -235,7 +236,9 @@ if (hiTail != null) {// 不为空
 }
 ```
 
-上面的代码重点是 `(e.hash & oldCap) == 0` 理解了这个就掌握了作者的思想
+## e.hash & oldCap
+
+上面的代码重点是 `(e.hash & oldCap) == 0` 和 `j + oldCap` 理解了这个就掌握了作者的思想
 
 还是来举例:
 
