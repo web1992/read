@@ -19,6 +19,9 @@ jdk 1.8 `HashMap` 分析
   - [e.hash & oldCap](#ehash--oldcap)
   - [j + oldCap](#j--oldcap)
   - [put](#put)
+  - [TreeNode](#treenode)
+    - [putTreeVal](#puttreeval)
+    - [treeifyBin](#treeifybin)
   - [Links](#links)
 
 ## get
@@ -280,6 +283,69 @@ hashmap 中数组的长度都是2的n次方,如： $2^3=8$ ,而2的n次方的结
 [如果这里没看懂，可以看文章末尾的连接](#links)
 
 ## put
+
+```java
+// put
+public V put(K key, V value) {
+    return putVal(hash(key), key, value, false, true);
+}
+// putVal
+final V putVal(int hash, K key, V value, boolean onlyIfAbsent,
+               boolean evict) {
+    Node<K,V>[] tab; Node<K,V> p; int n, i;
+    if ((tab = table) == null || (n = tab.length) == 0)
+        n = (tab = resize()).length;// 进行初始化
+    if ((p = tab[i = (n - 1) & hash]) == null)// 为空，说明i位置上并没存储其他数据
+        tab[i] = newNode(hash, key, value, null);// 把key，value 包装成Node，放在i的位置上
+    else {
+        Node<K,V> e; K k;
+        if (p.hash == hash &&
+            ((k = p.key) == key || (key != null && key.equals(k))))
+            e = p;// 如果hash相等&Key相等，e=p,下面的 e!=null 会进行处理
+        else if (p instanceof TreeNode)// treeNode 的处理
+            e = ((TreeNode<K,V>)p).putTreeVal(this, tab, hash, key, value);
+        else {// 链表的处理
+            for (int binCount = 0; ; ++binCount) {
+                if ((e = p.next) == null) {// 等于null说明是链表的最后一个元素了
+                    p.next = newNode(hash, key, value, null);// 把新的数据包装成Node放在链表的最后
+                    // TREEIFY_THRESHOLD=8
+                    // 如果链表的长度大于等于8了，那么把链表转换成 TreeNode
+                    if (binCount >= TREEIFY_THRESHOLD - 1) // -1 for 1st
+                        treeifyBin(tab, hash);
+                    break;// 结束循环
+                }
+                // 如果存在相等的Key, 结束 e!=null 会处理value的赋值
+                if (e.hash == hash &&
+                    ((k = e.key) == key || (key != null && key.equals(k))))
+                    break;
+                p = e;// break 执行了,p=e 就不会执行了
+            }
+        }
+        if (e != null) { // existing mapping for key
+            V oldValue = e.value;// 拿到旧值
+            if (!onlyIfAbsent || oldValue == null)
+                e.value = value;// 覆盖旧值
+            afterNodeAccess(e);// hook Method 这个方法在HashMap 中没作用，在LinkedHashMap 中有使用
+            return oldValue;
+        }
+    }
+    // modCount 用来进行并发修改检测的
+    // 如果你在遍历元素的时候，其他线程对 hashmap 进行了插入/删除数据
+    // 那么此时再继续遍历就不是安全的，抛出 ConcurrentModificationException 异常,而不是一直的错下去
+    ++modCount;
+    if (++size > threshold)// 数组的长度超过了 threshold 就进行扩容
+        resize();// 扩容的目的就是重新计算hash，打散数据，提高查询效率
+        // 因为hashmap 的数据越多，产生hash 冲突也就多,get 查询元素的时间复杂度就会从 O(1) 变成 O(n) 了
+    afterNodeInsertion(evict);// Hook Method
+    return null;
+}
+```
+
+## TreeNode
+
+### putTreeVal
+
+### treeifyBin
 
 ## Links
 
