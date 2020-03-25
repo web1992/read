@@ -16,7 +16,6 @@ jdk 1.8 `HashMap` 分析
   - [get](#get)
   - [init and resize](#init-and-resize)
   - [move element](#move-element)
-  - [loHead and hiHead](#lohead-and-hihead)
   - [put](#put)
   - [Links](#links)
 
@@ -256,14 +255,6 @@ hashmap 中数组的长度都是2的n次方,如：$2^3=8$,而2的n次方的结�
 而 `(e.hash & oldCap) == 0` 的最终目的就是根据&结果是否为零,来确定这个元素到底是放在`旧位置`还是`新位置`
 
 [如果这里没看懂，可以看文章末尾的连接](#links)
-
-## loHead and hiHead
-
-这里说下对 `loHead` `hiHead` 变量命令的猜测，如下图，在计算机中二进制的表示
-
-![hashmap-bit-array.png](./images/hashmap-bit-array.png)
-
-左边表示`高位`，右边表示`低位` `lower =lo` `hight = hi`，So... 新元素在高位，旧元素在低位
 
 ## put
 
