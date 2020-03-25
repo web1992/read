@@ -43,6 +43,7 @@
 - [x] [concurrent-modification-exception.md](concurrent-modification-exception.md)
 - [ ] [set.md](set.md)
 - [x] [map.md](map.md)
+- [x] [hashmap.md](hashmap.md)
 
 ## io/nio
 
