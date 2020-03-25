@@ -1,5 +1,7 @@
 # index
 
+🔥标记的已完结
+
 - [index](#index)
   - [reflect](#reflect)
   - [j.u.c](#juc)
@@ -43,7 +45,7 @@
 - [x] [concurrent-modification-exception.md](concurrent-modification-exception.md)
 - [ ] [set.md](set.md)
 - [x] [map.md](map.md)
-- [x] [hashmap.md](hashmap.md)
+- [x] [🔥hashmap.md](hashmap.md)
 
 ## io/nio
 
