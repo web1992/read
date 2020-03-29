@@ -12,12 +12,15 @@ home directory.
 
 ## package names rules
 
-• A package name should be all lowercase.
-• The name should be abbreviated if the meaning is fairly obvious (such as fmt).
-• It should be one word, if possible. If two words are needed, they should not be
-separated by underscores, and the second word should not be capitalized. (The strconv
-package is one example.)
-• Imported package names can conflict with local variable names, so don't use a name
-that package users are likely to want to use as well. (For example, if the strings package
-were named string, no one who imported that package would be able to name a local
-variable string).
+- A package name should be all lowercase.
+- The name should be abbreviated if the meaning is fairly obvious (such as fmt).
+- It should be one word, if possible. If two words are needed, they should not be separated by underscores, and the second word should not be capitalized. (The strconv package is one example.)
+- Imported package names can conflict with local variable names, so don't use a name that package users are likely to want to use as well. (For example, if the strings package were named string, no one who imported that package would be able to name a local variable string).
+
+## go doc/get/install and godoc
+
+```sh
+go get github.com/headfirstgo/keyboard
+go doc github.com/headfirstgo/keyboard
+go install hi
+```

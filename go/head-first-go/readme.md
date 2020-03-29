@@ -6,3 +6,4 @@
 - 2 conditionals and loops
 - 3 functions
 - 4 packages
+- 5 arrays
