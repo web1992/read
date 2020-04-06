@@ -68,6 +68,6 @@ myVar := myType{field1: "value"}
 
 - Adding a struct field with no name, only a type, defines an `anonymous` field.
 
-- An inner struct that is added as part of an outer struct using an anonymous field is said to be embedded within the outer struct.
+- An inner struct that is added as part of an outer struct using an anonymous field is said to be `embedded` within the outer struct.
 
 - You can access the fields of an `embedded` struct as if they belong to the outer struct.
