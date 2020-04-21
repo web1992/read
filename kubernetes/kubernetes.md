@@ -1,6 +1,6 @@
 # kubernetes
 
-> Kubernetes provides you with
+Kubernetes provides you with
 
 - Service discovery and load balancing
 - Storage orchestration
