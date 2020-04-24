@@ -8,3 +8,7 @@ Kubernetes provides you with
 - Automatic bin packing
 - Self-healin
 - Secret and configuration management
+
+## Tech
+
+![k8s-tech.png](./images/k8s-tech.png)
