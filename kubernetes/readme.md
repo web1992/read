@@ -199,3 +199,4 @@ Operator: In/NotIn/Exists/DoesNotExist/Gl/Lt
 - [https://kubernetes.io/docs/concepts/overview/what-is-kubernetes/](https://kubernetes.io/docs/concepts/overview/what-is-kubernetes/)
 - [https://kubernetes.io/docs/concepts/architecture](https://kubernetes.io/docs/concepts/architecture)
 - [kubernetes.md](kubernetes.md)
+- [谈 Kubernetes 的架构设计与实现原理](https://mp.weixin.qq.com/s/R-ltInkLTM4NgLQgx8Mg1w)
