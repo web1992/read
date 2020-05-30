@@ -7,4 +7,7 @@
 - 函数变量，也是有类型的，只能和 nil 比较
 - 匿名函数
 - 函数变量可以拥有状态
-- defer
+- defer 延迟函数调用
+- recover
+- recover + runtime.Stack
+- recover 应只恢复本包内的错误
