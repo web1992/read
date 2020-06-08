@@ -10,7 +10,7 @@
 | %f   | Float-point number                                                                          |
 | %d   | Decimal integer                                                                             |
 | %s   | String                                                                                      |
-| %t   | Boolean trueorfalse                                                                       |
+| %t   | Boolean true or false                                                                       |
 | %v   | Any value                                                                                   |
 | %#v  | Any value  %#v can show you some values that would otherwise be hidden in your output. '\t' |
 | %T   | Type of supplied value(int string etc)                                                      |
