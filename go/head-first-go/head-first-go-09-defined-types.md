@@ -56,8 +56,7 @@ fmt.Println("called on", m)
 
 - You can define additional parameters or return values on a method, just as you would with any other function.
 
-- Defining multiple functions with the same name in the same package is not allowed, even if they have parameters of different types. But you can define multiple
-methods with the same name, as long as each is defined on a different type.
+- Defining multiple functions with the same name in the same package is not allowed, even if they have parameters of different types. But you can define multiple methods with the same name, as long as each is defined on a different type.
 
 - You can only define methods on types that were defined in the same package.
 
