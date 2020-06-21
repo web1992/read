@@ -17,3 +17,13 @@ sudo systemctl status docker
 sudo systemctl enable docker
 
 ```
+
+## 设置镜像地址
+
+`cat /etc/docker/daemon.json`
+
+```json
+{
+  "registry-mirrors": ["https://registry.docker-cn.com"]
+}
+```
