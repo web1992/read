@@ -267,8 +267,12 @@ docker logs CONTAINERID
 
 kubectl get configmap  --namespace=kube-system
 
-kubectl  describe configmap  aaaxxx --namespace=kube-system
+kubectl  describe configmap   --namespace=kube-system aaaxxx
 
 kubectl  replace -f kubeadm-config.yaml --namespace=kube-system
 
 kubectl  get configmap  kubeadm-config   --namespace=kube-system  -o yaml > kubeadm-config.yaml
+
+kubectl  get configmap  kube-proxy  --namespace=kube-system  -o yaml > kube-proxy.yaml
+
+kubectl  replace -f kube-proxy.yaml --namespace=kube-system
