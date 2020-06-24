@@ -264,3 +264,7 @@ systemctl status kubelet
 journalctl -xeu kubelet
 docker ps -a | grep kube | grep -v pause
 docker logs CONTAINERID
+
+kubectl get configmap  --namespace=kube-system
+
+kubectl  describe configmap  aaaxxx --namespace=kube-system
