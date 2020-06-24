@@ -258,7 +258,7 @@ kubeadm init
 kubectl taint nodes --all node-role.kubernetes.io/master-
 kubectl get  pod kube-apiserver-rourou.xyz --namespace=kube-system -o yaml
 
-kubeadm init --image-repository=registry.cn-hangzhou.aliyuncs.com/google_containers --apiserver-advertise-address=81.68.100.22 --kubernetes-version=v1.18.0 --v=5 --ignore-preflight-errors=NumCPU
+kubeadm init --image-repository=registry.cn-hangzhou.aliyuncs.com/google_containers --apiserver-advertise-address=81.68.100.22 --kubernetes-version=v1.18.0 --v=5 --ignore-preflight-errors=NumCPU --apiserver-cert-extra-sans=81.68.100.22,172.17.0.11,rourou.xyz
 
 systemctl status kubelet
 journalctl -xeu kubelet
