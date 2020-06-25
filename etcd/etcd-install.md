@@ -1,6 +1,6 @@
 # install
 
-cat etcd.service
+cat `etcd.service`
 
 ```conf
 [Unit]
