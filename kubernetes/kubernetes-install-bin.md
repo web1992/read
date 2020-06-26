@@ -21,6 +21,19 @@ LimitNOFILE=65536
 WantedBy=multi-user.target
 ```
 
+```conf
+KUBE_API_ARGS="--etcd-servers=http://127.0.0.1:2379 \
+--insecure-bind-address=0.0.0.0 \
+--insecure-port=8080 \
+--service-cluster-ip-range=169.169.0.0/16 \
+--service-node-port-range=1-65535 \
+--logtostderr=false \
+--log-dir=/var/log/kubernetes \
+--v=0 \
+--enable-admission-plugins=NamespaceLifecycle,LimitRanger,ServiceAccount,TaintNodesByCondition,Priority,DefaultTolerationSeconds,DefaultStorageClass,StorageObjectInUseProtection,PersistentVolumeClaimResize,RuntimeClass,CertificateApproval,CertificateSigning,CertificateSubjectRestriction,DefaultIngressClass,MutatingAdmissionWebhook,ValidatingAdmissionWebhook,ResourceQuota"
+```
+
+
 `kube-controller-manager.service`
 
 ```conf
@@ -57,7 +70,7 @@ LimitNOFILE=65536
 WantedBy=multi-user.target
 ```
 
-systemctl daemon-reload
+1q
 
 systemctl enable kube-apiserver.service
 systemctl start kube-apiserver.service
@@ -171,5 +184,75 @@ KUBELETE_ARGS="--kubeconfig=/etc/kubernetes/kubeconfig \
 --hostname-override=huawei \
 --logtostderr=false \
 --log-dir=/var/log/kubernetes \
+--pod-infra-container-image=registry.cn-hangzhou.aliyuncs.com/google_containers/pause:3.2 \
 --v=5"
 ```
+
+openssl genrsa -out cs_client.key 2048
+
+openssl req  -new  -key cs_client.key -subj "/CN=rourou.xyz" -days 10000 -out cs_client.csr
+
+
+openssl x509 -req -in cs_client.csr   -CA ca.crt -CAkey ca.key -CAcreateserial -out cs_client.crt -days 10000
+
+
+client-certificate: /etc/kubernetes/cs_client.crt
+client-key: /etc/kubernetes/cs_client.key
+certificate-authority: /etc/kubernetes/ca.crt
+
+
+kubectl --server=https://81.68.100.22:6443 \
+--client-certificate=/etc/kubernetes/cs_client.crt \
+--client-key=/etc/kubernetes/cs_client.key \
+--certificate-authority=/etc/kubernetes/ca.crt get nodes
+
+openssl req -x509 -new -nodes -key ca.key -subj "/CN=rourou.xyz" -days 10000 -out ca.crt
+
+```conf
+[ req ]
+default_bits = 2048
+prompt = no
+default_md = sha256
+req_extensions = req_ext
+distinguished_name = dn
+
+[ dn ]
+C = CN
+ST = CNST
+L = SH
+O = web1992
+OU = web1992u
+CN = 81.68.100.22
+
+[ req_ext ]
+subjectAltName = @alt_names
+
+[ alt_names ]
+DNS.1 = kubernetes
+DNS.2 = kubernetes.default
+DNS.3 = kubernetes.default.svc
+DNS.4 = kubernetes.default.svc.cluster
+DNS.5 = kubernetes.default.svc.cluster.local
+IP.1 = 81.68.100.22
+IP.2 = 169.169.0.1
+
+[ v3_ext ]
+authorityKeyIdentifier=keyid,issuer:always
+basicConstraints=CA:FALSE
+keyUsage=keyEncipherment,dataEncipherment
+extendedKeyUsage=serverAuth,clientAuth
+subjectAltName=@alt_names
+
+```
+
+```conf
+--client-ca-file=/etc/kubernetes/ca.crt \
+--tls-private-key-file=/etc/kubernetes/server.key \
+--tls-cert-file=/etc/kubernetes/server.crt \
+--insecure-port=0 \
+--secure-port=6443 \
+```
+
+## Link
+
+- [https://kubernetes.io/zh/docs/concepts/cluster-administration/certificates/](https://kubernetes.io/zh/docs/concepts/cluster-administration/certificates/)

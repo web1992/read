@@ -251,7 +251,7 @@ kube-system   kube-scheduler-tengxunyun            1/1     Running   0          
 kube-system   weave-net-zc5qz                      2/2     Running   0          26m
 ```
 
-kubectl get pods --all-namespaces
+
 kubectl --namespace=kube-system describe pod
 kubeadm reset
 kubeadm init
@@ -276,3 +276,5 @@ kubectl  get configmap  kubeadm-config   --namespace=kube-system  -o yaml > kube
 kubectl  get configmap  kube-proxy  --namespace=kube-system  -o yaml > kube-proxy.yaml
 
 kubectl  replace -f kube-proxy.yaml --namespace=kube-system
+
+registry.cn-hangzhou.aliyuncs.com/google_containers/pause:3.2
