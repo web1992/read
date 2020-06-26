@@ -100,7 +100,7 @@ scheduler: {}
 apiVersion: kubeadm.k8s.io/v1beta2
 imageRepository: registry.cn-hangzhou.aliyuncs.com/google_containers
 localAPIEndpoint:
-  advertiseAddress: 81.68.100.22
+  advertiseAddress: 192.168.1.10
   bindPort: 6443
 kind: ClusterConfiguration
 kubernetesVersion: v1.18.0
@@ -206,7 +206,7 @@ apiVersion: kubeadm.k8s.io/v1beta2
 kind: JoinConfiguration
 discovery:
   bootstrapToken:
-    apiServerEndpoint: 81.68.100.22:6443
+    apiServerEndpoint: 192.168.1.10:6443
     token: aaa.xxx
     unsafeSkipCAVerification: true
   tlsBootstrapToken: aaa.xxx
@@ -258,7 +258,7 @@ kubeadm init
 kubectl taint nodes --all node-role.kubernetes.io/master-
 kubectl get  pod kube-apiserver-rourou.xyz --namespace=kube-system -o yaml
 
-kubeadm init --image-repository=registry.cn-hangzhou.aliyuncs.com/google_containers --apiserver-advertise-address=81.68.100.22 --kubernetes-version=v1.18.0 --v=5 --ignore-preflight-errors=NumCPU --apiserver-cert-extra-sans=81.68.100.22,172.17.0.11,rourou.xyz
+kubeadm init --image-repository=registry.cn-hangzhou.aliyuncs.com/google_containers --apiserver-advertise-address=192.168.1.10 --kubernetes-version=v1.18.0 --v=5 --ignore-preflight-errors=NumCPU --apiserver-cert-extra-sans=192.168.1.10,172.17.0.11,rourou.xyz
 
 systemctl status kubelet
 journalctl -xeu kubelet
