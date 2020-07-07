@@ -94,3 +94,9 @@ spec:
 status:
   loadBalancer: {}
 ```
+
+## 外部访问 Service
+
+Node IP
+Pod IP
+Cluster : IP Service IP
