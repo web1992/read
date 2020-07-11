@@ -25,6 +25,8 @@ k8s 集群的二进制安装 (OS: CentOS 7)
   - [常用命令](#常用命令)
   - [Link](#link)
 
+![k8s-bin.png](./images/k8s-bin.png)
+
 ## Master
 
 Master 节点需要安装的服务
