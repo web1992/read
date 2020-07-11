@@ -25,7 +25,7 @@ k8s 集群的二进制安装 (OS: CentOS 7)
   - [常用命令](#常用命令)
   - [Link](#link)
 
-![k8s-bin.png](./images/k8s-bin.png)
+![k8s-bin.png](https://web1992-1258160421.cos.ap-shanghai.myqcloud.com/k8s-bin.png)
 
 ## Master
 
