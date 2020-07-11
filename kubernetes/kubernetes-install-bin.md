@@ -1,6 +1,6 @@
 # kubernetes install bin
 
-k8s 集群的二进制安装
+k8s 集群的二进制安装 (OS: CentOS 7)
 
 - [kubernetes install bin](#kubernetes-install-bin)
   - [Master](#master)
@@ -28,6 +28,8 @@ k8s 集群的二进制安装
 ## Master
 
 Master 节点需要安装的服务
+
+所有的服务都是基于 `systemd` 进行配置管理，安装之前需要知道 `systemd` 相关的知识,文末有链接
 
 ```sh
 # pwd
@@ -231,7 +233,9 @@ docker.service
 
 `kubectl` 是链接到 k8s 集群的命令行工具，如果集群使用了证书，就需要配置证书，否则不需要配置
 
-`~/.kube/config`
+`kubectl` 可以安装到任何机器上，安装之后，配置下集群地址就可以使用了
+
+配置 `~/.kube/config`
 
 ```yaml
 apiVersion: v1
@@ -407,4 +411,5 @@ systemctl status kube-controller-scheduler
 
 ## Link
 
+- [systemd](http://www.ruanyifeng.com/blog/2016/03/systemd-tutorial-commands.html)
 - [https://kubernetes.io/zh/docs/concepts/cluster-administration/certificates/](https://kubernetes.io/zh/docs/concepts/cluster-administration/certificates/)
