@@ -15,3 +15,8 @@ redo log 是物理日志，记录的是页的物理修改操作
 undo log 回滚行记录到指定的版本
 
 undo log 是逻辑日志 根据每行进行记录
+
+## Links
+
+- [https://dev.mysql.com/doc/refman/5.7/en/innodb-redo-log.html](https://dev.mysql.com/doc/refman/5.7/en/innodb-redo-log.html)
+- [https://dev.mysql.com/doc/refman/5.7/en/innodb-undo-logs.html](https://dev.mysql.com/doc/refman/5.7/en/innodb-undo-logs.html)
