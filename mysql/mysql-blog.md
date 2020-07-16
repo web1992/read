@@ -2,10 +2,10 @@
 
 ## 目录
 
-- [MySQL 相关博文](#MySQL-%E7%9B%B8%E5%85%B3%E5%8D%9A%E6%96%87)
-  - [目录](#%E7%9B%AE%E5%BD%95)
-  - [优化](#%E4%BC%98%E5%8C%96)
-  - [原理](#%E5%8E%9F%E7%90%86)
+- [MySQL 相关博文](#mysql-相关博文)
+  - [目录](#目录)
+  - [优化](#优化)
+  - [原理](#原理)
 
 ## 优化
 
@@ -24,6 +24,7 @@
 - [MySQL join temporary table 优化](https://dev.mysql.com/doc/refman/5.7/en/where-optimization.html)
 - [MySQL Optimization Using filesort 优化](https://dev.mysql.com/doc/refman/5.7/en/order-by-optimization.html#order-by-filesort)
 - [MySQL Tracing the Optimizer 优化跟踪](https://dev.mysql.com/doc/internals/en/optimizer-tracing.html)
+- [MySQL 索引原理及慢查询优化](https://tech.meituan.com/2014/06/30/mysql-index.html)
 
 ## 原理
 
