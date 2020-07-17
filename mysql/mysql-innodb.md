@@ -1,5 +1,9 @@
 # InnoDB
 
+## innodb-data-struct
+
+![innodb-data-struct](./images/innodb-data-struct.png)
+
 ## innodb-architecture
 
 ![InnoDB](./images/innodb-architecture.png)
