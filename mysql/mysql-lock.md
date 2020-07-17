@@ -36,6 +36,8 @@ mysql> select * from t_user;
 | delete from t_user where id =16;        |
 |                                         | ERROR 1213 (40001): Deadlock found when trying to get lock; try restarting transaction |
 
+`show engine innodb status;`
+
 死锁日志：
 
 ```sql
