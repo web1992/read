@@ -1,6 +1,12 @@
 # InnoDB
 
+## innodb-architecture
+
 ![InnoDB](./images/innodb-architecture.png)
+
+## Buffer Pool
+
+![innodb-buffer-pool-list](./images/innodb-buffer-pool-list.png)
 
 ## Links
 
