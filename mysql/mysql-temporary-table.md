@@ -1,3 +1,4 @@
+
 # MySQL 创建临时表的案例
 
 ## 1 use join
