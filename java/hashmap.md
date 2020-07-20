@@ -13,6 +13,7 @@ jdk 1.8 `HashMap` 分析
 | 二进制          | 二进制的 & 操作的特点和经典应用场景 |
 
 - [HashMap](#hashmap)
+  - [Prepare](#prepare)
   - [Get](#get)
   - [Init and resize](#init-and-resize)
   - [Move element](#move-element)
@@ -26,9 +27,36 @@ jdk 1.8 `HashMap` 分析
     - [putTreeVal](#puttreeval)
   - [Links](#links)
 
+## Prepare
+
+`HashMap` 底层是由`数组` + `链表` + `树` 等数据结构组合而来的
+
+数组用来存储元素，链表和树则用来优化数组中数据的查询效率 (也就是提高 Get 操作的查询效率)
+
+`HashMap` 最主要的操作就是 `get` 和 `put` 因此从这里入手。
+
 ## Get
 
-先从 get 方法入手
+先从 `get` 方法入手,可以理解为如何通过 `key` 在数组中查询元素。
+
+从数组中查询一个元素，最简单的方式就是循环遍历，如下：
+
+```java
+int[] arr=new int[]{....};
+int key =1;// 查询素组中是否有 key =1
+for(int i=0;i<arr.lenght;i++){
+    if(a == arr[i]){
+        // find it ,break
+        break;
+    }
+}
+```
+
+这样能实现，但是存在问题，查询数据中如果有100万个数据，那么循环就需要执行100万次，能不能通过某种方式较少循环的次数呢？
+
+当然可以的，`HashMap` 中使用 hash 函数（hash算法）来解决这个问题。hash 函数的特性是，可以把一个字符串(也可以是其他)转换成`一串数字`
+
+而这次`一串数字`可以转换(通过&操作)成数组的下表，然后最快一次就查询到了该元素(这里说是最快，如果发生了hash冲突，就需要多次查询了)
 
 ```java
 // get
