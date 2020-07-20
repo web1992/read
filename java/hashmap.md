@@ -13,20 +13,20 @@ jdk 1.8 `HashMap` 分析
 | 二进制          | 二进制的 & 操作的特点和经典应用场景 |
 
 - [HashMap](#hashmap)
-  - [get](#get)
-  - [init and resize](#init-and-resize)
-  - [move element](#move-element)
-  - [e.hash & oldCap](#ehash--oldcap)
-  - [j + oldCap](#j--oldcap)
-  - [put](#put)
-  - [treeifyBin](#treeifybin)
+  - [Get](#get)
+  - [Init and resize](#init-and-resize)
+  - [Move element](#move-element)
+    - [e.hash & oldCap](#ehash--oldcap)
+    - [j + oldCap](#j--oldcap)
+  - [Put](#put)
+  - [TreeifyBin](#treeifybin)
   - [TreeNode](#treenode)
     - [balanceInsertion](#balanceinsertion)
     - [balanceDeletion](#balancedeletion)
     - [putTreeVal](#puttreeval)
   - [Links](#links)
 
-## get
+## Get
 
 先从 get 方法入手
 
@@ -49,7 +49,7 @@ final Node<K,V> getNode(int hash, Object key) {
     // HashMap 底层是使用数组来存放元素的
     if ((tab = table) != null && (n = tab.length) > 0 &&
         // tab[(n - 1) & hash]
-        // 这里简单的说下这个& 操作
+        // 这里简单的说下这个 & 操作
         // 前提 n 是 2的N次幂，如 2的3次方=8，2的4次方=16 (扩容的时候也会保证这个)
         // 这些数的特点是 转化成二进制之后 最高位都是1 ，其他位都是0
         // 如 8 =1000，16 = 10000 (高位为0省略)
@@ -77,7 +77,7 @@ final Node<K,V> getNode(int hash, Object key) {
 }
 ```
 
-## init and resize
+## Init and resize
 
 `HashMap` 是延迟初始化的，在 `put` 之后进行初始化操作的
 
@@ -106,9 +106,9 @@ final Node<K,V>[] resize() {
     else {               // zero initial threshold signifies using defaults
         // 初始化走这里
         newCap = DEFAULT_INITIAL_CAPACITY;// 默认数组大小是16
-        newThr = (int)(DEFAULT_LOAD_FACTOR * DEFAULT_INITIAL_CAPACITY);// - 0.75*16=12.0
+        newThr = (int)(DEFAULT_LOAD_FACTOR * DEFAULT_INITIAL_CAPACITY);//  0.75*16=12.0
     }
-    if (newThr == 0) {// 指定了初始容量，走这个逻辑，重新计算下一次扩容的容量
+    if (newThr == 0) {
         float ft = (float)newCap * loadFactor;
         newThr = (newCap < MAXIMUM_CAPACITY && ft < (float)MAXIMUM_CAPACITY ?
                   (int)ft : Integer.MAX_VALUE);
@@ -130,7 +130,7 @@ final Node<K,V>[] resize() {
                 else { // preserve order 保证顺序
                     // 代码执行到这里，说明 e 这个 Node 已经是链表了
                     // 那么需要把这个链表进行拆分和元素移动
-                    // 具体的细节和做法，在后面详细解释
+                    // 具体的细节和做法，在后面 Move element 部分详细解释
                     Node<K,V> loHead = null, loTail = null;
                     Node<K,V> hiHead = null, hiTail = null;
                     Node<K,V> next;
@@ -167,7 +167,7 @@ final Node<K,V>[] resize() {
 }
 ```
 
-## move element
+## Move element
 
 > 元素移动
 
@@ -241,7 +241,7 @@ if (hiTail != null) {// 不为空
 }
 ```
 
-## e.hash & oldCap
+### e.hash & oldCap
 
 上面的代码重点是 `(e.hash & oldCap) == 0` 和 `j + oldCap` 理解了这个就掌握了作者的思想
 
@@ -263,7 +263,7 @@ hashmap 中数组的长度都是2的n次方,如： $2^3=8$ ,而2的n次方的结
 
 而 `(e.hash & oldCap) == 0` 的最终目的就是根据&结果是否为零,来确定这个元素到底是放在`旧位置`还是`新位置`
 
-## j + oldCap
+### j + oldCap
 
 - 旧位置： `newTab[j] = loHead`
 - 新位置： `newTab[j + oldCap] = hiHead`
@@ -284,7 +284,7 @@ hashmap 中数组的长度都是2的n次方,如： $2^3=8$ ,而2的n次方的结
 
 [如果这里没看懂，可以看文章末尾的连接](#links)
 
-## put
+## Put
 
 ```java
 // put
@@ -343,7 +343,7 @@ final V putVal(int hash, K key, V value, boolean onlyIfAbsent,
 }
 ```
 
-## treeifyBin
+## TreeifyBin
 
 ```java
 /**
