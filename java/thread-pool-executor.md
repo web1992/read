@@ -2,34 +2,35 @@
 
 > 目录
 
-- [ThreadPoolExecutor](#ThreadPoolExecutor)
-  - [ExecutorService 类图](#ExecutorService-%E7%B1%BB%E5%9B%BE)
-  - [设计目的](#%E8%AE%BE%E8%AE%A1%E7%9B%AE%E7%9A%84)
-  - [构造参数](#%E6%9E%84%E9%80%A0%E5%8F%82%E6%95%B0)
-    - [Core and maximum pool sizes](#Core-and-maximum-pool-sizes)
-    - [On-demand construction](#On-demand-construction)
-    - [Creating new threads](#Creating-new-threads)
-    - [Keep-alive times](#Keep-alive-times)
-    - [Queuing](#Queuing)
-      - [SynchronousQueue](#SynchronousQueue)
-      - [LinkedBlockingQueue](#LinkedBlockingQueue)
-      - [ArrayBlockingQueue](#ArrayBlockingQueue)
-    - [Rejected tasks](#Rejected-tasks)
-    - [Rejected demo](#Rejected-demo)
-  - [Hook methods](#Hook-methods)
-  - [Queue maintenance](#Queue-maintenance)
-  - [Finalization](#Finalization)
-  - [runState](#runState)
-  - [Method List](#Method-List)
+- [ThreadPoolExecutor](#threadpoolexecutor)
+  - [ExecutorService 类图](#executorservice-类图)
+  - [设计目的](#设计目的)
+  - [构造参数](#构造参数)
+    - [Core and maximum pool sizes](#core-and-maximum-pool-sizes)
+    - [On-demand construction](#on-demand-construction)
+    - [Creating new threads](#creating-new-threads)
+    - [Keep-alive times](#keep-alive-times)
+    - [Queuing](#queuing)
+      - [SynchronousQueue](#synchronousqueue)
+      - [LinkedBlockingQueue](#linkedblockingqueue)
+      - [ArrayBlockingQueue](#arrayblockingqueue)
+    - [Rejected tasks](#rejected-tasks)
+    - [Rejected demo](#rejected-demo)
+  - [Hook methods](#hook-methods)
+  - [Queue maintenance](#queue-maintenance)
+  - [Finalization](#finalization)
+  - [runState and workCount](#runstate-and-workcount)
+  - [runState](#runstate)
+  - [Method List](#method-list)
     - [execute](#execute)
-    - [runWorker](#runWorker)
-    - [getTask](#getTask)
-  - [Worker](#Worker)
-  - [Executors](#Executors)
-    - [newFixedThreadPool](#newFixedThreadPool)
-    - [newSingleThreadExecutor](#newSingleThreadExecutor)
-    - [newCachedThreadPool](#newCachedThreadPool)
-  - [参考](#%E5%8F%82%E8%80%83)
+    - [runWorker](#runworker)
+    - [getTask](#gettask)
+  - [Worker](#worker)
+  - [Executors](#executors)
+    - [newFixedThreadPool](#newfixedthreadpool)
+    - [newSingleThreadExecutor](#newsinglethreadexecutor)
+    - [newCachedThreadPool](#newcachedthreadpool)
+  - [参考](#参考)
 
 ## ExecutorService 类图
 
@@ -161,6 +162,10 @@ Method `getQueue()` 为了调试设计,其他忽用
 ## Finalization
 
 如果大量的线程，长时间的不使用，需要进行回收，否则就会浪费不必要的资源。或者忘记调用 `shutdown()` 方法进行关闭时，也会造成资源的浪费.
+
+## runState and workCount
+
+![thread-pool-ctl.png](./images/thread-pool-ctl.png)
 
 ## runState
 
