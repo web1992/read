@@ -14,13 +14,14 @@ ThreadPoolExecutor 提供了一系列的参数，用来方便的控制线程池�
 
 ```java
 // ThreadPoolExecutor 的构造参数
-public ThreadPoolExecutor(int corePoolSize,
-                              int maximumPoolSize,
-                              long keepAliveTime,
-                              TimeUnit unit,
-                              BlockingQueue<Runnable> workQueue,
-                              ThreadFactory threadFactory,
-                              RejectedExecutionHandler handler) {
+public ThreadPoolExecutor(
+    int corePoolSize,
+    int maximumPoolSize,
+    long keepAliveTime,
+    TimeUnit unit,
+    BlockingQueue<Runnable> workQueue,
+    ThreadFactory threadFactory,
+    RejectedExecutionHandler handler) {
 
 // ...
 }
@@ -38,10 +39,10 @@ public ThreadPoolExecutor(int corePoolSize,
 
 ## 思考
 
-虽然 Executors提供了众多的方法来创建线程池，但是如果使用不当，可能引发风险
+虽然 `Executors` 提供了众多的方法来创建线程池，但是如果使用不当，可能引发风险
 
-- 风险一：无限制的创建线程导致，机器资源耗尽，服务宕机
-- 风险二：没有限制BlockingQueue队列的大小，导致内存消耗过大
+- 风险一：无限制的创建线程导致，机器资源耗尽，服务宕机,比如: `Executors.newCachedThreadPool`
+- 风险二：没有限制`BlockingQueue`队列的大小，导致内存消耗过大，比如: `Executors.newFixedThreadPool`
 
 因此建议最佳实践是自己创建 `ThreadPoolExecutor` 根据不同的场景进行不同的参数设置
 
@@ -52,9 +53,9 @@ public class FixedThreadPool implements ThreadPool {
 
     @Override
     public Executor getExecutor(URL url) {
-        String name = url.getParameter(Constants.THREAD_NAME_KEY, Constants.DEFAULT_THREAD_NAME);
-        int threads = url.getParameter(Constants.THREADS_KEY, Constants.DEFAULT_THREADS);
-        int queues = url.getParameter(Constants.QUEUES_KEY, Constants.DEFAULT_QUEUES);
+        String name = ...
+        int threads = ...
+        int queues = ...
         return new ThreadPoolExecutor(threads, threads, 0, TimeUnit.MILLISECONDS,
                 queues == 0 ? new SynchronousQueue<Runnable>() :
                         (queues < 0 ? new LinkedBlockingQueue<Runnable>()
