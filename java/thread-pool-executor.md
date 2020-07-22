@@ -3,7 +3,7 @@
 > 目录
 
 - [ThreadPoolExecutor](#threadpoolexecutor)
-  - [ExecutorService 类图](#executorservice-类图)
+  - [Java 中的线程池家族](#java-中的线程池家族)
   - [设计目的](#设计目的)
   - [构造参数](#构造参数)
     - [Core and maximum pool sizes](#core-and-maximum-pool-sizes)
@@ -32,7 +32,7 @@
     - [newCachedThreadPool](#newcachedthreadpool)
   - [参考](#参考)
 
-## ExecutorService 类图
+## Java 中的线程池家族
 
 ![ThreadPoolExecutor](./images/ThreadPoolExecutor.png)
 
