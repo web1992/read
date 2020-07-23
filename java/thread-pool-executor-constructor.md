@@ -12,6 +12,8 @@ tags: [java]
 
 ThreadPoolExecutor 提供了一系列的参数，用来方便的控制线程池的行为,下面进行解释
 
+<!--truncate-->
+
 ```java
 // ThreadPoolExecutor 的构造参数
 public ThreadPoolExecutor(

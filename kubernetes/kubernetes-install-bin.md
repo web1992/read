@@ -2,7 +2,10 @@
 
 k8s 集群的二进制安装 (OS: CentOS 7)
 
+<!--truncate-->
+
 - [kubernetes install bin](#kubernetes-install-bin)
+  - [安装组件](#安装组件)
   - [Master](#master)
     - [kube-apiserver.service](#kube-apiserverservice)
     - [kube-controller-manager.service](#kube-controller-managerservice)
@@ -24,6 +27,8 @@ k8s 集群的二进制安装 (OS: CentOS 7)
     - [Node 签发证书](#node-签发证书)
   - [常用命令](#常用命令)
   - [Link](#link)
+
+## 安装组件
 
 ![k8s-bin.png](https://web1992-1258160421.cos.ap-shanghai.myqcloud.com/k8s-bin.png)
 
