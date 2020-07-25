@@ -2,9 +2,9 @@
 id: thread-pool-executor-constructor
 title: ThreadPoolExecutor 之构造参数
 author: web1992
-author_title: web1992
+author_title: Code of Java
 author_url: https://github.com/web1992
-author_image_url: https://avatars3.githubusercontent.com/u/6828647?s=60&v=4
+author_image_url: /img/avatars3.jpeg
 tags: [java]
 ---
 
@@ -31,7 +31,7 @@ public ThreadPoolExecutor(
 
 | 参数            | 类型                     | 含义                                                                                      |
 | --------------- | ------------------------ | ----------------------------------------------------------------------------------------- |
-| corePoolSize    | int                      | 核心线程数的大小(最小的线程数据)                                                          |
+| corePoolSize    | int                      | 核心线程数的大小(最小的线程数)                                                          |
 | maximumPoolSize | int                      | 最大线程数(线程数量不能超过这个)，当队列满了之后，会继续参加线程到 maximumPoolSize 个线程 |
 | keepAliveTime   | long                     | 线程最大存活时间                                                                          |
 | unit            | TimeUnit                 | 线程最大存活时间的时间单位                                                                |
@@ -41,10 +41,14 @@ public ThreadPoolExecutor(
 
 ## 思考
 
-虽然 `Executors` 提供了众多的方法来创建线程池，但是如果使用不当，可能引发风险
+:::important
 
-- 风险一：无限制的创建线程导致，机器资源耗尽，服务宕机,比如: `Executors.newCachedThreadPool`
-- 风险二：没有限制`BlockingQueue`队列的大小，导致内存消耗过大，比如: `Executors.newFixedThreadPool`
+虽然 Executors 提供了众多的方法来创建线程池，但是如果使用不当，可能引发风险
+
+- 风险一：无限制的创建线程导致，机器资源耗尽，服务宕机,比如: Executors.newCachedThreadPool (maximumPoolSize 为Integer.MAX_VALUE)
+- 风险二：没有限制BlockingQueue队列的大小，导致内存消耗过大，比如: Executors.newFixedThreadPool (队列是无边界的 LinkedBlockingQueue)
+
+:::
 
 因此建议最佳实践是自己创建 `ThreadPoolExecutor` 根据不同的场景进行不同的参数设置
 
