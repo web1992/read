@@ -8,19 +8,28 @@ author_image_url: https://avatars3.githubusercontent.com/u/6828647?s=60&v=4
 tags: [java]
 ---
 
-Hashmap 的数据结构之 Tree
+`Hashmap` 的数据结构之 `Tree`
 
-Hashmap 中使用红黑树这种数据结构，解决hash 冲突之后，数据查询效率下降的问题。
+`Hashmap` 中使用红黑树这种数据结构，解决 `hash` 冲突之后，数据查询效率下降的问题。
 
 <!--truncate-->
 
-- [TreeifyBin](#treeifybin)
-- [TreeNode](#treenode)
-  - [balanceInsertion](#balanceinsertion)
-  - [balanceDeletion](#balancedeletion)
-  - [putTreeVal](#puttreeval)
+- [Red-Black Tree](#red-black-tree)
+- [treeifyBin](#treeifybin)
+- [treeify](#treeify)
+- [balanceInsertion](#balanceinsertion)
+- [balanceDeletion](#balancedeletion)
+- [rotateRight](#rotateright)
+- [rotateLeft](#rotateleft)
 
-## TreeifyBin
+## Red-Black Tree
+
+一个动态的树创建过程
+[https://www.cs.usfca.edu/~galles/visualization/RedBlack.html](https://www.cs.usfca.edu/~galles/visualization/RedBlack.html)
+
+## treeifyBin
+
+下面是代码，后面会有解释
 
 ```java
 /**
@@ -30,7 +39,7 @@ Hashmap 中使用红黑树这种数据结构，解决hash 冲突之后，数据�
 final void treeifyBin(Node<K,V>[] tab, int hash) {
     int n, index; Node<K,V> e;
     // MIN_TREEIFY_CAPACITY =64 小于64仅仅是扩容
-    // 数组的大于64才开始把链表变成树
+    // 数组的长度大于64才开始把链表变成树
     if (tab == null || (n = tab.length) < MIN_TREEIFY_CAPACITY)
         resize();
     else if ((e = tab[index = (n - 1) & hash]) != null) {// 元素所在的位置有值
@@ -54,18 +63,18 @@ final void treeifyBin(Node<K,V>[] tab, int hash) {
 }
 ```
 
-## TreeNode
+`treeifyBin` 方法，把 `Node` 链表转换成 `TreeNode` 链表，`treeify` 方法然后在把`链表`变成`树`
+
+下图是一个转换过程:
+
+![hashmap-node-to-tree.png](./images/hashmap-node-to-tree.png)
+
+## treeify
 
 ```java
-// TreeNode#treeify
-/**
- * Forms tree of the nodes linked from this node.
- */
-// hd.treeify(tab)
-// 上面说过在treeifyBin 中已经创建了 TreeNode 链表
-// 而hd 是第一个元素，下面的循环就是从第一个元素开始
 final void treeify(Node<K,V>[] tab) {
     TreeNode<K,V> root = null;
+    // TreeNode 链表循环
     for (TreeNode<K,V> x = this, next; x != null; x = next) {
         next = (TreeNode<K,V>)x.next;
         x.left = x.right = null;
@@ -75,12 +84,15 @@ final void treeify(Node<K,V>[] tab) {
             root = x;
         }
         else {
+            // x 是当前要插入的新节点
             K k = x.key;
             int h = x.hash;
             Class<?> kc = null;
+            // 从树的根节点开始进行节点比较放到合适的位置
             for (TreeNode<K,V> p = root;;) {
-                int dir, ph;
+                int dir, ph; 
                 K pk = p.key;
+                // 计算 dir
                 if ((ph = p.hash) > h)
                     dir = -1;
                 else if (ph < h)
@@ -89,7 +101,11 @@ final void treeify(Node<K,V>[] tab) {
                           (kc = comparableClassFor(k)) == null) ||
                          (dir = compareComparables(kc, k, pk)) == 0)
                     dir = tieBreakOrder(k, pk);
+                // 计算 dir 结束，也是计算新插入的节点，放在左边还是右边已经确定了
                 TreeNode<K,V> xp = p;
+                // 找到节点p,如果p 的左/右字节点为空
+                // 就是找到插入的位置了，插入节点，进行树的平衡
+                // 然后结束循环
                 if ((p = (dir <= 0) ? p.left : p.right) == null) {
                     x.parent = xp;
                     if (dir <= 0)
@@ -99,14 +115,21 @@ final void treeify(Node<K,V>[] tab) {
                     root = balanceInsertion(root, x);// 插入成功，进行重新树的平衡
                     break;// 结束循环
                 }
+                // 不为空，继续循环
             }
         }
-    }
+    } // TreeNode 链表循环结束
     moveRootToFront(tab, root);
 }
 ```
 
-### balanceInsertion
+这里说下为什么需求进行 `树的平衡` 这个操作，如下图，如果不进行树的平衡，那么创建的一棵树有可能是下面这样子的。
+
+![hashmap-tree-mock.png](./images/hashmap-tree-mock.png)
+
+如果创建了一个这样的树，那么本来是`树`的数据结构就`退化`成了链表，这样子的树是没有意义的，因此需要执行树的平衡
+
+## balanceInsertion
 
 > 插入操作
 
@@ -115,7 +138,7 @@ final void treeify(Node<K,V>[] tab) {
 // 在 treeify 可以，此时 x 已经插入到树种了
 // 下面的操作就是进行重新平衡
 static <K,V> TreeNode<K,V> balanceInsertion(TreeNode<K,V> root,
-                                            TreeNode<K,V> x) {
+                                            TreeNode<K,V> x) {// x 是当前插入的新节点
     x.red = true;
     for (TreeNode<K,V> xp, xpp, xppl, xppr;;) {
         if ((xp = x.parent) == null) {
@@ -170,9 +193,9 @@ static <K,V> TreeNode<K,V> balanceInsertion(TreeNode<K,V> root,
 }
 ```
 
-![tree-node](./images/hashmap-tree-node.png)
+![tree-node](./images/hashmap-tree-x.png)
 
-### balanceDeletion
+## balanceDeletion
 
 ```java
 // HashMap.TreeNode#balanceDeletion
@@ -269,4 +292,54 @@ static <K,V> TreeNode<K,V> balanceDeletion(TreeNode<K,V> root,
 }
 ```
 
-### putTreeVal
+## rotateRight
+
+- 一：为什么需要右旋
+- 二：什么时候进行右旋
+- 三：怎么右旋
+
+```java
+static <K,V> TreeNode<K,V> rotateRight(TreeNode<K,V> root,
+                                       TreeNode<K,V> p) {
+    TreeNode<K,V> l, pp, lr;
+    if (p != null && (l = p.left) != null) {
+        if ((lr = p.left = l.right) != null)
+            lr.parent = p;
+        if ((pp = l.parent = p.parent) == null)
+            (root = l).red = false;
+        else if (pp.right == p)
+            pp.right = l;
+        else
+            pp.left = l;
+        l.right = p;
+        p.parent = l;
+    }
+    return root;
+}
+```
+
+## rotateLeft
+
+- 一：为什么需要左旋
+- 二：什么时候进行左旋
+- 三：怎么左旋
+
+```java
+tatic <K,V> TreeNode<K,V> rotateLeft(TreeNode<K,V> root,
+                                      TreeNode<K,V> p) {
+    TreeNode<K,V> r, pp, rl;
+    if (p != null && (r = p.right) != null) {
+        if ((rl = p.right = r.left) != null)
+            rl.parent = p;
+        if ((pp = r.parent = p.parent) == null)
+            (root = r).red = false;
+        else if (pp.left == p)
+            pp.left = r;
+        else
+            pp.right = r;
+        r.left = p;
+        p.parent = r;
+    }
+    return root;
+}
+```
