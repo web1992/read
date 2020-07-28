@@ -15,17 +15,27 @@ tags: [java]
 <!--truncate-->
 
 - [Red-Black Tree](#red-black-tree)
+  - [5个特性](#5个特性)
 - [treeifyBin](#treeifybin)
 - [treeify](#treeify)
 - [balanceInsertion](#balanceinsertion)
 - [balanceDeletion](#balancedeletion)
 - [rotateRight](#rotateright)
 - [rotateLeft](#rotateleft)
+- [Links](#links)
 
 ## Red-Black Tree
 
 一个动态的树创建过程
 [https://www.cs.usfca.edu/~galles/visualization/RedBlack.html](https://www.cs.usfca.edu/~galles/visualization/RedBlack.html)
+
+### 5个特性
+
+- 1. 节点是红色或黑色。
+- 2. 根节点是黑色。
+- 3. 所有叶子节点都是黑色的空节点。(叶子节点是NIL节点或NULL节点)
+- 4. 每个红色节点的两个子节点都是黑色节点。(从每个叶子节点到根的所有路径上不能有两个连续的红色节点)
+- 5. 从任一节点到其每个叶子节点的所有路径都包含相同数目的黑色节点。
 
 ## treeifyBin
 
@@ -90,7 +100,7 @@ final void treeify(Node<K,V>[] tab) {
             Class<?> kc = null;
             // 从树的根节点开始进行节点比较放到合适的位置
             for (TreeNode<K,V> p = root;;) {
-                int dir, ph; 
+                int dir, ph;
                 K pk = p.key;
                 // 计算 dir
                 if ((ph = p.hash) > h)
@@ -123,7 +133,7 @@ final void treeify(Node<K,V>[] tab) {
 }
 ```
 
-这里说下为什么需求进行 `树的平衡` 这个操作，如下图，如果不进行树的平衡，那么创建的一棵树有可能是下面这样子的。
+这里说下为什么需要进行 `树的平衡` 这个操作，如下图，如果不进行树的平衡，那么创建的一棵树有可能是下面这样子的。
 
 ![hashmap-tree-mock.png](./images/hashmap-tree-mock.png)
 
@@ -133,13 +143,15 @@ final void treeify(Node<K,V>[] tab) {
 
 > 插入操作
 
+`balanceInsertion` 的代码可以参考下面的图，进行理解。(下图只是列举了xpp节点是黑色的情况)
+
 ```java
 // HashMap.TreeNode#balanceInsertion
 // 在 treeify 可以，此时 x 已经插入到树种了
 // 下面的操作就是进行重新平衡
 static <K,V> TreeNode<K,V> balanceInsertion(TreeNode<K,V> root,
                                             TreeNode<K,V> x) {// x 是当前插入的新节点
-    x.red = true;
+    x.red = true;// 设置成红色，这样做的目的是减少插入节点导致违背 红黑树5个特性的概率
     for (TreeNode<K,V> xp, xpp, xppl, xppr;;) {
         if ((xp = x.parent) == null) {
             x.red = false;
@@ -193,7 +205,7 @@ static <K,V> TreeNode<K,V> balanceInsertion(TreeNode<K,V> root,
 }
 ```
 
-![tree-node](./images/hashmap-tree-x.png)
+![tree-node](./images/hashmap-tree-x-node.png)
 
 ## balanceDeletion
 
@@ -298,25 +310,33 @@ static <K,V> TreeNode<K,V> balanceDeletion(TreeNode<K,V> root,
 - 二：什么时候进行右旋
 - 三：怎么右旋
 
+:::tip
+右旋：以某个节点作为支点(旋转节点)，其左子节点变为旋转节点的父节点，左子节点的右子节点变为旋转节点的左子节点，旋转节点的右子节点保持不变。左子节点的右子节点相当于从左子节点上“断开”，重新连接到旋转节点上。
+:::
+
+![left-rotate.gif](./images/right-rotate.gif)
+
 ```java
 static <K,V> TreeNode<K,V> rotateRight(TreeNode<K,V> root,
                                        TreeNode<K,V> p) {
     TreeNode<K,V> l, pp, lr;
-    if (p != null && (l = p.left) != null) {
-        if ((lr = p.left = l.right) != null)
-            lr.parent = p;
+    if (p != null && (l = p.left) != null) {// 右旋 左子节点必须不为空 l=E
+        if ((lr = p.left = l.right) != null)// E.left=C,lr=C
+            lr.parent = p;//C.parent=S
         if ((pp = l.parent = p.parent) == null)
-            (root = l).red = false;
-        else if (pp.right == p)
-            pp.right = l;
+            (root = l).red = false;// 没有其他节点，更新root 节点为S,同时修改颜色
+        else if (pp.right == p)//S 是pp 的左子节点还是右子节点
+            pp.right = l;// 更新pp 的右子节点
         else
-            pp.left = l;
-        l.right = p;
-        p.parent = l;
+            pp.left = l;// 更新pp 的左子节点
+        l.right = p;// E.right=S
+        p.parent = l;//S.parent=E
     }
     return root;
 }
 ```
+
+![hashmap-tree-rotate-right.png](./images/hashmap-tree-rotate-right.png)
 
 ## rotateLeft
 
@@ -324,22 +344,37 @@ static <K,V> TreeNode<K,V> rotateRight(TreeNode<K,V> root,
 - 二：什么时候进行左旋
 - 三：怎么左旋
 
+:::tip
+左旋：以某个节点作为支点(旋转节点)，其右子节点变为旋转节点的父节点，右子节点的左子节点变为旋转节点的右子节点，旋转节点的左子节点保持不变。右子节点的左子节点相当于从右子节点上“断开”，重新连接到旋转节点上。
+:::
+
+![left-rotate.gif](./images/left-rotate.gif)
+
 ```java
-tatic <K,V> TreeNode<K,V> rotateLeft(TreeNode<K,V> root,
+static <K,V> TreeNode<K,V> rotateLeft(TreeNode<K,V> root,
                                       TreeNode<K,V> p) {
     TreeNode<K,V> r, pp, rl;
-    if (p != null && (r = p.right) != null) {
-        if ((rl = p.right = r.left) != null)
-            rl.parent = p;
-        if ((pp = r.parent = p.parent) == null)
-            (root = r).red = false;
-        else if (pp.left == p)
-            pp.left = r;
+    if (p != null && (r = p.right) != null) {// 左旋，右节点必须存在
+        if ((rl = p.right = r.left) != null)//E.right=B,rl=B
+            rl.parent = p;// B.parent=E
+        if ((pp = r.parent = p.parent) == null)// S.parent=pp
+            (root = r).red = false;// 没有其他节点，更新root 节点为S,同时修改颜色
+        else if (pp.left == p)//E 是pp 的左节点还是右节点
+            pp.left = r;// 更新pp的左子节点
         else
-            pp.right = r;
-        r.left = p;
-        p.parent = r;
+            pp.right = r;// 更新pp的右子节点
+        r.left = p;// S.left=E
+        p.parent = r;//E.parent=S
     }
     return root;
 }
 ```
+
+![hashmap-tree-rotate-left.png](./images/hashmap-tree-rotate-left.png)
+
+## Links
+
+参考文章
+
+- [红黑树-左旋-右旋](https://zhuanlan.zhihu.com/p/37470948)
+- [红黑树简介及左旋、右旋、变色](https://blog.csdn.net/weixin_43790276/article/details/106042360)
