@@ -8,9 +8,9 @@ author_image_url: https://avatars3.githubusercontent.com/u/6828647?s=60&v=4
 tags: [java]
 ---
 
-`Hashmap` 的数据结构之 `Tree`
+`HashMap` 的数据结构之 `Red-Black Tree`
 
-`HashMap` 中使用红黑树这种数据结构，解决 `hash` 冲突之后，数据查询效率下降的问题。
+`HashMap` 中使用`红黑树`这种数据结构，解决 `hash` 冲突之后，数据查询效率下降的问题。
 
 这里对 `HashMap` 中与树的创建，插入，删除，左旋，右旋的方法的进行拆解
 
@@ -19,7 +19,7 @@ tags: [java]
 <!--truncate-->
 
 - [Red-Black Tree](#red-black-tree)
-  - [5个特性](#5个特性)
+  - [Red-Black Tree 5个特性](#red-black-tree-5个特性)
 - [treeifyBin](#treeifybin)
 - [treeify](#treeify)
 - [balanceInsertion](#balanceinsertion)
@@ -30,16 +30,32 @@ tags: [java]
 
 ## Red-Black Tree
 
-一个动态的树创建过程
-[https://www.cs.usfca.edu/~galles/visualization/RedBlack.html](https://www.cs.usfca.edu/~galles/visualization/RedBlack.html)
+红黑树/二叉树 创建的可视化网站
 
-### 5个特性
+- [https://www.cs.usfca.edu/~galles/visualization/RedBlack.html](https://www.cs.usfca.edu/~galles/visualization/RedBlack.html)
+- [https://visualgo.net/en/bst](https://visualgo.net/en/bst)
 
-- 1. 节点是红色或黑色。
-- 2. 根节点是黑色。
-- 3. 所有叶子节点都是黑色的空节点。(叶子节点是NIL节点或NULL节点)
-- 4. 每个红色节点的两个子节点都是黑色节点。(从每个叶子节点到根的所有路径上不能有两个连续的红色节点)
-- 5. 从任一节点到其每个叶子节点的所有路径都包含相同数目的黑色节点。
+### Red-Black Tree 5个特性
+
+1. 节点是红色或黑色。
+
+2. 根节点是黑色。
+
+3. 所有叶子节点都是黑色的空节点。(叶子节点是NIL节点或NULL节点)
+
+4. 每个红色节点的两个子节点都是黑色节点。(从每个叶子节点到根的所有路径上不能有两个连续的红色节点)
+
+5. 从任一节点到其每个叶子节点的所有路径都包含相同数目的黑色节点。
+
+下面来自 `Introduction to Algorithms - 3rd Edition`
+
+A red-black tree is a binary tree that satisfies the following red-black properties:
+
+1. Every node is either red or black.
+2. The root is black.
+3. Every leaf (NIL) is black.
+4. If a node is red, then both its children are black.
+5. For each node, all simple paths from the node to descendant leaves contain the same number of black nodes.
 
 ## treeifyBin
 
@@ -382,3 +398,4 @@ static <K,V> TreeNode<K,V> rotateLeft(TreeNode<K,V> root,
 
 - [红黑树-左旋-右旋](https://zhuanlan.zhihu.com/p/37470948)
 - [红黑树简介及左旋、右旋、变色](https://blog.csdn.net/weixin_43790276/article/details/106042360)
+- [https://www.cnblogs.com/skywang12345/p/3245399.html](https://www.cnblogs.com/skywang12345/p/3245399.html)
