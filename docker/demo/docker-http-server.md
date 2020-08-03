@@ -29,11 +29,40 @@ build.sh
 #!/usr/bin/env bash
 #imagesid=`docker images |awk -F" " 'NR==2 {print $3}'`
 imagesid=`date +%s`
-
+repo="cardapp"
 echo ${imagesid}
 
-docker build -t registry.cn-hangzhou.aliyuncs.com/web1992/spring-boots:${imagesid} .
+docker build -t registry.cn-hangzhou.aliyuncs.com/web1992/cardapp:${imagesid} .
 
-docker push registry.cn-hangzhou.aliyuncs.com/web1992/spring-boots:${imagesid}
+docker push registry.cn-hangzhou.aliyuncs.com/web1992/cardapp:${imagesid}
 
+sed  s/versionxxxx/${imagesid}/g temp-deployment.yml > ${repo}-deployment.yml
+
+#sed  s/repoxxxxx/${repo}/g temp-deployment.yml
+
+kubectl apply -f ${repo}-deployment.yml
+```
+
+`temp-deployment.yml`
+
+```yaml
+apiVersion: apps/v1 # v1 for versions before 1.9.0 use apps/v1beta2
+kind: Deployment
+metadata:
+  name: cardapp-deployment
+spec:
+  selector:
+    matchLabels:
+      app: cardapp
+  replicas: 2 # tells deployment to run 2 pods matching the template
+  template:
+    metadata:
+      labels:
+        app: cardapp
+    spec:
+      containers:
+      - name: cardapp
+        image: registry.cn-hangzhou.aliyuncs.com/web1992/cardapp:versionxxxx
+        ports:
+        - containerPort: 80
 ```
