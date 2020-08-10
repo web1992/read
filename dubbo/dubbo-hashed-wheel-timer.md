@@ -1,7 +1,7 @@
 # dubbo HashedWheelTimer
 
 - [dubbo HashedWheelTimer](#dubbo-hashedwheeltimer)
-  - [引言](#%e5%bc%95%e8%a8%80)
+  - [引言](#引言)
   - [interface](#interface)
   - [Timer](#timer)
   - [HashedWheelTimer](#hashedwheeltimer)
@@ -9,8 +9,8 @@
   - [Timeout](#timeout)
   - [HashedWheelTimeout](#hashedwheeltimeout)
   - [HashedWheelBucket](#hashedwheelbucket)
-  - [HashedWheelTimer 的创建](#hashedwheeltimer-%e7%9a%84%e5%88%9b%e5%bb%ba)
-  - [newTimeout 定时任务的插入](#newtimeout-%e5%ae%9a%e6%97%b6%e4%bb%bb%e5%8a%a1%e7%9a%84%e6%8f%92%e5%85%a5)
+  - [HashedWheelTimer 的创建](#hashedwheeltimer-的创建)
+  - [newTimeout 定时任务的插入](#newtimeout-定时任务的插入)
   - [Worker](#worker)
 
 `dubbo` 定时任务的实现，来自于 `Netty` 的源码

@@ -6,7 +6,7 @@
 
 - [Dispatcher](#dispatcher)
   - [interface](#interface)
-  - [Dispatcher 实现类](#dispatcher-%e5%ae%9e%e7%8e%b0%e7%b1%bb)
+  - [Dispatcher 实现类](#dispatcher-实现类)
   - [ChannelHandlers](#channelhandlers)
   - [AllChannelHandler](#allchannelhandler)
 

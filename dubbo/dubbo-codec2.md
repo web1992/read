@@ -1,7 +1,7 @@
 # Codec2
 
 - [Codec2](#codec2)
-  - [简介](#%e7%ae%80%e4%bb%8b)
+  - [简介](#简介)
   - [Codec2 interface](#codec2-interface)
   - [ExchangeCodec](#exchangecodec)
   - [Magic number](#magic-number)
@@ -16,7 +16,7 @@
   - [DecodeableRpcInvocation](#decodeablerpcinvocation)
   - [TelnetCodec](#telnetcodec)
     - [TelnetHandler](#telnethandler)
-  - [好文链接](#%e5%a5%bd%e6%96%87%e9%93%be%e6%8e%a5)
+  - [好文链接](#好文链接)
 
 ## 简介
 

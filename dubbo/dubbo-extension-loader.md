@@ -6,7 +6,7 @@
 2. 通过`ServiceConfig`中的`protocol.export`方法，分析 `dubbo` 自适应的实现方式
 
 - [ExtensionLoader](#extensionloader)
-  - [ExtensionLoader 的作用](#extensionloader-%e7%9a%84%e4%bd%9c%e7%94%a8)
+  - [ExtensionLoader 的作用](#extensionloader-的作用)
   - [ExtensionLoader methods](#extensionloader-methods)
     - [getExtensionLoader](#getextensionloader)
     - [getExtension](#getextension)

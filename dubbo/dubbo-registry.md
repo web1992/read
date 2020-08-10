@@ -10,7 +10,7 @@
   - [FailbackRegistry](#failbackregistry)
   - [MulticastRegistry](#multicastregistry)
     - [uml](#uml)
-    - [简介](#%e7%ae%80%e4%bb%8b)
+    - [简介](#简介)
     - [MulticastRegistry init](#multicastregistry-init)
   - [ZookeeperRegistry](#zookeeperregistry)
 
