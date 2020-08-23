@@ -9,6 +9,10 @@
 - [table.md](table.md)
 - [tokudb.md](tokudb.md)
 - [mysql-transaction.md](mysql-transaction.md)
+- [🔥mysql-index.md](mysql-index.md)
+- [🔥mysql-page.md](mysql-page.md)
+- [🔥mysql-redo-undo.md](mysql-redo-undo.md)
+- [🔥mysql-innodb.md](mysql-innodb.md)
 
 ## 查询优化
 
