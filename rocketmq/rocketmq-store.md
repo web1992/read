@@ -8,7 +8,8 @@ abort
 checkpoint
 commitlog
 config
-consumequeue index  
+consumequeue
+index  
 lock
 
 ```sh
