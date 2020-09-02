@@ -1,6 +1,7 @@
 # io
 
 - [理解 C10K 问题](https://www.cnblogs.com/zafu/p/8251936.html)
+- [select poll epoll](https://www.cnblogs.com/Anker/p/3265058.html)
 
 ## Stream
 
