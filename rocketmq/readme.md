@@ -10,4 +10,4 @@
 ## Links
 
 - [https://mp.weixin.qq.com/s/TOfR98N-MhOHkGLPimIHmg](https://mp.weixin.qq.com/s/TOfR98N-MhOHkGLPimIHmg)
-  
+- [http://jm.taobao.org/2017/01/12/rocketmq-quick-start-in-10-minutes/](http://jm.taobao.org/2017/01/12/rocketmq-quick-start-in-10-minutes/)
