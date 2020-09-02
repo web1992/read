@@ -1,5 +1,7 @@
 # io
 
+- [理解 C10K 问题](https://www.cnblogs.com/zafu/p/8251936.html)
+
 ## Stream
 
 The `java.io` package provides several output stream and input stream
