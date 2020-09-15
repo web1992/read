@@ -16,3 +16,7 @@ go 中的接口是隐式的，对于具体的类型，无需声明了它实现�
 - io.Writer
 - sort.Interface
 - http.Handler
+
+## Links
+
+- [https://mp.weixin.qq.com/s/XKirIaGmyBAwpFKo9Yekxw](https://mp.weixin.qq.com/s/XKirIaGmyBAwpFKo9Yekxw)
