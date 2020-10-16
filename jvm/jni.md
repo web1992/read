@@ -1,5 +1,9 @@
 # jni
 
+The following code example illustrates how to use functions in the Invocation API. 
+
+In this example, the C++ code creates a Java VM and invokes a static method, called Main.test. For clarity, we omit error checking.
+
 ```c
 #include <jni.h>       /* where everything is defined */
 ...
