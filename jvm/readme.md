@@ -13,6 +13,7 @@
 - [gclog](https://plumbr.io/blog/garbage-collection/understanding-garbage-collection-logs)
 - [g1](https://plumbr.io/handbook/garbage-collection-algorithms-implementations/g1)
 - [JVM指令手册](https://www.cnblogs.com/lsy131479/p/11201241.html)
+- [jni spec](https://docs.oracle.com/javase/6/docs/technotes/guides/jni/spec/design.html#wp615)
 
 ## 参数设置
 
