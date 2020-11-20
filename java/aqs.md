@@ -2,7 +2,8 @@
 
 - [AQS](#aqs)
   - [AbstractQueuedSynchronizer](#abstractqueuedsynchronizer)
-  - [实例分析](#%e5%ae%9e%e4%be%8b%e5%88%86%e6%9e%90)
+  - [实例分析](#实例分析)
+  - [Queue](#queue)
   - [AbstractQueuedSynchronizer.Node](#abstractqueuedsynchronizernode)
   - [Node.waitStatus](#nodewaitstatus)
     - [CANCELLED](#cancelled)
@@ -10,7 +11,7 @@
     - [PROPAGATE](#propagate)
     - [CONDITION](#condition)
   - [AbstractQueuedSynchronizer queue and state](#abstractqueuedsynchronizer-queue-and-state)
-  - [参考](#%e5%8f%82%e8%80%83)
+  - [参考](#参考)
 
 ## AbstractQueuedSynchronizer
 
@@ -27,6 +28,18 @@
 
 - [CountDownLatch](count-down-latch.md)
 - [ReentrantLock](reentrant-lock.md)
+
+## Queue
+
+`Condition queue And Main queue`
+
+Threads waiting on Conditions use the same nodes, but
+use an additional link. Conditions only need to link nodes
+in simple (non-concurrent) linked queues because they are
+only accessed when exclusively held.  Upon await, a node is
+inserted into a `condition queue.`  Upon signal, the node is
+transferred to the `main queue`.  A special value of status
+field is used to mark which queue a node is on.
 
 ## AbstractQueuedSynchronizer.Node
 
