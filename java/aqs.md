@@ -37,9 +37,17 @@ Threads waiting on Conditions use the same nodes, but
 use an additional link. Conditions only need to link nodes
 in simple (non-concurrent) linked queues because they are
 only accessed when exclusively held.  Upon await, a node is
-inserted into a `condition queue.`  Upon signal, the node is
+inserted into a `condition queue`.  Upon signal, the node is
 transferred to the `main queue`.  A special value of status
 field is used to mark which queue a node is on.
+
+为什么需要两个 `Queue` ?
+
+`Main Queue`中的线程是获取锁失败在排队`等待`的线程,如果队列前面的线程释放了锁，就需要去获取锁。 `Main Queue` 中的所有线程都在`排队`等待锁的获取。
+
+而 `condition queue` 中的线程是在执行 `Condition.await` 这个方法之后加入的。它的含义是线程不去参加锁的竞争，线程去`休息`了。因此它不能在 `Main Queue` 中（线程不`排队`了）。
+
+而在执行 `Condition.signal` 或者 `Condition.signalAll` 之后才开始去`排队`竞争锁，才需要进入到 `Main Queue` 中。
 
 ## AbstractQueuedSynchronizer.Node
 
