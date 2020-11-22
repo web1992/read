@@ -9,21 +9,11 @@
   - [AbstractQueuedSynchronizer.ConditionObject.signalAll](#abstractqueuedsynchronizerconditionobjectsignalall)
   - [link](#link)
 
-  - [Condition interface](#Condition-interface)
-  - [ConditionObject](#ConditionObject)
-  - [AbstractQueuedSynchronizer.ConditionObject.await](#AbstractQueuedSynchronizerConditionObjectawait)
-  - [AbstractQueuedSynchronizer.fullyRelease](#AbstractQueuedSynchronizerfullyRelease)
-  - [AbstractQueuedSynchronizer.ConditionObject.signal](#AbstractQueuedSynchronizerConditionObjectsignal)
-  - [AbstractQueuedSynchronizer.ConditionObject.signalAll](#AbstractQueuedSynchronizerConditionObjectsignalAll)
-  - [link](#link)
-
-- [Condition (from oracle doc)](https://docs.oracle.com/javase/7/docs/api/java/util/concurrent/locks/Condition.html)
-
 Condition factors out the Object monitor methods (wait, notify and notifyAll) into distinct objects to give the effect of having multiple wait-sets per object, by combining them with the use of arbitrary Lock implementations. Where a Lock replaces the use of synchronized methods and statements, a Condition replaces the use of the Object monitor methods.
 
 `Condition` 类提供了类似 `Object` 类中的 `wait`, `notify` and `notifyAll` 方法，用来替换 `Object` 类，配合 `Lock` 类实现线程之间的通信(阻塞，唤醒)[`synchronized`](synchronized.md)
 
-`Condition` 一定绑定了一个 `Lock` 实例。`Lock` 用来索取锁和释放锁，而 `Condition` 主要是 为了阻塞(`wait`)和唤醒(`notify`)线程的。
+`Condition` 一定绑定了一个 `Lock` 实例。`Lock` 用来索取锁(`lock`)和释放(`unlock`)锁，而 `Condition` 主要是 为了阻塞(`wait`)和唤醒(`notify`)线程的。
 
 能调用 `notify` 和 `wait` 方法的线程，一定是持有锁的线程。
 
