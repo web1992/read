@@ -13,9 +13,9 @@ Condition factors out the Object monitor methods (wait, notify and notifyAll) in
 
 `Condition` 类提供了类似 `Object` 类中的 `wait`, `notify` and `notifyAll` 方法，用来替换 `Object` 类，配合 `Lock` 类实现线程之间的通信(阻塞，唤醒)[`synchronized`](synchronized.md)
 
-`Condition` 一定绑定了一个 `Lock` 实例。`Lock` 用来索取锁(`lock`)和释放(`unlock`)锁，而 `Condition` 主要是 为了阻塞(`wait`)和唤醒(`notify`)线程的。
+`Condition` 一定绑定了一个 `Lock` 实例。`Lock` 用来索取锁(`lock`)和释放(`unlock`)锁，而 `Condition` 主要是 为了阻塞(`await`)和唤醒(`signal`)线程的。
 
-能调用 `notify` 和 `wait` 方法的线程，一定是持有锁的线程。
+能调用 `await` 和 `signal` 方法的线程，一定是持有锁的线程。
 
 ## Condition interface
 
