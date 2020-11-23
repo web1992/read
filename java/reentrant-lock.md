@@ -24,6 +24,7 @@
 - `ReentrantLock` 实现了 `公平锁` & `非公平锁` 的语义
 - `ReentrantLock` 必须使用 `try`加锁，`finally` 来释放锁
 - `ReentrantLock` 可以使用 `tryLock` 设置锁的超时时间
+- `ReentrantLock` 能响应中断信号,`synchronized` 不会响应中断信号
 
 ## Lock interface
 
