@@ -14,3 +14,4 @@
 - [https://github.com/doocs/advanced-java](https://github.com/doocs/advanced-java)
 - [https://github.com/jobbole/awesome-java-cn](https://github.com/jobbole/awesome-java-cn)
 - [https://github.com/CL0610/Java-concurrency](https://github.com/CL0610/Java-concurrency)
+- [https://segmentfault.com/a/1190000038292644](https://segmentfault.com/a/1190000038292644)
