@@ -69,7 +69,7 @@ Code:
 ## 指令
 
 关于指令解释，可参照
-[JVM Opcode Reference](http://homepages.inf.ed.ac.uk/kwxm/JVM/codeByFn.html#A2b)
+[JVM Opcode Reference](https://docs.oracle.com/javase/specs/jvms/se8/html/jvms-6.html)
 
 下面是 `jvm` 指令的含义
 
