@@ -201,7 +201,9 @@ public static byte[] rocketMQProtocolEncode(RemotingCommand cmd) {
 
 ## CommandCustomHeader and extFields
 
-上面提到过 `customHeader` 是被 `transient` 修饰的，不会被 `JSON` 序列化，而下面的方法就是把 `customHeader` 转换成 `extFields` 的代码片段
+上面提到过 `customHeader` 是被 `transient` 修饰的，不会被 `JSON` 序列化
+
+而下面的方法就是把 `customHeader` 转换成 `extFields` 的代码片段
 
 ```java
 // RemotingCommand#makeCustomHeaderToNet 方法
