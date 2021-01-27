@@ -238,6 +238,35 @@ private Integer l; // consumeRetryTimes
 private boolean m; //batch
 ```
 
-发送普通消息的截图：
+发送普通消息的截图:
 
 ![rocket-mq-customer-head.png](./images/rocket-mq-customer-head.png)
+
+事务消息:
+
+![rocket-mq-customer-head-trac.png](./images/rocket-mq-customer-head-trac.png)
+
+```json
+{
+  "code": 310,
+  "extFields": {
+    "a": "please_rename_unique_group_name",
+    "b": "TopicTest1234",
+    "c": "TBW102",
+    "d": "4",
+    "e": "3",
+    "f": "4",
+    "g": "1611725871436",
+    "h": "0",
+    "i": "KEYS  KEY2  TRAN_MSG  true  UNIQ_KEY  7F000001222C18B4AAC288D21D4B0001  WAIT  true  PGROUP  please_rename_unique_group_name  TAGS  TagC  ",
+    "j": "0",
+    "k": "false",
+    "m": "false"
+  },
+  "flag": 0,
+  "language": "JAVA",
+  "opaque": 9,
+  "serializeTypeCurrentRPC": "JSON",
+  "version": 373
+}
+```
