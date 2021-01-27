@@ -4,6 +4,7 @@
 
 ## Index
 
+- [🔥rocketmq-serialize.md](rocketmq-serialize.md)
 - [rocketmq-broker-cluster.md](rocketmq-broker-cluster.md)
 - [rocketmq-name-server-cluster.md](rocketmq-name-server-cluster.md)
 
