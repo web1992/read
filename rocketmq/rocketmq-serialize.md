@@ -8,13 +8,14 @@ RocketMQ 序列化
   - [code 字段](#code-字段)
   - [ROCKETMQ Decode](#rocketmq-decode)
   - [ROCKETMQ Encode](#rocketmq-encode)
+  - [CommandCustomHeader and extFields](#commandcustomheader-and-extfields)
   - [CommandCustomHeader](#commandcustomheader)
 
 ## RocketMQ 序列化协议
 
-RocketMQ 序列化协议规定了进行网络通信的 `byte[]` 数据格式,协议由`head` + `body` 组成的变长消息，支持扩展字段。
+`RocketMQ` 序列化协议规定了进行网络通信的 `byte[]` 数据格式,协议由`head` + `body` 组成的变长消息(`head`也是变长的)，支持扩展字段。
 
-支持 `JSON` 和 `ROCKETMQ` 两种序列化方式
+`Head` 支持 `JSON` 和 `ROCKETMQ` 两种序列化方式,而 `body` 永远是 `byte[]`
 
 ```java
 // org.apache.rocketmq.remoting.protocol.SerializeType
@@ -36,9 +37,10 @@ private int opaque = requestId.getAndIncrement();
 private int flag = 0;
 private String remark;
 private HashMap<String, String> extFields;
+// transient 修饰 是避免 被 Josn 解析
 private transient CommandCustomHeader customHeader;
 private SerializeType serializeTypeCurrentRPC = serializeTypeConfigInThisServer;
-// body
+// body transient 修饰 是避免 被 Josn 解析
 private transient byte[] body;
 ```
 
@@ -52,7 +54,7 @@ private transient byte[] body;
 | opaque                  | 消息的 seq num                                                                                                                               |
 | flag                    | RPC 的类型  支持二种类型：REQUEST_COMMAND(请求响应模式) RPC_ONEWAY                                                                           |
 | remark                  | 备注                                                                                                                                         |
-| extFields               | 扩展字段，基本每一种 RPC 通信都会有的字段，用来传输自定义信息                                                                                |
+| extFields               | 扩展字段，基本每一种 RPC 通信都会有的字段，用来传输自定义信息(但是 RocketMQ 确是用来传输 customHeader 的)                                    |
 | customHeader            | 消息head的格式，种类有很多个(code 不同，对应的customHeader 也不同),包含了消息的 group,topic,tags 等信息，常用的有 SendMessageRequestHeaderV2 |
 | serializeTypeCurrentRPC | 序列化的格式，支持 `json` 和 `ROCKETMQ`                                                                                                      |
 | body                    | 消息体，例如发送 `Hello` 到某一个 tpoic 里面只包含 `Hello` 信息，不包含tpoic,tag 信息                                                        |
@@ -195,6 +197,41 @@ public static byte[] rocketMQProtocolEncode(RemotingCommand cmd) {
        }
        return headerBuffer.array();
    }
+```
+
+## CommandCustomHeader and extFields
+
+```java
+// RemotingCommand#makeCustomHeaderToNet
+// 把 CommandCustomHeader 对象 转换成 extFields Map
+
+// RemotingCommand#decodeCommandCustomHeader
+// 把 extFields 转成 CommandCustomHeader 对象
+public void makeCustomHeaderToNet() {
+    if (this.customHeader != null) {
+        Field[] fields = getClazzFields(customHeader.getClass());
+        if (null == this.extFields) {
+            this.extFields = new HashMap<String, String>();
+        }
+        for (Field field : fields) {
+            if (!Modifier.isStatic(field.getModifiers())) {
+                String name = field.getName();
+                if (!name.startsWith("this")) {
+                    Object value = null;
+                    try {
+                        field.setAccessible(true);
+                        value = field.get(this.customHeader);
+                    } catch (Exception e) {
+                        log.error("Failed to access field [{}]", name, e);
+                    }
+                    if (value != null) {
+                        this.extFields.put(name, value.toString());
+                    }
+                }
+            }
+        }
+    }
+}
 ```
 
 ## CommandCustomHeader
