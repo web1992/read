@@ -48,10 +48,10 @@ private transient byte[] body;
 
 | 字段                    | 描述                                                                                                                                         |
 | ----------------------- | -------------------------------------------------------------------------------------------------------------------------------------------- |
-| code                    | RequestCode，ResponseCode 可作做为 事务消息，普通消息的区分标记                                                                              |
+| code                    | RequestCode，ResponseCode 可作做为 心跳消息，普通消息，不同消息版本 等等，之间的区分标记记                                                   |
 | language                | 使用的开发语言，如：java,c++,golang                                                                                                          |
 | version                 | 消息版本                                                                                                                                     |
-| opaque                  | 消息的 seq num                                                                                                                               |
+| opaque                  | 消息的 seq num (消息的序号，也是常见的字段，用来回写 response)                                                                               |
 | flag                    | RPC 的类型  支持二种类型：REQUEST_COMMAND(请求响应模式) RPC_ONEWAY                                                                           |
 | remark                  | 备注                                                                                                                                         |
 | extFields               | 扩展字段，基本每一种 RPC 通信都会有的字段，用来传输自定义信息(但是 RocketMQ 确是用来传输 customHeader 的)                                    |
