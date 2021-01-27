@@ -2,11 +2,19 @@
 
 RocketMQ 序列化
 
+- [Serialize](#serialize)
+  - [RocketMQ 序列化协议](#rocketmq-序列化协议)
+  - [序列化的 Head 和 Body](#序列化的-head-和-body)
+  - [code 字段](#code-字段)
+  - [ROCKETMQ Decode](#rocketmq-decode)
+  - [ROCKETMQ Encode](#rocketmq-encode)
+  - [CommandCustomHeader](#commandcustomheader)
+
 ## RocketMQ 序列化协议
 
 RocketMQ 序列化协议规定了进行网络通信的 `byte[]` 数据格式,协议由`head` + `body` 组成的变长消息，支持扩展字段。
 
-支持 `JSON` 和 `ROCKETMQ` 二种序列化方式
+支持 `JSON` 和 `ROCKETMQ` 两种序列化方式
 
 ```java
 // org.apache.rocketmq.remoting.protocol.SerializeType
@@ -191,7 +199,15 @@ public static byte[] rocketMQProtocolEncode(RemotingCommand cmd) {
 
 ## CommandCustomHeader
 
-`org.apache.rocketmq.common.protocol.header.SendMessageRequestHeaderV2`
+常用的消息 Head
+
+- CheckTransactionStateRequestHeader 事务检查
+- CheckTransactionStateResponseHeader
+- EndTransactionRequestHeader 结束事务
+- EndTransactionResponseHeader
+- SendMessageRequestHeaderV2
+
+最常用的消息 `org.apache.rocketmq.common.protocol.header.SendMessageRequestHeaderV2`
 
 ```java
 // SendMessageRequestHeaderV2
