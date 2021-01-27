@@ -44,7 +44,7 @@ private SerializeType serializeTypeCurrentRPC = serializeTypeConfigInThisServer;
 private transient byte[] body;
 ```
 
-字段说明：
+> 字段说明：
 
 | 字段                    | 描述                                                                                                                                         |
 | ----------------------- | -------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -201,12 +201,14 @@ public static byte[] rocketMQProtocolEncode(RemotingCommand cmd) {
 
 ## CommandCustomHeader and extFields
 
+上面提到过 `customHeader` 是被 `transient` 修饰的，不会被 `JSON` 序列化，而下面的方法就是把 `customHeader` 转换成 `extFields` 的代码片段
+
 ```java
-// RemotingCommand#makeCustomHeaderToNet
+// RemotingCommand#makeCustomHeaderToNet 方法
 // 把 CommandCustomHeader 对象 转换成 extFields Map
 
-// RemotingCommand#decodeCommandCustomHeader
-// 把 extFields 转成 CommandCustomHeader 对象
+// RemotingCommand#decodeCommandCustomHeader 方法
+// 把 extFields 转成 CommandCustomHeader 对象,代码此处就不在列举了
 public void makeCustomHeaderToNet() {
     if (this.customHeader != null) {
         Field[] fields = getClazzFields(customHeader.getClass());
@@ -282,6 +284,8 @@ private boolean m; //batch
 事务消息:
 
 ![rocket-mq-customer-head-trac.png](./images/rocket-mq-customer-head-trac.png)
+
+> json 形式
 
 ```json
 {
