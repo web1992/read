@@ -2,21 +2,24 @@
 
 RocketMQ 序列化
 
-## RocketMQ 协议
+## RocketMQ 序列化协议
 
-RocketMQ 协议规定了进行网络通信的 `byte[]` 数据格式,`head` + `body` 的变长消息
+RocketMQ 序列化协议规定了进行网络通信的 `byte[]` 数据格式,协议由`head` + `body` 组成的变长消息，支持扩展字段。
 
 支持 `JSON` 和 `ROCKETMQ` 二种序列化方式
 
 ```java
+// org.apache.rocketmq.remoting.protocol.SerializeType
 JSON((byte) 0),
 ROCKETMQ((byte) 1);
 ```
 
 ## 序列化的 Head 和 Body
 
+序列化协议的主要实现类是 `RemotingCommand`，代码片段如下：
+
 ```java
-// RemotingCommand
+// org.apache.rocketmq.remoting.protocol.RemotingCommand
 // head
 private int code;
 private LanguageCode language = LanguageCode.JAVA;
@@ -30,15 +33,6 @@ private SerializeType serializeTypeCurrentRPC = serializeTypeConfigInThisServer;
 // body
 private transient byte[] body;
 ```
-
-- RequestCode
-
-```java
-// 常用的code
-public static final int SEND_MESSAGE_V2 = 310;
-```
-
-- ResponseCode
 
 字段说明：
 
@@ -54,6 +48,19 @@ public static final int SEND_MESSAGE_V2 = 310;
 | customHeader            | 消息head的格式，种类有很多个(code 不同，对应的customHeader 也不同),包含了消息的 group,topic,tags 等信息，常用的有 SendMessageRequestHeaderV2 |
 | serializeTypeCurrentRPC | 序列化的格式，支持 `json` 和 `ROCKETMQ`                                                                                                      |
 | body                    | 消息体，例如发送 `Hello` 到某一个 tpoic 里面只包含 `Hello` 信息，不包含tpoic,tag 信息                                                        |
+
+## code 字段
+
+`code` 是用来区分消息的类型的，根据不同的类型会有不同的处理
+
+- RequestCode 发送的消息类型
+
+```java
+// 常用的code
+public static final int SEND_MESSAGE_V2 = 310;
+```
+
+- ResponseCode 响应的消息类型
 
 ## ROCKETMQ Decode
 
