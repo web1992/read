@@ -10,6 +10,15 @@ RocketMQ 序列化
   - [ROCKETMQ Encode](#rocketmq-encode)
   - [CommandCustomHeader and extFields](#commandcustomheader-and-extfields)
   - [CommandCustomHeader](#commandcustomheader)
+  - [Links](#links)
+
+可以解答的疑惑：
+
+- RocketMQ 序列化协议的设计结构
+- RocketMQ 支持的序列化协议是什么
+- RocketMQ 序列化协议设计中的小技巧
+- RocketMQ group,topic,tags,keys 等信息是怎么进行序列化传输的
+- RocketMQ 事务消息和普通消息，在序列化中的区别（怎么区分是事务消息，非事务消息）
 
 ## RocketMQ 序列化协议
 
@@ -18,6 +27,7 @@ RocketMQ 序列化
 `Head` 支持 `JSON` 和 `ROCKETMQ` 两种序列化方式,而 `body` 永远是 `byte[]`
 
 ```java
+// ROCKETMQ 支持的序列化方式
 // org.apache.rocketmq.remoting.protocol.SerializeType
 JSON((byte) 0),
 ROCKETMQ((byte) 1);
@@ -81,6 +91,10 @@ public static final int SEND_MESSAGE_V2 = 310;
 反序列化(解码)：`byte[]` 转化成 `RemotingCommand` 对象
 
 入口在 `org.apache.rocketmq.remoting.netty.NettyDecoder`
+
+> 下面的代码片段需要有`IO`操作的知识。比如知道如何把`java`中的`int`转化成`byte[]`,把`byte[]`转成`int`
+> 其他类型的`shot`,`long`,`double`,`String`都是类似的原理。
+> 了解 `Big-Endian` 和 `Little-endian`
 
 ```java
 // NettyDecoder#decode
@@ -317,3 +331,11 @@ private boolean m; //batch
   "version": 373
 }
 ```
+
+上面的 json 中的 i 对应的是 含义是 `properties` 因此可以知道 RocketMQ 的 group,topic,tags,keys 都是被包装成 `properties` 进行传输的
+
+如果是事务消息，则 `properties` 中会有 `TRAN_MSG  true`
+
+## Links
+
+- [https://www.cnblogs.com/NaughtyCat/p/little-endian-and-big-endian-based-on-bytebuffer-in-java.html](https://www.cnblogs.com/NaughtyCat/p/little-endian-and-big-endian-based-on-bytebuffer-in-java.html)
