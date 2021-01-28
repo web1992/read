@@ -46,22 +46,22 @@ private transient byte[] body;
 
 > 字段说明：
 
-| 字段                    | 描述                                                                                                                                         |
-| ----------------------- | -------------------------------------------------------------------------------------------------------------------------------------------- |
-| code                    | RequestCode，ResponseCode 可作做为 心跳消息，普通消息，不同消息版本 等等，之间的区分标记记                                                   |
-| language                | 使用的开发语言，如：java,c++,golang                                                                                                          |
-| version                 | 消息版本                                                                                                                                     |
-| opaque                  | 消息的 seq num (消息的序号，也是常见的字段，用来回写 response)                                                                               |
-| flag                    | RPC 的类型 REQUEST/RESPONSE (RemotingCommandType) 还用来区分是：请求响应模式 或者 RPC_ONEWAY                                                 |
-| remark                  | 备注                                                                                                                                         |
-| extFields               | 扩展字段，基本每一种 RPC 通信都会有的字段，用来传输自定义信息(但是 RocketMQ 确是用来传输 customHeader 的)                                    |
-| customHeader            | 消息head的格式，种类有很多个(code 不同，对应的customHeader 也不同),包含了消息的 group,topic,tags 等信息，常用的有 SendMessageRequestHeaderV2 |
-| serializeTypeCurrentRPC | 序列化的格式，支持 `json` 和 `ROCKETMQ`                                                                                                      |
-| body                    | 消息体，例如发送 `Hello` 到某一个 tpoic 里面只包含 `Hello` 信息，不包含tpoic,tag 信息                                                        |
+| 字段                    | 描述                                                                                                                                                            |
+| ----------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| code                    | RequestCode，ResponseCode 可作做为 心跳消息，普通消息，不同消息版本 等等，之间的区分标记记，在响应的时候，可以表示请求的成功或者失败（RemotingSysResponseCode） |
+| language                | 使用的开发语言，如：java,c++,golang                                                                                                                             |
+| version                 | 消息版本                                                                                                                                                        |
+| opaque                  | 消息的 seq num (消息的序号，也是常见的字段，用来回写 response)                                                                                                  |
+| flag                    | RPC 的类型 REQUEST/RESPONSE (RemotingCommandType) 还用来区分是：请求响应模式 或者 RPC_ONEWAY                                                                    |
+| remark                  | 备注                                                                                                                                                            |
+| extFields               | 扩展字段，基本每一种 RPC 通信都会有的字段，用来传输自定义信息(但是 RocketMQ 确是用来传输 customHeader 的)                                                       |
+| customHeader            | 消息head的格式，种类有很多个(code 不同，对应的customHeader 也不同),包含了消息的 group,topic,tags 等信息，常用的有 SendMessageRequestHeaderV2                    |
+| serializeTypeCurrentRPC | 序列化的格式，支持 `json` 和 `ROCKETMQ`                                                                                                                         |
+| body                    | 消息体，例如发送 `Hello` 到某一个 tpoic 里面只包含 `Hello` 信息，不包含tpoic,tag 信息                                                                           |
 
 ## code 字段
 
-`code` 是用来区分消息的类型的，根据不同的类型会有不同的处理
+`code` 在`发送请求`的时候是用来区分消息的类型的，根据不同的类型会有不同的处理
 
 - RequestCode 发送的消息类型
 
@@ -71,6 +71,10 @@ public static final int SEND_MESSAGE_V2 = 310;
 ```
 
 - ResponseCode 响应的消息类型
+
+`code` 在处理响应的时候，用来检测响应的成功、失败等其他状态（响应的code 在 RemotingSysResponseCode 中）
+
+因此 `code` 在`请求`和`响应`的时候含义是不同的，这样设计的目的是为了`精简` RPC 协议（少一个字段，少传输byte数据），也是常用的设计方式。
 
 ## ROCKETMQ Decode
 
