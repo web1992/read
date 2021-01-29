@@ -1,4 +1,21 @@
-# rocketmq store
+# RocketMQ Store
+
+## MQ 请求处理流程
+
+```java
+NettyDecoder ->
+    NettyServerHandler -> channelRead0 -> processMessageReceived -> processRequestCommand
+        -> NettyRemotingAbstract -> ExecutorService
+            -> AsyncNettyRequestProcessor -> asyncProcessRequest
+                -> SendMessageProcessor -> asyncProcessRequest -> asyncSendMessage
+                    -> DefaultMessageStore#asyncPutMessage
+                        -> CommitLog#asyncPutMessage
+                            -> MappedFile#appendMessage
+```
+
+上面的流程的核心思想就是把网络请求通过 `ExecutorService` 进行异步化处理。
+
+![rocket-netty-async.png](./images/rocket-netty-async.png)
 
 ## Index File
 
