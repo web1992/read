@@ -1,4 +1,4 @@
-# rocketmq
+# RocketMQ
 
 - [Apache RocketMQ](https://rocketmq.apache.org/)
 
