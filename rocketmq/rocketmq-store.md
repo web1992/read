@@ -28,8 +28,7 @@ NettyDecoder ->
 
 上面的流程的核心思想就是把网络请求通过 `ExecutorService` 进行异步化处理，最终存储到文件中。
 
-存储的实现层次
-
+存储的实现层次:
 ![rocket-netty-async.png](./images/rocket-store.png)
 
 > `SendMessageProcessor` 代码片段：
