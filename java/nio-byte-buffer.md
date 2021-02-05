@@ -8,7 +8,7 @@ A byte buffer. This class defines `six` categories of operations upon byte buffe
 - getChar()
 - compact
 - duplicate
-- slice
+- slice 创建一个 ByteBuffer 但是底层共享 positon,limit,capacity 相互影响
 - allocate
 - wrap
 
