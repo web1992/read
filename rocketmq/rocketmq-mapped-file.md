@@ -157,9 +157,28 @@ public int flush(final int flushLeastPages) {
 }
 ```
 
-## MappedFile isAbleToCommit
+## MappedFile isAbleToFlush and  isAbleToCommit
 
 ```java
+// 判断数据是否够刷盘，在进行 MappedFile#flush 会进行判断
+// commitLeastPages>0 时，需要计算下能刷盘的内存页数是否满足，OS_PAGE_SIZE=1024 * 4 =（4k）
+// getReadPosition 获取数据已经写到的位置（有效数据的位置）
+// 当 flushLeastPages=0 时，对写入的页数没有限制，只有满足 write > flush 即可，说明有数据可以刷盘
+// 当 flushLeastPages>0 时，需要判断写入的数据页数是否满足 flushLeastPages 
+// 满足则能用进行刷盘
+private boolean isAbleToFlush(final int flushLeastPages) {
+    int flush = this.flushedPosition.get();// 刷盘的位置
+    int write = getReadPosition();// 数据已经写入到的位置
+    if (this.isFull()) 
+        return true;
+    }
+    if (flushLeastPages > 0) {// 计算页数，一页大小 1024 * 4 =（4k）
+        return ((write / OS_PAGE_SIZE) - (flush / OS_PAGE_SIZE)) >= flushLeastPages;
+    }
+    return write > flush;
+}
+
+// isAbleToCommit 功能类似
 protected boolean isAbleToCommit(final int commitLeastPages) {
     int flush = this.committedPosition.get();
     int write = this.wrotePosition.get();
