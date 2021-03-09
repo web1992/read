@@ -13,6 +13,7 @@
 - [gclog](https://plumbr.io/blog/garbage-collection/understanding-garbage-collection-logs)
 - [g1](https://plumbr.io/handbook/garbage-collection-algorithms-implementations/g1)
 - [JVM指令手册](https://www.cnblogs.com/lsy131479/p/11201241.html)
+- [垃圾回收](https://draveness.me/system-design-memory-management/)
 
 ## JNI
 
