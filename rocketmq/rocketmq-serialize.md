@@ -64,7 +64,7 @@ private transient byte[] body;
 | opaque                  | 消息的 seq num (消息的序号，也是常见的字段，用来回写 response)                                                                                                  |
 | flag                    | RPC 的类型 REQUEST/RESPONSE (RemotingCommandType) 还用来区分是：请求响应模式 或者 RPC_ONEWAY                                                                    |
 | remark                  | 备注                                                                                                                                                            |
-| extFields               | 扩展字段，基本每一种 RPC 通信都会有的字段，用来传输自定义信息(但是 RocketMQ 确是用来传输 customHeader 的)                                                       |
+| extFields               | 扩展字段，基本每一种 RPC 通信都会有的字段，用来传输自定义信息(但是 RocketMQ 却是用来传输 customHeader 的)                                                       |
 | customHeader            | 消息head的格式，种类有很多个(code 不同，对应的customHeader 也不同),包含了消息的 group,topic,tags 等信息，常用的有 SendMessageRequestHeaderV2                    |
 | serializeTypeCurrentRPC | 序列化的格式，支持 `json` 和 `ROCKETMQ`                                                                                                                         |
 | body                    | 消息体，例如发送 `Hello` 到某一个 tpoic 里面只包含 `Hello` 信息，不包含tpoic,tag 信息                                                                           |
