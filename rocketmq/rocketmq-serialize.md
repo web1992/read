@@ -20,6 +20,10 @@ RocketMQ 序列化
 - RocketMQ group,topic,tags,keys 等信息是怎么进行序列化传输的
 - RocketMQ 事务消息和普通消息，在序列化中的区别（怎么区分是事务消息，非事务消息）
 
+一个消息从创建到发送到MQ，都经历了什么？如下图：
+
+![rocket-store-msg-seralize.png](images/rocket-store-msg-seralize.png)
+
 ## RocketMQ 序列化协议
 
 `RocketMQ` 序列化协议规定了进行网络通信的 `byte[]` 数据格式,协议由`head` + `body` 组成的变长消息(`head`也是变长的)，支持扩展字段。
