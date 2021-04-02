@@ -3,6 +3,7 @@
 `RocketMQ` 的存储实现概述
 
 - [RocketMQ Store](#rocketmq-store)
+  - [存储的实现层次](#存储的实现层次)
   - [MQ 请求处理流程](#mq-请求处理流程)
   - [存储核心类](#存储核心类)
   - [DefaultMessageStore](#defaultmessagestore)
@@ -13,6 +14,10 @@
   - [Store dir](#store-dir)
 
 阅读此文，可以先阅读 [RocketMQ 的序列化](rocketmq-serialize.md)过程和实现，对MQ 的消息流转有一个整体的了解。
+
+## 存储的实现层次
+
+![rocket-store.png](./images/rocket-store.png)
 
 ## MQ 请求处理流程
 
@@ -29,9 +34,6 @@ NettyDecoder ->
 ```
 
 上面的流程的核心思想就是把网络请求通过 `ExecutorService` 进行异步化处理，最终存储到文件中。
-
-存储的实现层次:
-![rocket-store.png](./images/rocket-store.png)
 
 > `SendMessageProcessor` 代码片段：
 
