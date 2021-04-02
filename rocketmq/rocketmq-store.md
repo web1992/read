@@ -12,6 +12,8 @@
   - [IndexService and IndexFile](#indexservice-and-indexfile)
   - [Store dir](#store-dir)
 
+阅读此文，可以先阅读 [RocketMQ 的序列化](rocketmq-serialize.md)过程和实现，对MQ 的消息流转有一个整体的了解。
+
 ## MQ 请求处理流程
 
 ```java
@@ -29,7 +31,7 @@ NettyDecoder ->
 上面的流程的核心思想就是把网络请求通过 `ExecutorService` 进行异步化处理，最终存储到文件中。
 
 存储的实现层次:
-![rocket-netty-async.png](./images/rocket-store.png)
+![rocket-store.png](./images/rocket-store.png)
 
 > `SendMessageProcessor` 代码片段：
 
@@ -113,8 +115,7 @@ if (transFlag != null && Boolean.parseBoolean(transFlag)) {
 | getBrokerStatsManager         |
 | handleScheduleMessageService  |
 
-
-`DefaultMessageStore` 的成员变量
+> `DefaultMessageStore` 的成员变量
 
 ```java
 public class DefaultMessageStore implements MessageStore {
@@ -220,7 +221,7 @@ public class DefaultMessageStore implements MessageStore {
 | checkSelf                      |
 | lockTimeMills                  |
 
-`CommitLog` 的成员变量
+> `CommitLog` 的成员变量
 
 ```java
 public class CommitLog {
@@ -289,7 +290,7 @@ public class CommitLog {
 | getCommittedWhere         |
 | setCommittedWhere         |
 
-`MappedFileQueue` 成员变量
+> `MappedFileQueue` 成员变量
 
 ```java
 public class MappedFileQueue {
@@ -357,7 +358,7 @@ public class MappedFileQueue {
 | mlock                       |
 | munlock                     |
 
-`MappedFile` 的成变量
+> `MappedFile` 的成变量
 
 ```java
 public class MappedFile extends ReferenceResource {
@@ -378,7 +379,7 @@ public class MappedFile extends ReferenceResource {
     protected ByteBuffer writeBuffer = null;
     protected TransientStorePool transientStorePool = null;
     private String fileName;
-    private long fileFromOffset;
+    private long fileFromOffset;// 其实就是文件名称
     private File file;
     private MappedByteBuffer mappedByteBuffer;
     private volatile long storeTimestamp = 0;
