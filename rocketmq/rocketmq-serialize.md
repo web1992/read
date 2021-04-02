@@ -5,6 +5,7 @@ RocketMQ 序列化
 - [Serialize](#serialize)
   - [RocketMQ 序列化协议](#rocketmq-序列化协议)
   - [RemotingCommand 的 Head 和 Body](#remotingcommand-的-head-和-body)
+  - [flag 字段](#flag-字段)
   - [code 字段](#code-字段)
   - [RemotingCommand Decode](#remotingcommand-decode)
   - [RemotingCommand Encode](#remotingcommand-encode)
@@ -79,6 +80,41 @@ private transient byte[] body;
 | customHeader            | 消息head的格式，种类有很多个(code 不同，对应的customHeader 也不同),包含了消息的 group,topic,tags 等信息，常用的有 SendMessageRequestHeaderV2                    |
 | serializeTypeCurrentRPC | 序列化的格式，支持 `json` 和 `ROCKETMQ`                                                                                                                         |
 | body                    | 消息体，例如发送 `Hello` 到某一个 tpoic 里面只包含 `Hello` 信息，不包含tpoic,tag 信息                                                                           |
+
+## flag 字段
+
+`flag` 是 bit 位的经典使用方式。用不同的 bit 位来标示不同的状态，Java 中的 [`SelectionKey`](https://github.com/web1992/read/blob/main/java/nio-selection-key.md) 和 `AbstractQueuedSynchronizer`的`state` 字段都采用了此方式。
+
+```java
+// ...
+int flag=0;
+int RPC_TYPE = 0;
+int RPC_ONEWAY = 1;
+
+// flag 的赋值
+public void markOnewayRPC() {
+    int bits = 1 << RPC_ONEWAY;
+    this.flag |= bits;
+}
+@JSONField(serialize = false)
+public boolean isOnewayRPC() {
+    int bits = 1 << RPC_ONEWAY;
+    return (this.flag & bits) == bits;
+}
+// flag 的使用
+@JSONField(serialize = false)
+public RemotingCommandType getType() {
+    if (this.isResponseType()) {
+        return RemotingCommandType.RESPONSE_COMMAND;
+    }
+    return RemotingCommandType.REQUEST_COMMAND;
+}
+@JSONField(serialize = false)
+public boolean isResponseType() {
+    int bits = 1 << RPC_TYPE;
+    return (this.flag & bits) == bits;
+}
+```
 
 ## code 字段
 
