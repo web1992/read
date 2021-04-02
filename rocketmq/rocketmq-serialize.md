@@ -4,10 +4,10 @@ RocketMQ 序列化
 
 - [Serialize](#serialize)
   - [RocketMQ 序列化协议](#rocketmq-序列化协议)
-  - [序列化的 Head 和 Body](#序列化的-head-和-body)
+  - [RemotingCommand 的 Head 和 Body](#remotingcommand-的-head-和-body)
   - [code 字段](#code-字段)
-  - [ROCKETMQ Decode](#rocketmq-decode)
-  - [ROCKETMQ Encode](#rocketmq-encode)
+  - [RemotingCommand Decode](#remotingcommand-decode)
+  - [RemotingCommand Encode](#remotingcommand-encode)
   - [CommandCustomHeader and extFields](#commandcustomheader-and-extfields)
   - [CommandCustomHeader](#commandcustomheader)
   - [Links](#links)
@@ -20,11 +20,17 @@ RocketMQ 序列化
 - RocketMQ group,topic,tags,keys 等信息是怎么进行序列化传输的
 - RocketMQ 事务消息和普通消息，在序列化中的区别（怎么区分是事务消息，非事务消息）
 
-一个消息从创建到发送到MQ，都经历了什么？如下图：
+一个消息从创建到发送到MQ，都经历了什么？如下图（只是列出了Msg的创建到存储，不包含消费流程，大量细节被省略）：
 
 ![rocket-store-msg-seralize.png](images/rocket-store-msg-seralize.png)
 
+我们发送的 `Message` 对象会被转化成 `RemotingCommand` 序列化，进行网络传输。`RocketMQ` 的序列化的核心对象就是 `RemotingCommand`
+
+`RemotingCommand` 在到达 `RocketMQ` 之后，会被转化成 `MessageExtBrokerInner` 进行持久化存储，也就是存储到文件。
+
 ## RocketMQ 序列化协议
+
+序列化协议，简单来讲就是`制定`了 **byte[] 字节转化成 Java 对象和 Java 对象转化成 byte[]** 的方式
 
 `RocketMQ` 序列化协议规定了进行网络通信的 `byte[]` 数据格式,协议由`head` + `body` 组成的变长消息(`head`也是变长的)，支持扩展字段。
 
@@ -37,9 +43,9 @@ JSON((byte) 0),
 ROCKETMQ((byte) 1);
 ```
 
-## 序列化的 Head 和 Body
+## RemotingCommand 的 Head 和 Body
 
-序列化协议的主要实现类是 `RemotingCommand`，代码片段如下：
+序列化协议的主要实现类是 `RemotingCommand`，由 head + body 组成。代码片段如下：
 
 ```java
 // org.apache.rocketmq.remoting.protocol.RemotingCommand
@@ -54,11 +60,12 @@ private HashMap<String, String> extFields;
 // transient 修饰 是避免 被 Josn 解析
 private transient CommandCustomHeader customHeader;
 private SerializeType serializeTypeCurrentRPC = serializeTypeConfigInThisServer;
-// body transient 修饰 是避免 被 Josn 解析
+// body 
+// transient 修饰 是避免 被 Josn 解析
 private transient byte[] body;
 ```
 
-> 字段说明：
+> `RemotingCommand` 字段说明：
 
 | 字段                    | 描述                                                                                                                                                            |
 | ----------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -90,9 +97,9 @@ public static final int SEND_MESSAGE_V2 = 310;
 
 因此 `code` 在`请求`和`响应`的时候含义是不同的，这样设计的目的是为了`精简` RPC 协议（少一个字段，少传输byte数据），也是常用的设计方式。
 
-## ROCKETMQ Decode
+## RemotingCommand Decode
 
-反序列化(解码)：`byte[]` 转化成 `RemotingCommand` 对象
+**反序列化** (解码)：`byte[]` 转化成 `RemotingCommand` 对象
 
 入口在 `org.apache.rocketmq.remoting.netty.NettyDecoder`
 
@@ -155,9 +162,9 @@ public static RemotingCommand decode(final ByteBuffer byteBuffer) {
 }
 ```
 
-## ROCKETMQ Encode
+## RemotingCommand Encode
 
-序列化(编码)：`RemotingCommand` 转化成 `byte[]`对象
+**序列化** (编码)：`RemotingCommand` 转化成 `byte[]`对象
 
 入口在 `org.apache.rocketmq.remoting.netty.NettyEncoder`
 
@@ -175,7 +182,10 @@ if (body != null) {
 }
 ```
 
+下面是 head 转成 byte[]
+
 ```java
+// head 转成 byte[]
 public static byte[] rocketMQProtocolEncode(RemotingCommand cmd) {
        // String remark
        byte[] remarkBytes = null;
@@ -225,7 +235,7 @@ public static byte[] rocketMQProtocolEncode(RemotingCommand cmd) {
 
 上面提到过 `customHeader` 是被 `transient` 修饰的，不会被 `JSON` 序列化
 
-而下面的方法就是把 `customHeader` 转换成 `extFields` 的代码片段
+而下面的方法就是把 `customHeader` 转换成 `extFields` （从而进行序列化传输）的代码片段
 
 ```java
 // RemotingCommand#makeCustomHeaderToNet 方法
@@ -261,6 +271,8 @@ public void makeCustomHeaderToNet() {
 ```
 
 ## CommandCustomHeader
+
+`CommandCustomHeader` 的主要作用是存储消息和转化的 `topic` `tags` `是否事物消息` 等信息。
 
 常用的消息 Head
 
@@ -309,7 +321,7 @@ private boolean m; //batch
 
 ![rocket-mq-customer-head-trac.png](./images/rocket-mq-customer-head-trac.png)
 
-> json 形式
+**json 形式**
 
 ```json
 {
