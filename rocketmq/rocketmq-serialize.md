@@ -23,7 +23,7 @@ RocketMQ 序列化
 
 一个消息从创建到发送到MQ，都经历了什么？如下图（只是列出了Msg的创建到存储，不包含消费流程，大量细节被省略）：
 
-![rocket-store-msg-seralize.png](https://cdn.nlark.com/yuque/0/2021/png/12734972/1617333381976-95890fde-349a-4808-b68c-02305051ea9f.png)
+![rocket-store-msg-seralize.png](https://cdn.nlark.com/yuque/0/2021/png/12734972/1617333801839-7d0c195b-fa85-438c-83d5-996a29d5908c.png)
 
 我们发送的 `Message` 对象会被转化成 `RemotingCommand` 序列化，进行网络传输。`RocketMQ` 的序列化的核心对象就是 `RemotingCommand`
 
