@@ -1,15 +1,35 @@
 # MappedFile
 
+`MappedFile` 的主要作用是对 `Message` 进行持久化存储（存储到文件系统）。
+
+了解 MappedFile 可以知道 RocketMQ 为了提高持久化的性能都做了那些优化。
+
+比如为了避免`IO`的瓶颈,使用了那些技术。如果服务器突然宕机，文件怎么恢复。
+
+- MappedFile 的初始化
+- MappedFile 的文件格式
+- MappedFile 的刷盘操作=
+- MappedFile 的异常恢复
+
+阅读此文之前，建议先阅读 [RocketMQ 持久化概述](rocketmq-store.md) 这篇文章。了解 `MappedFile` 在 `RocketMQ` 中扮演的角色和作用。
+
 ## MappedFileQueue
 
 topicQueueTable
 
+`MappedFileQueue` 用来维护多个 `MappedFile` 文件。负责 MappedFile 文件的加载,维护，commit,flush
+
 ## MappedFileQueue#findMappedFileByOffset
 
-## MappedFile.init
+## MappedFile.init 初始化
+
+在构建 `MappedFile` 的时候，有个 `init` 方法对应 `MappedFile` 的二个构造方法:
+
+- 一个 `init` 没有 `TransientStorePool` 参数
+- 一个 `init` 有 `TransientStorePool` 参数
 
 ```java
-// MappedFile#init
+// MappedFile#init 没有 TransientStorePool 参数的方法
 private void init(final String fileName, final int fileSize) throws IOException {
     this.fileName = fileName;
     this.fileSize = fileSize;
@@ -34,6 +54,40 @@ private void init(final String fileName, final int fileSize) throws IOException 
             this.fileChannel.close();
         }
     }
+}
+
+// 有 transientStorePool 的方法
+// 会对 writeBuffer 进行初始化
+public void init(final String fileName, final int fileSize,
+    final TransientStorePool transientStorePool) throws IOException {
+    init(fileName, fileSize);// 执行init
+    this.writeBuffer = transientStorePool.borrowBuffer();
+    this.transientStorePool = transientStorePool;
+}
+
+
+```
+
+```java
+// AllocateMappedFileService 的代码片段
+MappedFile mappedFile;
+// 查询 配置是否启用了 TransientStorePool
+if (messageStore.getMessageStoreConfig().isTransientStorePoolEnable()) {
+    try {
+        mappedFile = ServiceLoader.load(MappedFile.class).iterator().next();
+        mappedFile.init(req.getFilePath(), req.getFileSize(), messageStore.getTransientStorePool());
+    } catch (RuntimeException e) {
+        log.warn("Use default implementation.");
+        mappedFile = new MappedFile(req.getFilePath(), req.getFileSize(), messageStore.getTransientStorePool());
+    }
+} else {
+    mappedFile = new MappedFile(req.getFilePath(), req.getFileSize());
+}
+
+//开启的条件 transientStorePoolEnable参数+ 异步刷盘 + Master节点
+public boolean isTransientStorePoolEnable() {
+     return transientStorePoolEnable && FlushDiskType.ASYNC_FLUSH == getFlushDiskType()
+         && BrokerRole.SLAVE != getBrokerRole();
 }
 ```
 
@@ -133,7 +187,7 @@ public AppendMessageResult appendMessagesInner(final MessageExt messageExt, fina
 ```java
 // 把内存强制刷新到磁盘中，会更新 flushedPosition 的值
 public int flush(final int flushLeastPages) {
-    if (this.isAbleToFlush(flushLeastPages)) {
+    if (this.isAbleToFlush(flushLeastPages)) {// 这个方法也很重要，下面有说明
         if (this.hold()) {
             int value = getReadPosition();
             try {
