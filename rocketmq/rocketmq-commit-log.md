@@ -1,44 +1,48 @@
 # CommitLog
 
-## asyncPutMessage
+阅读此文之前，建议先阅读 [RocketMQ 持久化概述](rocketmq-store.md) [MappedFile](rocketmq-mapped-file.md) 这篇文章。
 
-## mappedFileQueue
+了解 `MappedFile` 在 `RocketMQ` 中扮演的角色和作用。
 
-## topicQueueTable
+- [CommitLog](#commitlog)
+  - [CommitLog 的初始化](#commitlog-的初始化)
+  - [FlushRealTimeService](#flushrealtimeservice)
+  - [GroupCommitService](#groupcommitservice)
+  - [putMessage](#putmessage)
+  - [submitFlushRequest](#submitflushrequest)
+  - [StoreCheckpoint](#storecheckpoint)
+  - [submitReplicaRequest](#submitreplicarequest)
 
-## submitFlushRequest
+## CommitLog 的初始化
 
-`asyncPutMessage` 方法只是把消息存入到内存 `Buf` 中，并没有真正的存在到磁盘文件中。因此需要执行 `submitFlushRequest` 方法，把内存中的数据存在到磁盘文件中。
+从 CommitLog 的初始化 中可以知道 CommitLog 的主要功能是什么，维护日志文件和处理消息。
 
-通常把内存中的数据同步到磁盘文件过程叫做`刷盘`
+- 初始化 mappedFileQueue
+- 初始化 defaultMessageStore
+- 初始化 flushCommitLogService
+- 初始化 commitLogService
+- 初始化 appendMessageCallback
 
 ```java
-// submitFlushRequest 中主要有二个分支，一个是同步的逻辑，一个是异步的逻辑
-// 同步的逻辑调用 GroupCommitService 进行持久化
-// 异步的逻辑是：唤醒异步线程，直接返回 PUT_OK (因此存在消息丢失的可能)
-public CompletableFuture<PutMessageStatus> submitFlushRequest(AppendMessageResult result, MessageExt messageExt) {
-    // Synchronization flush
-    if (FlushDiskType.SYNC_FLUSH == this.defaultMessageStore.getMessageStoreConfig().getFlushDiskType()) {
-        final GroupCommitService service = (GroupCommitService) this.flushCommitLogService;
-        if (messageExt.isWaitStoreMsgOK()) {
-            GroupCommitRequest request = new GroupCommitRequest(result.getWroteOffset() + result.getWroteBytes(),
-                    this.defaultMessageStore.getMessageStoreConfig().getSyncFlushTimeout());
-            service.putRequest(request);
-            return request.future();
-        } else {
-            service.wakeup();
-            return CompletableFuture.completedFuture(PutMessageStatus.PUT_OK);
-        }
+// CommitLog 的初始
+public CommitLog(final DefaultMessageStore defaultMessageStore) {
+    this.mappedFileQueue = new MappedFileQueue(defaultMessageStore.getMessageStoreConfig().getStorePathCommitLog(),
+        defaultMessageStore.getMessageStoreConfig().getMappedFileSizeCommitLog(), defaultMessageStore.getAllocateMappedFileService());
+    this.defaultMessageStore = defaultMessageStore;
+    if (FlushDiskType.SYNC_FLUSH == defaultMessageStore.getMessageStoreConfig().getFlushDiskType()) {
+        this.flushCommitLogService = new GroupCommitService();
+    } else {
+        this.flushCommitLogService = new FlushRealTimeService();
     }
-    // Asynchronous flush
-    else {
-        if (!this.defaultMessageStore.getMessageStoreConfig().isTransientStorePoolEnable()) {
-            flushCommitLogService.wakeup();
-        } else  {
-            commitLogService.wakeup();
+    this.commitLogService = new CommitRealTimeService();
+    this.appendMessageCallback = new DefaultAppendMessageCallback(defaultMessageStore.getMessageStoreConfig().getMaxMessageSize());
+    batchEncoderThreadLocal = new ThreadLocal<MessageExtBatchEncoder>() {
+        @Override
+        protected MessageExtBatchEncoder initialValue() {
+            return new MessageExtBatchEncoder(defaultMessageStore.getMessageStoreConfig().getMaxMessageSize());
         }
-        return CompletableFuture.completedFuture(PutMessageStatus.PUT_OK);
-    }
+    };
+    this.putMessageLock = defaultMessageStore.getMessageStoreConfig().isUseReentrantLockWhenPutMessage() ? new PutMessageReentrantLock() : new PutMessageSpinLock();
 }
 ```
 
@@ -170,6 +174,55 @@ private void doCommit() {
     }
 }
 ```
+
+## putMessage
+
+`putMessage` 方法有四种，如下，异步的两组，同步的两组。分别支`持批量消息`和`非批量消息`的存储。
+
+```java
+CompletableFuture<PutMessageResult> asyncPutMessage(final MessageExtBrokerInner msg)
+CompletableFuture<PutMessageResult> asyncPutMessages(final MessageExtBatch messageExtBatch)
+PutMessageResult putMessage(final MessageExtBrokerInner msg)
+PutMessageResult putMessages(final MessageExtBatch messageExtBatch)
+```
+
+## submitFlushRequest
+
+`asyncPutMessage` 方法只是把消息存入到内存 `Buf` 中，并没有真正的存在到磁盘文件中。因此需要执行 `submitFlushRequest` 方法，把内存中的数据存在到磁盘文件中。
+
+通常把内存中的数据同步到磁盘文件过程叫做`刷盘`
+
+```java
+// submitFlushRequest 中主要有二个分支，一个是同步的逻辑，一个是异步的逻辑
+// 同步的逻辑调用 GroupCommitService 进行持久化
+// 异步的逻辑是：唤醒异步线程，直接返回 PUT_OK (因此存在消息丢失的可能)
+public CompletableFuture<PutMessageStatus> submitFlushRequest(AppendMessageResult result, MessageExt messageExt) {
+    // Synchronization flush
+    if (FlushDiskType.SYNC_FLUSH == this.defaultMessageStore.getMessageStoreConfig().getFlushDiskType()) {
+        final GroupCommitService service = (GroupCommitService) this.flushCommitLogService;
+        if (messageExt.isWaitStoreMsgOK()) {
+            GroupCommitRequest request = new GroupCommitRequest(result.getWroteOffset() + result.getWroteBytes(),
+                    this.defaultMessageStore.getMessageStoreConfig().getSyncFlushTimeout());
+            service.putRequest(request);
+            return request.future();
+        } else {
+            service.wakeup();
+            return CompletableFuture.completedFuture(PutMessageStatus.PUT_OK);
+        }
+    }
+    // Asynchronous flush
+    else {
+        if (!this.defaultMessageStore.getMessageStoreConfig().isTransientStorePoolEnable()) {
+            flushCommitLogService.wakeup();
+        } else  {
+            commitLogService.wakeup();
+        }
+        return CompletableFuture.completedFuture(PutMessageStatus.PUT_OK);
+    }
+}
+```
+
+
 
 ## StoreCheckpoint
 
