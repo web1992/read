@@ -9,9 +9,9 @@
 - MappedFile 的初始化
 - MappedFile 的文件格式
 - MappedFile 的刷盘操作
-- MappedFile 的异常恢复
 
 - [MappedFile](#mappedfile)
+  - [MappedFileQueue new](#mappedfilequeue-new)
   - [MappedFileQueue](#mappedfilequeue)
   - [MappedFileQueue#findMappedFileByOffset](#mappedfilequeuefindmappedfilebyoffset)
   - [MappedFile.init 初始化](#mappedfileinit-初始化)
@@ -23,6 +23,12 @@
   - [appendMessagesInner](#appendmessagesinner)
 
 阅读此文之前，建议先阅读 [RocketMQ 持久化概述](rocketmq-store.md) 这篇文章。了解 `MappedFile` 在 `RocketMQ` 中扮演的角色和作用。
+
+## MappedFileQueue new
+
+`MappedFileQueue` 的 创建 主要有三个地方，分别是 `CommitLog` `，ConsumeQueue`，`ConsumeQueueExt`
+
+![MappedFileQueue new](./images/mapped-file-queue-new.png)
 
 ## MappedFileQueue
 

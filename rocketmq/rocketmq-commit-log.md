@@ -24,7 +24,7 @@
 
 ## CommitLog 的初始化
 
-从 CommitLog 的初始化 中可以知道 CommitLog 的主要功能是什么，维护日志文件和处理消息。
+从 `CommitLog` 的初始化 中可以知道 `CommitLog` 的主要功能是什么，维护日志文件和处理消息。
 
 - 初始化 mappedFileQueue
 - 初始化 defaultMessageStore
@@ -34,16 +34,22 @@
 
 ```java
 // CommitLog 的初始
+// 这里说下 defaultMessageStore.getMessageStoreConfig().getStorePathCommitLog() 参数
+// 默认值是 private String storePathCommitLog = System.getProperty("user.home") + File.separator + "store" + File.separator + "commitlog";
+// 在我的电脑的默认路径是：/Users/zl/store/commitlog
 public CommitLog(final DefaultMessageStore defaultMessageStore) {
+    // 创建 MappedFileQueue
     this.mappedFileQueue = new MappedFileQueue(defaultMessageStore.getMessageStoreConfig().getStorePathCommitLog(),
         defaultMessageStore.getMessageStoreConfig().getMappedFileSizeCommitLog(), defaultMessageStore.getAllocateMappedFileService());
     this.defaultMessageStore = defaultMessageStore;
+    // 根据 刷盘的类型，初始化不同的线程
     if (FlushDiskType.SYNC_FLUSH == defaultMessageStore.getMessageStoreConfig().getFlushDiskType()) {
-        this.flushCommitLogService = new GroupCommitService();
+        this.flushCommitLogService = new GroupCommitService();// 同步刷盘线程
     } else {
-        this.flushCommitLogService = new FlushRealTimeService();
+        this.flushCommitLogService = new FlushRealTimeService();// 异步刷盘线程
     }
-    this.commitLogService = new CommitRealTimeService();
+    this.commitLogService = new CommitRealTimeService();// 内存同步线程,在开启了 transientStorePoolEnable 才会启动的线程。
+    // 初始化 appendMessageCallback 主要作用是把 Msg 转化成 byte[] 方便存储到文件
     this.appendMessageCallback = new DefaultAppendMessageCallback(defaultMessageStore.getMessageStoreConfig().getMaxMessageSize());
     batchEncoderThreadLocal = new ThreadLocal<MessageExtBatchEncoder>() {
         @Override
@@ -51,15 +57,34 @@ public CommitLog(final DefaultMessageStore defaultMessageStore) {
             return new MessageExtBatchEncoder(defaultMessageStore.getMessageStoreConfig().getMaxMessageSize());
         }
     };
+    // CommitLog 中的锁，保证在写文件的时候，只有一个线程能写入文件
     this.putMessageLock = defaultMessageStore.getMessageStoreConfig().isUseReentrantLockWhenPutMessage() ? new PutMessageReentrantLock() : new PutMessageSpinLock();
 }
 ```
 
+查询 `tree` 命令 路径 `/Users/zl/store`
+
+```sh
+pwd
+/Users/zl/store
+tree .
+├── abort
+├── checkpoint
+├── commitlog
+│   └── 00000000000000000000
+├── config
+
+# 查看 commitlog 文件夹下面的文件，可以发现有一个大小是 1G 的文件。就是 RocketMQ 的日志文件，也是存储消息的核心文件
+ls -lh commitlog
+total 11688
+-rw-r--r--  1 zl  staff   1.0G  2  6 00:09 00000000000000000000
+```
+
 ## CommitLog 中的三个线程
 
-- FlushRealTimeService 线程，异步刷盘线程。
-- GroupCommitService 线程，同步刷盘线程。
-- CommitRealTimeService 线程，内存同步线程。在开启了 transientStorePoolEnable 才会启动的线程。
+- `FlushRealTimeService` 线程，异步刷盘线程。
+- `GroupCommitService` 线程，同步刷盘线程。
+- `CommitRealTimeService` 线程，内存同步线程。在开启了 `transientStorePoolEnable` 才会启动的线程。
 
 ```java
 // FlushRealTimeService 和 GroupCommitService 线程，二选一
@@ -180,6 +205,15 @@ private volatile List<GroupCommitRequest> requestsWrite = new ArrayList<GroupCom
 private volatile List<GroupCommitRequest> requestsRead = new ArrayList<GroupCommitRequest>();
 }
 
+// 把 Msg 放入到 List 中
+// GroupCommitRequest 中主要 存在 nextOffset ,执行 flush 以后 超过这个位置，就认为是刷盘成功了。
+public synchronized void putRequest(final GroupCommitRequest request) {
+    synchronized (this.requestsWrite) {
+        this.requestsWrite.add(request);
+    }
+    this.wakeup();
+}
+// 互换 List
 private void swapRequests() {
     List<GroupCommitRequest> tmp = this.requestsWrite;
     this.requestsWrite = this.requestsRead;
@@ -207,6 +241,9 @@ private void doCommit() {
             for (GroupCommitRequest req : this.requestsRead) {
                 // There may be a message in the next file, so a maximum of
                 // two times the flush
+                // 超过 nextOffset ，认为刷盘成功
+                // 下面的循环如果第一次失败，会执行两次。原因是因为 mappedFile 有可能满了，
+                // 会写入的是 空消息。 然后创建新的 mappedFile, 此时 FlushedWhere 可能不满足，则就进行重试。
                 boolean flushOK = CommitLog.this.mappedFileQueue.getFlushedWhere() >= req.getNextOffset();
                 for (int i = 0; i < 2 && !flushOK; i++) {
                     CommitLog.this.mappedFileQueue.flush(0);
@@ -332,11 +369,12 @@ public PutMessageResult putMessage(MessageExtBrokerInner msg) {
 // 2. 找到 mappedFile 
 // 3. putMessageLock 锁
 // 4. 执行 mappedFile.appendMessage 逻辑主要回调方法中执行 DefaultAppendMessageCallback
-// 5. 判断执行结果 
-// 6. 更新统计信息
-// 7. handleDiskFlush
-// 8. handleHA
-// 9. 返回 PutMessageResult
+// 5. 释放 putMessageLock 锁
+// 6. 判断执行结果 
+// 7. 更新统计信息
+// 8. handleDiskFlush
+// 9. handleHA
+// 10. 返回 PutMessageResult
 public PutMessageResult putMessage(final MessageExtBrokerInner msg) {
 // ...
 }
@@ -430,11 +468,12 @@ public void handleHA(AppendMessageResult result, PutMessageResult putMessageResu
 // 2. 找到 mappedFile 
 // 3. putMessageLock 锁
 // 4. 执行 mappedFile.appendMessage 逻辑主要回调方法中执行 DefaultAppendMessageCallback
-// 5. 判断执行结果 
-// 6. 更新统计信息
-// 7. 执行 submitFlushRequest
-// 8. 执行 submitReplicaRequest
-// 9. 返回 CompletableFuture<PutMessageResult>
+// 5. 释放 putMessageLock 锁
+// 6. 判断执行结果 
+// 7. 更新统计信息
+// 8. 执行 submitFlushRequest
+// 9. 执行 submitReplicaRequest
+// 10. 返回 CompletableFuture<PutMessageResult>
 public CompletableFuture<PutMessageResult> asyncPutMessage(final MessageExtBrokerInner msg) {
 // ...
 }
