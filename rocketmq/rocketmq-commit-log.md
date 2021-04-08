@@ -648,7 +648,7 @@ protected void waitForRunning(long interval) {
 
 从上面的代码逻辑可以知道。`GroupCommitService` 线程会进入阻塞（让出CPU）最多10毫秒,然而，这个10毫秒是必须的。
 
-如果不阻塞10毫秒，线程会一直占用CPU（即使没有要处理的消息也占用CPU，就变成了wihle(true)）。
+如果不阻塞10毫秒，线程会一直占用CPU（即使没有要处理的消息也占用CPU，就变成了 while(true) ）。
 
 上面的逻辑与 `阻塞队列` 类似，有任务的时候(被唤醒)就执行业务，没有任务的时候就进入阻塞。
 
