@@ -2,11 +2,15 @@
 
 - [Consumer](#consumer)
   - [Consumer start](#consumer-start)
-  - [Message Flow](#message-flow)
+  - [消息的创建和消费](#消息的创建和消费)
+  - [消息消费的核心类](#消息消费的核心类)
   - [MQClientInstance](#mqclientinstance)
     - [MQClientInstance#selectConsumer](#mqclientinstanceselectconsumer)
     - [MQClientInstance 中的定时任务](#mqclientinstance-中的定时任务)
     - [MQClientInstance PullMessageService](#mqclientinstance-pullmessageservice)
+  - [ConsumeMessageConcurrentlyService](#consumemessageconcurrentlyservice)
+    - [consumeMessageDirectly](#consumemessagedirectly)
+    - [ConsumeRequest](#consumerequest)
   - [ProcessQueue](#processqueue)
   - [RebalanceImpl](#rebalanceimpl)
   - [PullCallback](#pullcallback)
@@ -17,7 +21,13 @@
   - [PullMessageService](#pullmessageservice)
   - [DefaultLitePullConsumer](#defaultlitepullconsumer)
   - [DefaultMQPushConsumer](#defaultmqpushconsumer)
-  - [Message Ack](#message-ack)
+
+可以了解的内容：
+
+- Consumer 消费消息的流程
+- Consumer 消费消息失败了，怎么处理
+- Consumer 在重启之后，如何继续上一次消费的位置，继续处理
+- Consumer 为什么需要重平衡(rebalance)的
 
 ## Consumer start
 
@@ -35,9 +45,18 @@ DefaultMQPushConsumer#start
             -> this.defaultMQProducer.getDefaultMQProducerImpl().start(false);
 ```
 
-## Message Flow
+## 消息的创建和消费
 
-![messgae flow](images/rocketmq-messgae-flow.png)
+![messgae flow](images/rocketmq-consumer-create-consumer.png)
+
+## 消息消费的核心类
+
+![rocketmq-consumer-class](./images/rocketmq-consumer.png)
+
+- DefaultMQPushConsumer （consumer 入口）负责 consumer 的启动&管理配置参数
+- DefaultMQPushConsumerImpl 核心实现类，包含 ConsumeMessageService 和 MQClientInstance
+- MQClientInstance 负责底层的通信
+- ConsumeMessageService 负责处理消息服务
 
 ## MQClientInstance
 
@@ -100,6 +119,12 @@ private void pullMessage(final PullRequest pullRequest) {
 }
 ```
 
+## ConsumeMessageConcurrentlyService
+
+### consumeMessageDirectly
+
+### ConsumeRequest
+
 ## ProcessQueue
 
 ## RebalanceImpl
@@ -141,5 +166,3 @@ public MQClientAPIImpl(final NettyClientConfig nettyClientConfig,
 ## DefaultLitePullConsumer
 
 ## DefaultMQPushConsumer
-
-## Message Ack
