@@ -4,23 +4,18 @@
   - [Consumer start](#consumer-start)
   - [消息的创建和消费](#消息的创建和消费)
   - [消息消费的核心类](#消息消费的核心类)
-  - [MQClientInstance](#mqclientinstance)
-    - [MQClientInstance#selectConsumer](#mqclientinstanceselectconsumer)
-    - [MQClientInstance 中的定时任务](#mqclientinstance-中的定时任务)
-    - [MQClientInstance PullMessageService](#mqclientinstance-pullmessageservice)
-  - [ConsumeMessageConcurrentlyService](#consumemessageconcurrentlyservice)
-    - [consumeMessageDirectly](#consumemessagedirectly)
-    - [ConsumeRequest](#consumerequest)
+  - [DefaultMQPushConsumerImpl](#defaultmqpushconsumerimpl)
+    - [DefaultMQPushConsumerImpl 的启动](#defaultmqpushconsumerimpl-的启动)
+    - [DefaultMQPushConsumerImpl#pullMessage](#defaultmqpushconsumerimplpullmessage)
   - [ProcessQueue](#processqueue)
-  - [RebalanceImpl](#rebalanceimpl)
-  - [PullCallback](#pullcallback)
-  - [PullAPIWrapper pullKernelImpl](#pullapiwrapper-pullkernelimpl)
-  - [PullMessageRequestHeader](#pullmessagerequestheader)
-  - [RemotingClient](#remotingclient)
-  - [PullMessageProcessor](#pullmessageprocessor)
+  - [ConsumeRequest](#consumerequest)
+  - [RebalancePushImpl](#rebalancepushimpl)
+  - [MQClientInstance](#mqclientinstance)
+    - [MQClientInstance#start](#mqclientinstancestart)
   - [PullMessageService](#pullmessageservice)
-  - [DefaultLitePullConsumer](#defaultlitepullconsumer)
-  - [DefaultMQPushConsumer](#defaultmqpushconsumer)
+  - [ConsumeMessageConcurrentlyService](#consumemessageconcurrentlyservice)
+  - [ConsumeMessageOrderlyService](#consumemessageorderlyservice)
+  - [RemotingClient](#remotingclient)
 
 可以了解的内容：
 
@@ -53,61 +48,124 @@ DefaultMQPushConsumer#start
 
 ![rocketmq-consumer-class](./images/rocketmq-consumer.png)
 
-- DefaultMQPushConsumer （consumer 入口）负责 consumer 的启动&管理配置参数
-- DefaultMQPushConsumerImpl 核心实现类，包含 ConsumeMessageService 和 MQClientInstance
-- MQClientInstance 负责底层的通信
-- ConsumeMessageService 负责处理消息服务
+- `DefaultMQPushConsumer` （Consumer 入口）负责 Consumer 的启动&管理配置参数
+- `DefaultMQPushConsumerImpl` 核心实现类，包含 `ConsumeMessageService` 和 `MQClientInstance`
+- `MQClientInstance` 负责底层的通信
+- `ConsumeMessageService` 负责处理消息服务
+
+## DefaultMQPushConsumerImpl
+
+### DefaultMQPushConsumerImpl 的启动
+
+```java
+// 1. 检查配置
+// 2. copy copySubscription
+// 3. 创建 mQClientFactory
+// 4. 创建 pullAPIWrapper
+// 5. 注册 filterMessageHookList
+// 6. 获取offsetStore 并且加载 offset
+// 7. 创建 consumeMessageService 并且启动，有序的 ConsumeMessageOrderlyService , 无序的的 ConsumeMessageConcurrentlyService
+// 8. 注册 Consumer mQClientFactory.registerConsumer
+// 9. 启动 mQClientFactory
+// 10. 更新 topic 的订阅信息
+// 11. 校验 checkClientInBroker
+// 12. 发送心跳到 broker
+// 13. rebalanceImmediately 执行 rebalance 操作
+public synchronized void start() throws MQClientException {
+// ...
+}
+```
+
+### DefaultMQPushConsumerImpl#pullMessage
+
+```java
+// pullMessage 方法的声明,注意返回值是 void，参数是 PullRequest
+
+// 1. 检查 ProcessQueue
+// 2. 更新 ProcessQueue 的 lastPullTimestamp
+// 3. 检查 serviceState 状态
+// 4. 检查 DefaultMQPushConsumerImpl 的 pause 标记
+// 5. 检查 cachedMessageCount （在 ProcessQueue 中），如果超过，则延迟 PullRequest
+// 6. 检查 cachedMessageSizeInMiB 的大小。超过多少100M，则延迟 PullRequest
+// 7. 如果是按照顺序消费&检查 getMaxSpan 是否超过 2000，超过则延迟 PullRequest
+// 8. 检查 processQueue 的锁状态
+// 9. 
+// 10. 获取 SubscriptionData  
+// 11. 包装 PullCallback
+// 12. 获取  commitOffsetValue
+// 13. 获取  SubscriptionData
+// 14. build  sysFlag
+// 15. 执行 pullKernelImpl (本质是发送 PullMessageRequestHeader 去拉消息)
+
+// 这里说明下，把 PullMessageRequestHeader broker 之后，等待异步响应，
+// 获取  PullMessageResponseHeader 响应之后，执行回调 PullCallback
+public void pullMessage(final PullRequest pullRequest) {
+// ...   
+}
+```
+
+## ProcessQueue
+
+## ConsumeRequest
+
+```java
+ConsumeRequest consumeRequest = new ConsumeRequest(msgs, processQueue, messageQueue);
+```
+
+## RebalancePushImpl
 
 ## MQClientInstance
 
-### MQClientInstance#selectConsumer
-
-### MQClientInstance 中的定时任务
-
-- MQClientInstance.this.mQClientAPIImpl.fetchNameServerAddr();
-- MQClientInstance.this.updateTopicRouteInfoFromNameServer();
-- MQClientInstance.this.cleanOfflineBroker();
-- MQClientInstance.this.sendHeartbeatToAllBrokerWithLock();
-- MQClientInstance.this.persistAllConsumerOffset();
-- MQClientInstance.this.adjustThreadPool();
-
-### MQClientInstance PullMessageService
+### MQClientInstance#start
 
 ```java
-// PullMessageService 的定义，继承了 ServiceThread
-public class PullMessageService extends ServiceThread {
-
-}
-// PullRequest 阻塞队列
-private final LinkedBlockingQueue<PullRequest> pullRequestQueue = new LinkedBlockingQueue<PullRequest>();
-private final MQClientInstance mQClientFactory;
-// scheduledExecutorService 支持延迟的 PullRequest 
-// 就是在一定时间之后，再把 PullRequest 放入到 pullRequestQueue 队列中
-private final ScheduledExecutorService scheduledExecutorService = Executors
-    .newSingleThreadScheduledExecutor(new ThreadFactory() {
-        @Override
-        public Thread newThread(Runnable r) {
-            return new Thread(r, "PullMessageServiceScheduledThread");
-        }
-    });
-
-// run 方法
-@Override
-public void run() {
-    log.info(this.getServiceName() + " service started");
-    while (!this.isStopped()) {
-        try {
-            PullRequest pullRequest = this.pullRequestQueue.take();
-            this.pullMessage(pullRequest);
-        } catch (InterruptedException ignored) {
-        } catch (Exception e) {
-            log.error("Pull Message Service Run Method exception", e);
+// MQClientInstance 的启动
+public void start() throws MQClientException {
+    synchronized (this) {
+        switch (this.serviceState) {
+            case CREATE_JUST:
+                this.serviceState = ServiceState.START_FAILED;
+                // If not specified,looking address from name server
+                if (null == this.clientConfig.getNamesrvAddr()) {
+                    this.mQClientAPIImpl.fetchNameServerAddr();
+                }
+                // Start request-response channel
+                this.mQClientAPIImpl.start();
+                // Start various schedule tasks
+                this.startScheduledTask();
+                // Start pull service
+                this.pullMessageService.start();
+                // Start rebalance service
+                this.rebalanceService.start();
+                // Start push service
+                this.defaultMQProducer.getDefaultMQProducerImpl().start(false);
+                log.info("the client factory [{}] start OK", this.clientId);
+                this.serviceState = ServiceState.RUNNING;
+                break;
+            case START_FAILED:
+                throw new MQClientException("The Factory object[" + this.getClientId() + "] has been created before, and failed.", null);
+            default:
+                break;
         }
     }
-    log.info(this.getServiceName() + " service end");
+}
+```
+
+## PullMessageService
+
+```java
+// PullMessageService 的定义，本质是一个线程
+public class PullMessageService extends ServiceThread {
+// ...    
+}
+// 线程的 Run 方法
+public void run() {
+   // ...
+    this.pullMessage(pullRequest);
+   //...
 }
 
-// pullMessage
+// 拉取消息
 private void pullMessage(final PullRequest pullRequest) {
     final MQConsumerInner consumer = this.mQClientFactory.selectConsumer(pullRequest.getConsumerGroup());
     if (consumer != null) {
@@ -121,19 +179,7 @@ private void pullMessage(final PullRequest pullRequest) {
 
 ## ConsumeMessageConcurrentlyService
 
-### consumeMessageDirectly
-
-### ConsumeRequest
-
-## ProcessQueue
-
-## RebalanceImpl
-
-## PullCallback
-
-## PullAPIWrapper pullKernelImpl
-
-## PullMessageRequestHeader
+## ConsumeMessageOrderlyService
 
 ## RemotingClient
 
@@ -156,13 +202,3 @@ public MQClientAPIImpl(final NettyClientConfig nettyClientConfig,
     this.remotingClient.registerProcessor(RequestCode.PUSH_REPLY_MESSAGE_TO_CLIENT, this.clientRemotingProcessor, null);
 }
 ```
-
-## PullMessageProcessor
-
-`org.apache.rocketmq.broker.processor.PullMessageProcessor`
-
-## PullMessageService
-
-## DefaultLitePullConsumer
-
-## DefaultMQPushConsumer
