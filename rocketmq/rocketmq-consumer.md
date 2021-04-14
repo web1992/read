@@ -9,7 +9,7 @@
     - [DefaultMQPushConsumerImpl#pullMessage](#defaultmqpushconsumerimplpullmessage)
   - [ProcessQueue](#processqueue)
   - [ConsumeRequest](#consumerequest)
-  - [RebalancePushImpl](#rebalancepushimpl)
+  - [RebalancePushImpl#computePullFromWhere](#rebalancepushimplcomputepullfromwhere)
   - [MQClientInstance](#mqclientinstance)
     - [MQClientInstance#start](#mqclientinstancestart)
   - [PullMessageService](#pullmessageservice)
@@ -46,7 +46,7 @@ DefaultMQPushConsumer#start
 
 ## 消息消费的核心类
 
-![rocketmq-consumer-class](./images/rocketmq-consumer.png)
+![rocketmq-consumer-class](images/rocketmq-consumer.png)
 
 - `DefaultMQPushConsumer` （Consumer 入口）负责 Consumer 的启动&管理配置参数
 - `DefaultMQPushConsumerImpl` 核心实现类，包含 `ConsumeMessageService` 和 `MQClientInstance`
@@ -89,14 +89,16 @@ public synchronized void start() throws MQClientException {
 // 6. 检查 cachedMessageSizeInMiB 的大小。超过多少100M，则延迟 PullRequest
 // 7. 如果是按照顺序消费&检查 getMaxSpan 是否超过 2000，超过则延迟 PullRequest
 // 8. 检查 processQueue 的锁状态
-// 9. 
+// 9. 检查是否是一次 pull Msg,计算 offset 从哪里开始消费，并更新 offset
 // 10. 获取 SubscriptionData  
 // 11. 包装 PullCallback
 // 12. 获取  commitOffsetValue
 // 13. 获取  SubscriptionData
 // 14. build  sysFlag
 // 15. 执行 pullKernelImpl (本质是发送 PullMessageRequestHeader 去拉消息)
-
+//  ↓
+//  TCP
+//  ↓
 // 这里说明下，把 PullMessageRequestHeader broker 之后，等待异步响应，
 // 获取  PullMessageResponseHeader 响应之后，执行回调 PullCallback
 public void pullMessage(final PullRequest pullRequest) {
@@ -112,7 +114,45 @@ public void pullMessage(final PullRequest pullRequest) {
 ConsumeRequest consumeRequest = new ConsumeRequest(msgs, processQueue, messageQueue);
 ```
 
-## RebalancePushImpl
+## RebalancePushImpl#computePullFromWhere
+
+[computePullFromWhere 源码](https://github.com/apache/rocketmq/blob/master/client/src/main/java/org/apache/rocketmq/client/impl/consumer/RebalancePushImpl.java#L141)
+
+```java
+// 是否是第一次 pull Msg
+if (!pullRequest.isLockedFirst()) {
+         // 获取 offset
+         final long offset = this.rebalanceImpl.computePullFromWhere(pullRequest.getMessageQueue());
+         // 更新 offset
+         pullRequest.setNextOffset(offset);
+}
+```
+
+`computePullFromWhere` 的实现
+
+```java
+public long computePullFromWhere(MessageQueue mq) {
+//...
+switch (consumeFromWhere) {
+    case CONSUME_FROM_LAST_OFFSET_AND_FROM_MIN_WHEN_BOOT_FIRST:// 废弃
+    case CONSUME_FROM_MIN_OFFSET:// 废弃
+    case CONSUME_FROM_MAX_OFFSET:// 废弃
+    case CONSUME_FROM_LAST_OFFSET: {//case1
+        break;
+    }
+    case CONSUME_FROM_FIRST_OFFSET: {//case2
+        break;
+    }
+    case CONSUME_FROM_TIMESTAMP: {//case3
+        break;
+    }
+}
+// 上面的三个 case 都是执行 readOffset 方法，获取 lastOffset
+// long lastOffset = offsetStore.readOffset(mq, ReadOffsetType.READ_FROM_STORE);
+// case1: 如果是第一次消费(lastOffset=-1) 获取 getMQAdminImpl().maxOffset 否则使用 lastOffset
+// case2: 如果是第一次消费,lastOffset=0,否则使用 lastOffset
+// case3: 如果是第一次消费,getMQAdminImpl().searchOffset(mq,timestamp) 查找Offset，否则使用 lastOffset
+```
 
 ## MQClientInstance
 
