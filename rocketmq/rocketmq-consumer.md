@@ -1,9 +1,9 @@
 # Consumer
 
 - [Consumer](#consumer)
-  - [Consumer start](#consumer-start)
   - [消息的创建和消费](#消息的创建和消费)
   - [消息消费的核心类](#消息消费的核心类)
+  - [Consumer start](#consumer-start)
   - [DefaultMQPushConsumerImpl](#defaultmqpushconsumerimpl)
     - [DefaultMQPushConsumerImpl 的启动](#defaultmqpushconsumerimpl-的启动)
     - [DefaultMQPushConsumerImpl#pullMessage](#defaultmqpushconsumerimplpullmessage)
@@ -24,9 +24,23 @@
 - Consumer 在重启之后，如何继续上一次消费的位置，继续处理
 - Consumer 为什么需要重平衡(rebalance)的
 
+## 消息的创建和消费
+
+![messgae flow](images/rocketmq-consumer-create-consumer.png)
+
+## 消息消费的核心类
+
+![rocketmq-consumer-class](images/rocketmq-consumer.png)
+
+- `DefaultMQPushConsumer` （Consumer 入口）负责 Consumer 的启动&管理配置参数
+- `DefaultMQPushConsumerImpl` 核心实现类，包含 `ConsumeMessageService` 和 `MQClientInstance`
+- `ConsumeMessageService` 负责处理消息服务(有 `ConsumeMessageConcurrentlyService` 和 `ConsumeMessageOrderlyService` )两种实现
+- `MQClientInstance` 负责底层的通信
+- `RebalanceImpl` 执行 rebalance
+
 ## Consumer start
 
-消息消费者的启动过程：
+消息消费者(client)的启动过程(这里列举了启动的核心类)：
 
 ```java
 DefaultMQPushConsumer#start
@@ -40,18 +54,9 @@ DefaultMQPushConsumer#start
             -> this.defaultMQProducer.getDefaultMQProducerImpl().start(false);
 ```
 
-## 消息的创建和消费
+![启动图](./images/rocketmq-consumer-start.png)
 
-![messgae flow](images/rocketmq-consumer-create-consumer.png)
-
-## 消息消费的核心类
-
-![rocketmq-consumer-class](images/rocketmq-consumer.png)
-
-- `DefaultMQPushConsumer` （Consumer 入口）负责 Consumer 的启动&管理配置参数
-- `DefaultMQPushConsumerImpl` 核心实现类，包含 `ConsumeMessageService` 和 `MQClientInstance`
-- `MQClientInstance` 负责底层的通信
-- `ConsumeMessageService` 负责处理消息服务
+下面是各个启动类的代码片段：
 
 ## DefaultMQPushConsumerImpl
 
