@@ -68,7 +68,7 @@ DefaultMQPushConsumer#start
 // 3. 创建 mQClientFactory
 // 4. 创建 pullAPIWrapper
 // 5. 注册 filterMessageHookList
-// 6. 获取offsetStore 并且加载 offset
+// 6. 获取 offsetStore 并且加载 offset
 // 7. 创建 consumeMessageService 并且启动，有序的 ConsumeMessageOrderlyService , 无序的的 ConsumeMessageConcurrentlyService
 // 8. 注册 Consumer mQClientFactory.registerConsumer
 // 9. 启动 mQClientFactory
@@ -78,6 +78,10 @@ DefaultMQPushConsumer#start
 // 13. rebalanceImmediately 执行 rebalance 操作
 public synchronized void start() throws MQClientException {
 // ...
+this.updateTopicSubscribeInfoWhenSubscriptionChanged();// 10
+this.mQClientFactory.checkClientInBroker();// 11
+this.mQClientFactory.sendHeartbeatToAllBrokerWithLock();// 12
+this.mQClientFactory.rebalanceImmediately();// 13
 }
 ```
 
@@ -98,7 +102,7 @@ public synchronized void start() throws MQClientException {
 // 10. 获取 SubscriptionData  
 // 11. 包装 PullCallback
 // 12. 获取  commitOffsetValue
-// 13. 获取  SubscriptionData
+// 13. 获取  SubscriptisonData
 // 14. build  sysFlag
 // 15. 执行 pullKernelImpl (本质是发送 PullMessageRequestHeader 去拉消息)
 //  ↓
