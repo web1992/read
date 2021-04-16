@@ -3,12 +3,12 @@
 - [Consumer](#consumer)
   - [消息的创建和消费](#消息的创建和消费)
   - [消息消费的核心类](#消息消费的核心类)
-  - [Consumer start](#consumer-start)
+  - [Consumer的启动](#consumer的启动)
   - [DefaultMQPushConsumerImpl](#defaultmqpushconsumerimpl)
     - [DefaultMQPushConsumerImpl 的启动](#defaultmqpushconsumerimpl-的启动)
     - [DefaultMQPushConsumerImpl#pullMessage](#defaultmqpushconsumerimplpullmessage)
-  - [ProcessQueue](#processqueue)
   - [ConsumeRequest](#consumerequest)
+  - [ConsumeMessageConcurrentlyService#processConsumeResult](#consumemessageconcurrentlyserviceprocessconsumeresult)
   - [RebalancePushImpl#computePullFromWhere](#rebalancepushimplcomputepullfromwhere)
   - [MQClientInstance](#mqclientinstance)
     - [MQClientInstance#start](#mqclientinstancestart)
@@ -22,7 +22,7 @@
 - Consumer 消费消息的流程
 - Consumer 消费消息失败了，怎么处理
 - Consumer 在重启之后，如何继续上一次消费的位置，继续处理
-- Consumer 为什么需要重平衡(rebalance)的
+- Consumer 为什么需要重平衡(rebalance)
 
 ## 消息的创建和消费
 
@@ -33,12 +33,12 @@
 ![rocketmq-consumer-class](images/rocketmq-consumer.png)
 
 - `DefaultMQPushConsumer` （Consumer 入口）负责 Consumer 的启动&管理配置参数
-- `DefaultMQPushConsumerImpl` 核心实现类，包含 `ConsumeMessageService` 和 `MQClientInstance`
+- `DefaultMQPushConsumerImpl` 负责发送 `PullReques`t 拉消息,包含 `ConsumeMessageService` 和 `MQClientInstance`
 - `ConsumeMessageService` 负责处理消息服务(有 `ConsumeMessageConcurrentlyService` 和 `ConsumeMessageOrderlyService` )两种实现
 - `MQClientInstance` 负责底层的通信
 - `RebalanceImpl` 执行 rebalance
 
-## Consumer start
+## Consumer的启动
 
 消息消费者(client)的启动过程(这里列举了启动的核心类)：
 
@@ -115,12 +115,83 @@ public void pullMessage(final PullRequest pullRequest) {
 }
 ```
 
-## ProcessQueue
+消息消费的简化图：
+
+![rocketmq-consumer-consumer-simple.png](images/rocketmq-consumer-consumer-simple.png)
 
 ## ConsumeRequest
 
 ```java
+// org.apache.rocketmq.client.impl.consumer.ConsumeMessageConcurrentlyService.ConsumeRequest
+// org.apache.rocketmq.client.impl.consumer.ConsumeMessageOrderlyService.ConsumeRequest
+class ConsumeRequest implements Runnable {
+// ConsumeRequest 实现了 Runnable 可以提交给线程池
+}
+
+// 以 ConsumeMessageConcurrentlyService 中的 ConsumeRequest 为例子
+// ConsumeRequest 的创建
+// 三个参数：
+// List<MessageExt> msgs
+// ProcessQueue processQueue
+// MessageQueue messageQueue
 ConsumeRequest consumeRequest = new ConsumeRequest(msgs, processQueue, messageQueue);
+
+// run 方法
+@Override
+public void run() {
+    // ...
+    MessageListenerConcurrently listener = 
+    // ... 消费消息
+    status = listener.consumeMessage(Collections.unmodifiableList(msgs), context); 
+}
+```
+
+## ConsumeMessageConcurrentlyService#processConsumeResult
+
+处理消费结果
+
+```java
+public void processConsumeResult(
+    final ConsumeConcurrentlyStatus status,
+    final ConsumeConcurrentlyContext context,
+    final ConsumeRequest consumeRequest
+) {
+// 省略了其他代码...
+int ackIndex = consumeRequest.getMsgs().size() - 1;
+ switch (status) {
+     case CONSUME_SUCCESS:// 成功 +1
+         int ok = ackIndex + 1;
+         break;
+     case RECONSUME_LATER:// 失败 -1
+         ackIndex = -1;
+         break;
+     default:
+         break;
+ }
+
+switch (this.defaultMQPushConsumer.getMessageModel()) {
+    case BROADCASTING:
+        // print log 
+        break;
+    case CLUSTERING:
+        List<MessageExt> msgBackFailed = new ArrayList<MessageExt>(consumeRequest.getMsgs().size());
+        for (int i = ackIndex + 1; i < consumeRequest.getMsgs().size(); i++) {
+            MessageExt msg = consumeRequest.getMsgs().get(i);
+            boolean result = this.sendMessageBack(msg, context);// 消费失败，发送回去到 MQ
+            if (!result) {
+                msg.setReconsumeTimes(msg.getReconsumeTimes() + 1);
+                msgBackFailed.add(msg);
+            }
+        }
+        if (!msgBackFailed.isEmpty()) {// 发送到MQ失败，继续消费
+            consumeRequest.getMsgs().removeAll(msgBackFailed);
+            this.submitConsumeRequestLater(msgBackFailed, consumeRequest.getProcessQueue(), consumeRequest.getMessageQueue());
+        }
+        break;
+    default:
+        break;
+}
+}
 ```
 
 ## RebalancePushImpl#computePullFromWhere
