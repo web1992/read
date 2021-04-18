@@ -7,13 +7,12 @@
   - [DefaultMQPushConsumerImpl](#defaultmqpushconsumerimpl)
     - [DefaultMQPushConsumerImpl 的启动](#defaultmqpushconsumerimpl-的启动)
     - [DefaultMQPushConsumerImpl#pullMessage](#defaultmqpushconsumerimplpullmessage)
-  - [ConsumeRequest](#consumerequest)
-  - [ConsumeMessageConcurrentlyService#processConsumeResult](#consumemessageconcurrentlyserviceprocessconsumeresult)
+    - [ConsumeRequest](#consumerequest)
+    - [ConsumeMessageService#processConsumeResult](#consumemessageserviceprocessconsumeresult)
   - [RebalancePushImpl#computePullFromWhere](#rebalancepushimplcomputepullfromwhere)
   - [MQClientInstance](#mqclientinstance)
     - [MQClientInstance#start](#mqclientinstancestart)
   - [PullMessageService](#pullmessageservice)
-  - [ConsumeMessageConcurrentlyService](#consumemessageconcurrentlyservice)
   - [ConsumeMessageOrderlyService](#consumemessageorderlyservice)
   - [RemotingClient](#remotingclient)
 
@@ -119,7 +118,7 @@ public void pullMessage(final PullRequest pullRequest) {
 
 ![rocketmq-consumer-consumer-simple.png](images/rocketmq-consumer-consumer-simple.png)
 
-## ConsumeRequest
+### ConsumeRequest
 
 ```java
 // org.apache.rocketmq.client.impl.consumer.ConsumeMessageConcurrentlyService.ConsumeRequest
@@ -146,11 +145,12 @@ public void run() {
 }
 ```
 
-## ConsumeMessageConcurrentlyService#processConsumeResult
+### ConsumeMessageService#processConsumeResult
 
 处理消费结果
 
 ```java
+//  ConsumeMessageConcurrentlyService 的代码片段
 public void processConsumeResult(
     final ConsumeConcurrentlyStatus status,
     final ConsumeConcurrentlyContext context,
@@ -195,6 +195,8 @@ switch (this.defaultMQPushConsumer.getMessageModel()) {
 ```
 
 ## RebalancePushImpl#computePullFromWhere
+
+消费者，从哪里开始消费的实现
 
 [computePullFromWhere 源码](https://github.com/apache/rocketmq/blob/master/client/src/main/java/org/apache/rocketmq/client/impl/consumer/RebalancePushImpl.java#L141)
 
@@ -297,11 +299,15 @@ private void pullMessage(final PullRequest pullRequest) {
 }
 ```
 
-## ConsumeMessageConcurrentlyService
+上面的 `pullMessage` 方法最终会调用 `DefaultMQPushConsumerImpl#pullMessage` 方法
 
 ## ConsumeMessageOrderlyService
 
+顺序消费消息的实现
+
 ## RemotingClient
+
+`RemotingClient` 网络处理的实现
 
 ```java
 // RemotingClient 的初始化
