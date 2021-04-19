@@ -113,7 +113,7 @@ public boolean isTransientStorePoolEnable() {
 // 首先获取一些配置信息：
 // 1. flushCommitLogTimed 是否是实时刷盘
 // 2. interval 刷数据到磁盘的间隔，默认500毫秒
-// 3. flushPhysicQueueLeastPages 帅盘的时候，每次Page数，默认是4  
+// 3. flushPhysicQueueLeastPages 刷盘的时候，每次Page数，默认是4  
 // 4. flushPhysicQueueThoroughInterval 
 public void run() {
     CommitLog.log.info(this.getServiceName() + " service started");
