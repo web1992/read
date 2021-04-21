@@ -8,7 +8,9 @@
   - [DefaultMQProducerImpl#endTransaction](#defaultmqproducerimplendtransaction)
   - [EndTransactionProcessor](#endtransactionprocessor)
   - [TransactionalMessageBridge](#transactionalmessagebridge)
-  - [事物状态查询](#事物状态查询)
+  - [TransactionalMessageCheckService 事物服务的初始化](#transactionalmessagecheckservice-事物服务的初始化)
+  - [TransactionalMessageCheckService#check](#transactionalmessagecheckservicecheck)
+  - [AbstractTransactionalMessageCheckListener 发事物消息查询 Request](#abstracttransactionalmessagechecklistener-发事物消息查询-request)
 
 ## 概述
 
@@ -242,10 +244,38 @@ public RemotingCommand processRequest(ChannelHandlerContext ctx, RemotingCommand
 
 ## TransactionalMessageBridge
 
-## 事物状态查询
+## TransactionalMessageCheckService 事物服务的初始化
 
 ```java
-// AbstractTransactionalMessageCheckListener
+// BrokerController#initialTransaction
+// transactionalMessageService 事物消息的实现类
+// transactionalMessageCheckListener 事物消息的检查回调（负责处理事物状态查询）
+// transactionalMessageCheckService 是一个线程,主页作用的检查事物的状态（开启事物状态查询的入口）
+private void initialTransaction() {
+    this.transactionalMessageService = ServiceProvider.loadClass(ServiceProvider.TRANSACTION_SERVICE_ID, TransactionalMessageService.class);
+    if (null == this.transactionalMessageService) {
+        this.transactionalMessageService = new TransactionalMessageServiceImpl(new TransactionalMessageBridge(this, this.getMessageStore()));
+        log.warn("Load default transaction message hook service: {}", TransactionalMessageServiceImpl.class.getSimpleName());
+    }
+    this.transactionalMessageCheckListener = ServiceProvider.loadClass(ServiceProvider.TRANSACTION_LISTENER_ID, AbstractTransactionalMessageCheckListener.class);
+    if (null == this.transactionalMessageCheckListener) {
+        this.transactionalMessageCheckListener = new DefaultTransactionalMessageCheckListener();
+        log.warn("Load default discard message hook service: {}", DefaultTransactionalMessageCheckListener.class.getSimpleName());
+    }
+    this.transactionalMessageCheckListener.setBrokerController(this);
+    this.transactionalMessageCheckService = new TransactionalMessageCheckService(this);
+}
+```
+
+## TransactionalMessageCheckService#check
+
+事物消息的 check
+
+## AbstractTransactionalMessageCheckListener 发事物消息查询 Request
+
+```java
+// AbstractTransactionalMessageCheckListener#sendCheckMessage
+// 次方法发送消息到 Client 查询事物状态
 public void sendCheckMessage(MessageExt msgExt) throws Exception {
     CheckTransactionStateRequestHeader checkTransactionStateRequestHeader = new CheckTransactionStateRequestHeader();
     checkTransactionStateRequestHeader.setCommitLogOffset(msgExt.getCommitLogOffset());
@@ -265,3 +295,7 @@ public void sendCheckMessage(MessageExt msgExt) throws Exception {
     }
 }
 ```
+
+当 `Client` 收到消息的时候，会执行下面的代码流程，执行检查事物消息的逻辑。
+
+`ClientRemotingProcessor.checkTransactionState` -> `transactionCheckListener.checkLocalTransactionState`
