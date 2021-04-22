@@ -29,6 +29,12 @@
 
 ## 消息消费的核心类
 
+RockerMQ 中的（Client）Consumer 实现也是比较复杂的，主要是涉及的类很多，而且各个类之间都相互关联。
+虽然 Consumer 的主要作用是发送消息，但是很多功能都是在 Consumer 端实现的。
+比如：1。拉取消息进行消费。2.消息消费失败，重新发回到MQ，3.多个 Consumer 消费者之间的 负载均衡，4.持久化消费者的 offset 等等。
+
+而下图的类，就是负责上述的这些功能。
+
 ![rocketmq-consumer-class](images/rocketmq-consumer.png)
 
 - `DefaultMQPushConsumer` （Consumer 入口）负责 Consumer 的启动&管理配置参数
