@@ -357,7 +357,7 @@ private boolean m; //batch
 
 ![rocket-mq-customer-head-trac.png](./images/rocket-mq-customer-head-trac.png)
 
-**json 形式**
+json 形式
 
 ```json
 {
