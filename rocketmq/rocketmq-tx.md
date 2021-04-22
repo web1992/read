@@ -269,7 +269,56 @@ private void initialTransaction() {
 
 ## TransactionalMessageCheckService#check
 
-事物消息的 check
+事物消息的查询策略：
+
+- 1.定时任务 `TransactionalMessageCheckService` 会定期的执行查询事物状态得任务
+- 2.通过 Offset 查询事物消息，
+- 3.根据 "d" in tags ,过滤已经 commit / rollback 的消息
+- 4.执行查询逻辑 listener.resolveHalfMsg(msgExt);
+- 5.最后更新 offset
+
+```java
+// offset
+// halfOffset 事物消息的 ConsumeOffset,每次从这里开始查询事物消息
+// opOffset
+long halfOffset = transactionalMessageBridge.fetchConsumeOffset(messageQueue);
+long opOffset = transactionalMessageBridge.fetchConsumeOffset(opQueue);
+```
+
+```java
+// 根据 opOffset halfOffset 查询事物消息。
+// 如果已经 commit / rollback 的消息会加入到 removeMap 中
+PullResult pullResult = fillOpRemoveMap(removeMap, opQueue, opOffset, halfOffset, doneOpOffset);
+```
+
+事物消息的删除逻辑如下：
+
+```java
+@Override
+public boolean deletePrepareMessage(MessageExt msgExt) {
+    // 添加 tags=d,标记次消息”删除“ 也就是事物成功了
+    if (this.transactionalMessageBridge.putOpMessage(msgExt, TransactionalMessageUtil.REMOVETAG)) { // REMOVETAG = "d";
+        log.debug("Transaction op message write successfully. messageId={}, queueId={} msgExt:{}", msgExt.getMsgId(), msgExt.getQueueId(), msgExt);
+        return true;
+    } else {
+        log.error("Transaction op message write failed. messageId is {}, queueId is {}", msgExt.getMsgId(), msgExt.getQueueId());
+        return false;
+    }
+}
+```
+
+最后更新 offset
+
+```java
+// 更新 offset
+if (newOffset != halfOffset) {
+    transactionalMessageBridge.updateConsumeOffset(messageQueue, newOffset);
+}
+long newOpOffset = calculateOpOffset(doneOpOffset, opOffset);
+if (newOpOffset != opOffset) {
+    transactionalMessageBridge.updateConsumeOffset(opQueue, newOpOffset);
+}
+```
 
 ## AbstractTransactionalMessageCheckListener 发事物消息查询 Request
 
@@ -299,3 +348,4 @@ public void sendCheckMessage(MessageExt msgExt) throws Exception {
 当 `Client` 收到消息的时候，会执行下面的代码流程，执行检查事物消息的逻辑。
 
 `ClientRemotingProcessor.checkTransactionState` -> `transactionCheckListener.checkLocalTransactionState`
+
