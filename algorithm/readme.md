@@ -1,16 +1,8 @@
 # algorithm
 
-- [限流算法(from 博客园)](https://www.cnblogs.com/LBSer/p/4083131.html)
-- [MCS](#algorithm)
-- [CLH](#algorithm)
-
 ## 算法图形化网站
 
 - [https://www.cs.usfca.edu/~galles/visualization/Algorithms.html](https://www.cs.usfca.edu/~galles/visualization/Algorithms.html)
-
-## log
-
-[对数](https://baike.baidu.com/item/%E5%AF%B9%E6%95%B0)
 
 ## 时间复杂度
 
@@ -32,7 +24,12 @@
 
 大O(n)表示法 让你能够比较操作数，它指出了算法运行时间的增速。
 
+## log
+
+[对数](https://baike.baidu.com/item/%E5%AF%B9%E6%95%B0)
+
 ## 算法学习网站
 
 - [https://github.com/chefyuan/algorithm-base](https://github.com/chefyuan/algorithm-base)
 - [https://github.com/youngyangyang04/leetcode-master](https://github.com/youngyangyang04/leetcode-master)
+- [限流算法(from 博客园)](https://www.cnblogs.com/LBSer/p/4083131.html)
