@@ -263,7 +263,7 @@ switch (consumeFromWhere) {
 -> QueryConsumerOffsetRequestHeader // 发送查询 Request
 -> Borker // Borker 进行处理，发送 Response
 -> QueryConsumerOffsetResponseHeader // 处理 Response
--> offset 获取 offset
+-> offset // 获取 offset
 ```
 
 ## MQClientInstance#start
