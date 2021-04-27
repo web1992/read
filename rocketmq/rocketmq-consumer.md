@@ -1,11 +1,15 @@
 # Consumer
 
+RocketMQ 消费消息的实现解析。
+
+目录：
+
 - [Consumer](#consumer)
   - [消息的创建和消费](#消息的创建和消费)
   - [消息消费的核心类](#消息消费的核心类)
   - [Consumer的启动](#consumer的启动)
   - [DefaultMQPushConsumerImpl](#defaultmqpushconsumerimpl)
-    - [DefaultMQPushConsumerImpl 的启动](#defaultmqpushconsumerimpl-的启动)
+    - [DefaultMQPushConsumerImpl#start](#defaultmqpushconsumerimplstart)
     - [DefaultMQPushConsumerImpl#pullMessage](#defaultmqpushconsumerimplpullmessage)
     - [ConsumeRequest](#consumerequest)
     - [ConsumeMessageService#processConsumeResult](#consumemessageserviceprocessconsumeresult)
@@ -14,6 +18,7 @@
     - [MQClientInstance#start](#mqclientinstancestart)
   - [PullMessageService](#pullmessageservice)
   - [ConsumeMessageOrderlyService](#consumemessageorderlyservice)
+  - [ConsumeOffset](#consumeoffset)
   - [RemotingClient](#remotingclient)
 
 可以了解的内容：
@@ -30,12 +35,15 @@
 ## 消息消费的核心类
 
 RockerMQ 中的（Client）Consumer 实现也是比较复杂的，主要是涉及的类很多，而且各个类之间都相互关联。
-虽然 Consumer 的主要作用是发送消息，但是很多功能都是在 Consumer 端实现的。
-比如：1。拉取消息进行消费。2.消息消费失败，重新发回到MQ，3.多个 Consumer 消费者之间的 负载均衡，4.持久化消费者的 offset 等等。
+虽然 Consumer 的主要作用是消费消息，但是很多功能都是在 Consumer 端实现的。
+比如：1.拉取消息进行消费。2.消息消费失败，重新发回到MQ，3.多个 Consumer 消费者之间的 负载均衡，4.持久化消费者的 offset 等等。
 
-而下图的类，就是负责上述的这些功能。
+而下图中的类，就是负责上述的这些功能（类真的多！）。
 
 ![rocketmq-consumer-class](images/rocketmq-consumer.png)
+
+如果我们不关心实现，只消费消息。我们使用 `DefaultMQPushConsumer` 和 `MessageListenerConcurrently`(`MessageListener`) 就可以完成消息的消费了。
+但是如果我们要关心实现，那么上图中的类，都需要了解，下面对主要的类进行简单的说明：
 
 - `DefaultMQPushConsumer` （Consumer 入口）负责 Consumer 的启动&管理配置参数
 - `DefaultMQPushConsumerImpl` 负责发送 `PullReques`t 拉消息,包含 `ConsumeMessageService` 和 `MQClientInstance`
@@ -65,7 +73,11 @@ DefaultMQPushConsumer#start
 
 ## DefaultMQPushConsumerImpl
 
-### DefaultMQPushConsumerImpl 的启动
+`DefaultMQPushConsumerImpl` 的主要功能是 拉取消息进行消费，下面 从 start 和 pullMessage 方法中去了解消息消费的核心。
+
+### DefaultMQPushConsumerImpl#start
+
+消息消费的启动过程如下：
 
 ```java
 // 1. 检查配置
@@ -91,6 +103,8 @@ this.mQClientFactory.rebalanceImmediately();// 13
 ```
 
 ### DefaultMQPushConsumerImpl#pullMessage
+
+获取消息的过程如下：
 
 ```java
 // pullMessage 方法的声明,注意返回值是 void，参数是 PullRequest
@@ -125,6 +139,8 @@ public void pullMessage(final PullRequest pullRequest) {
 ![rocketmq-consumer-consumer-simple.png](images/rocketmq-consumer-consumer-simple.png)
 
 ### ConsumeRequest
+
+消息消费的代码片段，
 
 ```java
 // org.apache.rocketmq.client.impl.consumer.ConsumeMessageConcurrentlyService.ConsumeRequest
@@ -310,6 +326,10 @@ private void pullMessage(final PullRequest pullRequest) {
 ## ConsumeMessageOrderlyService
 
 顺序消费消息的实现
+
+## ConsumeOffset
+
+`ConsumerOffsetManager`
 
 ## RemotingClient
 
