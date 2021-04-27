@@ -254,6 +254,18 @@ switch (consumeFromWhere) {
 // case3: 如果是第一次消费,getMQAdminImpl().searchOffset(mq,timestamp) 查找Offset，否则使用 lastOffset
 ```
 
+简单的代码流程：
+
+```java
+`RemoteBrokerOffsetStore`(`OffsetStore`) -> readOffset
+-> MQClientInstance
+-> MQClientAPIImpl -> queryConsumerOffset
+-> QueryConsumerOffsetRequestHeader // 发送查询 Request
+-> Borker // Borker 进行处理，发送 Response
+-> QueryConsumerOffsetResponseHeader // 处理 Response
+-> offset 获取 offset
+```
+
 ## MQClientInstance#start
 
 ```java
