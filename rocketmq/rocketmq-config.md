@@ -2,6 +2,8 @@
 
 ## MessageStoreConfig
 
+`MessageStoreConfig` 和配置相关的实现类。
+
 - ConsumerOffsetManager
 - ConsumerFilterManager
 - ScheduleMessageService
@@ -65,4 +67,24 @@ public synchronized void persist() {
 
 ```java
 if (started.get()) ScheduleMessageService.this.persist();
+```
+
+## ScheduleMessageService
+
+`org.apache.rocketmq.store.schedule.ScheduleMessageService`
+
+```java
+// 会在 DefaultMessageStore 中启动 
+ @Override
+ public void handleScheduleMessageService(final BrokerRole brokerRole) {
+     if (this.scheduleMessageService != null) {
+         if (brokerRole == BrokerRole.SLAVE) {
+             this.scheduleMessageService.shutdown();
+         } else {
+             // 启动 ScheduleMessageService
+             this.scheduleMessageService.start();
+         }
+     }
+
+ }
 ```
