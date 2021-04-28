@@ -335,3 +335,14 @@ private void pullMessage(final PullRequest pullRequest) {
 ## RebalanceImpl
 
 `Rebalance` 的实现
+
+| ConsumerImpl                | Rebalance             |
+| --------------------------- | --------------------- |
+| DefaultMQPushConsumerImpl   | RebalancePushImpl     |
+| DefaultLitePullConsumerImpl | RebalanceLitePullImpl |
+| DefaultMQPullConsumerImpl   | RebalancePullImpl     |
+
+```java
+// DefaultMQPushConsumerImpl
+private final RebalanceImpl rebalanceImpl = new RebalancePushImpl(this);
+```
