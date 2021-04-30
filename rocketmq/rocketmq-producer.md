@@ -1,7 +1,27 @@
 # Producer
 
-![rocketmq-producer.png](./images/rocketmq-producer.png)
+## DefaultMQProducer
 
-## Message Flow
+```java
+public class DefaultMQProducer extends ClientConfig implements MQProducer {
+// ...
+}
+```
 
-![messgae flow](images/rocketmq-messgae-flow.png)
+## MessageQueue
+
+`queueId` 的获取
+
+```java
+// 选择 MessageQueue  DefaultMQProducerImpl#selectOneMessageQueue
+MessageQueue mqSelected = this.selectOneMessageQueue(topicPublishInfo, lastBrokerName);
+mq = mqSelected;
+
+// 发消息 DefaultMQProducerImpl#sendDefaultImpl
+sendResult = this.sendKernelImpl(msg, mq, communicationMode, sendCallback, topicPublishInfo, timeout - costTime);
+
+// ... DefaultMQProducerImpl#sendKernelImpl
+SendMessageRequestHeader requestHeader = new SendMessageRequestHeader();
+// get QueueId
+requestHeader.setQueueId(mq.getQueueId());
+```

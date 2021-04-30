@@ -346,3 +346,26 @@ private void pullMessage(final PullRequest pullRequest) {
 // DefaultMQPushConsumerImpl
 private final RebalanceImpl rebalanceImpl = new RebalancePushImpl(this);
 ```
+
+核心方法
+
+```java
+public void doRebalance(final boolean isOrder) {
+    Map<String, SubscriptionData> subTable = this.getSubscriptionInner();
+    if (subTable != null) {
+        for (final Map.Entry<String, SubscriptionData> entry : subTable.entrySet()) {
+            final String topic = entry.getKey();
+            try {
+                this.rebalanceByTopic(topic, isOrder);
+            } catch (Throwable e) {
+                if (!topic.startsWith(MixAll.RETRY_GROUP_TOPIC_PREFIX)) {
+                    log.warn("rebalanceByTopic Exception", e);
+                }
+            }
+        }
+    }
+    this.truncateMessageQueueNotMyTopic();
+}
+```
+
+`AllocateMessageQueueStrategy`

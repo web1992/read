@@ -1,0 +1,5 @@
+# MessageStore
+
+## DefaultMessageStore
+
+## DefaultMessageStore#getMessage
