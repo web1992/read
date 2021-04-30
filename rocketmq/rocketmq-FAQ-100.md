@@ -4,13 +4,15 @@
 
 列举下面的问题主要目的是 `带着问题看RocketMQ`，事半功倍。
 
-- `RocketMQ` 为什么不建议在生产环境中适用自动创建Topic
+- `RocketMQ` 为什么不建议在生产环境中使用自动创建Topic这个功能
 - `RocketMQ` 路由信息是什么，为什么需要它
 - `RocketMQ` 中的`queueId`的作用
+- `RocketMQ` 中 tags 是作用是什么
 - `RocketMQ` 的负载均衡的实现，`Borker`的负载均衡和`Consumer`的负载均衡的实现
 - `RocketMQ` HA 的实现
 - `RocketMQ` 的主从（master/slave）实现
 - `RocketMQ` 存储的如何实现高性能的
+- `RocketMQ` 中的一条Msg消息是如何存在在文件中的（以什么样的格式）
 - `RocketMQ` 顺序消费消息的实现
 - `RocketMQ` 事物消息的实现
 - `RocketMQ` 消息消费失败的处理方式
@@ -25,3 +27,4 @@
 - `RocketMQ` 事物消息的回查是如何触发的（查询事物消息的状态）
 - `RocketMQ` Consumer 是如何知道有消息可以消费了，是 Consumer Pull 还是 Borker Push
 - `RocketMQ` Consumer 消费过慢会怎么样
+- `RocketMQ` 批量消息的使用场景

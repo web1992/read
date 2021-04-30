@@ -15,4 +15,5 @@
 
 ## Links
 
+- [概念基础](https://help.aliyun.com/document_detail/29532.html?spm=a2c4g.11186623.6.548.1bce7907LlxyjC)
 - [https://mp.weixin.qq.com/s/TOfR98N-MhOHkGLPimIHmg](https://mp.weixin.qq.com/s/TOfR98N-MhOHkGLPimIHmg)
