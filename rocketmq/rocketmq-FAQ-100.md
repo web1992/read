@@ -17,7 +17,7 @@
 - `RocketMQ` 事物消息的实现
 - `RocketMQ` 消息消费失败的处理方式
 - `RocketMQ` 的序列化
-- `RocketMQ` 如何记录消息消费的位置，在重启之后继续消费
+- `RocketMQ` 如何记录消息消费的位置(offset)，在重启之后继续消费
 - `RocketMQ` 如何通过`MessageId`查询一个消息
 - `RocketMQ` Client(Producer&Consumer) 与 Borker 的通信方式
 - `RocketMQ` consumerQueue 的作用
