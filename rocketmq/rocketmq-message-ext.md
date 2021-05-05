@@ -15,3 +15,19 @@ RocketMQ  如何存储（持久化）消息
 ![rocket-store-msg.png](./images/rocket-store-msg.png)
 
 上图是根据 `org.apache.rocketmq.store.CommitLog` 中内部类 `DefaultAppendMessageCallback` 源码绘制。
+
+## 核心字段讲解
+
+### queueId
+
+### queueOffset
+
+### msgId
+
+### reconsumeTimes
+
+### sysFlag
+
+### preparedTransactionOffset
+
+### commitLogOffset
