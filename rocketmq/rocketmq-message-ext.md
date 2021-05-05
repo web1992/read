@@ -20,7 +20,60 @@ RocketMQ  如何存储（持久化）消息
 
 ### queueId
 
+```java
+// MessageExt
+private int queueId;
+
+// CommitLog#DefaultAppendMessageCallback
+// 4 QUEUEID
+this.msgStoreItemMemory.putInt(msgInner.getQueueId());
+
+```
+
 ### queueOffset
+
+```java
+private boolean putBackHalfMsgQueue(MessageExt msgExt, long offset) {
+    PutMessageResult putMessageResult = putBackToHalfQueueReturnResult(msgExt);
+    if (putMessageResult != null
+        && putMessageResult.getPutMessageStatus() == PutMessageStatus.PUT_OK) {
+        msgExt.setQueueOffset(// queueOffset
+            putMessageResult.getAppendMessageResult().getLogicsOffset());// queueOffset
+        msgExt.setCommitLogOffset(// commitLogOffset
+            putMessageResult.getAppendMessageResult().getWroteOffset());// wroteOffset
+        msgExt.setMsgId(putMessageResult.getAppendMessageResult().getMsgId());
+        log.debug(
+            "Send check message, the offset={} restored in queueOffset={} "
+                + "commitLogOffset={} "
+                + "newMsgId={} realMsgId={} topic={}",
+            offset, msgExt.getQueueOffset(), msgExt.getCommitLogOffset(), msgExt.getMsgId(),
+            msgExt.getUserProperty(MessageConst.PROPERTY_UNIQ_CLIENT_MESSAGE_ID_KEYIDX),
+            msgExt.getTopic());
+        return true;
+    } else {
+        log.error(
+            "PutBackToHalfQueueReturnResult write failed, topic: {}, queueId: {}, "
+                + "msgId: {}",
+            msgExt.getTopic(), msgExt.getQueueId(), msgExt.getMsgId());
+        return false;
+    }
+}
+```
+
+`AppendMessageResult`
+
+```java
+// AppendMessageResult
+// PHY OFFSET
+long wroteOffset = fileFromOffset + byteBuffer.position();
+
+Long queueOffset = CommitLog.this.topicQueueTable.get(key);
+
+AppendMessageResult result = new AppendMessageResult(AppendMessageStatus.PUT_OK, wroteOffset, msgLen, msgId,
+    msgInner.getStoreTimestamp(), queueOffset, CommitLog.this.defaultMessageStore.now() - beginTimeMills);
+// logicsOffset=queueOffset
+// wroteOffset=wroteOffset
+```
 
 ### msgId
 
