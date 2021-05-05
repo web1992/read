@@ -1,5 +1,11 @@
 # Producer
 
+## Msg 的发送
+
+`Message` -> `CommandCustomHeader` -> `RemotingCommand` -> `byte[]` -> TPC -> `Broker` -> `SendResult`
+
+## SendResult
+
 ## DefaultMQProducer
 
 ```java
