@@ -11,6 +11,7 @@
   - [TransactionalMessageCheckService 事物服务的初始化](#transactionalmessagecheckservice-事物服务的初始化)
   - [TransactionalMessageCheckService#check](#transactionalmessagecheckservicecheck)
   - [AbstractTransactionalMessageCheckListener 发事物消息查询 Request](#abstracttransactionalmessagechecklistener-发事物消息查询-request)
+  - [Links](#links)
 
 ## 概述
 
@@ -349,3 +350,6 @@ public void sendCheckMessage(MessageExt msgExt) throws Exception {
 
 `ClientRemotingProcessor.checkTransactionState` -> `transactionCheckListener.checkLocalTransactionState`
 
+## Links
+
+- [https://rocketmq.apache.org/rocketmq/the-design-of-transactional-message/](https://rocketmq.apache.org/rocketmq/the-design-of-transactional-message/)
