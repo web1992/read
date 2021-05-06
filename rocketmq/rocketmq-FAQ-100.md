@@ -28,3 +28,8 @@
 - `RocketMQ` Consumer 是如何知道有消息可以消费了，是 Consumer Pull 还是 Borker Push
 - `RocketMQ` Consumer 消费过慢会怎么样
 - `RocketMQ` 批量消息的使用场景
+- `RocketMQ` 与 kafka 的对比，场景用kafka，什么场景用 RocketMQ。以及各自的优缺点。
+
+## Links
+
+- [https://www.confluent.io/blog/how-choose-number-topics-partitions-kafka-cluster/](https://www.confluent.io/blog/how-choose-number-topics-partitions-kafka-cluster/)
