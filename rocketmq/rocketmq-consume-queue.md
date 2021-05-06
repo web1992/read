@@ -145,3 +145,5 @@ public ConsumeQueue findConsumeQueue(String topic, int queueId) {
     return logic;
 }
 ```
+
+- [RocketMQ ConsumerQueue](https://rocketmq.apache.org/rocketmq/how-to-support-more-queues-in-rocketmq/)
