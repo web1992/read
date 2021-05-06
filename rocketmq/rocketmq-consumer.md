@@ -10,6 +10,8 @@ RocketMQ 消费消息的实现解析。
   - [Consumer的启动](#consumer的启动)
   - [DefaultMQPushConsumerImpl#start](#defaultmqpushconsumerimplstart)
   - [DefaultMQPushConsumerImpl#pullMessage](#defaultmqpushconsumerimplpullmessage)
+    - [PullRequest](#pullrequest)
+    - [PullResult](#pullresult)
   - [ConsumeRequest](#consumerequest)
   - [ConsumeMessageService#processConsumeResult](#consumemessageserviceprocessconsumeresult)
   - [RebalancePushImpl#computePullFromWhere](#rebalancepushimplcomputepullfromwhere)
@@ -70,11 +72,12 @@ DefaultMQPushConsumer#start
 
 ## DefaultMQPushConsumerImpl#start
 
-`DefaultMQPushConsumerImpl` 的主要功能是 拉取消息进行消费，下面 从 start 和 pullMessage 方法中去了解消息消费的核心。
+`DefaultMQPushConsumerImpl` 的主要功能是 拉取消息进行消费，下面 从 `start` 和 `pullMessage` 方法中去了解消息消费的核心。
 
 消息消费的启动过程如下：
 
 ```java
+// DefaultMQPushConsumerImpl#start
 // 1. 检查配置
 // 2. copy copySubscription
 // 3. 创建 mQClientFactory
@@ -99,9 +102,10 @@ this.mQClientFactory.rebalanceImmediately();// 13
 
 ## DefaultMQPushConsumerImpl#pullMessage
 
-获取消息的过程如下：
+1. 拉取消息的启动和准备阶段。获取消息的过程如下：
 
 ```java
+// DefaultMQPushConsumerImpl#pullMessage
 // pullMessage 方法的声明,注意返回值是 void，参数是 PullRequest
 
 // 1. 检查 ProcessQueue
@@ -133,7 +137,77 @@ public void pullMessage(final PullRequest pullRequest) {
 
 ![rocketmq-consumer-consumer-simple.png](images/rocketmq-consumer-consumer-simple.png)
 
+### PullRequest
+
+2.执行拉取消息的阶段
+
+`org.apache.rocketmq.client.impl.consumer.PullRequest` 是一个拉取消息的`请求`类。首先 PullRequest 会在 `RebalanceImpl` 中创建，然后加入到 PullMessageService 线程的 queue 中。
+PullMessageService 线程会对 queue 执行 take 操作，执行拉取操作。无论是否新消息，在进行拉取消息之后， 然后再把 PullRequest 放入到 queue 中,以此循环。
+
+```java
+// RebalanceImpl 中 PullRequest 的创建
+PullRequest pullRequest = new PullRequest();
+pullRequest.setConsumerGroup(consumerGroup);
+pullRequest.setNextOffset(nextOffset);
+pullRequest.setMessageQueue(mq);
+pullRequest.setProcessQueue(pq);
+pullRequestList.add(pullRequest);
+```
+
+在 PullCallback 中会执行拉消息的回调处理，在这里会更新 `nextOffset`,代码片段如下：
+
+```java
+long prevRequestOffset = pullRequest.getNextOffset();
+// 使用 pullResult 更新 nextOffset
+pullRequest.setNextOffset(pullResult.getNextBeginOffset());
+```
+
+### PullResult
+
+`org.apache.rocketmq.client.consumer.PullResult` 是拉取消息的结果
+
+```java
+// PullCallback 在中的 PullResult
+PullCallback pullCallback = new PullCallback() {
+    @Override
+    public void onSuccess(PullResult pullResult) {
+        // 处理 PullResult
+    }
+}
+
+// PullResult 的字段
+public class PullResult {
+    private final PullStatus pullStatus;
+    private final long nextBeginOffset;
+    private final long minOffset;
+    private final long maxOffset;
+    private List<MessageExt> msgFoundList;
+}
+```
+
 ## ConsumeRequest
+
+3.在获取到`PullResult`之后，进入到消费消息的阶段。
+
+```java
+// 在获取到 PullResult 之后，执行 ConsumeMessageService 的 submitConsumeRequest 方法
+DefaultMQPushConsumerImpl.this.consumeMessageService.submitConsumeRequest(
+                                    pullResult.getMsgFoundList(),
+                                    processQueue,
+                                    pullRequest.getMessageQueue(),
+                                    dispatchToConsume);
+// submitConsumeRequest 方法
+public void submitConsumeRequest(
+    final List<MessageExt> msgs,
+    final ProcessQueue processQueue,
+    final MessageQueue messageQueue,
+    final boolean dispatchToConsume) {
+    // 包装 ConsumeRequest
+    ConsumeRequest consumeRequest = new ConsumeRequest(msgs, processQueue, messageQueue);
+    // 提交给线程池，进行异步的消费处理
+    this.consumeExecutor.submit(consumeRequest);
+}
+```
 
 消息消费的代码片段。
 
