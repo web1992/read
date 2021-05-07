@@ -8,15 +8,15 @@ RocketMQ 消费消息的实现解析。
   - [消息的创建和消费](#消息的创建和消费)
   - [消息消费的核心类](#消息消费的核心类)
   - [Consumer的启动](#consumer的启动)
-  - [DefaultMQPushConsumerImpl#start](#defaultmqpushconsumerimplstart)
-  - [DefaultMQPushConsumerImpl#pullMessage](#defaultmqpushconsumerimplpullmessage)
+    - [DefaultMQPushConsumerImpl#start](#defaultmqpushconsumerimplstart)
+    - [MQClientInstance#start](#mqclientinstancestart)
+  - [Consumer 拉取消息的流程](#consumer-拉取消息的流程)
+    - [PullMessageService](#pullmessageservice)
     - [PullRequest](#pullrequest)
     - [PullResult](#pullresult)
   - [ConsumeRequest](#consumerequest)
   - [ConsumeMessageService#processConsumeResult](#consumemessageserviceprocessconsumeresult)
   - [RebalancePushImpl#computePullFromWhere](#rebalancepushimplcomputepullfromwhere)
-  - [MQClientInstance#start](#mqclientinstancestart)
-  - [PullMessageService](#pullmessageservice)
   - [ConsumeMessageOrderlyService](#consumemessageorderlyservice)
   - [RebalanceImpl](#rebalanceimpl)
 
@@ -35,13 +35,13 @@ RocketMQ 消费消息的实现解析。
 
 RockerMQ 中的（Client）Consumer 实现也是比较复杂的，主要是涉及的类很多，而且各个类之间都相互关联。
 虽然 Consumer 的主要作用是消费消息，但是很多功能都是在 Consumer 端实现的。
-比如：1.拉取消息进行消费。2.消息消费失败，重新发回到MQ，3.多个 Consumer 消费者之间的`负载均衡`，4.持久化消费者的 offset 等等。
+比如：1.(Pull 模式)拉取消息进行消费。2.消息消费失败，重新发回到MQ，3.多个 Consumer 消费者之间的`负载均衡`，4.持久化消费者的 offset 等等。
 
 而下图中的类，就是负责上述的这些功能（类真的多！）。
 
 ![rocketmq-consumer-class](images/rocketmq-consumer.png)
 
-如果我们不关心实现，只消费消息。我们使用 `DefaultMQPushConsumer` 和 `MessageListenerConcurrently`(`MessageListener`) 就可以完成消息的消费了。
+如果我们不关心消费端的实现，只使用消费消息的功能。我们使用 `DefaultMQPushConsumer` 和 `MessageListenerConcurrently`(`MessageListener`) 就可以完成消息的消费了。
 但是如果我们要关心实现，那么上图中的类，都需要了解，下面对主要的类进行简单的说明：
 
 - `DefaultMQPushConsumer` （Consumer 入口）负责 Consumer 的启动&管理配置参数
@@ -70,7 +70,7 @@ DefaultMQPushConsumer#start
 
 下面是各个启动类的代码片段：
 
-## DefaultMQPushConsumerImpl#start
+### DefaultMQPushConsumerImpl#start
 
 `DefaultMQPushConsumerImpl` 的主要功能是 拉取消息进行消费，下面 从 `start` 和 `pullMessage` 方法中去了解消息消费的核心。
 
@@ -100,7 +100,45 @@ this.mQClientFactory.rebalanceImmediately();// 13
 }
 ```
 
-## DefaultMQPushConsumerImpl#pullMessage
+### MQClientInstance#start
+
+```java
+// MQClientInstance 的启动
+public void start() throws MQClientException {
+    synchronized (this) {
+        switch (this.serviceState) {
+            case CREATE_JUST:
+                this.serviceState = ServiceState.START_FAILED;
+                // If not specified,looking address from name server
+                if (null == this.clientConfig.getNamesrvAddr()) {
+                    this.mQClientAPIImpl.fetchNameServerAddr();
+                }
+                // Start request-response channel
+                this.mQClientAPIImpl.start();
+                // Start various schedule tasks
+                this.startScheduledTask();
+                // Start pull service
+                this.pullMessageService.start();
+                // Start rebalance service
+                this.rebalanceService.start();
+                // Start push service
+                this.defaultMQProducer.getDefaultMQProducerImpl().start(false);
+                log.info("the client factory [{}] start OK", this.clientId);
+                this.serviceState = ServiceState.RUNNING;
+                break;
+            case START_FAILED:
+                throw new MQClientException("The Factory object[" + this.getClientId() + "] has been created before, and failed.", null);
+            default:
+                break;
+        }
+    }
+}
+```
+
+## Consumer 拉取消息的流程
+
+消费者从 Broker 拉取消息，进行消费的主要实现是在 `DefaultMQPushConsumerImpl#pullMessage` 方法中。
+这里我们先看下整理的流程（细节太多，不一一看了。）
 
 1. 拉取消息的启动和准备阶段。获取消息的过程如下：
 
@@ -136,6 +174,36 @@ public void pullMessage(final PullRequest pullRequest) {
 消息消费的简化图：
 
 ![rocketmq-consumer-consumer-simple.png](images/rocketmq-consumer-consumer-simple.png)
+
+### PullMessageService
+
+`PullMessageService` 是一个线程，这里我称它为 `拉取消息的线程`。后面会再次提到它。
+
+```java
+// PullMessageService 的定义，本质是一个线程
+public class PullMessageService extends ServiceThread {
+// ...    
+}
+// 线程的 Run 方法
+public void run() {
+   // ...
+    this.pullMessage(pullRequest);
+   //...
+}
+
+// 拉取消息
+private void pullMessage(final PullRequest pullRequest) {
+    final MQConsumerInner consumer = this.mQClientFactory.selectConsumer(pullRequest.getConsumerGroup());
+    if (consumer != null) {
+        DefaultMQPushConsumerImpl impl = (DefaultMQPushConsumerImpl) consumer;
+        impl.pullMessage(pullRequest);
+    } else {
+        log.warn("No matched consumer for the PullRequest {}, drop it", pullRequest);
+    }
+}
+```
+
+上面的 `pullMessage` 方法最终会调用 `DefaultMQPushConsumerImpl#pullMessage` 方法
 
 ### PullRequest
 
@@ -192,7 +260,7 @@ public class PullResult {
 ```java
 // 在获取到 PullResult 之后，执行 ConsumeMessageService 的 submitConsumeRequest 方法
 DefaultMQPushConsumerImpl.this.consumeMessageService.submitConsumeRequest(
-                                    pullResult.getMsgFoundList(),
+                                    pullResult.getMsgFoundList(),// pullResult 中的消息
                                     processQueue,
                                     pullRequest.getMessageQueue(),
                                     dispatchToConsume);
@@ -202,14 +270,22 @@ public void submitConsumeRequest(
     final ProcessQueue processQueue,
     final MessageQueue messageQueue,
     final boolean dispatchToConsume) {
-    // 包装 ConsumeRequest
+    // ...
+    // 包装成 ConsumeRequest
     ConsumeRequest consumeRequest = new ConsumeRequest(msgs, processQueue, messageQueue);
+    // ...
     // 提交给线程池，进行异步的消费处理
     this.consumeExecutor.submit(consumeRequest);
 }
 ```
 
-消息消费的代码片段。
+从上可知整体流程：在拉取到消息之后，获取到 `PullResult` ，然后包装成 `ConsumeRequest` 提交给线程池，进行消息的消费。
+这里说下为什么需要使用新的线程池去消息消息。使用新的线程池，主要是处理 `ConsumeRequest` 任务。这些任务会与业务逻辑的代码在一个线程执行。
+而业务逻辑的耗时是不可控的，如果执行的时间过长，那么就导致线程池的耗尽。而使用新的线程池，可以与 `拉取消息的线程池` 分开。这样避免上述问题的发生。
+
+此外也引出的另一个问题，如果消息消费过慢，那么`拉取消息的线程` 会进入怎么样的状态呢？
+
+`ConsumeRequest` 消息消费的代码片段。
 
 ```java
 // org.apache.rocketmq.client.impl.consumer.ConsumeMessageConcurrentlyService.ConsumeRequest
@@ -229,8 +305,8 @@ ConsumeRequest consumeRequest = new ConsumeRequest(msgs, processQueue, messageQu
 // run 方法
 @Override
 public void run() {
-    // ...
-    MessageListenerConcurrently listener = 
+    // ... 这里是我熟悉的 listener 的 consumeMessage 的方法
+    MessageListenerConcurrently listener = //...
     // ... 消费消息
     status = listener.consumeMessage(Collections.unmodifiableList(msgs), context); 
 }
@@ -238,7 +314,9 @@ public void run() {
 
 ## ConsumeMessageService#processConsumeResult
 
-处理消费结果，这里能找到消息消费失败之后的处理，把消息再次`发回`到 Broker。
+在我们了解如何从 Borker 拉取消息之后，再来看看，消息消费的结果是如何处理的。具体的代码逻辑在 `ConsumeMessageService#processConsumeResult` 方法中。
+
+> 处理消费结果，这里能找到消息消费失败之后的处理，把消息再次`发回`到 Broker。
 
 ```java
 //  ConsumeMessageConcurrentlyService 的代码片段
@@ -287,7 +365,9 @@ switch (this.defaultMQPushConsumer.getMessageModel()) {
 
 ## RebalancePushImpl#computePullFromWhere
 
-消费者，从哪里开始消费的实现
+现实场景中，如果消费者由于发布等原因，进行了重启。那么在重启之后，消息者需要知道从哪里消费消息（或者说从哪里拉取消息）。
+
+而 `RebalancePushImpl#computePullFromWhere` 方法就是消费者从哪里开始消费的实现。
 
 [computePullFromWhere 源码](https://github.com/apache/rocketmq/blob/master/client/src/main/java/org/apache/rocketmq/client/impl/consumer/RebalancePushImpl.java#L141)
 
@@ -327,7 +407,7 @@ switch (consumeFromWhere) {
 // case3: 如果是第一次消费,getMQAdminImpl().searchOffset(mq,timestamp) 查找Offset，否则使用 lastOffset
 ```
 
-简单的代码流程：
+获取 `offset` 的简单的代码流程：
 
 ```java
 `RemoteBrokerOffsetStore`(`OffsetStore`) -> readOffset
@@ -338,69 +418,6 @@ switch (consumeFromWhere) {
 -> QueryConsumerOffsetResponseHeader // 处理 Response
 -> offset // 获取 offset
 ```
-
-## MQClientInstance#start
-
-```java
-// MQClientInstance 的启动
-public void start() throws MQClientException {
-    synchronized (this) {
-        switch (this.serviceState) {
-            case CREATE_JUST:
-                this.serviceState = ServiceState.START_FAILED;
-                // If not specified,looking address from name server
-                if (null == this.clientConfig.getNamesrvAddr()) {
-                    this.mQClientAPIImpl.fetchNameServerAddr();
-                }
-                // Start request-response channel
-                this.mQClientAPIImpl.start();
-                // Start various schedule tasks
-                this.startScheduledTask();
-                // Start pull service
-                this.pullMessageService.start();
-                // Start rebalance service
-                this.rebalanceService.start();
-                // Start push service
-                this.defaultMQProducer.getDefaultMQProducerImpl().start(false);
-                log.info("the client factory [{}] start OK", this.clientId);
-                this.serviceState = ServiceState.RUNNING;
-                break;
-            case START_FAILED:
-                throw new MQClientException("The Factory object[" + this.getClientId() + "] has been created before, and failed.", null);
-            default:
-                break;
-        }
-    }
-}
-```
-
-## PullMessageService
-
-```java
-// PullMessageService 的定义，本质是一个线程
-public class PullMessageService extends ServiceThread {
-// ...    
-}
-// 线程的 Run 方法
-public void run() {
-   // ...
-    this.pullMessage(pullRequest);
-   //...
-}
-
-// 拉取消息
-private void pullMessage(final PullRequest pullRequest) {
-    final MQConsumerInner consumer = this.mQClientFactory.selectConsumer(pullRequest.getConsumerGroup());
-    if (consumer != null) {
-        DefaultMQPushConsumerImpl impl = (DefaultMQPushConsumerImpl) consumer;
-        impl.pullMessage(pullRequest);
-    } else {
-        log.warn("No matched consumer for the PullRequest {}, drop it", pullRequest);
-    }
-}
-```
-
-上面的 `pullMessage` 方法最终会调用 `DefaultMQPushConsumerImpl#pullMessage` 方法
 
 ## ConsumeMessageOrderlyService
 
