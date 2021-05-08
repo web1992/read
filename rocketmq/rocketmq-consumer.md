@@ -394,11 +394,11 @@ if (offset >= 0 && !consumeRequest.getProcessQueue().isDropped()) {
 
 ### ProcessQueue
 
-`ProcessQueue` 的创建,代码在 RebalanceImpl 中。ProcessQueue（PullRequest）的创建，会在 重平衡之后，再次创建或者删除 PullRequest。
+首先说下 `ProcessQueue` 的创建,代码在 RebalanceImpl 中。ProcessQueue（PullRequest）的创建，会在 重平衡之后，再次创建或者删除 PullRequest。
 
-这里简单说下 重平衡(Rebalance) 的作用，现实场景中，存在 Consumer 上线下线的过程（如应用发布），而 MessageQueue （默认是16个，0-15）。如果新 consumer 上线了
-它也需要分配一个 MessageQueue 进行消息的拉取消费。这里就是 Rebalance 的作用，重新分配 MessageQueue 让每个 consumer 都可以拉取消息进行消费。
-（Consumer 下线是一样的道理。下线的consumer使用的MessageQueue需要分配给其他 consumer 进行消费）
+这里简单说下 重平衡(Rebalance)的作用，现实场景中，存在`Consumer`上线下线的过程（如应用发布），而 MessageQueue （默认是16个，0-15）。如果新 consumer 上线了
+它也需要分配一个 MessageQueue 进行消息的拉取消费。这里就是 Rebalance 的作用，重新分配 MessageQueue 让每个 Consumer 都可以拉取消息进行消费。
+（Consumer 下线是一样的道理。下线的Consumer使用的MessageQueue需要分配给其他 Consumer 进行消费）
 
 ```java
 // ProcessQueue 创建&与 PullRequest 绑定的代码片段
@@ -418,6 +418,22 @@ for (MessageQueue mq : mqSet) {
     }
 }
 ```
+
+上面主要是说明 `ProcessQueue` : `PullRequest` = 1:1
+
+其次在说 `ProcessQueue` 的作用，一个 `ProcessQueue` 对应 `PullRequest` 。在拉取消息之后，会把消息加入到 ProcessQueue 中。代码如下：
+
+```java
+// 添加消息
+// DefaultMQPushConsumerImpl#pullMessage
+boolean dispatchToConsume = processQueue.putMessage(pullResult.getMsgFoundList());
+// 移除消息
+// ConsumeMessageConcurrentlyService#processConsumeResult
+long offset = consumeRequest.getProcessQueue().removeMessage(consumeRequest.getMsgs());
+```
+
+而在消息消费之后，会从 `ProcessQueue` 中移除。因此通过 `ProcessQueue` 可以知道有多少消息没有消费，判断消息是否产生了`积压`,
+如果产生了`积压`，那就会暂定拉取消息。这是 Consumer 端控制消息积压的方式。具体的代码可以在 `DefaultMQPushConsumerImpl#pullMessage` 中找到。
 
 ## RebalancePushImpl#computePullFromWhere
 
