@@ -14,10 +14,11 @@ RocketMQ 消费消息的实现解析。
     - [PullMessageService](#pullmessageservice)
     - [PullRequest](#pullrequest)
     - [PullResult](#pullresult)
-  - [ConsumeRequest](#consumerequest)
-  - [ConsumeMessageService#processConsumeResult](#consumemessageserviceprocessconsumeresult)
+  - [Consumer 消费结果的处理](#consumer-消费结果的处理)
+    - [ConsumeRequest](#consumerequest)
+    - [processConsumeResult](#processconsumeresult)
+    - [ProcessQueue](#processqueue)
   - [RebalancePushImpl#computePullFromWhere](#rebalancepushimplcomputepullfromwhere)
-  - [ConsumeMessageOrderlyService](#consumemessageorderlyservice)
   - [RebalanceImpl](#rebalanceimpl)
 
 可以了解的内容：
@@ -26,6 +27,15 @@ RocketMQ 消费消息的实现解析。
 - Consumer 消费消息失败了，怎么处理
 - Consumer 在重启之后，如何继续上一次消费的位置，继续处理
 - Consumer 为什么需要重平衡(rebalance)
+- RocketMQ 为什么没有办法保证消息的重复消费。
+
+RocketMQ 消费消息的实现有3种方式，这里主要以 `DefaultMQPushConsumer(DefaultMQPushConsumerImpl)`(推消息) 和 `ConsumeMessageConcurrentlyService`（并发消息消息）为例子。
+
+三种消息消息的实现类：
+
+- DefaultLitePullConsumer
+- DefaultMQPullConsumer
+- DefaultMQPushConsumer
 
 ## 消息的创建和消费
 
@@ -253,7 +263,9 @@ public class PullResult {
 }
 ```
 
-## ConsumeRequest
+## Consumer 消费结果的处理
+
+### ConsumeRequest
 
 3.在获取到`PullResult`之后，进入到消费消息的阶段。
 
@@ -312,11 +324,15 @@ public void run() {
 }
 ```
 
-## ConsumeMessageService#processConsumeResult
+### processConsumeResult
 
-在我们了解如何从 Borker 拉取消息之后，再来看看，消息消费的结果是如何处理的。具体的代码逻辑在 `ConsumeMessageService#processConsumeResult` 方法中。
+这里以 `ConsumeMessageConcurrentlyService#processConsumeResult` 实现为例子。
+
+在我们了解如何从 Borker 拉取消息之后，再来看看，消息消费的结果是如何处理的。具体的代码逻辑在 `ConsumeMessageConcurrentlyService#processConsumeResult` 方法中。
 
 > 处理消费结果，这里能找到消息消费失败之后的处理，把消息再次`发回`到 Broker。
+
+`processConsumeResult` 中的核心内容是： 消息消费结果的处理&更新offset(消息消费的位置offset)。
 
 ```java
 //  ConsumeMessageConcurrentlyService 的代码片段
@@ -360,6 +376,46 @@ switch (this.defaultMQPushConsumer.getMessageModel()) {
     default:
         break;
 }
+
+// 更新 offset
+long offset = consumeRequest.getProcessQueue().removeMessage(consumeRequest.getMsgs());
+if (offset >= 0 && !consumeRequest.getProcessQueue().isDropped()) {
+    // 这里会更新 offset 
+    // 如果看实现（RemoteBrokerOffsetStore） 中的实现，仅仅是把内存中的 offset 进行更新
+    // 并没有RPC或者执行文件刷盘等操作。
+    // 而真正的同步 offset 是通过定时任务定期执行的(源码在 MQClientInstance#startScheduledTask 中)
+    // 因此offset 的同步是存在时间差的，如果 consumer 被kill -9 了， offset 可能没有被更新，
+    // 等 consumer 重启，依然会从旧的 offset 拉取消息进行消费，也就存在重复消费消息的可能。
+    this.defaultMQPushConsumerImpl.getOffsetStore().updateOffset(consumeRequest.getMessageQueue(), offset, true);
+}
+
+}
+```
+
+### ProcessQueue
+
+`ProcessQueue` 的创建,代码在 RebalanceImpl 中。ProcessQueue（PullRequest）的创建，会在 重平衡之后，再次创建或者删除 PullRequest。
+
+这里简单说下 重平衡(Rebalance) 的作用，现实场景中，存在 Consumer 上线下线的过程（如应用发布），而 MessageQueue （默认是16个，0-15）。如果新 consumer 上线了
+它也需要分配一个 MessageQueue 进行消息的拉取消费。这里就是 Rebalance 的作用，重新分配 MessageQueue 让每个 consumer 都可以拉取消息进行消费。
+（Consumer 下线是一样的道理。下线的consumer使用的MessageQueue需要分配给其他 consumer 进行消费）
+
+```java
+// ProcessQueue 创建&与 PullRequest 绑定的代码片段
+// RebalanceImpl#updateProcessQueueTableInRebalance
+for (MessageQueue mq : mqSet) {
+    if (!this.processQueueTable.containsKey(mq)) {
+        // 创建 ProcessQueue
+        ProcessQueue pq = new ProcessQueue();
+        // ... 
+        // 创建 PullRequest 绑定 ProcessQueue
+        PullRequest pullRequest = new PullRequest();
+        pullRequest.setConsumerGroup(consumerGroup);
+        pullRequest.setNextOffset(nextOffset);
+        pullRequest.setMessageQueue(mq);
+        pullRequest.setProcessQueue(pq);// 设置 ProcessQueue
+        pullRequestList.add(pullRequest);
+    }
 }
 ```
 
@@ -418,10 +474,6 @@ switch (consumeFromWhere) {
 -> QueryConsumerOffsetResponseHeader // 处理 Response
 -> offset // 获取 offset
 ```
-
-## ConsumeMessageOrderlyService
-
-顺序消费消息的实现
 
 ## RebalanceImpl
 
