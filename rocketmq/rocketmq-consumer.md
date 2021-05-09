@@ -7,7 +7,7 @@ RocketMQ 消费消息的实现解析。
 - [Consumer](#consumer)
   - [消息的创建和消费](#消息的创建和消费)
   - [消息消费的核心类](#消息消费的核心类)
-  - [Consumer的启动](#consumer的启动)
+  - [Consumer 的启动](#consumer-的启动)
     - [DefaultMQPushConsumerImpl#start](#defaultmqpushconsumerimplstart)
     - [MQClientInstance#start](#mqclientinstancestart)
   - [Consumer 拉取消息的流程](#consumer-拉取消息的流程)
@@ -20,6 +20,7 @@ RocketMQ 消费消息的实现解析。
     - [ProcessQueue](#processqueue)
   - [RebalancePushImpl#computePullFromWhere](#rebalancepushimplcomputepullfromwhere)
   - [RebalanceImpl](#rebalanceimpl)
+  - [MessageQueue 的分配策略](#messagequeue-的分配策略)
 
 可以了解的内容：
 
@@ -31,7 +32,7 @@ RocketMQ 消费消息的实现解析。
 
 RocketMQ 消费消息的实现有3种方式，这里主要以 `DefaultMQPushConsumer(DefaultMQPushConsumerImpl)`(推消息) 和 `ConsumeMessageConcurrentlyService`（并发消息消息）为例子。
 
-三种消息消息的实现类：
+三种消息消费的实现类：
 
 - DefaultLitePullConsumer
 - DefaultMQPullConsumer
@@ -57,10 +58,10 @@ RockerMQ 中的（Client）Consumer 实现也是比较复杂的，主要是涉�
 - `DefaultMQPushConsumer` （Consumer 入口）负责 Consumer 的启动&管理配置参数
 - `DefaultMQPushConsumerImpl` 负责发送 `PullReques`t 拉消息,包含 `ConsumeMessageService` 和 `MQClientInstance`
 - `ConsumeMessageService` 负责处理消息服务(有 `ConsumeMessageConcurrentlyService` 和 `ConsumeMessageOrderlyService` )两种实现
-- `MQClientInstance` 负责底层的通信
+- `MQClientInstance`(mQClientFactory) 负责底层的通信
 - `RebalanceImpl` 执行 rebalance
 
-## Consumer的启动
+## Consumer 的启动
 
 消息消费者(client)的启动过程(这里列举了启动的核心类)：
 
@@ -150,7 +151,7 @@ public void start() throws MQClientException {
 消费者从 Broker 拉取消息，进行消费的主要实现是在 `DefaultMQPushConsumerImpl#pullMessage` 方法中。
 这里我们先看下整理的流程（细节太多，不一一看了。）
 
-1. 拉取消息的启动和准备阶段。获取消息的过程如下：
+1. 拉取消息的准备阶段和执行阶段。获取消息的过程如下：
 
 ```java
 // DefaultMQPushConsumerImpl#pullMessage
@@ -220,7 +221,7 @@ private void pullMessage(final PullRequest pullRequest) {
 2.执行拉取消息的阶段
 
 `org.apache.rocketmq.client.impl.consumer.PullRequest` 是一个拉取消息的`请求`类。首先 PullRequest 会在 `RebalanceImpl` 中创建，然后加入到 PullMessageService 线程的 queue 中。
-PullMessageService 线程会对 queue 执行 take 操作，执行拉取操作。无论是否新消息，在进行拉取消息之后， 然后再把 PullRequest 放入到 queue 中,以此循环。
+`PullMessageService` 线程会对 queue 执行 take 操作，执行拉取操作。无论是否拉取到新消息，在进行拉取消息之后， 然后再把 PullRequest 放入到 queue 中,以此循环。
 
 ```java
 // RebalanceImpl 中 PullRequest 的创建
@@ -293,7 +294,7 @@ public void submitConsumeRequest(
 
 从上可知整体流程：在拉取到消息之后，获取到 `PullResult` ，然后包装成 `ConsumeRequest` 提交给线程池，进行消息的消费。
 这里说下为什么需要使用新的线程池去消息消息。使用新的线程池，主要是处理 `ConsumeRequest` 任务。这些任务会与业务逻辑的代码在一个线程执行。
-而业务逻辑的耗时是不可控的，如果执行的时间过长，那么就导致线程池的耗尽。而使用新的线程池，可以与 `拉取消息的线程池` 分开。这样避免上述问题的发生。
+而业务逻辑的耗时是不可控的，如果执行的时间过长，那么就导致线程池的耗尽。而使用新的线程池，可以与 `拉取消息的线程池`(`PullMessageService`) 分开。这样避免上述问题的发生。
 
 此外也引出的另一个问题，如果消息消费过慢，那么`拉取消息的线程` 会进入怎么样的状态呢？
 
@@ -434,6 +435,7 @@ long offset = consumeRequest.getProcessQueue().removeMessage(consumeRequest.getM
 
 而在消息消费之后，会从 `ProcessQueue` 中移除。因此通过 `ProcessQueue` 可以知道有多少消息没有消费，判断消息是否产生了`积压`,
 如果产生了`积压`，那就会暂定拉取消息。这是 Consumer 端控制消息积压的方式。具体的代码可以在 `DefaultMQPushConsumerImpl#pullMessage` 中找到。
+(这里也回答了上面如果，消息消费过慢，可以通过 ProcessQueue 进行判断，把 pullRequest 放入到延迟线程池中。等待50ms之后再拉取消息)
 
 ## RebalancePushImpl#computePullFromWhere
 
@@ -493,13 +495,13 @@ switch (consumeFromWhere) {
 
 ## RebalanceImpl
 
-`Rebalance` 的实现
+`Rebalance` 的实现（划线的已废弃）
 
-| ConsumerImpl                | Rebalance             |
-| --------------------------- | --------------------- |
-| DefaultMQPushConsumerImpl   | RebalancePushImpl     |
-| DefaultLitePullConsumerImpl | RebalanceLitePullImpl |
-| DefaultMQPullConsumerImpl   | RebalancePullImpl     |
+| ConsumerImpl                  | Rebalance             |
+| ----------------------------- | --------------------- |
+| DefaultMQPushConsumerImpl     | RebalancePushImpl     |
+| DefaultLitePullConsumerImpl   | RebalanceLitePullImpl |
+| ~~DefaultMQPullConsumerImpl~~ | ~~RebalancePullImpl~~ |
 
 ```java
 // DefaultMQPushConsumerImpl
@@ -527,4 +529,50 @@ public void doRebalance(final boolean isOrder) {
 }
 ```
 
-`AllocateMessageQueueStrategy`
+```java
+// rebalanceByTopic
+private void rebalanceByTopic(final String topic, final boolean isOrder) {
+     
+}
+```
+
+## MessageQueue 的分配策略
+
+`AllocateMessageQueueStrategy` 是 `doRebalance` 中多个消费者如何分配 `MessageQueue` 的实现策略
+
+- AllocateMachineRoomNearby
+- AllocateMessageQueueAveragely
+- AllocateMessageQueueAveragelyByCircle
+- AllocateMessageQueueByConfig
+- AllocateMessageQueueByMachineRoom
+- AllocateMessageQueueConsistentHash
+
+
+`AllocateMessageQueueAveragely` 的分配实现
+
+```java
+// 参数
+// currentCID 当前的 clientId
+// mqAll 所有的MessageQueue
+// cidAll 所有的 clientId
+public List<MessageQueue> allocate(String consumerGroup, 
+                                   String currentCID, 
+                                    List<MessageQueue> mqAll,
+                                    List<String> cidAll) 
+{
+
+    List<MessageQueue> result = new ArrayList<MessageQueue>();
+    int index = cidAll.indexOf(currentCID);
+    int mod = mqAll.size() % cidAll.size();
+    int averageSize =
+        mqAll.size() <= cidAll.size() ? 1 : (mod > 0 && index < mod ? mqAll.size() / cidAll.size()
+            + 1 : mqAll.size() / cidAll.size());
+    int startIndex = (mod > 0 && index < mod) ? index * averageSize : index * averageSize + mod;
+    int range = Math.min(averageSize, mqAll.size() - startIndex);
+    for (int i = 0; i < range; i++) {
+        result.add(mqAll.get((startIndex + i) % mqAll.size()));
+    }
+    return result;
+
+}
+```
