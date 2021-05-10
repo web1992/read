@@ -547,7 +547,6 @@ private void rebalanceByTopic(final String topic, final boolean isOrder) {
 - AllocateMessageQueueByMachineRoom
 - AllocateMessageQueueConsistentHash
 
-
 `AllocateMessageQueueAveragely` 的分配实现
 
 ```java
@@ -561,9 +560,19 @@ public List<MessageQueue> allocate(String consumerGroup,
                                     List<String> cidAll) 
 {
 
+    // cidAll 和 mqAll 都是排序过的，因此可以保证，所有的Consumer Client 拿到的Client列表顺序是一样的。
     List<MessageQueue> result = new ArrayList<MessageQueue>();
-    int index = cidAll.indexOf(currentCID);
-    int mod = mqAll.size() % cidAll.size();
+    int index = cidAll.indexOf(currentCID);// 
+    int mod = mqAll.size() % cidAll.size();// MessageQueue数量 % Client数量
+    // 1. 计算 averageSize
+    //    如果 MessageQueue数量小于Client数量，说明Client数量多于queue数量，每个Client最多只能分配一个Queue
+    //    mod>0 说明不是整除，如果 index小于mod，averageSize 需要整除+1
+    //    如果有0-15个Queue,有3个client,此时mod=1,每个client平均分配5queue,还剩下一个queue,就按照顺序分配给以第一个Client (averageSize=5+1) 个Queue，
+    //    而第一个Client 的index=0 小于 (mode=1)
+    // 3. 计算 startIndex,计算当前 currentCID 从哪里开始分配queue(0~15)
+    //    (mod > 0 && index < mod)  mod > 0 有余数，不够平均分配，把多的分配给 index < mod 的Client 只会有一个
+    // 4. 计算 range 分配的次数,index=0时，startIndex=0，使用  Math.min 计算正确的 range
+    // 5. 根据次数和startIndex 分配queue
     int averageSize =
         mqAll.size() <= cidAll.size() ? 1 : (mod > 0 && index < mod ? mqAll.size() / cidAll.size()
             + 1 : mqAll.size() / cidAll.size());
@@ -575,4 +584,51 @@ public List<MessageQueue> allocate(String consumerGroup,
     return result;
 
 }
+```
+
+Demo 测试如下：
+
+```java
+public class main {
+    public static void main(String[] args) {
+
+        List<String> cidAll = Arrays.asList("C1", "C2", "C3");
+        List<Integer> mqAll = Arrays.asList(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15);
+        String consumerGroup = "TEST";
+
+        Collections.sort(cidAll);
+        Collections.sort(mqAll);
+
+        allocate(consumerGroup, "C1", mqAll, cidAll).forEach(i -> System.out.print(i + ","));
+        System.out.println();
+        allocate(consumerGroup, "C2", mqAll, cidAll).forEach(i -> System.out.print(i + ","));
+        System.out.println();
+        allocate(consumerGroup, "C3", mqAll, cidAll).forEach(i -> System.out.print(i + ","));
+    }
+
+    public static List<Integer> allocate(String consumerGroup,
+                                         String currentCID,
+                                         List<Integer> mqAll,
+                                         List<String> cidAll) {
+
+        List<Integer> result = new ArrayList<Integer>();
+        int index = cidAll.indexOf(currentCID);//
+        int mod = mqAll.size() % cidAll.size();
+
+        int averageSize =
+                mqAll.size() <= cidAll.size() ? 1 : (mod > 0 && index < mod ? mqAll.size() / cidAll.size()
+                        + 1 : mqAll.size() / cidAll.size());
+        int startIndex = (mod > 0 && index < mod) ? index * averageSize : index * averageSize + mod;
+        int range = Math.min(averageSize, mqAll.size() - startIndex);
+        for (int i = 0; i < range; i++) {
+            result.add(mqAll.get((startIndex + i) % mqAll.size()));
+        }
+        return result;
+
+    }
+}
+// Output:
+// 0,1,2,3,4,5,
+// 6,7,8,9,10,
+// 11,12,13,14,15,
 ```
