@@ -531,10 +531,27 @@ public void doRebalance(final boolean isOrder) {
 
 ```java
 // rebalanceByTopic
+// rebalanceByTopic 方法的主要作用就是执行 AllocateMessageQueueStrategy#allocate 方法
 private void rebalanceByTopic(final String topic, final boolean isOrder) {
-     
+
+// ...
+List<MessageQueue> allocateResult = null;
+try {
+    allocateResult = strategy.allocate(
+        this.consumerGroup,
+        this.mQClientFactory.getClientId(),
+        mqAll,
+        cidAll);
+} catch (Throwable e) {
+    log.error("AllocateMessageQueueStrategy.allocate Exception. allocateMessageQueueStrategyName={}", strategy.getName(),
+        e);
+    return;
+}
+// ...
 }
 ```
+
+下面继续看 `AllocateMessageQueueStrategy` 的分配策略
 
 ## MessageQueue 的分配策略
 
