@@ -19,8 +19,9 @@ RocketMQ 消费消息的实现解析。
     - [processConsumeResult](#processconsumeresult)
     - [ProcessQueue](#processqueue)
   - [RebalancePushImpl#computePullFromWhere](#rebalancepushimplcomputepullfromwhere)
-  - [RebalanceImpl](#rebalanceimpl)
-  - [MessageQueue 的分配策略](#messagequeue-的分配策略)
+  - [Consumer 的负载均衡](#consumer-的负载均衡)
+    - [RebalanceImpl Consumer的重平衡](#rebalanceimpl-consumer的重平衡)
+    - [MessageQueue 的分配策略](#messagequeue-的分配策略)
 
 可以了解的内容：
 
@@ -493,9 +494,11 @@ switch (consumeFromWhere) {
 -> offset // 获取 offset
 ```
 
-## RebalanceImpl
+## Consumer 的负载均衡
 
-`Rebalance` 的实现（划线的已废弃）
+### RebalanceImpl Consumer的重平衡
+
+`Rebalance` 的实现（划线的已废弃）`Rebalance` 的作用主要是给`Client`按照一定的策略分配`Queue`
 
 | ConsumerImpl                  | Rebalance             |
 | ----------------------------- | --------------------- |
@@ -553,7 +556,7 @@ try {
 
 下面继续看 `AllocateMessageQueueStrategy` 的分配策略
 
-## MessageQueue 的分配策略
+### MessageQueue 的分配策略
 
 `AllocateMessageQueueStrategy` 是 `doRebalance` 中多个消费者如何分配 `MessageQueue` 的实现策略
 
