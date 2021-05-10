@@ -547,7 +547,7 @@ private void rebalanceByTopic(final String topic, final boolean isOrder) {
 - AllocateMessageQueueByMachineRoom
 - AllocateMessageQueueConsistentHash
 
-这里看下 `AllocateMessageQueueAveragely` 的分配实现。
+这里看下 `AllocateMessageQueueAveragely` 的分配实现(默认的Queue分配规则)。
 
 ```java
 // allocate 方法的参数
@@ -567,12 +567,12 @@ public List<MessageQueue> allocate(String consumerGroup,
     // 1. 计算 averageSize
     //    如果 MessageQueue数量小于Client数量，说明Client数量多于queue数量，每个Client最多只能分配一个Queue
     //    mod>0 说明不是整除，如果 index小于mod，averageSize 需要整除+1
-    //    举例：如果有0-15个Queue,有3个client,此时mod=1,每个client平均分配5个queue,还剩下一个queue,就按照顺序分配给以第一个Client (averageSize=5+1) 个Queue，
-    //    而第一个Client 的index=0 小于 (mode=1)
-    // 3. 计算 startIndex,计算当前 currentCID 从哪里开始分配queue(0~15)
-    //    (mod > 0 && index < mod)  mod > 0 有余数，不够平均分配,index < mod,说明是第一个Client,开始位置不需要加上 mod
-    // 4. 计算 range 分配的次数,index=0时，startIndex=0，使用  Math.min 计算正确的 range
-    // 5. 根据次数和startIndex分配queue
+    //    举例：如果有0-15个Queue,有3个client,此时mod=1,每个client平均分配5个queue,还剩下一个queue,就按照顺序分配给以第一个Client(averageSize=5+1)6个Queue，
+    //    而第一个Client的index=0 小于 (mode=1)
+    // 2. 计算 startIndex,计算当前 currentCID 从哪里开始分配queue(0~15)
+    //    (mod > 0 && index < mod)  mod > 0 有余数，不够平均分配,index < mod,说明是第一个Client,开始位置不需要加上余数mod
+    // 3. 计算 range 分配的次数,index=0时，startIndex=0，使用  Math.min 计算正确的 range
+    // 4. 根据次数range和startIndex分配queue
     int averageSize =
         mqAll.size() <= cidAll.size() ? 1 : (mod > 0 && index < mod ? mqAll.size() / cidAll.size()
             + 1 : mqAll.size() / cidAll.size());
