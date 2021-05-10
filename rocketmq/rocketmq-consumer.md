@@ -639,3 +639,5 @@ public class main {
 ```
 
 > 如果 Client 的数量大于Queue(默认16个)，那么多余的Client其实是无法分配到Queue的，也就没有办法进行消息的消费。
+
+最后我们知道了，重平衡(rebalance)的主要作用就是给`Client`重新分配`Queue`,也就是`Consumer`端的负载均衡的实现入口。
