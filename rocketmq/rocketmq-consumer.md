@@ -547,10 +547,10 @@ private void rebalanceByTopic(final String topic, final boolean isOrder) {
 - AllocateMessageQueueByMachineRoom
 - AllocateMessageQueueConsistentHash
 
-`AllocateMessageQueueAveragely` 的分配实现
+这里看下 `AllocateMessageQueueAveragely` 的分配实现。
 
 ```java
-// 参数
+// allocate 方法的参数
 // currentCID 当前的 clientId
 // mqAll 所有的MessageQueue
 // cidAll 所有的 clientId
@@ -586,6 +586,8 @@ public List<MessageQueue> allocate(String consumerGroup,
 
 }
 ```
+
+分配结果图：
 
 ![rocketmq-consumer-AllocateMessageQueueAveragely.png](./images/rocketmq-consumer-AllocateMessageQueueAveragely.png)
 
@@ -635,3 +637,5 @@ public class main {
 // 6,7,8,9,10,
 // 11,12,13,14,15,
 ```
+
+> 如果 Client 的数量大于Queue(默认16个)，那么多余的Client其实是无法分配到Queue的，也就没有办法进行消息的消费。
