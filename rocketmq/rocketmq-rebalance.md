@@ -31,6 +31,7 @@ public void doRebalance(final boolean isOrder) {
 下面是执行`重平衡`的核心逻辑
 
 ```java
+// RebalanceImpl#rebalanceByTopic
 private void rebalanceByTopic(final String topic, final boolean isOrder) {
     switch (messageModel) {
         case BROADCASTING: {
