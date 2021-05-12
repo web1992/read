@@ -29,6 +29,7 @@
 - `RocketMQ` Consumer 消费过慢会怎么样
 - `RocketMQ` 批量消息的使用场景
 - `RocketMQ` 与 kafka 的对比，场景用kafka，什么场景用 RocketMQ。以及各自的优缺点。
+- `RocketMQ` 消费失败的次数超过最大次数（默认是16次）会对消息做什么特殊的处理
 
 ## Links
 

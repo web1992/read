@@ -68,17 +68,17 @@ if (transFlag != null && Boolean.parseBoolean(transFlag)) {
 
 `DefaultMessageStore` 实现了 `MessageStore` 总共有 `46` 个方法，如下：
 
-| 方法                          | 描述 |
-| ----------------------------- | ---- |
+| 方法                          | 描述     |
+| ----------------------------- | -------- |
 | load                          |
 | start                         |
 | shutdown                      |
 | destroy                       |
-| asyncPutMessage               |
-| asyncPutMessages              |
-| putMessage                    |
-| putMessages                   |
-| getMessage                    |
+| asyncPutMessage               | 核心方法 |
+| asyncPutMessages              | 核心方法 |
+| putMessage                    | 核心方法 |
+| putMessages                   | 核心方法 |
+| getMessage                    | 核心方法 |
 | getMaxOffsetInQueue           |
 | getMinOffsetInQueue           |
 | getCommitLogOffsetInQueue     |
@@ -121,57 +121,35 @@ if (transFlag != null && Boolean.parseBoolean(transFlag)) {
 
 ```java
 public class DefaultMessageStore implements MessageStore {
-    private static final InternalLogger log = InternalLoggerFactory.getLogger(LoggerName.STORE_LOGGER_NAME);
-
+    // DefaultMessageStore 的核心字段
     private final MessageStoreConfig messageStoreConfig;
     // CommitLog
     private final CommitLog commitLog;
-
     private final ConcurrentMap<String/* topic */, ConcurrentMap<Integer/* queueId */, ConsumeQueue>> consumeQueueTable;
-
     private final FlushConsumeQueueService flushConsumeQueueService;
-
     private final CleanCommitLogService cleanCommitLogService;
-
     private final CleanConsumeQueueService cleanConsumeQueueService;
-
     private final IndexService indexService;
-
     private final AllocateMappedFileService allocateMappedFileService;
-
     private final ReputMessageService reputMessageService;
-
     private final HAService haService;
-
     private final ScheduleMessageService scheduleMessageService;
-
     private final StoreStatsService storeStatsService;
-
     private final TransientStorePool transientStorePool;
-
     private final RunningFlags runningFlags = new RunningFlags();
     private final SystemClock systemClock = new SystemClock();
-
     private final ScheduledExecutorService scheduledExecutorService =
         Executors.newSingleThreadScheduledExecutor(new ThreadFactoryImpl("StoreScheduledThread"));
     private final BrokerStatsManager brokerStatsManager;
     private final MessageArrivingListener messageArrivingListener;
     private final BrokerConfig brokerConfig;
-
     private volatile boolean shutdown = true;
-
     private StoreCheckpoint storeCheckpoint;
-
     private AtomicLong printTimes = new AtomicLong(0);
-
     private final LinkedList<CommitLogDispatcher> dispatcherList;
-
     private RandomAccessFile lockFile;
-
     private FileLock lock;
-
     boolean shutDownNormal = false;
-
     private final ScheduledExecutorService diskCheckScheduledExecutorService =
             Executors.newSingleThreadScheduledExecutor(new ThreadFactoryImpl("DiskCheckScheduledThread"));
 }
@@ -179,15 +157,14 @@ public class DefaultMessageStore implements MessageStore {
 
 ## CommitLog
 
-方法列表：
+`CommitLog` 方法列表：
 
-| 方法                           | 描述 |
-| ------------------------------ | ---- |
-| CommitLog                      |
+| 方法                           | 描述     |
+| ------------------------------ | -------- |
 | load                           |
 | start                          |
 | shutdown                       |
-| flush                          |
+| flush                          | 核心方法 |
 | getMaxOffset                   |
 | remainHowManyDataToCommit      |
 | remainHowManyDataToFlush       |
@@ -202,9 +179,9 @@ public class DefaultMessageStore implements MessageStore {
 | recoverAbnormally              |
 | resetOffset                    |
 | getBeginTimeInLock             |
-| asyncPutMessage                |
-| asyncPutMessages               |
-| putMessage                     |
+| asyncPutMessage                | 核心方法 |
+| asyncPutMessages               | 核心方法 |
+| putMessage                     | 核心方法 |
 | submitFlushRequest             |
 | submitReplicaRequest           |
 | handleDiskFlush                |
@@ -255,8 +232,8 @@ public class CommitLog {
 
 方法列表：
 
-| 方法                      | 描述 |
-| ------------------------- | ---- |
+| 方法                      | 描述     |
+| ------------------------- | -------- |
 | MappedFileQueue           |
 | checkSelf                 |
 | getMappedFileByTime       |
@@ -275,8 +252,8 @@ public class CommitLog {
 | deleteLastMappedFile      |
 | deleteExpiredFileByTime   |
 | deleteExpiredFileByOffset |
-| flush                     |
-| commit                    |
+| flush                     | 核心方法 |
+| commit                    | 核心方法 |
 | findMappedFileByOffset    |
 | getFirstMappedFile        |
 | findMappedFileByOffset    |
@@ -296,20 +273,13 @@ public class CommitLog {
 
 ```java
 public class MappedFileQueue {
-   
     private static final int DELETE_FILES_BATCH_MAX = 10;
-
     private final String storePath;
-
     private final int mappedFileSize;
-
     private final CopyOnWriteArrayList<MappedFile> mappedFiles = new CopyOnWriteArrayList<MappedFile>();
-
     private final AllocateMappedFileService allocateMappedFileService;
-
     private long flushedWhere = 0;
     private long committedWhere = 0;
-
     private volatile long storeTimestamp = 0;
 }
 ```
@@ -365,10 +335,7 @@ public class MappedFileQueue {
 ```java
 public class MappedFile extends ReferenceResource {
     public static final int OS_PAGE_SIZE = 1024 * 4;
-    protected static final InternalLogger log = InternalLoggerFactory.getLogger(LoggerName.STORE_LOGGER_NAME);
-
     private static final AtomicLong TOTAL_MAPPED_VIRTUAL_MEMORY = new AtomicLong(0);
-
     private static final AtomicInteger TOTAL_MAPPED_FILES = new AtomicInteger(0);
     protected final AtomicInteger wrotePosition = new AtomicInteger(0);
     protected final AtomicInteger committedPosition = new AtomicInteger(0);
