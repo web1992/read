@@ -1,13 +1,13 @@
 # Kubernetes
 
 - [Kubernetes](#kubernetes)
-  - [Kubernetes 设计目的](#kubernetes-%e8%ae%be%e8%ae%a1%e7%9b%ae%e7%9a%84)
-  - [核心功能](#%e6%a0%b8%e5%bf%83%e5%8a%9f%e8%83%bd)
-  - [kubernets 架构](#kubernets-%e6%9e%b6%e6%9e%84)
+  - [Kubernetes 设计目的](#kubernetes-设计目的)
+  - [核心功能](#核心功能)
+  - [kubernets 架构](#kubernets-架构)
     - [Master](#master)
     - [Node](#node)
     - [Pod](#pod)
-    - [Pod 类型](#pod-%e7%b1%bb%e5%9e%8b)
+    - [Pod 类型](#pod-类型)
       - [Deployment](#deployment)
       - [Service](#service)
       - [NameSpace](#namespace)
@@ -15,15 +15,15 @@
       - [Daemon Set](#daemon-set)
     - [ConfigMap](#configmap)
     - [Sidecar](#sidecar)
-  - [kubernets 资源](#kubernets-%e8%b5%84%e6%ba%90)
-  - [kubernets 控制运行](#kubernets-%e6%8e%a7%e5%88%b6%e8%bf%90%e8%a1%8c)
+  - [kubernets 资源](#kubernets-资源)
+  - [kubernets 控制运行](#kubernets-控制运行)
   - [Pod Volumes](#pod-volumes)
-  - [Pod 配置管理](#pod-%e9%85%8d%e7%bd%ae%e7%ae%a1%e7%90%86)
-  - [Pod 健康监控](#pod-%e5%81%a5%e5%ba%b7%e7%9b%91%e6%8e%a7)
-  - [Pod 调度](#pod-%e8%b0%83%e5%ba%a6)
-    - [Pod 与 Pod](#pod-%e4%b8%8e-pod)
-    - [Pod 与 Node](#pod-%e4%b8%8e-node)
-    - [Node 标记/容忍](#node-%e6%a0%87%e8%ae%b0%e5%ae%b9%e5%bf%8d)
+  - [Pod 配置管理](#pod-配置管理)
+  - [Pod 健康监控](#pod-健康监控)
+  - [Pod 调度](#pod-调度)
+    - [Pod 与 Pod](#pod-与-pod)
+    - [Pod 与 Node](#pod-与-node)
+    - [Node 标记/容忍](#node-标记容忍)
   - [Links](#links)
 
 ## Kubernetes 设计目的
@@ -142,6 +142,7 @@ status -> spec
 - 数据共享
 
 Persistent Volumes (PV)
+
 Persistent Volumes Cliam (PVC)
 
 ## Pod 配置管理
@@ -166,7 +167,7 @@ Persistent Volumes Cliam (PVC)
 
 - HttpGet
 - Exec
-- TcoSocket  ip+port
+- TcPSocket  ip+port
 
 探测结果：
 
