@@ -59,7 +59,7 @@ RockerMQ 中的（Client）Consumer 实现也是比较复杂的，主要是涉�
 - `DefaultMQPushConsumer` （Consumer 入口）负责 Consumer 的启动&管理配置参数
 - `DefaultMQPushConsumerImpl` 负责发送 `PullReques`t 拉消息,包含 `ConsumeMessageService` 和 `MQClientInstance`
 - `ConsumeMessageService` 负责处理消息服务(有 `ConsumeMessageConcurrentlyService` 和 `ConsumeMessageOrderlyService` )两种实现
-- `MQClientInstance`(mQClientFactory) 负责底层的通信
+- `MQClientInstance`(mQClientFactory) 负责底层的通信(单实例的，多个Consumer会共享一个)
 - `RebalanceImpl` 执行 rebalance
 
 ## Consumer 的启动
