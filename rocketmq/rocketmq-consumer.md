@@ -36,7 +36,7 @@ RocketMQ 消费消息的实现有3种方式，这里主要以 `DefaultMQPushCons
 三种消息消费的实现类：
 
 - DefaultLitePullConsumer
-- DefaultMQPullConsumer
+- ~~DefaultMQPullConsumer~~
 - DefaultMQPushConsumer
 
 ## 消息的创建和消费
