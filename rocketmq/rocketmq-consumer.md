@@ -398,7 +398,7 @@ if (offset >= 0 && !consumeRequest.getProcessQueue().isDropped()) {
 
 首先说下 `ProcessQueue` 的创建,代码在 RebalanceImpl 中。ProcessQueue（PullRequest）的创建，会在 重平衡之后，再次创建或者删除 PullRequest。
 
-这里简单说下 重平衡(Rebalance)的作用，现实场景中，存在`Consumer`上线下线的过程（如应用发布），而 MessageQueue （默认是16个，0-15）。如果新 consumer 上线了
+这里简单说下 重平衡(Rebalance)的作用，现实场景中，存在`Consumer`上线下线的过程（如应用发布）。如果新 consumer 上线了
 它也需要分配一个 MessageQueue 进行消息的拉取消费。这里就是 Rebalance 的作用，重新分配 MessageQueue 让每个 Consumer 都可以拉取消息进行消费。
 （Consumer 下线是一样的道理。下线的Consumer使用的MessageQueue需要分配给其他 Consumer 进行消费）
 
@@ -658,6 +658,6 @@ public class main {
 // 11,12,13,14,15,
 ```
 
-> 如果 Client 的数量大于Queue(默认16个)，那么多余的Client其实是无法分配到Queue的，也就没有办法进行消息的消费。
+> 如果 Client 的数量大于Queue，那么多余的Client其实是无法分配到Queue的，也就没有办法进行消息的消费。
 
 最后我们知道了，重平衡(rebalance)的主要作用就是给`Client`重新分配`Queue`,也就是`Consumer`端的负载均衡的实现入口。
