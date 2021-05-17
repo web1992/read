@@ -59,7 +59,3 @@
 - [RPC Remote procedure call](https://en.wikipedia.org/wiki/Remote_procedure_call)
 - [Distributed object communication](https://en.wikipedia.org/wiki/Distributed_object_communication)
 - [internet protocol](http://www.ruanyifeng.com/blog/2012/05/internet_protocol_suite_part_i.html)
-
-## Dubbo 执行流程图
-
-![Dubbo](./images/dubbo-framework.jpg)
