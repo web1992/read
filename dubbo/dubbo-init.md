@@ -4,20 +4,20 @@
 
 - [dubbo init](#dubbo-init)
   - [Protocol](#protocol)
-  - [provider init](#provider-init)
+  - [Provider init](#provider-init)
     - [ServiceBean](#servicebean)
-    - [export](#export)
-    - [registry](#registry)
-    - [provider subscribe](#provider-subscribe)
-    - [provider invoker](#provider-invoker)
-  - [consumer init](#consumer-init)
+    - [Export](#export)
+    - [Registry](#registry)
+    - [Provider subscribe](#provider-subscribe)
+    - [Provider invoker](#provider-invoker)
+  - [Consumer init](#consumer-init)
     - [ReferenceBean](#referencebean)
-    - [init](#init)
-    - [refer](#refer)
+    - [Init](#init)
+    - [Refer](#refer)
     - [getProxy](#getproxy)
     - [InvokerInvocationHandler](#invokerinvocationhandler)
-    - [customer subscribe](#customer-subscribe)
-    - [customer client](#customer-client)
+    - [Customer subscribe](#customer-subscribe)
+    - [Customer client](#customer-client)
   - [Summary](#summary)
   - [provider invoker vs customer invoker](#provider-invoker-vs-customer-invoker)
 
@@ -53,7 +53,7 @@ public interface Protocol {
 - [dubbo-protocol-registry-protocol.md](dubbo-protocol-registry-protocol.md)
 - [dubbo-protocol-dubbo-protocol.md](dubbo-protocol-dubbo-protocol.md)
 
-## provider init
+## Provider init
 
 初始化过程，以下面的这个简单的 xml 配置为例子
 
@@ -144,7 +144,7 @@ public class DubboNamespaceHandler extends NamespaceHandlerSupport {
 
 `<dubbo:service />`标签对应的解析类是`ServiceBean`
 
-> `ServiceBean` 类图：
+`ServiceBean` 类图：
 
 ![dubbo-ServiceBean](./images/dubbo-ServiceBean.png)
 
@@ -166,15 +166,14 @@ public class DubboNamespaceHandler extends NamespaceHandlerSupport {
     }
 ```
 
-> 这里思考下，为什么在`ContextRefreshedEvent`事件中进行服务的初始化？
+这里思考下，为什么在`ContextRefreshedEvent`事件中进行服务的初始化？
 
 `ServiceBean`中会根据配置，来初始化服务，如使用`netty`启动本地服务，注册服务到`zookeeper`等
 
-> `dubbo` 服务提供者的初始化过程，这里主要分析服务的`export`(暴露)和`registry`(注册)
->
-> 下面分析`export`和`registry` 这两个过程
+`dubbo` 服务提供者的初始化过程，这里主要分析服务的`export`(暴露)和`registry`(注册)
+下面分析`export`和`registry` 这两个过程
 
-### export
+### Export
 
 `export` 的主要作用是在本地启动一个 `TCP` 服务，并生成一个 `Exporter` 对象
 
@@ -318,7 +317,7 @@ protected void doOpen() throws Throwable {
 }
 ```
 
-### registry
+### Registry
 
 `registry`的主要作用是把本地启动的服务信息,如: ip + 端口 + 接口 + 方法等信息，注册到服务中心（如：zookeeper）
 
@@ -344,11 +343,11 @@ if (register) {
 registry.subscribe(overrideSubscribeUrl, overrideSubscribeListener);
 ```
 
-### provider subscribe
+### Provider subscribe
 
 这个会监听 `configurators` (配置中心)信息的变化),如果需要 provider 会重新暴露服务(重新生成 invoker 对象)
 
-### provider invoker
+### Provider invoker
 
 先说 `invoker` 的`暴露`，其实就是把 `invoker` 放入到 `Map` 中
 
@@ -401,11 +400,9 @@ DubboExporter<?> exporter = (DubboExporter<?>) exporterMap.get(serviceKey);
 
 至此 `Invoker` 的`暴露`和`查找调用`，形成闭环
 
-## consumer init
+## Consumer init
 
-通过下面的配置，来分析 `consumer` 的初始化过程
-
-> dubbo-consumer.xml
+通过下面的配置，来分析 `consumer` 的初始化过程,`dubbo-consumer.xml`
 
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
@@ -445,7 +442,7 @@ public class ReferenceBean<T> extends ReferenceConfig<T> implements FactoryBean,
 
 `ReferenceBean` 实现了 `FactoryBean` 接口,通过 `getObject` 来进行客户端的初始化
 
-### init
+### Init
 
 ```java
 @Override
@@ -496,7 +493,7 @@ System.out.println("result: " + hello);
 我们为`DemoService`生成一个代理类(`Proxy`), 并且宣称我实现了`DemoService`中的所有方法.当我们调用`sayHello`方法
 的时候，我们其实是调用代理类，代理类通过`TCP`发送请求，等待处理响应，然后返回结果。
 
-### refer
+### Refer
 
 `refer` 和上面的 `export` 方法类似，都是 `Protocol` 接口中定义的方法, refer 主要负责初始化客户端&生成 invoker
 
@@ -605,7 +602,7 @@ private RpcInvocation createInvocation(Method method, Object[] args) {
 
 ![invoker](./images/dubbo-customer-invoker.png)
 
-### customer subscribe
+### Customer subscribe
 
 `subscribe` 的主要作用：
 
@@ -733,7 +730,7 @@ public <T> Invoker<T> refer(Class<T> serviceType, URL url) throws RpcException {
 }
 ```
 
-### customer client
+### Customer client
 
 `ExchangeClient` 可以看做是 `dubbo` 对底层的网络通信（TCP）的封装
 
