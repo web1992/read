@@ -4,6 +4,14 @@ RocketMQ 中重平衡的实现逻辑。重平衡的主要目的是实现多个`C
 
 重平衡的主要类是 `RebalanceImpl`
 
+下面用一张图来说明`重平衡`的作用：
+
+![重新平衡](images/rocketmq-consumer-AllocateMessageQueueAveragely.png)
+
+`重平衡` 的作用是解决多个Consumer之间如何平均的分配Queue，从而达到负载均衡的目的。
+
+具体的说明可以参考 [RocketMQ 消费端的实现](rocketmq-consumer.md)
+
 ## doRebalance
 
 ```java
@@ -74,5 +82,21 @@ private void rebalanceByTopic(final String topic, final boolean isOrder) {
         default:
             break;
     }
+}
+```
+
+## 实现自定义的重平衡策略
+
+首先，消息的创建需要 `DefaultMQPushConsumer` 类实例，而此类的实例构造方法提供了实现 `AllocateMessageQueueStrategy`
+
+```java
+// 无参的构造，分配策略默认实现类是 AllocateMessageQueueAveragely
+public DefaultMQPushConsumer(final String consumerGroup) {
+    this(null, consumerGroup, null, new AllocateMessageQueueAveragely());
+}
+// 此构造方法提供了自定义 AllocateMessageQueueStrategy 分配策略的入口。
+public DefaultMQPushConsumer(final String consumerGroup, RPCHook rpcHook,
+    AllocateMessageQueueStrategy allocateMessageQueueStrategy) {
+    this(null, consumerGroup, rpcHook, allocateMessageQueueStrategy);
 }
 ```
