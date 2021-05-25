@@ -6,6 +6,8 @@
 
 基于 `RocketMQ 4.8.0` 源码的分析
 
+- [🔥RocketMQ 100问](rocketmq-FAQ-100.md)
+- [🔥RocketMQ Consumer的实现](rocketmq-consumer.md)
 - [🔥RocketMQ 的序列化实现](rocketmq-serialize.md)
 - [🔥RocketMQ 的存储实现概述](rocketmq-store.md)
 - [🔥RocketMQ MappedFile 详解](rocketmq-mapped-file.md)
