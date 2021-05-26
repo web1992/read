@@ -10,6 +10,121 @@
 - SubscriptionGroupManager
 - TopicConfigManager
 
+## TopicConfigManager
+
+`org.apache.rocketmq.broker.topic.TopicConfigManager` 负责 `RocketMQ` `Topic` 的创建
+
+```java
+
+private final ConcurrentMap<String, TopicConfig> topicConfigTable =
+        new ConcurrentHashMap<String, TopicConfig>(1024);
+
+// org.apache.rocketmq.broker.topic.TopicConfigManager 的构造方法
+public TopicConfigManager(BrokerController brokerController) {
+    this.brokerController = brokerController;
+    {
+        String topic = TopicValidator.RMQ_SYS_SELF_TEST_TOPIC;
+        TopicConfig topicConfig = new TopicConfig(topic);
+        TopicValidator.addSystemTopic(topic);
+        topicConfig.setReadQueueNums(1);
+        topicConfig.setWriteQueueNums(1);
+        this.topicConfigTable.put(topicConfig.getTopicName(), topicConfig);
+    }
+    {
+        if (this.brokerController.getBrokerConfig().isAutoCreateTopicEnable()) {
+            String topic = TopicValidator.AUTO_CREATE_TOPIC_KEY_TOPIC;
+            TopicConfig topicConfig = new TopicConfig(topic);
+            TopicValidator.addSystemTopic(topic);
+            topicConfig.setReadQueueNums(this.brokerController.getBrokerConfig()
+                .getDefaultTopicQueueNums());
+            topicConfig.setWriteQueueNums(this.brokerController.getBrokerConfig()
+                .getDefaultTopicQueueNums());
+            int perm = PermName.PERM_INHERIT | PermName.PERM_READ | PermName.PERM_WRITE;
+            topicConfig.setPerm(perm);
+            this.topicConfigTable.put(topicConfig.getTopicName(), topicConfig);
+        }
+    }
+    {
+        String topic = TopicValidator.RMQ_SYS_BENCHMARK_TOPIC;
+        TopicConfig topicConfig = new TopicConfig(topic);
+        TopicValidator.addSystemTopic(topic);
+        topicConfig.setReadQueueNums(1024);
+        topicConfig.setWriteQueueNums(1024);
+        this.topicConfigTable.put(topicConfig.getTopicName(), topicConfig);
+    }
+    {
+        String topic = this.brokerController.getBrokerConfig().getBrokerClusterName();
+        TopicConfig topicConfig = new TopicConfig(topic);
+        TopicValidator.addSystemTopic(topic);
+        int perm = PermName.PERM_INHERIT;
+        if (this.brokerController.getBrokerConfig().isClusterTopicEnable()) {
+            perm |= PermName.PERM_READ | PermName.PERM_WRITE;
+        }
+        topicConfig.setPerm(perm);
+        this.topicConfigTable.put(topicConfig.getTopicName(), topicConfig);
+    }
+    {
+        String topic = this.brokerController.getBrokerConfig().getBrokerName();
+        TopicConfig topicConfig = new TopicConfig(topic);
+        TopicValidator.addSystemTopic(topic);
+        int perm = PermName.PERM_INHERIT;
+        if (this.brokerController.getBrokerConfig().isBrokerTopicEnable()) {
+            perm |= PermName.PERM_READ | PermName.PERM_WRITE;
+        }
+        topicConfig.setReadQueueNums(1);
+        topicConfig.setWriteQueueNums(1);
+        topicConfig.setPerm(perm);
+        this.topicConfigTable.put(topicConfig.getTopicName(), topicConfig);
+    }
+    {
+        String topic = TopicValidator.RMQ_SYS_OFFSET_MOVED_EVENT;
+        TopicConfig topicConfig = new TopicConfig(topic);
+        TopicValidator.addSystemTopic(topic);
+        topicConfig.setReadQueueNums(1);
+        topicConfig.setWriteQueueNums(1);
+        this.topicConfigTable.put(topicConfig.getTopicName(), topicConfig);
+    }
+    {
+        String topic = TopicValidator.RMQ_SYS_SCHEDULE_TOPIC;
+        TopicConfig topicConfig = new TopicConfig(topic);
+        TopicValidator.addSystemTopic(topic);
+        topicConfig.setReadQueueNums(SCHEDULE_TOPIC_QUEUE_NUM);
+        topicConfig.setWriteQueueNums(SCHEDULE_TOPIC_QUEUE_NUM);
+        this.topicConfigTable.put(topicConfig.getTopicName(), topicConfig);
+    }
+    {
+        if (this.brokerController.getBrokerConfig().isTraceTopicEnable()) {
+            String topic = this.brokerController.getBrokerConfig().getMsgTraceTopicName();
+            TopicConfig topicConfig = new TopicConfig(topic);
+            TopicValidator.addSystemTopic(topic);
+            topicConfig.setReadQueueNums(1);
+            topicConfig.setWriteQueueNums(1);
+            this.topicConfigTable.put(topicConfig.getTopicName(), topicConfig);
+        }
+    }
+    {
+        String topic = this.brokerController.getBrokerConfig().getBrokerClusterName() + "_" + MixAll.REPLY_TOPIC_POSTFIX;
+        TopicConfig topicConfig = new TopicConfig(topic);
+        TopicValidator.addSystemTopic(topic);
+        topicConfig.setReadQueueNums(1);
+        topicConfig.setWriteQueueNums(1);
+        this.topicConfigTable.put(topicConfig.getTopicName(), topicConfig);
+    }
+}
+```
+
+| TOPIC名称           | 描述                                                                                                               |
+| ------------------- | ------------------------------------------------------------------------------------------------------------------ |
+| SELF_TEST_TOPIC     |
+| TBW102              |
+| BenchmarkTest       |
+| DefaultCluster      | `String topic = this.brokerController.getBrokerConfig().getBrokerClusterName();`                                   |
+| BrokerName          | `String topic = this.brokerController.getBrokerConfig().getBrokerName()`                                           |
+| OFFSET_MOVED_EVENT  |
+| SCHEDULE_TOPIC_XXXX |
+| RMQ_SYS_TRACE_TOPIC | `String topic = this.brokerController.getBrokerConfig().getMsgTraceTopicName()`                                    |
+| REPLY_TOPIC         | `String topic = this.brokerController.getBrokerConfig().getBrokerClusterName() + "_" + MixAll.REPLY_TOPIC_POSTFIX` |
+
 ## ConsumerOffsetManager
 
 `ConsumerOffsetManager` 用来管理消费者的 `offset` ，下面是核心方法。
