@@ -30,6 +30,7 @@ __Broker 端：__
 
 1. Broker 启动
 2. 启动之后，注册自己到 NameServer
+3. 发送消息之后，保存topicConfig 信息，定期同步到 NameServer
 
 __Producer 端：__
 
@@ -83,7 +84,6 @@ if (this.brokerController.getBrokerConfig().isAutoCreateTopicEnable()) {
 }
 ```
 
-
 `MQClientInstance#topicRouteData2TopicPublishInfo` 方法把 `TopicRouteData` 转化成 `TopicPublishInfo`（里面维护了 MessageQueue）
 
 TopicConfig
@@ -110,6 +110,7 @@ public class TopicPublishInfo {
 
 ```java
 // MQFaultStrategy#selectOneMessageQueue
+// 使用轮训的方式进行选择
 public MessageQueue selectOneMessageQueue(final TopicPublishInfo tpInfo, final String lastBrokerName) {
     if (this.sendLatencyFaultEnable) {
         try {
@@ -165,14 +166,6 @@ public enum SendStatus {
 }
 ```
 
-## DefaultMQProducer
-
-```java
-public class DefaultMQProducer extends ClientConfig implements MQProducer {
-// ...
-}
-```
-
 ## MessageQueue
 
 `queueId` 的获取
@@ -193,7 +186,7 @@ requestHeader.setQueueId(mq.getQueueId());
 
 ## 自动创建 Topic 与 手动创建Topic
 
-先说结论：`自动创建 Topic ` 会导致Topic的Queue不一定平均的分配到每个Broker中。`手动创建Topic`没有这个缺陷。
+先说结论：`自动创建 Topic` 会导致Topic的Queue不一定平均的分配到每个Broker中。`手动创建Topic`没有这个缺陷。
 
 自动创建 Topic 的交互图：
 
