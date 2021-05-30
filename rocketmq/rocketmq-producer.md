@@ -201,10 +201,10 @@ requestHeader.setQueueId(mq.getQueueId());
 - 1 拉取 TBW102 路由信息，并复制路由信息
 - 2 发送消息到 Broker，Broker存储路由信息
 - 3 Broker 同步路由信息到 NameServer
-- 4  从NameServer 拉取路由信息，覆盖从TBW102复制的路由信息
+- 4 Producer从NameServer拉取路由信息，覆盖从TBW102复制的路由信息
 
 从上面的图可知，第4步骤会覆盖内存中的路由信息，但是如果Broker2没有把自己的路由信息同步到NameServer到中。
 
-那么在拉取消息的时候，只能获取到Broker1中的路由信息，这也导致只有Broker1的路由信息，消息也只能发送到Broker1中。
+那么在拉取消息的时候(比如Producer重启)，只能获取到Broker1中的路由信息，这也导致只有Broker1的路由信息，消息也只能发送到Broker1中。
 
 如果Broker1服务宕机，那就导致服务不可用了。
