@@ -24,7 +24,7 @@ Producer 发送消息的前端是需要确定 queueId 确定了QueueId 也就确
 
 __NameServer 端：__
 
-1. NameServer 启动
+1. NameServer 启动,等待Borker的注册
 
 __Broker 端：__
 
@@ -37,7 +37,7 @@ __Producer 端：__
 2. 发送消息时，从 NameServer 获取路由信息
 3. 获取路由信息成功，发送消息
 
-`MQClientInstance#topicRouteData2TopicPublishInfo` 方法把 `TopicRouteData` 转化成 `TopicPublishInfo`
+`MQClientInstance#topicRouteData2TopicPublishInfo` 方法把 `TopicRouteData` 转化成 `TopicPublishInfo`（里面维护了 MessageQueue）
 
 TopicConfig
 
