@@ -186,25 +186,128 @@ requestHeader.setQueueId(mq.getQueueId());
 
 ## 自动创建 Topic 与 手动创建Topic
 
+### 自动创建 Topic 
+
 先说结论：`自动创建 Topic` 会导致Topic的Queue不一定平均的分配到每个Broker中。`手动创建Topic`没有这个缺陷。
 
 自动创建 Topic 的交互图：
 
 ![rocketmq-consumer-create-topic.png](./images/rocketmq-consumer-create-topic.png)
 
-按照正常的流程是 1→2→3→4.Borker1和Broker2 都会把topic 信息同步NameServer中。这样可以获取Broker1和Broker2二个的路由信息。这样发消息的时候，消息可以被发送到2个Broker中。
+按照正常的流程是 1→2→3→4→5.Borker1和Broker2都会把topic信息同步NameServer中。这样Producer可以获取Broker1和Broker2二个的路由信息。Producer发消息的时候，消息可以被发送到2个Broker中。
 
-但是。存在一种例外：由于某种原因，Broker2没有把路由信息同步到NamServer
+但是。存在一种例外：由于某种原因，Broker2没有把路由信息同步到NamServer，下面看图：
 
 ![rocketmq-consumer-route-info.png](images/rocketmq-consumer-route-info.png)
+
+路由信息的复制，上传，拉取（自动创建Topic的场景）
 
 - 1 拉取 TBW102 路由信息，并复制路由信息
 - 2 发送消息到 Broker，Broker存储路由信息
 - 3 Broker 同步路由信息到 NameServer
 - 4 Producer从NameServer拉取路由信息，覆盖从TBW102复制的路由信息
 
-从上面的图可知，第4步骤会覆盖内存中的路由信息，但是如果Broker2没有把自己的路由信息同步到NameServer到中(那么❌的信息是没有的)。
+从上面的图可知，第4步骤会覆盖内存中的路由信息(或者Producer重启，重新拉取路由信息)，但是如果Broker2没有把自己的路由信息同步到NameServer到中(那么打❌的信息是没有的)。
 
 那么在拉取消息的时候(比如Producer重启)，只能获取到Broker1中的路由信息，这也导致只有Broker1的路由信息，消息也只能发送到Broker1中。
 
 如果Broker1服务宕机，那就导致服务不可用了。
+
+一种Broker2没有同步路由信息到NameServer的情况：Producer没有向Broker2发送过信息，那么Broker2中的路由信息就是空的，自然是不会同步路由信息到NameServer中的。
+
+### 手动创建Topic
+
+自动创建 Topic 一般是通过控制台，进行创建的。主要的实现类是：
+
+- org.apache.rocketmq.tools.admin.DefaultMQAdminExt
+- org.apache.rocketmq.tools.admin.DefaultMQAdminExtImpl
+- org.apache.rocketmq.tools.admin.MQAdminExt
+
+从包的路径可知道，他们是属于RocketMQ的工具包。
+
+url： `/topic/createOrUpdate.do`
+
+```java
+// TopicController
+@RequestMapping(value = "/createOrUpdate.do", method = { RequestMethod.POST})
+@ResponseBody
+public Object topicCreateOrUpdateRequest(@RequestBody TopicConfigInfo topicCreateOrUpdateRequest) {
+    Preconditions.checkArgument(CollectionUtils.isNotEmpty(topicCreateOrUpdateRequest.getBrokerNameList()) || CollectionUtils.isNotEmpty(topicCreateOrUpdateRequest.getClusterNameList()),
+        "clusterName or brokerName can not be all blank");
+    logger.info("op=look topicCreateOrUpdateRequest={}", JsonUtil.obj2String(topicCreateOrUpdateRequest));
+    topicService.createOrUpdate(topicCreateOrUpdateRequest);
+    return true;
+}
+
+// TopicServiceImpl
+@Override
+public void createOrUpdate(TopicConfigInfo topicCreateOrUpdateRequest) {
+    TopicConfig topicConfig = new TopicConfig();
+    BeanUtils.copyProperties(topicCreateOrUpdateRequest, topicConfig);
+    try {
+        ClusterInfo clusterInfo = mqAdminExt.examineBrokerClusterInfo();
+        // 循环所有的Borker
+        for (String brokerName : changeToBrokerNameSet(clusterInfo.getClusterAddrTable(),
+            topicCreateOrUpdateRequest.getClusterNameList(), topicCreateOrUpdateRequest.getBrokerNameList())) {
+            mqAdminExt.createAndUpdateTopicConfig(clusterInfo.getBrokerAddrTable().get(brokerName).selectBrokerAddr(), topicConfig);
+        }
+    }
+    catch (Exception err) {
+        throw Throwables.propagate(err);
+    }
+}
+
+// MQClientAPIImpl
+public void createTopic(final String addr, final String defaultTopic, final TopicConfig topicConfig,
+    final long timeoutMillis)
+    throws RemotingException, MQBrokerException, InterruptedException, MQClientException {
+    CreateTopicRequestHeader requestHeader = new CreateTopicRequestHeader();
+    requestHeader.setTopic(topicConfig.getTopicName());
+    requestHeader.setDefaultTopic(defaultTopic);
+    requestHeader.setReadQueueNums(topicConfig.getReadQueueNums());
+    requestHeader.setWriteQueueNums(topicConfig.getWriteQueueNums());
+    requestHeader.setPerm(topicConfig.getPerm());
+    requestHeader.setTopicFilterType(topicConfig.getTopicFilterType().name());
+    requestHeader.setTopicSysFlag(topicConfig.getTopicSysFlag());
+    requestHeader.setOrder(topicConfig.isOrder());
+    RemotingCommand request = RemotingCommand.createRequestCommand(RequestCode.UPDATE_AND_CREATE_TOPIC, requestHeader);
+    RemotingCommand response = this.remotingClient.invokeSync(MixAll.brokerVIPChannel(this.clientConfig.isVipChannelEnabled(), addr),
+        request, timeoutMillis);
+    assert response != null;
+    switch (response.getCode()) {
+        case ResponseCode.SUCCESS: {
+            return;
+        }
+        default:
+            break;
+    }
+    throw new MQClientException(response.getCode(), response.getRemark());
+}
+
+// 创建Topic
+// AdminBrokerProcessor
+private synchronized RemotingCommand updateAndCreateTopic(ChannelHandlerContext ctx,
+    RemotingCommand request) throws RemotingCommandException {
+    final RemotingCommand response = RemotingCommand.createResponseCommand(null);
+    final CreateTopicRequestHeader requestHeader =
+        (CreateTopicRequestHeader) request.decodeCommandCustomHeader(CreateTopicRequestHeader.class);
+    log.info("updateAndCreateTopic called by {}", RemotingHelper.parseChannelRemoteAddr(ctx.channel()));
+    String topic = requestHeader.getTopic();
+    if (!TopicValidator.validateTopic(topic, response)) {
+        return response;
+    }
+    if (TopicValidator.isSystemTopic(topic, response)) {
+        return response;
+    }
+    TopicConfig topicConfig = new TopicConfig(topic);
+    topicConfig.setReadQueueNums(requestHeader.getReadQueueNums());
+    topicConfig.setWriteQueueNums(requestHeader.getWriteQueueNums());
+    topicConfig.setTopicFilterType(requestHeader.getTopicFilterTypeEnum());
+    topicConfig.setPerm(requestHeader.getPerm());
+    topicConfig.setTopicSysFlag(requestHeader.getTopicSysFlag() == null ? 0 : requestHeader.getTopicSysFlag());
+    this.brokerController.getTopicConfigManager().updateTopicConfig(topicConfig);
+    this.brokerController.registerIncrementBrokerData(topicConfig, this.brokerController.getTopicConfigManager().getDataVersion());
+    response.setCode(ResponseCode.SUCCESS);
+    return response;
+}
+```
