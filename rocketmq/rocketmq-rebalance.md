@@ -100,3 +100,7 @@ public DefaultMQPushConsumer(final String consumerGroup, RPCHook rpcHook,
     this(null, consumerGroup, rpcHook, allocateMessageQueueStrategy);
 }
 ```
+
+## Links
+
+- [https://cloud.tencent.com/developer/article/1554950](https://cloud.tencent.com/developer/article/1554950)
