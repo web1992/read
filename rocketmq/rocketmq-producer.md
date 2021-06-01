@@ -30,7 +30,7 @@ __Broker 端：__
 
 1. Broker 启动
 2. 启动之后，注册自己到 NameServer
-3. 发送消息之后，保存topicConfig 信息，定期同步到 NameServer
+3. 发送消息之后，保存topicConfig 信息，定期同步到 NameServer,具体代码在 [BrokerController.this.registerBrokerAll](https://github.com/apache/rocketmq/blob/master/broker/src/main/java/org/apache/rocketmq/broker/BrokerController.java#L895)
 
 __Producer 端：__
 
@@ -144,6 +144,24 @@ public MessageQueue selectOneMessageQueue(final TopicPublishInfo tpInfo, final S
 }
 ```
 
+## MessageQueue
+
+`queueId` 的获取
+
+```java
+// 选择 MessageQueue  DefaultMQProducerImpl#selectOneMessageQueue
+MessageQueue mqSelected = this.selectOneMessageQueue(topicPublishInfo, lastBrokerName);
+mq = mqSelected;
+
+// 发消息 DefaultMQProducerImpl#sendDefaultImpl
+sendResult = this.sendKernelImpl(msg, mq, communicationMode, sendCallback, topicPublishInfo, timeout - costTime);
+
+// ... DefaultMQProducerImpl#sendKernelImpl
+SendMessageRequestHeader requestHeader = new SendMessageRequestHeader();
+// get QueueId
+requestHeader.setQueueId(mq.getQueueId());
+```
+
 ## SendResult
 
 ```java
@@ -164,24 +182,6 @@ public enum SendStatus {
     FLUSH_SLAVE_TIMEOUT,
     SLAVE_NOT_AVAILABLE,
 }
-```
-
-## MessageQueue
-
-`queueId` 的获取
-
-```java
-// 选择 MessageQueue  DefaultMQProducerImpl#selectOneMessageQueue
-MessageQueue mqSelected = this.selectOneMessageQueue(topicPublishInfo, lastBrokerName);
-mq = mqSelected;
-
-// 发消息 DefaultMQProducerImpl#sendDefaultImpl
-sendResult = this.sendKernelImpl(msg, mq, communicationMode, sendCallback, topicPublishInfo, timeout - costTime);
-
-// ... DefaultMQProducerImpl#sendKernelImpl
-SendMessageRequestHeader requestHeader = new SendMessageRequestHeader();
-// get QueueId
-requestHeader.setQueueId(mq.getQueueId());
 ```
 
 ## 自动创建 Topic 与 手动创建Topic
@@ -311,3 +311,5 @@ private synchronized RemotingCommand updateAndCreateTopic(ChannelHandlerContext 
     return response;
 }
 ```
+
+最终会发送 `RemotingCommand request = RemotingCommand.createRequestCommand(RequestCode.REGISTER_BROKER, requestHeader)` 注册更新Topic信息到NameServer中。
