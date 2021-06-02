@@ -47,7 +47,7 @@ ROCKETMQ((byte) 1);
 
 ## Message to ByteBuffer
 
-Message 如果转成成 ByteBuffer
+Message 转成成 ByteBuffer,再到存储在文件中。
 
 ![rocketmq-msg-serialize.png](./images/rocketmq-msg-serialize.png)
 
