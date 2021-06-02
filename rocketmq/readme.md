@@ -24,3 +24,4 @@
 - [消息队列模型](https://cloud.tencent.com/developer/article/1747568?)
 - [RocketMQ 事物消息架构(官方文档)](https://rocketmq.apache.org/rocketmq/the-design-of-transactional-message/)
 - [RocketMQ 消息Proxy架构](https://cloud.tencent.com/developer/article/1547508?)
+- [Java 大小端转换（基于ByteBuffer）](https://www.cnblogs.com/NaughtyCat/p/little-endian-and-big-endian-based-on-bytebuffer-in-java.html)
