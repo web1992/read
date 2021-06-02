@@ -22,6 +22,7 @@ RocketMQ 消费消息的实现解析。
   - [Consumer 的负载均衡](#consumer-的负载均衡)
     - [RebalanceImpl Consumer的重平衡](#rebalanceimpl-consumer的重平衡)
     - [MessageQueue 的分配策略](#messagequeue-的分配策略)
+  - [Links](#links)
 
 可以了解的内容：
 
@@ -661,3 +662,7 @@ public class main {
 > 如果 Client 的数量大于Queue，那么多余的Client其实是无法分配到Queue的，也就没有办法进行消息的消费。
 
 最后我们知道了，重平衡(rebalance)的主要作用就是给`Client`重新分配`Queue`,也就是`Consumer`端的负载均衡的实现入口。
+
+## Links
+
+- [https://cloud.tencent.com/developer/article/1474885](https://cloud.tencent.com/developer/article/1474885)

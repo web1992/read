@@ -186,7 +186,7 @@ public enum SendStatus {
 
 ## 自动创建 Topic 与 手动创建Topic
 
-### 自动创建 Topic 
+### 自动创建 Topic
 
 先说结论：`自动创建 Topic` 会导致Topic的Queue不一定平均的分配到每个Broker中。`手动创建Topic`没有这个缺陷。
 
