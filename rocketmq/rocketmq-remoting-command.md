@@ -4,7 +4,7 @@ RockemtMQ 的 `Client`(Consumer,Producer) 与 `Server`(Broker) 的交互都是�
 
 先看图(Message到ByteBuffer的转化过程)：
 
-![rocketmq-consumer-msg-serialize.png](./images/rocketmq-consumer-msg-serialize.png)
+![rocketmq-msg-serialize.png](./images/rocketmq-msg-serialize.png)
 
 ```java
 // msg -> SendMessageRequestHeader

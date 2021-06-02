@@ -4,6 +4,7 @@ RocketMQ 序列化
 
 - [Serialize](#serialize)
   - [RocketMQ 序列化协议](#rocketmq-序列化协议)
+  - [Message to ByteBuffer](#message-to-bytebuffer)
   - [RemotingCommand 的 Head 和 Body](#remotingcommand-的-head-和-body)
   - [flag 字段](#flag-字段)
   - [code 字段](#code-字段)
@@ -43,6 +44,12 @@ RocketMQ 序列化
 JSON((byte) 0),
 ROCKETMQ((byte) 1);
 ```
+
+## Message to ByteBuffer
+
+Message 如果转成成 ByteBuffer
+
+![rocketmq-msg-serialize.png](./images/rocketmq-msg-serialize.png)
 
 ## RemotingCommand 的 Head 和 Body
 
