@@ -20,3 +20,7 @@
 - [概念基础](https://help.aliyun.com/document_detail/29532.html?spm=a2c4g.11186623.6.548.1bce7907LlxyjC)
 - [https://mp.weixin.qq.com/s/TOfR98N-MhOHkGLPimIHmg](https://mp.weixin.qq.com/s/TOfR98N-MhOHkGLPimIHmg)
 - [RocketMQ 网络问题排查](https://mp.weixin.qq.com/s/W4Dst8IPzDGPBB41cybAPg)
+- [消息订阅](https://cloud.tencent.com/developer/article/1474885)
+- [消息队列模型](https://cloud.tencent.com/developer/article/1747568?)
+- [RocketMQ 事物消息架构(官方文档)](https://rocketmq.apache.org/rocketmq/the-design-of-transactional-message/)
+- [RocketMQ 消息Proxy架构](https://cloud.tencent.com/developer/article/1547508?)

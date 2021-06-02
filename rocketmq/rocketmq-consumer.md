@@ -665,4 +665,5 @@ public class main {
 
 ## Links
 
-- [https://cloud.tencent.com/developer/article/1474885](https://cloud.tencent.com/developer/article/1474885)
+- [消息订阅](https://cloud.tencent.com/developer/article/1474885)
+- [消息队列模型](https://cloud.tencent.com/developer/article/1747568?)
