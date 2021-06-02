@@ -64,6 +64,8 @@ if (transFlag != null && Boolean.parseBoolean(transFlag)) {
 | MappedFile          | 日志文件，使用 FileChannel 进行过文件 map 的文件                                   |
 | MappedFileQueue     | 文件队列的管理 MappedFile（所有的消息最终会被写入到 日志文件中）                   |
 
+> 后面内容可忽略
+
 ## DefaultMessageStore
 
 `DefaultMessageStore` 实现了 `MessageStore` 总共有 `46` 个方法，如下：
