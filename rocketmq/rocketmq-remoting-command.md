@@ -2,6 +2,10 @@
 
 RockemtMQ 的 `Client`(Consumer,Producer) 与 `Server`(Broker) 的交互都是使用`RemotingCommand`对象进行序列化和反序列化的。
 
+先看图：
+
+![rocketmq-consumer-msg-serialize.png](./images/rocketmq-consumer-msg-serialize.png)
+
 ```java
 // msg -> SendMessageRequestHeader
 // 代码位置 DefaultMQProducerImpl#sendKernelImpl:781
