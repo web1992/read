@@ -7,7 +7,6 @@
   - [TransactionalMessageService asyncPrepareMessage](#transactionalmessageservice-asyncpreparemessage)
   - [DefaultMQProducerImpl#endTransaction](#defaultmqproducerimplendtransaction)
   - [EndTransactionProcessor](#endtransactionprocessor)
-  - [TransactionalMessageBridge](#transactionalmessagebridge)
   - [TransactionalMessageCheckService 事物服务的初始化](#transactionalmessagecheckservice-事物服务的初始化)
   - [TransactionalMessageCheckService#check](#transactionalmessagecheckservicecheck)
   - [AbstractTransactionalMessageCheckListener 发事物消息查询 Request](#abstracttransactionalmessagechecklistener-发事物消息查询-request)
@@ -16,8 +15,6 @@
 ## 概述
 
 ![rocket-mq-tx.png](./images/rocket-mq-tx.png)
-
-- [https://rocketmq.apache.org/docs/transaction-example/](https://rocketmq.apache.org/docs/transaction-example/)
 
 ## TransactionalMessageService
 
@@ -39,7 +36,7 @@
 - Client 对事物消息的发送，处理
 - Broker 对事物消息的特殊处理
 - Clinet 事物结束（提交or回滚）的实现逻辑
-- Broker 事物的回查询（查询事物状态）的实现路基
+- Broker 事物的回查询（查询事物状态）的实现逻辑
 
 ## Send transactional message
 
@@ -243,15 +240,13 @@ public RemotingCommand processRequest(ChannelHandlerContext ctx, RemotingCommand
 从上面的代码片段可知：事物的提交，最终是(再次发送消息)把消息发送到了真正的 topic 中，从 `RMQ_SYS_TRANS_HALF_TOPIC` tpoic 到真正的 topic
 而事物回滚则是`删除消息`。
 
-## TransactionalMessageBridge
-
 ## TransactionalMessageCheckService 事物服务的初始化
 
 ```java
 // BrokerController#initialTransaction
 // transactionalMessageService 事物消息的实现类
 // transactionalMessageCheckListener 事物消息的检查回调（负责处理事物状态查询）
-// transactionalMessageCheckService 是一个线程,主页作用的检查事物的状态（开启事物状态查询的入口）
+// transactionalMessageCheckService 是一个线程,主要作用的检查事物的状态（开启事物状态查询的入口）
 private void initialTransaction() {
     this.transactionalMessageService = ServiceProvider.loadClass(ServiceProvider.TRANSACTION_SERVICE_ID, TransactionalMessageService.class);
     if (null == this.transactionalMessageService) {
@@ -325,7 +320,7 @@ if (newOpOffset != opOffset) {
 
 ```java
 // AbstractTransactionalMessageCheckListener#sendCheckMessage
-// 次方法发送消息到 Client 查询事物状态
+// 此方法发送消息到 Client 查询事物状态
 public void sendCheckMessage(MessageExt msgExt) throws Exception {
     CheckTransactionStateRequestHeader checkTransactionStateRequestHeader = new CheckTransactionStateRequestHeader();
     checkTransactionStateRequestHeader.setCommitLogOffset(msgExt.getCommitLogOffset());
@@ -352,4 +347,5 @@ public void sendCheckMessage(MessageExt msgExt) throws Exception {
 
 ## Links
 
-- [https://rocketmq.apache.org/rocketmq/the-design-of-transactional-message/](https://rocketmq.apache.org/rocketmq/the-design-of-transactional-message/)
+- [RocketMQ 事物消息架构(官方文档)](https://rocketmq.apache.org/rocketmq/the-design-of-transactional-message/)
+- [https://rocketmq.apache.org/docs/transaction-example/](https://rocketmq.apache.org/docs/transaction-example/)
