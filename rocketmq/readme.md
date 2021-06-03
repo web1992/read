@@ -25,3 +25,5 @@
 - [RocketMQ 事物消息架构(官方文档)](https://rocketmq.apache.org/rocketmq/the-design-of-transactional-message/)
 - [RocketMQ 消息Proxy架构](https://cloud.tencent.com/developer/article/1547508?)
 - [Java 大小端转换（基于ByteBuffer）](https://www.cnblogs.com/NaughtyCat/p/little-endian-and-big-endian-based-on-bytebuffer-in-java.html)
+- [详解文件IO系列](https://cloud.tencent.com/developer/article/1805770?from=article.detail.1352677)
+- [mmap和madvise的使用](https://www.cnblogs.com/wlzy/p/10665472.html)
