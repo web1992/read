@@ -21,6 +21,7 @@
   - [MappedFile getLastMappedFile](#mappedfile-getlastmappedfile)
   - [MappedFile Position](#mappedfile-position)
   - [appendMessagesInner](#appendmessagesinner)
+  - [Links](#links)
 
 阅读此文之前，建议先阅读 [RocketMQ 持久化概述](rocketmq-store.md) 这篇文章。了解 `MappedFile` 在 `RocketMQ` 中扮演的角色和作用。
 
@@ -310,3 +311,7 @@ public AppendMessageResult appendMessagesInner(final MessageExt messageExt, fina
     return new AppendMessageResult(AppendMessageStatus.UNKNOWN_ERROR);
 }
 ```
+
+## Links
+
+- [https://cloud.tencent.com/developer/article/1352677](https://cloud.tencent.com/developer/article/1352677)
