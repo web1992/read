@@ -2,6 +2,8 @@
 
 MQAdminExt 提供了通过创建TOPIC，查询消息的一些工具。
 
+下面是根据MessageId查询消息的流转图：
+
 ![rocketmq-mqadmin.png](./images/rocketmq-mqadmin.png)
 
 ## viewMessage
