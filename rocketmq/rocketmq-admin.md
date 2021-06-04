@@ -12,12 +12,13 @@ MQAdminExt 提供了通过创建TOPIC，查询消息的一些工具。
 
 ```java
 
-blic MessageExt viewMessage(String msgId) throws RemotingException, MQBrokerException, InterruptedException, MQClientException {
-MessageId messageId = null;
-messageId = MessageDecoder.decodeMessageId(msgId);
-return this.mQClientFactory.getMQClientAPIImpl().viewMessage(RemotingUtil.socketAddress2String(messageId.getAddress()), messageId.getOffset(), this.timeoutMillis);
+public MessageExt viewMessage(String msgId) throws RemotingException, MQBrokerException, InterruptedException, MQClientException {
+    MessageId messageId = null;
+    messageId = MessageDecoder.decodeMessageId(msgId);
+    return this.mQClientFactory.getMQClientAPIImpl().viewMessage(RemotingUtil.socketAddress2String(messageId.getAddress()), messageId.getOffset(), this.timeoutMillis);
 }
 
+// MessageDecoder
 // msgId -> MessageId
 public static MessageId decodeMessageId(final String msgId) throws UnknownHostException {
     SocketAddress address;
@@ -34,7 +35,11 @@ public static MessageId decodeMessageId(final String msgId) throws UnknownHostEx
     offset = bb.getLong(0);
     return new MessageId(address, offset);
 }
+```
 
+下面是 msgId 的创建代码:
+
+```java
 // CommitLog.DefaultAppendMessageCallback#doAppend:1536
 String msgId;
 if ((sysflag & MessageSysFlag.STOREHOSTADDRESS_V6_FLAG) == 0) {
@@ -55,6 +60,8 @@ public static String createMessageId(final ByteBuffer input, final ByteBuffer ad
 
 ## ViewMessageRequestHeader
 
+会发送 ViewMessageRequestHeader 请求到Broker查询消息，会调用 MessageStore 查询消息
+
 ```java
 final SelectMappedBufferResult selectMappedBufferResult =
             this.brokerController.getMessageStore().selectOneMessageByOffset(requestHeader.getOffset());
@@ -64,7 +71,7 @@ final SelectMappedBufferResult selectMappedBufferResult =
 
 ```java
 public SelectMappedBufferResult selectOneMessageByOffset(long commitLogOffset) {
-    // 第一次读取，读取消息的总长度 TOTALSIZE
+    // 第一次读取，读取消息的总长度 TOTALSIZE，注意这个4，4是消息存储在磁盘的中的TOTALSIZE，也就是消息的总长度。
     SelectMappedBufferResult sbr = this.commitLog.getMessage(commitLogOffset, 4);
     if (null != sbr) {
         try {
@@ -81,7 +88,9 @@ public SelectMappedBufferResult selectOneMessageByOffset(long commitLogOffset) {
 }
 ```
 
-最终执行到 `MappedFileQueue`
+可参考序列化实现 [rocketmq序列化实现](rocketmq-serialize.md)
+
+从 DefaultMessageStore 执行，最终执行到 `MappedFileQueue`
 
 ```java
 // offset 参数是消息所在的物理偏移位置。
@@ -124,5 +133,28 @@ public MappedFile findMappedFileByOffset(final long offset, final boolean return
         log.error("findMappedFileByOffset Exception", e);
     }
     return null;
+}
+```
+
+最后通过下面代码写入到IO中，经过TCP传输到客户端
+
+```java
+try {
+    // selectMappedBufferResult 转化成 FileRegion 进行IO传输
+    FileRegion fileRegion =
+        new OneMessageTransfer(response.encodeHeader(selectMappedBufferResult.getSize()),
+            selectMappedBufferResult);
+    ctx.channel().writeAndFlush(fileRegion).addListener(new ChannelFutureListener() {
+        @Override
+        public void operationComplete(ChannelFuture future) throws Exception {
+            selectMappedBufferResult.release();
+            if (!future.isSuccess()) {
+                log.error("Transfer one message from page cache failed, ", future.cause());
+            }
+        }
+    });
+} catch (Throwable e) {
+    log.error("", e);
+    selectMappedBufferResult.release();
 }
 ```
