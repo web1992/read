@@ -103,4 +103,4 @@ public DefaultMQPushConsumer(final String consumerGroup, RPCHook rpcHook,
 
 ## Links
 
-- [https://cloud.tencent.com/developer/article/1554950](https://cloud.tencent.com/developer/article/1554950)
+- [RocketMQ Rebalance](https://cloud.tencent.com/developer/article/1554950)
