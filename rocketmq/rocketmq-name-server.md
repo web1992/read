@@ -26,9 +26,7 @@ public boolean initialize() {
 
 ## DefaultRequestProcessor
 
-`org.apache.rocketmq.namesrv.processor.DefaultRequestProcessor` 的主要作用是处理 `RemotingCommand`，因此通过 `DefaultRequestProcessor` 就可以知道NameServer的作用包含哪些。
-
-[DefaultRequestProcessor#processRequest 代码片段](https://github.com/apache/rocketmq/blob/master/namesrv/src/main/java/org/apache/rocketmq/namesrv/processor/DefaultRequestProcessor.java#L71)
+`org.apache.rocketmq.namesrv.processor.DefaultRequestProcessor` 的主要作用是处理 `RemotingCommand`，因此通过 `DefaultRequestProcessor` 就可以知道NameServer的作用包含哪些。[DefaultRequestProcessor#processRequest 代码片段](https://github.com/apache/rocketmq/blob/master/namesrv/src/main/java/org/apache/rocketmq/namesrv/processor/DefaultRequestProcessor.java#L71)
 
 下面的的代码片段中有`19`个Case,每个Case都处理不同的业务。
 
@@ -62,7 +60,7 @@ public boolean initialize() {
 
 ## RouteInfoManager
 
-RouteInfoManager 的主要作用就是存储Broker集群相关的信息。从下面的变量中就可以知道，NameServer中存储了那些信息。
+RouteInfoManager 的主要作用就是存储Broker集群相关的信息(元数据信息)。从下面的变量中就可以知道，NameServer中存储了那些信息。
 
 ![rocketmq-nameserver-info.png](./images/rocketmq-nameserver-info.png)
 
@@ -113,13 +111,11 @@ class BrokerLiveInfo {
 | brokerLiveTable   | brokerAddr + Channel TCP 连接信息                           |
 | filterServerTable | brokerAddr + Filter Server 的映射信息                       |
 
-这里说下 brokerAddrTable 列表这个变量。这里面存储的是 BrokerData ，而BrokerData 里面维护了 brokerId + broker address 的映射关系
+这里说下 brokerAddrTable 列表这个变量。这里面存储的是 BrokerData ，而BrokerData 里面维护了 `brokerId` + `broker address` 的映射关系
+brokerAddrs 是一个 map,里面存储了名称相同的 brokerName 的 `brokerId` + `broker address`。
+因此在执行`unregisterBroker`操作的时候，会根据 brokerName 拿到BrokerData的map，在根据brokerId去移除具体的Broker信息。
 
-brokerAddrs 是一个 map,里面存储了名称相同的 brokerName 的 brokerId + broker address。
-
-因此在执行`unregisterBroker`操作的时候，会根据 brokerName 拿到BrokerData的map，在根据brokerId 去移除具体的Broker信息。
-
-看下RocketMQ集群模式下的相关配置,[2m-2s-sync的配置](https://github.com/apache/rocketmq/tree/master/distribution/conf/2m-2s-sync)
+看下RocketMQ集群模式下的相关配置[2m-2s-sync的配置](https://github.com/apache/rocketmq/tree/master/distribution/conf/2m-2s-sync)(二个Master,二个Slave)
 
 ```properties
 # cat broker-a.properties
@@ -179,11 +175,52 @@ RegisterBrokerResult result = this.namesrvController.getRouteInfoManager().regis
     null,
     ctx.channel()
 );
+
+// 参数信息
+public RegisterBrokerResult registerBroker(
+    final String clusterName,
+    final String brokerAddr,
+    final String brokerName,
+    final long brokerId,
+    final String haServerAddr,
+    final TopicConfigSerializeWrapper topicConfigWrapper,
+    final List<String> filterServerList,
+    final Channel channel) {
+        
+    }
 ```
+
+Broker注册的流程:
+
+1. 依据 clusterName和 brokerName 更新 clusterAddrTable
+2. 更新 brokerAddrTable，`this.brokerAddrTable.put(brokerName, brokerData);`
+3. 更新 BrokerData 中的  `HashMap<Long/* brokerId */, String/* broker address */>` Map(因为存在Master,Slave切换的场景，是需要更新地址的)
+4. 如果是MASTER,并且是第一次注册，那么就更新 topicQueueTable 信息
+5. 注册 BrokerLiveInfo 信息
+6. 更新 filterServerList 信息
+7. 填充 masterAddr 信息，（Master的IP信息）
 
 ## unregisterBroker
 
 Broker 的取消注册
+
+```java
+// 取消注册的参数
+public void unregisterBroker(
+    final String clusterName,
+    final String brokerAddr,
+    final String brokerName,
+    final long brokerId) {
+        
+    }
+```
+
+Broker 取消注册的流程：
+
+1. 移除 filterServer `this.filterServerTable.remove(brokerAddr);`
+2. 更新 brokerAddrTable 中的 BrokerData 信息，如果为空则移除BrokerData
+3. 更新 clusterAddrTable ，如果为空，则移除
+4. 如果 Broker 信息有更新，则更新 Topic 信息（循环QueueData如果BrokerName相等，就移除）
 
 ## getRouteInfoByTopic
 
