@@ -27,7 +27,7 @@
 
 ## MappedFileQueue new
 
-`MappedFileQueue` 的 创建 主要有三个地方，分别是 `CommitLog` `，ConsumeQueue`，`ConsumeQueueExt`
+`MappedFileQueue` 的创建 主要有三个地方，分别是 `CommitLog` `，ConsumeQueue`，`ConsumeQueueExt`
 
 ![MappedFileQueue new](./images/mapped-file-queue-new.png)
 

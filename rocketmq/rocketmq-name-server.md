@@ -6,7 +6,7 @@ NameServer 的主要目的是注册 Broker 信息，方便 Producer 和 Consumer
 
 `NamesrvController` 是负责 NameServer 启动的主要实现类。
 
-主要逻辑都在 `NamesrvController#initialize` 方法中，而我们要关注的核心是执行 `scanNotActiveBroker` 方法的定时任务
+主要逻辑都在 [NamesrvController#initialize](https://github.com/apache/rocketmq/blob/master/namesrv/src/main/java/org/apache/rocketmq/namesrv/NamesrvController.java#L76) 方法中，而我们要关注的核心是执行 `scanNotActiveBroker` 方法的定时任务
 
 ```java
 // initialize 的主要作用
@@ -18,138 +18,133 @@ NameServer 的主要目的是注册 Broker 信息，方便 Producer 和 Consumer
 // 6. 启动定期打印 kv config 的线程
 // 7. 启动扫描 Tls 配置的线程
 public boolean initialize() {
-    this.kvConfigManager.load();
-    this.remotingServer = new NettyRemotingServer(this.nettyServerConfig, this.brokerHousekeepingService);
-    this.remotingExecutor =
-        Executors.newFixedThreadPool(nettyServerConfig.getServerWorkerThreads(), new ThreadFactoryImpl("RemotingExecutorThread_"));
-    this.registerProcessor();
-    this.scheduledExecutorService.scheduleAtFixedRate(new Runnable() {
-        @Override
-        public void run() {
-            NamesrvController.this.routeInfoManager.scanNotActiveBroker();
-        }
-    }, 5, 10, TimeUnit.SECONDS);
-    this.scheduledExecutorService.scheduleAtFixedRate(new Runnable() {
-        @Override
-        public void run() {
-            NamesrvController.this.kvConfigManager.printAllPeriodically();
-        }
-    }, 1, 10, TimeUnit.MINUTES);
-    if (TlsSystemConfig.tlsMode != TlsMode.DISABLED) {
-        // Register a listener to reload SslContext
-        try {
-            fileWatchService = new FileWatchService(
-                new String[] {
-                    TlsSystemConfig.tlsServerCertPath,
-                    TlsSystemConfig.tlsServerKeyPath,
-                    TlsSystemConfig.tlsServerTrustCertPath
-                },
-                new FileWatchService.Listener() {
-                    boolean certChanged, keyChanged = false;
-                    @Override
-                    public void onChanged(String path) {
-                        if (path.equals(TlsSystemConfig.tlsServerTrustCertPath)) {
-                            log.info("The trust certificate changed, reload the ssl context");
-                            reloadServerSslContext();
-                        }
-                        if (path.equals(TlsSystemConfig.tlsServerCertPath)) {
-                            certChanged = true;
-                        }
-                        if (path.equals(TlsSystemConfig.tlsServerKeyPath)) {
-                            keyChanged = true;
-                        }
-                        if (certChanged && keyChanged) {
-                            log.info("The certificate and private key changed, reload the ssl context");
-                            certChanged = keyChanged = false;
-                            reloadServerSslContext();
-                        }
-                    }
-                    private void reloadServerSslContext() {
-                        ((NettyRemotingServer) remotingServer).loadSslContext();
-                    }
-                });
-        } catch (Exception e) {
-            log.warn("FileWatchService created error, can't load the certificate dynamically");
-        }
-    }
-    return true;
+ // ...
 }
 ```
 
 ## scanNotActiveBroker
 
+```java
+// 扫描不活动的Broker,从brokerLiveTable中移除
+public void scanNotActiveBroker() {
+    Iterator<Entry<String, BrokerLiveInfo>> it = this.brokerLiveTable.entrySet().iterator();
+    while (it.hasNext()) {
+        Entry<String, BrokerLiveInfo> next = it.next();
+        long last = next.getValue().getLastUpdateTimestamp();
+        if ((last + BROKER_CHANNEL_EXPIRED_TIME) < System.currentTimeMillis()) {
+            RemotingUtil.closeChannel(next.getValue().getChannel());
+            it.remove();
+            log.warn("The broker channel expired, {} {}ms", next.getKey(), BROKER_CHANNEL_EXPIRED_TIME);
+            // 执行此方法移除 Broker信息，路由信息等等。
+            this.onChannelDestroy(next.getKey(), next.getValue().getChannel());
+        }
+    }
+}
+```
+
 ## DefaultRequestProcessor
 
-DefaultRequestProcessor 的主要作用是处理 RemotingCommand，因此通过 DefaultRequestProcessor 就可以知道NameServer的作用包含哪些。
+`org.apache.rocketmq.namesrv.processor.DefaultRequestProcessor` 的主要作用是处理 `RemotingCommand`，因此通过 `DefaultRequestProcessor` 就可以知道NameServer的作用包含哪些。
 
-下面的的代码片段中有19个Case,每个Case 都处理不同的业务。
+[DefaultRequestProcessor#processRequest 代码片段](https://github.com/apache/rocketmq/blob/master/namesrv/src/main/java/org/apache/rocketmq/namesrv/processor/DefaultRequestProcessor.java#L71)
 
-核心的 RemotingCommand:
+下面的的代码片段中有`19`个Case,每个Case都处理不同的业务。
+
+核心的 `RequestCode`:
 
 - REGISTER_BROKER
 - UNREGISTER_BROKER
 - GET_ROUTEINFO_BY_TOPIC
 
+| RequestCode                        | 描述                   |
+| ---------------------------------- | ---------------------- |
+| PUT_KV_CONFIG                      |
+| GET_KV_CONFIG                      |
+| DELETE_KV_CONFIG                   |
+| QUERY_DATA_VERSION                 |
+| REGISTER_BROKER                    | 注册 Broker            |
+| UNREGISTER_BROKER                  | 取消注册 Broker        |
+| GET_ROUTEINFO_BY_TOPIC             | 根据Topic 查询路由信息 |
+| GET_BROKER_CLUSTER_INFO            |
+| WIPE_WRITE_PERM_OF_BROKER          |
+| GET_ALL_TOPIC_LIST_FROM_NAMESERVER |
+| DELETE_TOPIC_IN_NAMESRV            |
+| GET_KVLIST_BY_NAMESPACE            |
+| GET_TOPICS_BY_CLUSTER              |
+| GET_SYSTEM_TOPIC_LIST_FROM_NS      |
+| GET_UNIT_TOPIC_LIST                |
+| GET_HAS_UNIT_SUB_TOPIC_LIST        |
+| GET_HAS_UNIT_SUB_UNUNIT_TOPIC_LIST |
+| UPDATE_NAMESRV_CONFIG              |
+| GET_NAMESRV_CONFIG                 |
+
+## registerBroker
+
+Broker 的注册
+
 ```java
-@Override
-public RemotingCommand processRequest(ChannelHandlerContext ctx,
-    RemotingCommand request) throws RemotingCommandException {
-    if (ctx != null) {
-        log.debug("receive request, {} {} {}",
-            request.getCode(),
-            RemotingHelper.parseChannelRemoteAddr(ctx.channel()),
-            request);
-    }
-    switch (request.getCode()) {
-        case RequestCode.PUT_KV_CONFIG:
-            return this.putKVConfig(ctx, request);
-        case RequestCode.GET_KV_CONFIG:
-            return this.getKVConfig(ctx, request);
-        case RequestCode.DELETE_KV_CONFIG:
-            return this.deleteKVConfig(ctx, request);
-        case RequestCode.QUERY_DATA_VERSION:
-            return queryBrokerTopicConfig(ctx, request);
-        case RequestCode.REGISTER_BROKER:
-            Version brokerVersion = MQVersion.value2Version(request.getVersion());
-            if (brokerVersion.ordinal() >= MQVersion.Version.V3_0_11.ordinal()) {
-                return this.registerBrokerWithFilterServer(ctx, request);
-            } else {
-                return this.registerBroker(ctx, request);
-            }
-        case RequestCode.UNREGISTER_BROKER:
-            return this.unregisterBroker(ctx, request);
-        case RequestCode.GET_ROUTEINFO_BY_TOPIC:
-            return this.getRouteInfoByTopic(ctx, request);
-        case RequestCode.GET_BROKER_CLUSTER_INFO:
-            return this.getBrokerClusterInfo(ctx, request);
-        case RequestCode.WIPE_WRITE_PERM_OF_BROKER:
-            return this.wipeWritePermOfBroker(ctx, request);
-        case RequestCode.GET_ALL_TOPIC_LIST_FROM_NAMESERVER:
-            return getAllTopicListFromNameserver(ctx, request);
-        case RequestCode.DELETE_TOPIC_IN_NAMESRV:
-            return deleteTopicInNamesrv(ctx, request);
-        case RequestCode.GET_KVLIST_BY_NAMESPACE:
-            return this.getKVListByNamespace(ctx, request);
-        case RequestCode.GET_TOPICS_BY_CLUSTER:
-            return this.getTopicsByCluster(ctx, request);
-        case RequestCode.GET_SYSTEM_TOPIC_LIST_FROM_NS:
-            return this.getSystemTopicListFromNs(ctx, request);
-        case RequestCode.GET_UNIT_TOPIC_LIST:
-            return this.getUnitTopicList(ctx, request);
-        case RequestCode.GET_HAS_UNIT_SUB_TOPIC_LIST:
-            return this.getHasUnitSubTopicList(ctx, request);
-        case RequestCode.GET_HAS_UNIT_SUB_UNUNIT_TOPIC_LIST:
-            return this.getHasUnitSubUnUnitTopicList(ctx, request);
-        case RequestCode.UPDATE_NAMESRV_CONFIG:
-            return this.updateConfig(ctx, request);
-        case RequestCode.GET_NAMESRV_CONFIG:
-            return this.getConfig(ctx, request);
-        default:
-            break;
-    }
-    return null;
+// DefaultRequestProcessor#registerBroker:300
+RegisterBrokerResult result = this.namesrvController.getRouteInfoManager().registerBroker(
+    requestHeader.getClusterName(),
+    requestHeader.getBrokerAddr(),
+    requestHeader.getBrokerName(),
+    requestHeader.getBrokerId(),
+    requestHeader.getHaServerAddr(),
+    topicConfigWrapper,
+    null,
+    ctx.channel()
+);
+```
+
+## RouteInfoManager
+
+RouteInfoManager 的主要作用就是存储Broker集群相关的信息。从下面的变量中就可以知道，NameServer中存储了那些信息。
+
+```java
+// RouteInfoManager 的成员变量
+public class RouteInfoManager {
+    // 超时时间
+    private final static long BROKER_CHANNEL_EXPIRED_TIME = 1000 * 60 * 2;
+
+    private final HashMap<String/* topic */, List<QueueData>> topicQueueTable;
+    private final HashMap<String/* brokerName */, BrokerData> brokerAddrTable;
+    private final HashMap<String/* clusterName */, Set<String/* brokerName */>> clusterAddrTable;
+    private final HashMap<String/* brokerAddr */, BrokerLiveInfo> brokerLiveTable;
+    private final HashMap<String/* brokerAddr */, List<String>/* Filter Server */> filterServerTable;
+}
+
+public class QueueData implements Comparable<QueueData> {
+    private String brokerName;
+    private int readQueueNums;
+    private int writeQueueNums;
+    private int perm;
+    private int topicSynFlag;
+}
+public class BrokerData implements Comparable<BrokerData> {
+    private String cluster;
+    private String brokerName;
+    private HashMap<Long/* brokerId */, String/* broker address */> brokerAddrs;
+
+    private final Random random = new Random();
+}
+
+class BrokerLiveInfo {
+    private long lastUpdateTimestamp;
+    private DataVersion dataVersion;
+    private Channel channel;
+    private String haServerAddr;
 }
 ```
+
+| 信息              | 描述                                                        |
+| ----------------- | ----------------------------------------------------------- |
+| topicQueueTable   | topic下面的queue的信息                                      |
+| brokerAddrTable   | brokerName + cluster + brokerId + broker address 的集群信息 |
+| clusterAddrTable  | clusterName + brokerName 的映射关系                         |
+| brokerLiveTable   | brokerAddr + Channel TCP 连接信息                           |
+| filterServerTable | brokerAddr + Filter Server 的映射信息                       |
+
+## getRouteInfoByTopic
 
 ## Links
 
