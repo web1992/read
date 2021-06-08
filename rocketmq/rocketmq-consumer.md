@@ -30,15 +30,7 @@ RocketMQ 消费消息的实现解析。
 - Consumer 消费消息失败了，怎么处理
 - Consumer 在重启之后，如何继续上一次消费的位置，继续处理
 - Consumer 为什么需要重平衡(rebalance)
-- RocketMQ 为什么没有办法保证消息的重复消费。
-
-RocketMQ 消费消息的实现有3种方式，这里主要以 `DefaultMQPushConsumer(DefaultMQPushConsumerImpl)`(推消息) 和 `ConsumeMessageConcurrentlyService`（并发消息消息）为例子。
-
-三种消息消费的实现类：
-
-- DefaultLitePullConsumer
-- ~~DefaultMQPullConsumer~~
-- DefaultMQPushConsumer
+- RocketMQ 为什么没有办法保证消息的不重复消费。
 
 ## 消息的创建和消费
 
@@ -46,9 +38,15 @@ RocketMQ 消费消息的实现有3种方式，这里主要以 `DefaultMQPushCons
 
 ## 消息消费的核心类
 
+三种消息消费的实现类：
+
+- DefaultLitePullConsumer
+- ~~DefaultMQPullConsumer~~
+- DefaultMQPushConsumer
+
 RockerMQ 中的（Client）Consumer 实现也是比较复杂的，主要是涉及的类很多，而且各个类之间都相互关联。
 虽然 Consumer 的主要作用是消费消息，但是很多功能都是在 Consumer 端实现的。
-比如：1.(Pull 模式)拉取消息进行消费。2.消息消费失败，重新发回到MQ，3.多个 Consumer 消费者之间的`负载均衡`，4.持久化消费者的 offset 等等。
+比如：1.(Pull 模式)拉取消息进行消费。2.消息消费失败，重新发回到MQ。3.多个 Consumer 消费者之间的`负载均衡`。4.持久化消费者的 offset 等等。
 
 而下图中的类，就是负责上述的这些功能（类真的多！）。
 
@@ -58,7 +56,7 @@ RockerMQ 中的（Client）Consumer 实现也是比较复杂的，主要是涉�
 但是如果我们要关心实现，那么上图中的类，都需要了解，下面对主要的类进行简单的说明：
 
 - `DefaultMQPushConsumer` （Consumer 入口）负责 Consumer 的启动&管理配置参数
-- `DefaultMQPushConsumerImpl` 负责发送 `PullReques`t 拉消息,包含 `ConsumeMessageService` 和 `MQClientInstance`
+- `DefaultMQPushConsumerImpl` 负责发送 `PullRequest` 拉消息,包含 `ConsumeMessageService` 和 `MQClientInstance`
 - `ConsumeMessageService` 负责处理消息服务(有 `ConsumeMessageConcurrentlyService` 和 `ConsumeMessageOrderlyService` )两种实现
 - `MQClientInstance`(mQClientFactory) 负责底层的通信(单实例的，多个Consumer会共享一个)
 - `RebalanceImpl` 执行 rebalance
@@ -486,7 +484,7 @@ switch (consumeFromWhere) {
 获取 `offset` 的简单的代码流程：
 
 ```java
-`RemoteBrokerOffsetStore`(`OffsetStore`) -> readOffset
+RemoteBrokerOffsetStore(OffsetStore) -> readOffset
 -> MQClientInstance
 -> MQClientAPIImpl -> queryConsumerOffset
 -> QueryConsumerOffsetRequestHeader // 发送查询 Request
@@ -667,3 +665,4 @@ public class main {
 
 - [消息订阅](https://cloud.tencent.com/developer/article/1474885)
 - [消息队列模型](https://cloud.tencent.com/developer/article/1747568?)
+- [RocketMQ 重平衡](rocketmq-rebalance.md)
