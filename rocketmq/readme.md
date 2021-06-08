@@ -28,3 +28,4 @@
 - [详解文件IO系列](https://cloud.tencent.com/developer/article/1805770)
 - [mmap和madvise的使用](https://www.cnblogs.com/wlzy/p/10665472.html)
 - [RocketMQ Rebalance](https://cloud.tencent.com/developer/article/1554950)
+- [主从同步注意点](https://cloud.tencent.com/developer/article/1458089)

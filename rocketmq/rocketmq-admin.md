@@ -58,6 +58,8 @@ public static String createMessageId(final ByteBuffer input, final ByteBuffer ad
 }
 ```
 
+可见MessageId中包含了消息的偏移量offset和Addr,addr 是消息存在在具体的Broker的IP地址。
+
 ## ViewMessageRequestHeader
 
 会发送 ViewMessageRequestHeader 请求到Broker查询消息，会调用 MessageStore 查询消息
