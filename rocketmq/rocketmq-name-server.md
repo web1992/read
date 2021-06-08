@@ -83,7 +83,7 @@ public void scanNotActiveBroker() {
 Broker 的注册
 
 ```java
-// DefaultRequestProcessor#registerBroker:300
+// IDEA: DefaultRequestProcessor#registerBroker:300
 RegisterBrokerResult result = this.namesrvController.getRouteInfoManager().registerBroker(
     requestHeader.getClusterName(),
     requestHeader.getBrokerAddr(),
@@ -96,9 +96,15 @@ RegisterBrokerResult result = this.namesrvController.getRouteInfoManager().regis
 );
 ```
 
+## unregisterBroker
+
+Broker 的取消注册
+
 ## RouteInfoManager
 
 RouteInfoManager 的主要作用就是存储Broker集群相关的信息。从下面的变量中就可以知道，NameServer中存储了那些信息。
+
+![rocketmq-nameserver-info.png](./images/rocketmq-nameserver-info.png)
 
 ```java
 // RouteInfoManager 的成员变量
@@ -144,7 +150,78 @@ class BrokerLiveInfo {
 | brokerLiveTable   | brokerAddr + Channel TCP 连接信息                           |
 | filterServerTable | brokerAddr + Filter Server 的映射信息                       |
 
+这里说下 brokerAddrTable 列表这个变量。这里面存储的是 BrokerData ，而BrokerData 里面维护了 brokerId + broker address 的映射关系
+
+brokerAddrs 是一个 map,里面存储了名称相同的 brokerName 的 brokerId + broker address。
+
+因此在执行`unregisterBroker`操作的时候，会根据 brokerName 拿到BrokerData的map，在根据brokerId 去移除具体的Broker信息。
+
+看下RocketMQ集群模式下的相关配置,[2m-2s-sync的配置](https://github.com/apache/rocketmq/tree/master/distribution/conf/2m-2s-sync)
+
+```properties
+# cat broker-a.properties
+brokerClusterName=DefaultCluster
+brokerName=broker-a
+brokerId=0
+deleteWhen=04
+fileReservedTime=48
+brokerRole=SYNC_MASTER
+flushDiskType=ASYNC_FLUSH
+
+# broker-a-s.properties
+brokerClusterName=DefaultCluster
+brokerName=broker-a
+brokerId=1
+deleteWhen=04
+fileReservedTime=48
+brokerRole=SLAVE
+flushDiskType=ASYNC_FLUSH
+
+# broker-b.properties
+brokerClusterName=DefaultCluster
+brokerName=broker-b
+brokerId=0
+deleteWhen=04
+fileReservedTime=48
+brokerRole=SYNC_MASTER
+flushDiskType=ASYNC_FLUSH
+
+# broker-b-s.properties
+brokerClusterName=DefaultCluster
+brokerName=broker-b
+brokerId=1
+deleteWhen=04
+fileReservedTime=48
+brokerRole=SLAVE
+flushDiskType=ASYNC_FLUSH
+```
+
+可见上述配置 `Master`&`Slave` 的配置中的`brokerName`是一样的。
+
 ## getRouteInfoByTopic
+
+路由信息的查询，入口在 [DefaultRequestProcessor#getRouteInfoByTopic](https://github.com/apache/rocketmq/blob/master/namesrv/src/main/java/org/apache/rocketmq/namesrv/processor/DefaultRequestProcessor.java#L338),具体的实现在中 [RouteInfoManager#pickupTopicRouteData](https://github.com/apache/rocketmq/blob/aaa92a2e53d773c7f1d9e9f25e41709f6948fa83/namesrv/src/main/java/org/apache/rocketmq/namesrv/routeinfo/RouteInfoManager.java#L374)
+
+此处的实现逻辑比较简单。不在赘述。下面看下伪代码：
+
+```java
+// init 初始化
+TopicRouteData topicRouteData = new TopicRouteData();
+topicRouteData.setBrokerDatas(brokerDataList);
+topicRouteData.setFilterServerTable(filterServerMap);
+// ... 
+// 根据 topic 查询QueueData
+List<QueueData> queueDataList = this.topicQueueTable.get(topic);
+// 获取所有的Broker 存入 brokerNameSet
+// 根据 brokerName 查询 BrokerData
+BrokerData brokerData = this.brokerAddrTable.get(brokerName);
+// 填充 brokerData
+brokerDataList.add(brokerDataClone);
+// 填充 filterServer
+filterServerMap.put(brokerAddr, filterServerList);
+// 返回 topicRouteData
+return topicRouteData;
+```
 
 ## Links
 
