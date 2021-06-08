@@ -6,6 +6,7 @@
 
 基于 `RocketMQ 4.8.0` 源码的分析
 
+- [🔥RocketMQ NameServer 简介](rocketmq-name-server.md)
 - [🔥RocketMQ 100问](rocketmq-FAQ-100.md)
 - [🔥RocketMQ Consumer的实现](rocketmq-consumer.md)
 - [🔥RocketMQ 的序列化实现](rocketmq-serialize.md)

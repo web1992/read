@@ -2,6 +2,16 @@
 
 NameServer 的主要目的是注册 Broker 信息，方便 Producer 和 Consumer 发现可用的 Broker。进行消息的发送和消费。
 
+- [NameServer](#nameserver)
+  - [启动](#启动)
+  - [DefaultRequestProcessor](#defaultrequestprocessor)
+  - [RouteInfoManager](#routeinfomanager)
+  - [registerBroker](#registerbroker)
+  - [unregisterBroker](#unregisterbroker)
+  - [getRouteInfoByTopic](#getrouteinfobytopic)
+  - [scanNotActiveBroker](#scannotactivebroker)
+  - [Links](#links)
+
 ## 启动
 
 `NamesrvController` 是负责 NameServer 启动的主要实现类。
