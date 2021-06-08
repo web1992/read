@@ -6,7 +6,9 @@ NameServer 的主要目的是注册 Broker 信息，方便 Producer 和 Consumer
 
 `NamesrvController` 是负责 NameServer 启动的主要实现类。
 
-主要逻辑都在 [NamesrvController#initialize](https://github.com/apache/rocketmq/blob/master/namesrv/src/main/java/org/apache/rocketmq/namesrv/NamesrvController.java#L76) 方法中，而我们要关注的核心是执行 `scanNotActiveBroker` 方法的定时任务
+主要逻辑都在 [NamesrvController#initialize](https://github.com/apache/rocketmq/blob/master/namesrv/src/main/java/org/apache/rocketmq/namesrv/NamesrvController.java#L76) 方法中。
+
+下面简单概述在启动过程中做了什么动作。
 
 ```java
 // initialize 的主要作用
@@ -19,26 +21,6 @@ NameServer 的主要目的是注册 Broker 信息，方便 Producer 和 Consumer
 // 7. 启动扫描 Tls 配置的线程
 public boolean initialize() {
  // ...
-}
-```
-
-## scanNotActiveBroker
-
-```java
-// 扫描不活动的Broker,从brokerLiveTable中移除
-public void scanNotActiveBroker() {
-    Iterator<Entry<String, BrokerLiveInfo>> it = this.brokerLiveTable.entrySet().iterator();
-    while (it.hasNext()) {
-        Entry<String, BrokerLiveInfo> next = it.next();
-        long last = next.getValue().getLastUpdateTimestamp();
-        if ((last + BROKER_CHANNEL_EXPIRED_TIME) < System.currentTimeMillis()) {
-            RemotingUtil.closeChannel(next.getValue().getChannel());
-            it.remove();
-            log.warn("The broker channel expired, {} {}ms", next.getKey(), BROKER_CHANNEL_EXPIRED_TIME);
-            // 执行此方法移除 Broker信息，路由信息等等。
-            this.onChannelDestroy(next.getKey(), next.getValue().getChannel());
-        }
-    }
 }
 ```
 
@@ -78,28 +60,6 @@ public void scanNotActiveBroker() {
 | UPDATE_NAMESRV_CONFIG              |
 | GET_NAMESRV_CONFIG                 |
 
-## registerBroker
-
-Broker 的注册
-
-```java
-// IDEA: DefaultRequestProcessor#registerBroker:300
-RegisterBrokerResult result = this.namesrvController.getRouteInfoManager().registerBroker(
-    requestHeader.getClusterName(),
-    requestHeader.getBrokerAddr(),
-    requestHeader.getBrokerName(),
-    requestHeader.getBrokerId(),
-    requestHeader.getHaServerAddr(),
-    topicConfigWrapper,
-    null,
-    ctx.channel()
-);
-```
-
-## unregisterBroker
-
-Broker 的取消注册
-
 ## RouteInfoManager
 
 RouteInfoManager 的主要作用就是存储Broker集群相关的信息。从下面的变量中就可以知道，NameServer中存储了那些信息。
@@ -119,6 +79,7 @@ public class RouteInfoManager {
     private final HashMap<String/* brokerAddr */, List<String>/* Filter Server */> filterServerTable;
 }
 
+// tpoic+队列信息，Consumer在消费消息重平衡的时候，会用到此信息
 public class QueueData implements Comparable<QueueData> {
     private String brokerName;
     private int readQueueNums;
@@ -126,6 +87,8 @@ public class QueueData implements Comparable<QueueData> {
     private int perm;
     private int topicSynFlag;
 }
+// Broker 信息，主要存储IP地址等信息
+// 按照 brokerName 维度存储在主从模式下 brokerName 是相同的，因此brokerAddrs是一个Map
 public class BrokerData implements Comparable<BrokerData> {
     private String cluster;
     private String brokerName;
@@ -133,7 +96,7 @@ public class BrokerData implements Comparable<BrokerData> {
 
     private final Random random = new Random();
 }
-
+// broker 的TCP连接维护。主要用来检测Broker是否存活
 class BrokerLiveInfo {
     private long lastUpdateTimestamp;
     private DataVersion dataVersion;
@@ -198,6 +161,30 @@ flushDiskType=ASYNC_FLUSH
 
 可见上述配置 `Master`&`Slave` 的配置中的`brokerName`是一样的。
 
+下面的 registerBroker 和 unregisterBroker 都是去操作 RouteInfoManager 维护的信息。
+
+## registerBroker
+
+Broker 的注册
+
+```java
+// IDEA: DefaultRequestProcessor#registerBroker:300
+RegisterBrokerResult result = this.namesrvController.getRouteInfoManager().registerBroker(
+    requestHeader.getClusterName(),
+    requestHeader.getBrokerAddr(),
+    requestHeader.getBrokerName(),
+    requestHeader.getBrokerId(),
+    requestHeader.getHaServerAddr(),
+    topicConfigWrapper,
+    null,
+    ctx.channel()
+);
+```
+
+## unregisterBroker
+
+Broker 的取消注册
+
 ## getRouteInfoByTopic
 
 路由信息的查询，入口在 [DefaultRequestProcessor#getRouteInfoByTopic](https://github.com/apache/rocketmq/blob/master/namesrv/src/main/java/org/apache/rocketmq/namesrv/processor/DefaultRequestProcessor.java#L338),具体的实现在中 [RouteInfoManager#pickupTopicRouteData](https://github.com/apache/rocketmq/blob/aaa92a2e53d773c7f1d9e9f25e41709f6948fa83/namesrv/src/main/java/org/apache/rocketmq/namesrv/routeinfo/RouteInfoManager.java#L374)
@@ -221,6 +208,26 @@ brokerDataList.add(brokerDataClone);
 filterServerMap.put(brokerAddr, filterServerList);
 // 返回 topicRouteData
 return topicRouteData;
+```
+
+## scanNotActiveBroker
+
+```java
+// 扫描不活动的Broker,从brokerLiveTable中移除
+public void scanNotActiveBroker() {
+    Iterator<Entry<String, BrokerLiveInfo>> it = this.brokerLiveTable.entrySet().iterator();
+    while (it.hasNext()) {
+        Entry<String, BrokerLiveInfo> next = it.next();
+        long last = next.getValue().getLastUpdateTimestamp();
+        if ((last + BROKER_CHANNEL_EXPIRED_TIME) < System.currentTimeMillis()) {
+            RemotingUtil.closeChannel(next.getValue().getChannel());
+            it.remove();
+            log.warn("The broker channel expired, {} {}ms", next.getKey(), BROKER_CHANNEL_EXPIRED_TIME);
+            // 执行此方法移除 Broker信息，路由信息等等。
+            this.onChannelDestroy(next.getKey(), next.getValue().getChannel());
+        }
+    }
+}
 ```
 
 ## Links
