@@ -31,6 +31,7 @@ RocketMQ 消费消息的实现解析。
 - Consumer 在重启之后，如何继续上一次消费的位置，继续处理
 - Consumer 为什么需要重平衡(rebalance)
 - RocketMQ 为什么没有办法保证消息的不重复消费。
+- 消息消费失败最大次数的控制是如何实现的
 
 ## 消息的创建和消费
 
@@ -260,7 +261,7 @@ public class PullResult {
     private final long nextBeginOffset;
     private final long minOffset;
     private final long maxOffset;
-    private List<MessageExt> msgFoundList;
+    private List<MessageExt> msgFoundList;// 拉取到的消息列表
 }
 ```
 
@@ -268,7 +269,7 @@ public class PullResult {
 
 ### ConsumeRequest
 
-3.在获取到`PullResult`之后，进入到消费消息的阶段。
+3.在获取到`PullResult`之后（此时已经有了`List<MessageExt>`），进入到消费消息的阶段。
 
 ```java
 // 在获取到 PullResult 之后，执行 ConsumeMessageService 的 submitConsumeRequest 方法
@@ -422,7 +423,7 @@ for (MessageQueue mq : mqSet) {
 
 上面主要是说明 `ProcessQueue` : `PullRequest` = 1:1
 
-其次在说 `ProcessQueue` 的作用，一个 `ProcessQueue` 对应 `PullRequest` 。在拉取消息之后，会把消息加入到 ProcessQueue 中。代码如下：
+其次再说 `ProcessQueue` 的作用，一个 `ProcessQueue` 对应 `PullRequest` 。在拉取消息之后，会把消息加入到 ProcessQueue 中。代码如下：
 
 ```java
 // 添加消息
