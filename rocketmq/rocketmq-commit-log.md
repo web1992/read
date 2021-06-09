@@ -1,6 +1,6 @@
 # CommitLog
 
-阅读此文之前，建议先阅读 [RocketMQ 持久化概述](rocketmq-store.md) [MappedFile](rocketmq-mapped-file.md) 这篇文章。
+阅读此文之前，建议先阅读 [RocketMQ 持久化概述](rocketmq-store.md)，[MappedFile](rocketmq-mapped-file.md) 这篇文章。
 
 了解 `RocketMQ` 存储的实现概述 和 `MappedFile` 在 `RocketMQ` 中扮演的角色和作用。
 
