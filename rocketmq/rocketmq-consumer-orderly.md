@@ -7,7 +7,7 @@ RocketMQ 的顺序消费和并发消费的实现细节。
 
 ## 初始化
 
-在消息消息中可以使用 `MessageListenerOrderly` 进行消息的顺序消费。使用 `MessageListenerConcurrently` 进行消息的并发消费。
+在消息消费初始中可以使用 `MessageListenerOrderly` 进行消息的顺序消费，使用 `MessageListenerConcurrently` 进行消息的并发消费。
 
 ```java
 // consumer 在启动之前需要先确定使用 MessageListenerConcurrently 还是 MessageListenerOrderly
@@ -71,7 +71,7 @@ void submitConsumeRequest(
 | ---------------------- | ----------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------ |
 | start                  | 启动了 `ConsumeMessageOrderlyService.this.lockMQPeriodically()` 定时任务            | 启动了一个 `cleanExpireMsg` 定时任务                                                                                                 |
 | consumeMessageDirectly | 处理 ConsumeOrderlyStatus 返回 ConsumeMessageDirectlyResult                         | 这里的实现比较简单，就是消费消息 处理 ConsumeConcurrentlyStatus，返回 ConsumeMessageDirectlyResult                                   |
-| submitConsumeRequest   | 把`List<MessageExt>`包装成 `ConsumeRequest` 提交给 `consumeExecutor` 线程池异步消息 | 把`List<MessageExt>`包装成 `ConsumeRequest` 提交给 `consumeExecutor` 线程池异步消息，因为`consumeExecutor`多个线程的，因此是并发消费 |
+| submitConsumeRequest   | 把`List<MessageExt>`包装成 `ConsumeRequest` 提交给 `consumeExecutor` 线程池异步消息（consumeExecutor线程池不是单线程池） | 把`List<MessageExt>`包装成 `ConsumeRequest` 提交给 `consumeExecutor` 线程池异步消息，因为`consumeExecutor`多个线程的，因此是并发消费 |
 
 从上面的对比中看，似乎没有说明 `ConsumeMessageOrderlyService` 与 `ConsumeMessageConcurrentlyService` 的区别在哪里。然而他们的 `ConsumeRequest` 是不同的，`ConsumeRequest` 是二个类的内部类。具体的不同实现就在 `ConsumeRequest` 中
 
@@ -81,6 +81,8 @@ void submitConsumeRequest(
 > 此处不再解释 `submitConsumeRequest` 方法参数 `List<MessageExt> msgs`,`ProcessQueue` 等的来源。具体可以在 [消息消费的实现](rocketmq-consumer.md) 中查看。
 
 ## ConsumeMessageOrderlyService.ConsumeRequest
+
+代码流程：
 
 - 加锁
 - 做检查
@@ -107,9 +109,11 @@ synchronized (objLock) {
 ```
 
 看上面的代码，应该有这个的疑问，`ConsumeMessageOrderlyService` 消息，只是保证了单个`queueId`下面的顺序消费，而在`queue`是多个，那么在`RocketMQ`如果保证全局的顺序性呢？
-这个就需要`Producer`端保证了。具体的Demo例子可以参考 [Producer](https://github.com/apache/rocketmq/blob/master/example/src/main/java/org/apache/rocketmq/example/ordermessage/Producer.java#L38)
+这个就需要`Producer`+`Consumer`端保证了。具体的Demo例子可以参考 [Producer+Consumer orderly](https://github.com/apache/rocketmq/blob/master/example/src/main/java/org/apache/rocketmq/example/ordermessage)
 
 ## ConsumeMessageConcurrentlyService.ConsumeRequest
+
+代码流程：
 
 - 构造 ConsumeConcurrentlyContext 上下文
 - 执行 `executeHookBefore` Hooks
@@ -165,7 +169,7 @@ for (MessageQueue mq : mqSet) {
 
 ```java
 // 加锁成功的Set
-Set<MessageQueue> lockedMqs
+Set<MessageQueue> lockedMqs = ...
 
 // get ConcurrentHashMap by consumer group
 ConcurrentHashMap<MessageQueue, LockEntry> groupValue = this.mqLockTable.get(group);
@@ -188,28 +192,6 @@ return lockedMqs
 ```
 
 此外，上面的代码省略了`续锁`(如果之前已经获取了锁，就延迟锁的过期时间)的操作。
-
-## ConsumeType
-
-```java
-public enum ConsumeType {
-
-    CONSUME_ACTIVELY("PULL"),
-
-    CONSUME_PASSIVELY("PUSH");
-
-    private String typeCN;
-
-    ConsumeType(String typeCN) {
-        this.typeCN = typeCN;
-    }
-
-    public String getTypeCN() {
-        return typeCN;
-    }
-}
-
-```
 
 ## Links
 
