@@ -32,8 +32,11 @@ RocketMQ 消费消息的实现解析。
 - Consumer 为什么需要重平衡(rebalance)
 - RocketMQ 为什么没有办法保证消息的不重复消费。
 - 消息消费失败最大次数的控制是如何实现的
+- Consumer 的Queue的分配策略
 
 ## 消息的创建和消费
+
+此文主要是解释Consumer：消息消费的整体流程，拉取消息，消费消息，消费结果处理，Consumer 的重平衡。可以了解 Consumer 实现类的各个角色。从而为深入了解各个角色的源码做准备。
 
 ![messgae flow](images/rocketmq-consumer-create-consumer.png)
 

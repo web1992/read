@@ -31,3 +31,4 @@
 - [RocketMQ Rebalance](https://cloud.tencent.com/developer/article/1554950)
 - [主从同步注意点](https://cloud.tencent.com/developer/article/1458089)
 - [RocketMQ Broker的快速失败机制](https://cloud.tencent.com/developer/article/1629347)
+- [RocketMQ 顺序消费](https://www.cnblogs.com/qdhxhz/p/11134903.html)
