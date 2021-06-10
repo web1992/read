@@ -1,11 +1,11 @@
-# RocketMQ Consuer Orderly
+# RocketMQ Consumer Orderly
 
 RocketMQ 的顺序消费和并发消费的实现细节。
 
 客户端使用 `MessageListenerConcurrently` 和 `MessageListenerOrderly` 来确定顺序消费还是并行消费。
 而具体的实现类是：`ConsumeMessageOrderlyService` 和 `ConsumeMessageConcurrentlyService`
 
-## 用法
+## 初始化
 
 在消息消息中可以使用 `MessageListenerOrderly` 进行消息的顺序消费。使用 `MessageListenerConcurrently` 进行消息的并发消费。
 
@@ -39,6 +39,8 @@ if (this.getMessageListenerInner() instanceof MessageListenerOrderly) {
 // 启动 ConsumeMessageService
 this.consumeMessageService.start();
 ```
+
+## ConsumeMessageService 的两种实现
 
 `ConsumeMessageOrderlyService` 和 `ConsumeMessageConcurrentlyService` 都实现了 `ConsumeMessageService` 接口。
 
