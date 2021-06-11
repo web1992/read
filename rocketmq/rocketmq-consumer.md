@@ -17,6 +17,7 @@ RocketMQ 消费消息的实现解析。
   - [Consumer 消费结果的处理](#consumer-消费结果的处理)
     - [ConsumeRequest](#consumerequest)
     - [processConsumeResult](#processconsumeresult)
+    - [sendMessageBack](#sendmessageback)
     - [ProcessQueue](#processqueue)
   - [RebalancePushImpl#computePullFromWhere](#rebalancepushimplcomputepullfromwhere)
   - [Consumer 的负载均衡](#consumer-的负载均衡)
@@ -394,6 +395,51 @@ if (offset >= 0 && !consumeRequest.getProcessQueue().isDropped()) {
     this.defaultMQPushConsumerImpl.getOffsetStore().updateOffset(consumeRequest.getMessageQueue(), offset, true);
 }
 
+}
+```
+
+### sendMessageBack
+
+sendMessageBack 的实现，Broker 实现细节可参考 [Broker消息重试逻辑](rocketmq-consumer-send-msg-back.md)
+
+```java
+
+// 首先通过 msg 获取Host地址，进行发送
+// 通过 ConsumerSendMsgBackRequestHeader 把消息发送到Borker 进行存储
+// Broker 中使用 MixAll.getRetryTopic 获取新的Topic 的名称
+// 此外还是会判断消息是已经消费了最大的次数等等
+
+// 上面的consumerSendMessageBack 方法异常之后，执行下面的逻辑
+// 获取Topic 的名称，Topic 名称是 %RETRY% + ConsumerGroup 的组合
+// 保存旧的msgId到Props中
+// 更新 reconsumeTime
+// 再次发送
+public void sendMessageBack(MessageExt msg, int delayLevel, final String brokerName)
+    throws RemotingException, MQBrokerException, InterruptedException, MQClientException {
+    try {
+        // 一次尝试发送消息到Broker
+        String brokerAddr = (null != brokerName) ? this.mQClientFactory.findBrokerAddressInPublish(brokerName)
+            : RemotingHelper.parseSocketAddressAddr(msg.getStoreHost());
+        this.mQClientFactory.getMQClientAPIImpl().consumerSendMessageBack(brokerAddr, msg,
+            this.defaultMQPushConsumer.getConsumerGroup(), delayLevel, 5000, getMaxReconsumeTimes());
+    } catch (Exception e) {
+        // 异常之后，第二次尝试再次发送消息
+        log.error("sendMessageBack Exception, " + this.defaultMQPushConsumer.getConsumerGroup(), e);
+        // Topic 名称是 %RETRY% + ConsumerGroup 的组合
+        Message newMsg = new Message(MixAll.getRetryTopic(this.defaultMQPushConsumer.getConsumerGroup()), msg.getBody());
+        String originMsgId = MessageAccessor.getOriginMessageId(msg);
+        MessageAccessor.setOriginMessageId(newMsg, UtilAll.isBlank(originMsgId) ? msg.getMsgId() : originMsgId);
+        newMsg.setFlag(msg.getFlag());
+        MessageAccessor.setProperties(newMsg, msg.getProperties());
+        MessageAccessor.putProperty(newMsg, MessageConst.PROPERTY_RETRY_TOPIC, msg.getTopic());
+        MessageAccessor.setReconsumeTime(newMsg, String.valueOf(msg.getReconsumeTimes() + 1));
+        MessageAccessor.setMaxReconsumeTimes(newMsg, String.valueOf(getMaxReconsumeTimes()));
+        MessageAccessor.clearProperty(newMsg, MessageConst.PROPERTY_TRANSACTION_PREPARED);
+        newMsg.setDelayTimeLevel(3 + msg.getReconsumeTimes());
+        this.mQClientFactory.getDefaultMQProducer().send(newMsg);
+    } finally {
+        msg.setTopic(NamespaceUtil.withoutNamespace(msg.getTopic(), this.defaultMQPushConsumer.getNamespace()));
+    }
 }
 ```
 
