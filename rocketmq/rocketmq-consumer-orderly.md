@@ -109,7 +109,7 @@ synchronized (objLock) {
 ```
 
 看上面的代码，应该有这个的疑问，`ConsumeMessageOrderlyService` 消息，只是保证了单个`queueId`下面的顺序消费，而在`queue`是多个，那么在`RocketMQ`如果保证全局的顺序性呢？
-这个就需要`Producer`+`Consumer`端保证了。具体的Demo例子可以参考 [Producer+Consumer orderly](https://github.com/apache/rocketmq/blob/master/example/src/main/java/org/apache/rocketmq/example/ordermessage)
+这个就需要`Producer`+`Consumer`端保证了。具体的Demo例子可以参考 [Producer+Consumer orderly](https://github.com/apache/rocketmq/blob/master/example/src/main/java/org/apache/rocketmq/example/ordermessage)。文末还有关于顺序消费的[链接](#Links)
 
 ## ConsumeMessageConcurrentlyService.ConsumeRequest
 
@@ -195,4 +195,4 @@ return lockedMqs
 
 ## Links
 
-- [RocketMQ 顺序消费](https://www.cnblogs.com/qdhxhz/p/11134903.html)
+- 1 [RocketMQ 顺序消费](https://www.cnblogs.com/qdhxhz/p/11134903.html)
