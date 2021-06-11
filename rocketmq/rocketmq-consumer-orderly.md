@@ -84,12 +84,12 @@ void submitConsumeRequest(
 
 代码流程：
 
-- 加锁
+- 执行 `messageQueueLock.fetchLockObject(this.messageQueue)` 加锁
 - 做检查
 - 执行 `this.processQueue.takeMessages(consumeBatchSize);` 这里是核心，因为 consumeBatchSize =1，所以每次只取一条消息
 - 构造 ConsumeOrderlyContext
 - 执行 executeHookBefore
-- 执行 `this.processQueue.getLockConsume().lock();` 再次加锁
+- 执行 `this.processQueue.getLockConsume().lock();` 再次加锁，这里再次加锁是避免上面的锁过期
 - 执行 messageListener.consumeMessage 消费消息
 - 处理 ConsumeOrderlyStatus 结果
 - 执行 executeHookAfter
@@ -101,7 +101,7 @@ void submitConsumeRequest(
 ```java
 // messageQueueLock 为每个 MessageQueue 分配一个Lock Object
 // 这样多个线程在进行处理 ConsumeRequest 中的run 方法的时候，都会尝试获取锁。
-// 那么每个 MessageQueue 的消息顺序只会有一个线程，这样就包装了在 同一个 MessageQueue 消息消费是顺序进行的。
+// 那么每个 MessageQueue 的消息顺序只会有一个线程，这样就保证了在同一个 MessageQueue 消息消费是顺序进行的。
 final Object objLock = messageQueueLock.fetchLockObject(this.messageQueue);
 synchronized (objLock) {
      // 消费消息的代码
