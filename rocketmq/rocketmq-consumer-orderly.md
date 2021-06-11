@@ -168,6 +168,7 @@ for (MessageQueue mq : mqSet) {
 代码结果如下（省略非核心部分）：
 
 ```java
+// Broker 申请加锁的过程
 // 加锁成功的Set
 Set<MessageQueue> lockedMqs = ...
 
@@ -183,11 +184,11 @@ groupValue.put(mq, lockEntry);
 // check
 if (lockEntry.isLocked(clientId)) {
      lockEntry.setLastUpdateTimestamp(System.currentTimeMillis());
-     lockedMqs.add(mq);
+     lockedMqs.add(mq);// 加锁成功，放入Set
      continue;
  }
 }
-// 返回加锁成功的
+// 返回加锁成功的 Set
 return lockedMqs
 ```
 
