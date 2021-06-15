@@ -1,6 +1,6 @@
 # RocketMQ Consumer Orderly
 
-RocketMQ 的顺序消费和并发消费的实现细节。
+RocketMQ 的顺序消费和并发消费的实现细节(从顺序消费和并发消费角度去看，此文注重看并发消费与顺序消费的实现细节)。
 
 客户端使用 `MessageListenerConcurrently` 和 `MessageListenerOrderly` 来确定顺序消费还是并行消费。
 而具体的实现类是：`ConsumeMessageOrderlyService` 和 `ConsumeMessageConcurrentlyService`
