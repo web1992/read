@@ -9,7 +9,6 @@
     - [DefaultLitePullConsumerImpl 的实现](#defaultlitepullconsumerimpl-的实现)
       - [PullTaskImpl#run](#pulltaskimplrun)
     - [DefaultMQPushConsumerImpl 的实现](#defaultmqpushconsumerimpl-的实现)
-      - [DefaultMQPushConsumerImpl#pullMessage](#defaultmqpushconsumerimplpullmessage)
     - [~~DefaultMQPullConsumerImpl 的实现~~](#defaultmqpullconsumerimpl-的实现)
 
 ## ConsumeType
@@ -150,11 +149,7 @@ for (MessageQueue mq : mqSet) {
 this.dispatchPullRequest(pullRequestList);
 ```
 
-拉取消息的核心方法是[DefaultMQPushConsumerImpl#pullMessage](https://github.com/apache/rocketmq/blob/master/client/src/main/java/org/apache/rocketmq/client/impl/consumer/DefaultMQPushConsumerImpl.java#L213)
-
-#### DefaultMQPushConsumerImpl#pullMessage
-
-可以参考 [pullMessage 的流程步骤](rocketmq-consumer.md#consumer-拉取消息的流程)。[源码地址](https://github.com/apache/rocketmq/blob/master/client/src/main/java/org/apache/rocketmq/client/impl/consumer/DefaultMQPushConsumerImpl.java#L213)。
+拉取消息的核心方法是[源码地址 DefaultMQPushConsumerImpl#pullMessage](https://github.com/apache/rocketmq/blob/master/client/src/main/java/org/apache/rocketmq/client/impl/consumer/DefaultMQPushConsumerImpl.java#L213)。可以参考 [pullMessage 的流程步骤](rocketmq-consumer.md#consumer-拉取消息的流程)
 
 ### ~~DefaultMQPullConsumerImpl 的实现~~
 
