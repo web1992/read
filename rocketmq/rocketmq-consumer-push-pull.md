@@ -120,15 +120,17 @@ private void startPullTask(Collection<MessageQueue> mqSet) {
 7. 如果找到 Msg ，把 msg 包装成 ConsumeRequest 进行异步消费
 8. 更新 updatePullOffset
 
+上面的第3，4 步骤就是 `flow control` 的实现（流控制：目的是防止消息消费太慢，导致积压，导致内存不足）。
+
 ### DefaultMQPushConsumerImpl 的实现
 
-此处以 MessageListenerConcurrently 并发消息为例。
+此处以 `MessageListenerConcurrently` 并发消费消息为例。
 
 1. 使用 `registerMessageListener` 注册`MessageListenerConcurrently`进行消息的消费
-2. ConsumeMessageConcurrentlyService 内存维护了 ConsumeRequest， ConsumeRequest 触发 MessageListener 的 consumeMessage 方法进行消费。
+2. `ConsumeMessageConcurrentlyService` 内存维护了 ConsumeRequest， ConsumeRequest 触发 MessageListener 的 consumeMessage 方法进行消费。
 3. ConsumeRequest 实现了Runnable，可以提交给线程池做异步处理。
-4. ConsumeRequest 来自 ConsumeMessageConcurrentlyService#submitConsumeRequest 方法，此方法包含了需要消费的消息 `List<MessageExt>`
-5. PullCallback 中调用 ConsumeMessageConcurrentlyService#submitConsumeRequest 提交`List<MessageExt>`
+4. ConsumeRequest 来自 `ConsumeMessageConcurrentlyService#submitConsumeRequest` 方法，此方法包含了需要消费的消息 `List<MessageExt>`
+5. PullCallback 中调用 `ConsumeMessageConcurrentlyService#submitConsumeRequest` 提交`List<MessageExt>`
 6. PullMessageService 线程中维护了 PullRequest 队列，会定期的执行take+pullMessage 拉取消息 包装
 7. PullRequest 是通过 RebalanceImpl#updateProcessQueueTableInRebalance 方法 MessageQueue 包装来的。并把 PullRequest 放入到 PullMessageService 中
 8. MessageQueue 也是通过重平衡而来的
