@@ -84,3 +84,5 @@ AppendMessageResult result = new AppendMessageResult(AppendMessageStatus.PUT_OK,
 ### preparedTransactionOffset
 
 ### commitLogOffset
+
+## Message PROPERTY
