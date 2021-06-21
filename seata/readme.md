@@ -2,13 +2,13 @@
 
 ## TCC
 
-- [TCC 简介 AT & TCC] https://seata.io/zh-cn/docs/overview/what-is-seata.html
-- [TCC 概念] http://seata.io/zh-cn/docs/dev/mode/tcc-mode.html
-- [TCC 源码] http://seata.io/zh-cn/blog/seata-analysis-tcc-modular.html
-- [SEATA 快速开始] http://seata.io/zh-cn/blog/seata-quick-start.html
-- [TCC 理论及设计实现指南介绍] https://seata.io/zh-cn/blog/tcc-mode-design-principle.html
-- [TCC 适用模型与适用场景分析]https://seata.io/zh-cn/blog/tcc-mode-applicable-scenario-analysis.html
-[Seata术语] https://seata.io/zh-cn/docs/overview/terminology.html
+- [TCC 简介 AT & TCC https://seata.io/zh-cn/docs/overview/what-is-seata.html](https://seata.io/zh-cn/docs/overview/what-is-seata.html)
+- [TCC 概念 http://seata.io/zh-cn/docs/dev/mode/tcc-mode.html](http://seata.io/zh-cn/docs/dev/mode/tcc-mode.html)
+- [TCC 源码 http://seata.io/zh-cn/blog/seata-analysis-tcc-modular.html](http://seata.io/zh-cn/blog/seata-analysis-tcc-modular.html)
+- [SEATA 快速开始 http://seata.io/zh-cn/blog/seata-quick-start.html](http://seata.io/zh-cn/blog/seata-quick-start.html)
+- [TCC 理论及设计实现指南介绍 https://seata.io/zh-cn/blog/tcc-mode-design-principle.html](https://seata.io/zh-cn/blog/tcc-mode-design-principle.html)
+- [TCC 适用模型与适用场景分析 https://seata.io/zh-cn/blog/tcc-mode-applicable-scenario-analysis.html](https://seata.io/zh-cn/blog/tcc-mode-applicable-scenario-analysis.html)
+- [Seata术语 https://seata.io/zh-cn/docs/overview/terminology.html](https://seata.io/zh-cn/docs/overview/terminology.html)
 
 Seata术语
 
