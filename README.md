@@ -2,6 +2,7 @@
 
 ## 阅读笔记
 
+- [RocketMQ 源码相关](rocketmq/readme.md)
 - [Dubbo 源码相关](dubbo/readme.md)
 - [Spring 源码相关](spring/readme.md)
 - [MyBatis 源码相关](mybatis/readme.md)
