@@ -5,3 +5,5 @@
 ## TccActionInterceptor
 
 ## ActionInterceptorHandler
+
+## GlobalTransactionalInterceptor
