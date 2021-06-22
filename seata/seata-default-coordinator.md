@@ -13,4 +13,4 @@ TC 的核心实现类。
 | 日志删除               | undoLogDelete          | `24 * 60 * 60 * 1000` ms  一次（24小时），可配置 |
 
 - `undoLogDelete` `AT` 模式下删除 `undoLog`
-- `timeoutCheck` 清理过时的 `GlobalSession`（全局事物的过期失效，模式是60000ms）由TM决定(`client.tm.default-global-transaction-timeout`)
+- `timeoutCheck` 清理过时的 `GlobalSession`（全局事物的过期失效，默认是60000ms）由TM的参数(`client.tm.default-global-transaction-timeout`)决定
