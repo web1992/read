@@ -1,5 +1,7 @@
 # DefaultCoordinator
 
+TC 的核心实现类。
+
 ## 定时任务线程
 
 | 线程                   | 任务                   | 周期                                             |
