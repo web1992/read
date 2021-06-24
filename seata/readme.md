@@ -46,3 +46,19 @@ dubbo 与 tcc 的结合。
 • 业务数据监控，比如长时间处于“下单状态”，“预占用状态” 的数据进行监控，进行报警。
 • 业务的频繁修改，比如订单修改明细，需要预占用库存（释放库存）。(prepare阶段的修改是否对下游可见，是否需要发送事物消息出来，可以在prepare,commit,rollback 都发消息出来)
 • 业务数据从3修改成2，此时事物处于prepare状态，其他业务系统查询到数据是2，此后事物回滚，其他业务系统拿到的数据应该是3才对（除非主动查询，没有办法在拿到3）。此时产生了数据不一致。因此prepare状态的数据不能对其他业务可见。
+
+## 本地事物表
+
+```java
+CREATE TABLE `trans_log` (
+    `id` INT(11) NOT NULL AUTO_INCREMENT,
+    `xid` VARCHAR(96) DEFAULT NULL,
+    `biz_id` BIGINT(20) NOT NULL,
+    `biz_type` VARCHAR(256) DEFAULT NULL COMMENT '',
+    `status` INT(4) DEFAULT NULL COMMENT '-1：删除 1:初始状态，2：已提交，3：已回滚，4:提交中，5：回滚中',
+    `version` INT(11) NOT NULL DEFAULT 1 COMMENT '版本号',
+    `gmt_create` DATETIME DEFAULT NULL,
+    `gmt_modified` DATETIME DEFAULT NULL,
+    PRIMARY KEY (`id`)
+)  ENGINE=INNODB AUTO_INCREMENT=1 DEFAULT CHARSET=UTF8 COMMENT '本地事物日志表';
+```
