@@ -55,7 +55,7 @@ CREATE TABLE `trans_log` (
     `xid` VARCHAR(96) DEFAULT NULL,
     `biz_id` BIGINT(20) NOT NULL,
     `biz_type` VARCHAR(256) DEFAULT NULL COMMENT '',
-    `status` INT(4) DEFAULT NULL COMMENT '-1：删除 1:初始状态，2：已提交，3：已回滚，4:提交中，5：回滚中',
+    `status` INT(4) DEFAULT NULL COMMENT '-1：删除 1:初始状态(已执行try)，2：已提交，3：已回滚，4:提交中，5：回滚中',
     `version` INT(11) NOT NULL DEFAULT 1 COMMENT '版本号',
     `gmt_create` DATETIME DEFAULT NULL,
     `gmt_modified` DATETIME DEFAULT NULL,
