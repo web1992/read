@@ -62,3 +62,43 @@ CREATE TABLE `trans_log` (
     PRIMARY KEY (`id`)
 )  ENGINE=INNODB AUTO_INCREMENT=1 DEFAULT CHARSET=UTF8 COMMENT '本地事物日志表';
 ```
+
+## 空回滚产生的原因
+
+已下面的代码为例，（具体的源码地址[TccTransactionService#doTransactionRollback](https://github.com/seata/seata-samples/blob/master/tcc/local-tcc-sample/src/main/java/io/seata/samples/tcc/service/TccTransactionService.java#L47)）
+
+```java
+@GlobalTransactional
+public String doTransactionRollback(Map map){
+    //第一个TCC 事务参与者
+    boolean result = tccActionOne.prepare(null, 1);
+    if(!result){
+        throw new RuntimeException("TccActionOne failed.");
+    }
+    List list = new ArrayList();
+    list.add("c1");
+    list.add("c2");
+    result = tccActionTwo.prepare(null, "two", list);
+    if(!result){
+        throw new RuntimeException("TccActionTwo failed.");
+    }
+    map.put("xid", RootContext.getXID());
+    throw new RuntimeException("transacton rollback");
+}
+```
+
+上面的例子中在执行`tccActionOne.prepare` 和 `tccActionTwo.prepare` 通过`方法的返回结果`来判断全局事物的状态。然后抛出`RuntimeException`异常，让TM进行事物的回滚。
+这种情况是存在的，并且没有问题。
+
+但是，存在这种情况：`tccActionOne.prepare` 或 `tccActionTwo.prepare` 执行的时候`超时`了，那么 `doTransactionRollback` 方法同样会抛出异常。TM 也会捕获此异常，进行事物的回滚。
+这里的问题是超时了，但是`tccActionOne.prepare` 和 `tccActionTwo.prepare` 业务代码已经执行成功了。而此时全局会执行`回滚`操作.
+
+此时TCC事物的 try 阶段可能执行成功了或者失败了。
+
+- try 执行成功：全局回滚，try 已经预处理，回滚操作，可以正常执行，按照约定进行回滚。
+- try 执行失败：全局回滚，try 没有进行预处理，回滚的时候其实是没有预站的资源需要回滚的。因此要执行`空回滚`（不执行任务业务逻辑，返回成功即可）。
+
+## 事物悬挂的问题
+
+由于网络延迟的问题。`rollback` 的操作比 `try` 先到。此时已经执行了 `空回滚`操作。那么全局事物的状态已经结束了，TC 不会在进行后面的`Commit` 操作了。那么`try`阶段的预站操作会一直被占用。
+而我们需要通过业务校验来阻止这样情况的发生。如果已经执行过了回滚。try 需要知道，并且终止业务执行即可。
