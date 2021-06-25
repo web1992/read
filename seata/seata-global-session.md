@@ -12,6 +12,8 @@ public class GlobalSession implements SessionLifecycle, SessionStorable {
 
 首先此参数是由 TM 在创建事物的时候，已经确定的，默认是 60000ms。此外`DefaultCoordinator`存在一个 `DefaultCoordinator#timeoutCheck` 的任务检查是否超时。
 
+`timeout`可以通过`client.tm.defaultGlobalTransactionTimeout`参数控制。
+
 ```java
 for (GlobalSession globalSession : allSessions) {
  
