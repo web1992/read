@@ -57,6 +57,8 @@ CREATE TABLE `trans_log` (
     `biz_type` VARCHAR(256) DEFAULT NULL COMMENT '',
     `status` INT(4) DEFAULT NULL COMMENT '-1：删除 1:初始状态(已执行try)，2：已提交，3：已回滚，4:提交中，5：回滚中 6：回滚失败',
     `version` INT(11) NOT NULL DEFAULT 1 COMMENT '版本号',
+    `prepare_count` BIGINT(20) NOT NULL DEFAULT 0 COMMENT 'prepare的次数',
+    `rollback_count` BIGINT(20) NOT NULL DEFAULT 0 COMMENT 'rollback的次数',
     `gmt_create` DATETIME DEFAULT NULL,
     `gmt_modified` DATETIME DEFAULT NULL,
     PRIMARY KEY (`id`)
