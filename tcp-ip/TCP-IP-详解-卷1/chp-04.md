@@ -16,4 +16,12 @@
 gateway (172.19.175.253) at ee:ff:ff:ff:ff:ff [ether] on eth0
 ? (10.0.9.3) at 02:42:0a:00:09:03 [ether] on docker0
 ? (10.0.9.5) at 02:42:0a:00:09:05 [ether] on docker0
-``
+```
+
+> 32 IP地址与48位以太网地址的转化（通过 ARP 和 RARP ）
+
+![TCP-IP-4-1.png](./images/TCP-IP-4-1.png)
+
+> ARP 协议格式
+
+![TCP-IP-4-3.png](./images/TCP-IP-4-3.png)
