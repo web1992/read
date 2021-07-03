@@ -26,3 +26,7 @@
 > 协议所在的分层
 
 ![TCP-IP-1-4.png](./images/TCP-IP-1-4.png)
+
+![TCP-IP-1-5.png](./images/TCP-IP-1-5.png)
+
+![TCP-IP-1-6.png](./images/TCP-IP-1-6.png)
