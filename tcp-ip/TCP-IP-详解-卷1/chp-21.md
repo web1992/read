@@ -2,9 +2,9 @@
 
 - RTT
 - RTO
-- 拥塞避免算法
-- 快速重传与快速恢复算法
-- 慢启动
+- 拥塞避免算法 (congestion avoidance)
+- 快速重传与快速恢复算法 (fast retransmit,fast recovery)
+- 慢启动 (slow start)
 
 网络出现拥塞的时候发生了什么？
 
