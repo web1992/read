@@ -18,8 +18,7 @@
 
 ## `Dubbo` 源码分析
 
-- [x] [dubbo-channel-buffer.md](dubbo-channel-buffer.md)
-- [x] [dubbo-input-output-stream.md](dubbo-input-output-stream.md)
+- [x] [dobbo-stream.md](dobbo-stream.md)
 - [x] [dubbo-channel-handler.md](dubbo-channel-handler.md)
 - [x] [dubbo-codec2.md](dubbo-codec2.md)
 - [x] [dubbo-dispatcher.md](dubbo-dispatcher.md)
