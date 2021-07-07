@@ -20,6 +20,8 @@
 
 ## 简介
 
+此文介绍 `Dubbo` `传输协议`的具体实现。
+
 > 知识储备：需要对 `Java IO` 有基本的了解
 > 知道如何把 `byte` 数组转换成 `int`,`long` 等基本类型
 
@@ -28,6 +30,23 @@
 `dubbo` 协议设计图:
 
 ![dubbo-codec2-protocol.png](images/dubbo-codec2-protocol.png)
+
+如果对TCP，IP 协议的定义有了解。那么上面的图更容易理解。下面是`TCP`控制传输协议的定义。
+
+IP 协议
+![TCP-IP-3-1.png](images/TCP-IP-3-1.png)
+
+TCP 协议
+![TCP-IP-17-2.png](images/TCP-IP-17-2.png)
+
+这里说下TCP/IP也是通过 Head+Body 组合的协议（大多数的网络字节协议都是这个组合）。head 一般存储特殊信息，如`IP`的Head中存储了IP地址，`TCP`的Head存储了端口号。
+Body 存储的是存 `纯数据`。
+
+如果把 `IP协议`+`TCP协议`+`dubbo协议` 放在一起看：dubbo协议就是TCP的Body,TCP就是IP协议的body。如下图：
+
+![TCP-IP-dubbo.png](./images/TCP-IP-dubbo.png)
+
+## Codec2 interface
 
 `Codec2` 的作用：
 
@@ -54,8 +73,6 @@
   - org.apache.dubbo.remoting.exchange.codec.ExchangeCodec
 - telnet
   - org.apache.dubbo.remoting.telnet.codec.TelnetCodec
-
-## Codec2 interface
 
 ```java
 @SPI
