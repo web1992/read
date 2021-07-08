@@ -3,9 +3,9 @@
 - [Codec2](#codec2)
   - [简介](#简介)
   - [Codec2 interface](#codec2-interface)
-  - [ExchangeCodec](#exchangecodec)
+  - [Dubbo Head 定义](#dubbo-head-定义)
   - [Magic number](#magic-number)
-  - [Dubbo encode](#dubbo-encode)
+  - [Dubbo Head+Body 解析](#dubbo-headbody-解析)
     - [ExchangeCodec-encodeRequest](#exchangecodec-encoderequest)
     - [ExchangeCodec-encodeResponse](#exchangecodec-encoderesponse)
     - [ExchangeCodec-decode](#exchangecodec-decode)
@@ -96,13 +96,15 @@ public interface Codec2 {
 
 ![dubbo-codec2](images/dubbo-codec2.png)
 
-## ExchangeCodec
+## Dubbo Head 定义
+
+`ExchangeCodec` 中定义了dubbo协议的Head中使用的关键信息。
 
 `ExchangeCodec` 中 `encode` 方法负责编码 `Request` & `Response` 和 `String(telent)` 而 `decode` 负责解析协议的 `head` 部分
 
 `decodeBody` 方法负责解码 `body` 而 `decodeBody` 方法被 `DubboCodec` 类重写了 因此 `body` 的解析在 `DubboCodec#decodeBody` 方法中
 
-`ExchangeCodec` 中定义的字段
+`ExchangeCodec` 中定义的Head相关的字段
 
 ```java
 // header length.
@@ -146,7 +148,7 @@ java nio 中的巧妙运用，可以参考这个文章: [nio-selection-key.md](.
 
 `dubbo` 中用二个 `MAGIC_HIGH` 和 `MAGIC_LOW` 来识别 `dubbo` 自定义的协议(如果在读取协议 `head` 时，遇到了上面的二个值，就认为是协议的开始，进行解码操作，先解析head,再解析body)
 
-## Dubbo encode
+## Dubbo Head+Body 解析
 
 下面先看下 `dubbo` 是如何进行编码的（把一个对象转成 byte 数据进行网络传输）
 
