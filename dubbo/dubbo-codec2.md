@@ -22,8 +22,11 @@
 
 此文介绍 `Dubbo` `传输协议`的具体实现。
 
-> 知识储备：需要对 `Java IO` 有基本的了解
-> 知道如何把 `byte` 数组转换成 `int`,`long` 等基本类型
+> 知识储备：
+
+- 需要对 `Java IO` 有基本的了解
+- 知道如何把 `byte` 数组转换成 `int`,`long` 等基本类型
+- 了解IP和TCP协议
 
 `dubbo` 中的协议是通过 `head + body` 组成的变长协议
 
@@ -39,12 +42,13 @@ IP 协议
 TCP 协议
 ![TCP-IP-17-2.png](images/TCP-IP-17-2.png)
 
-这里说下TCP/IP也是通过 Head+Body 组合的协议（大多数的网络字节协议都是这个组合）。head 一般存储特殊信息，如`IP`的Head中存储了IP地址，`TCP`的Head存储了端口号。
-Body 存储的是存 `纯数据`。
+这里说下TCP/IP也是通过 Head+Body 组合的协议（大多数的网络字节协议都是这个组合）。head 一般存储特殊信息，如`IP`的Head中存储了IP地址，`TCP`的Head存储了端口号。Body 存储的是存 `纯数据`。
 
 如果把 `IP协议`+`TCP协议`+`dubbo协议` 放在一起看：dubbo协议就是TCP的Body,TCP就是IP协议的body。如下图：
 
 ![TCP-IP-dubbo.png](./images/TCP-IP-dubbo.png)
+
+> 上面说了IP协议，TCP协议，duboo协议，目的就是要知道dubbo协议的组成，而下面的Codec2实现就是对dubbo协议Head和Body解析。
 
 ## Codec2 interface
 
@@ -75,6 +79,7 @@ Body 存储的是存 `纯数据`。
   - org.apache.dubbo.remoting.telnet.codec.TelnetCodec
 
 ```java
+// Codec2 接口定义
 @SPI
 public interface Codec2 {
 
