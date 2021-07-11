@@ -44,7 +44,7 @@ The parent project provides the following features:
 - An execution of the repackage goal with a repackage execution id.
 - Sensible resource filtering.
 - Sensible plugin configuration (exec plugin, Git commit ID, and shade).
-- Sensible resource filtering for `application.properties` and `application.yml `including profile-specific files (for example, `application-dev.properties` and `application-dev.yml`)
+- Sensible resource filtering for `application.properties` and `application.yml`including profile-specific files (for example, `application-dev.properties` and `application-dev.yml`)
 
 Note that, since the application.properties and application.yml files accept Spring style placeholders (${…​}), the Maven filtering is changed to use @..@ placeholders. (You can override that by setting a Maven property called resource.delimiter.)
 
