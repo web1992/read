@@ -26,7 +26,7 @@
 > 名词
 
 - RIP 选路信息协议 (Routing Infromation Protocol)
-- CIDR 无类型域间选路
+- CIDR 无类型域间选路 (Classless Inter-Domain Routing)
 - 内部网关协议IGP（Interior Gateway Protocol）
 - 域内选路协议（intradomain routing protocol）
 
