@@ -92,14 +92,15 @@ void submitConsumeRequest(
 
 代码流程：
 
-- 执行 `messageQueueLock.fetchLockObject(this.messageQueue)` 加锁
+- 执行 `objLock=messageQueueLock.fetchLockObject(this.messageQueue)` 分配锁对象
+- （加锁synchronized (objLock)）`messageQueueLock` 持有的锁
 - 做检查
 - 执行 `this.processQueue.takeMessages(consumeBatchSize);` 这里是核心，因为 consumeBatchSize =1，所以每次只取一条消息
 - 构造 ConsumeOrderlyContext
 - 执行 executeHookBefore
-- 执行 `this.processQueue.getLockConsume().lock();` 再次加锁，这里再次加锁是避免上面的锁过期
+- 执行 `this.processQueue.getLockConsume().lock();` 再次加锁，`processQueue` 持有的锁
 - 执行 messageListener.consumeMessage 消费消息
-- 处理 ConsumeOrderlyStatus 结果
+- 处理 `ConsumeOrderlyStatus` 结果
 - 执行 executeHookAfter
 - 执行 getConsumerStatsManager 进行统计
 - 执行 `processConsumeResult` 这里处理顺序消费的结果，如果消费失败会把消息重新放回到中 ConsumeRequest 中，等待下一次消费。
