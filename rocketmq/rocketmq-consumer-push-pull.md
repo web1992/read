@@ -62,7 +62,8 @@ public enum ConsumeType {
 | computePullFromWhere          | 拉取消费开始的位置                                                         |
 | dispatchPullRequest           | 转发 `PullRequest` 请求，主要针对 `RebalancePushImpl` 实现。其他是空实现。 |
 
-`RebalanceImpl`的三个实现类，是一个`适配类`（主要实现委托给了`*ConsumerImpl`）。主要的实现分别在成员变量`DefaultLitePullConsumerImpl`，`DefaultMQPullConsumerImpl`，`DefaultMQPushConsumerImpl`中。而这个三个类都实现了 `MQConsumerInner`接口。因此下面我们看`MQConsumerInner`。
+`RebalanceImpl`的三个实现类，是一个`适配类`（主要实现委托给了`*ConsumerImpl`）。主要的实现分别在成员变量`DefaultLitePullConsumerImpl`，`DefaultMQPullConsumerImpl`，`DefaultMQPushConsumerImpl`中。
+而这个三个类都实现了 `MQConsumerInner`接口。因此下面我们看`MQConsumerInner`。
 
 ## MQConsumerInner
 

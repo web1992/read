@@ -93,19 +93,19 @@ void submitConsumeRequest(
 代码流程：
 
 - 执行 `objLock=messageQueueLock.fetchLockObject(this.messageQueue)` 分配锁对象
-- （加锁synchronized (objLock)）`messageQueueLock` 持有的锁
+- （加锁synchronized (objLock)）`messageQueueLock` 持有的锁（线程锁）
 - 做检查
-- 执行 `this.processQueue.takeMessages(consumeBatchSize);` 这里是核心，因为 consumeBatchSize =1，所以每次只取一条消息
+- 执行 `this.processQueue.takeMessages(consumeBatchSize);` consumeBatchSize =1，所以每次只取一条消息
 - 构造 ConsumeOrderlyContext
 - 执行 executeHookBefore
-- 执行 `this.processQueue.getLockConsume().lock();` 再次加锁，`processQueue` 持有的锁
+- 执行 `this.processQueue.getLockConsume().lock();` 再次加锁，`processQueue` 持有的锁 (queue锁)
 - 执行 messageListener.consumeMessage 消费消息
 - 处理 `ConsumeOrderlyStatus` 结果
 - 执行 executeHookAfter
 - 执行 getConsumerStatsManager 进行统计
 - 执行 `processConsumeResult` 这里处理顺序消费的结果，如果消费失败会把消息重新放回到中 ConsumeRequest 中，等待下一次消费。
 
-这里说下加锁的实现：
+这里说下加锁的实现(因为 ConsumeRequest 是提交给线程池异步处理，因此需要上面的加锁过程)：
 
 ```java
 // messageQueueLock 为每个 MessageQueue 分配一个Lock Object
@@ -147,7 +147,7 @@ Set<MessageQueue> mqSet =...
 for (MessageQueue mq : mqSet) {
     if (!this.processQueueTable.containsKey(mq)) {// 这里不包含才执行，如果存在，说明MessageQueue之前已经分配给此Consumer了
         // ...
-        if (isOrder && !this.lock(mq)) {
+        if (isOrder && !this.lock(mq)) {// 此处是分布式锁的实现逻辑
         // 加锁失败。不使用此 MessageQueue
         continue;
         }     
@@ -202,6 +202,12 @@ return lockedMqs
 ```
 
 此外，上面的代码省略了`续锁`(如果之前已经获取了锁，就延迟锁的过期时间)的操作。
+
+锁总结:
+
+- 分布式锁 LockBatchRequestBody & UnlockBatchRequestBody
+- 线程锁 MessageQueue
+- queue锁 processQueue
 
 ## Links
 
