@@ -33,3 +33,4 @@
 - [https://github.com/chefyuan/algorithm-base](https://github.com/chefyuan/algorithm-base)
 - [https://github.com/youngyangyang04/leetcode-master](https://github.com/youngyangyang04/leetcode-master)
 - [限流算法(from 博客园)](https://www.cnblogs.com/LBSer/p/4083131.html)
+- [一致性哈希（Consistent hashing)](https://coderxing.gitbooks.io/architecture-evolution/di-san-pian-ff1a-bu-luo/631-yi-zhi-xing-ha-xi.html)
