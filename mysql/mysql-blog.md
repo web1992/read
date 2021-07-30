@@ -25,6 +25,7 @@
 - [MySQL Optimization Using filesort 优化](https://dev.mysql.com/doc/refman/5.7/en/order-by-optimization.html#order-by-filesort)
 - [MySQL Tracing the Optimizer 优化跟踪](https://dev.mysql.com/doc/internals/en/optimizer-tracing.html)
 - [MySQL 索引原理及慢查询优化](https://tech.meituan.com/2014/06/30/mysql-index.html)
+- [MySQL 常见问题](https://mp.weixin.qq.com/s/ex-mtzT15rQJ565U-q9l4w)
 
 ## 原理
 
