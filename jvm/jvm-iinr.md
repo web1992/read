@@ -2,31 +2,29 @@
 
 本文从 java 的`字节码`角度，去探索一下 i++ 与++i 的实现原理
 
-java 代码 1
+代码 1
 
 ```java
 public class Test {
    public static void main(String[] args) {
-       int q = 0;
+      int q = 0;
       q = q++;
-      System.out.println(q);
+      System.out.println(q); // 输出结果 0
   }
+}
 ```
 
-> 输出结果 0
-
- java 代码 2
+代码 2
 
 ```java
 public class Test {
   public static void main(String[] args) {  
                int q = 0;
                q = ++q;
-               System.out.println(q);
+               System.out.println(q);// 输出结果 1
+  }
 }
 ```
-
-> 输出结果 1
 
 ## JVM Opcode Reference
 
