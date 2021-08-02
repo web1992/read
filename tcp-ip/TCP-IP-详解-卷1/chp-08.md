@@ -1,8 +1,13 @@
 # Traceroute程序
 
+由VanJacobson编写的Traceroute程序是一个能更深入探索TCP/IP协议的方便可用的工具。
+尽管不能保证从源端发往目的端的两份连续的IP数据报具有相同的路由，但是大多数情况下
+是这样的。Traceroute程序可以让我们看到IP数据报从一台主机传到另一台主机所经过的路由。
+Traceroute程序还可以让我们使用IP源路由选项。
+
 - TTL
 - Traceroute
-- I P路由
+- IP路由
 - IP源站选路选项
 
 > 特点

@@ -1,11 +1,16 @@
 # IP选路
 
+选路是IP最重要的功能之一。
+
 - netstat -rn 查询路由信息
 - ifconfig 更新路由表
 - route 命令
 - 差错报文
 - ICMP重定向差错
 - ICMP路由器发现报文
+
+> 选路的原理
+
 
 ```log
 [root@xxx ~]# netstat -rn

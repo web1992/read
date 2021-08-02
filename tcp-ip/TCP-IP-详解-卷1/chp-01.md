@@ -35,3 +35,7 @@
 > 图1-6 各类IP地址的范围
 
 ![TCP-IP-1-6.png](./images/TCP-IP-1-6.png)
+
+> 图1-7 数据进入协议栈时的封装过程
+
+![TCP-IP-1-7.png](./images/TCP-IP-1-7.png)
