@@ -2,11 +2,11 @@
 
 - 动态选路
 - 选路信息协议RIP（Routing Information Protocol）
+- CIDR RFC 1518, RFC 1519
 
 动态选路协议，它用于路由器间的通信。我们主要讨论RIP，即选路信息协议
 (Routing Infromation Protocol)，大多数TCP/IP实现都提供这个应用广泛的协议。然后讨论两
-种新的选路协议，OSPF和BGP。本章的最后研究一种名叫无分类域间选路的新的选路技术，
-现在Internet上正在开始采用该协议以保持B类网络的数量。
+种新的选路协议，OSPF和BGP。最后研究一种名叫无分类域间选路的新的选路技术，现在Internet上正在开始采用该协议以保持B类网络的数量。
 
 > 动态选路(概念)
 
@@ -33,10 +33,15 @@
 - 内部网关协议IGP（Interior Gateway Protocol）
 - 域内选路协议（intradomain routing protocol）
 
-> 选路协议
+> 图10-1routed和gated所支持的选路协议
 
 ![TCP-IP-10-1.png](./images/TCP-IP-10-1.png)
 
-> RIP 报文格式
+> 图10-2 封装在UDP数据报中的RIP报文
 
 ![TCP-IP-10-2.png](./images/TCP-IP-10-2.png)
+
+# Links 
+
+- [https://datatracker.ietf.org/doc/html/rfc1518](https://datatracker.ietf.org/doc/html/rfc1518)
+- [CIDR路由聚合](https://cloud.tencent.com/developer/article/1193143)
