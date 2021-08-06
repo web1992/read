@@ -2,6 +2,16 @@
 
 NameServer 的主要目的是注册 Broker 信息，方便 Producer 和 Consumer 发现可用的 Broker。进行消息的发送和消费。
 
+关键字：
+
+- Broker 作用
+- Broker 的注册
+- Broker 的下线
+- Broker 的路由信息维护
+- Broker 存活检查
+
+![rocketmq-consumer-nameserver.png](./images/rocketmq-consumer-nameserver.png)
+
 - [NameServer](#nameserver)
   - [启动](#启动)
   - [DefaultRequestProcessor](#defaultrequestprocessor)
@@ -36,9 +46,11 @@ public boolean initialize() {
 
 ## DefaultRequestProcessor
 
-`org.apache.rocketmq.namesrv.processor.DefaultRequestProcessor` 的主要作用是处理 `RemotingCommand`，因此通过 `DefaultRequestProcessor` 就可以知道NameServer的作用包含哪些。[DefaultRequestProcessor#processRequest 代码片段](https://github.com/apache/rocketmq/blob/master/namesrv/src/main/java/org/apache/rocketmq/namesrv/processor/DefaultRequestProcessor.java#L71)
+了解`DefaultRequestProcessor`此类可以知道 `NameServer` 支持哪些功能。
 
-下面的的代码片段中有`19`个Case,每个Case都处理不同的业务。
+`org.apache.rocketmq.namesrv.processor.DefaultRequestProcessor` 的主要作用是处理 `RemotingCommand`，因此通过 `DefaultRequestProcessor` 就可以知道 NameServer 的作用包含哪些。[DefaultRequestProcessor#processRequest 代码片段](https://github.com/apache/rocketmq/blob/master/namesrv/src/main/java/org/apache/rocketmq/namesrv/processor/DefaultRequestProcessor.java#L71)
+
+下面的的代码片段中有`19`个 Case,每个 Case 都处理不同的业务。
 
 核心的 `RequestCode`:
 
@@ -46,15 +58,15 @@ public boolean initialize() {
 - UNREGISTER_BROKER
 - GET_ROUTEINFO_BY_TOPIC
 
-| RequestCode                        | 描述                   |
-| ---------------------------------- | ---------------------- |
+| RequestCode                        | 描述                    |
+| ---------------------------------- | ----------------------- |
 | PUT_KV_CONFIG                      |
 | GET_KV_CONFIG                      |
 | DELETE_KV_CONFIG                   |
 | QUERY_DATA_VERSION                 |
-| REGISTER_BROKER                    | 注册 Broker            |
-| UNREGISTER_BROKER                  | 取消注册 Broker        |
-| GET_ROUTEINFO_BY_TOPIC             | 根据Topic 查询路由信息 |
+| REGISTER_BROKER                    | 注册 Broker             |
+| UNREGISTER_BROKER                  | 取消注册 Broker         |
+| GET_ROUTEINFO_BY_TOPIC             | 根据 Topic 查询路由信息 |
 | GET_BROKER_CLUSTER_INFO            |
 | WIPE_WRITE_PERM_OF_BROKER          |
 | GET_ALL_TOPIC_LIST_FROM_NAMESERVER |
@@ -70,7 +82,9 @@ public boolean initialize() {
 
 ## RouteInfoManager
 
-RouteInfoManager 的主要作用就是存储Broker集群相关的信息(元数据信息)。从下面的变量中就可以知道，NameServer中存储了那些信息。
+> Broker 的路由信息维护
+
+RouteInfoManager 的主要作用就是存储 Broker 集群相关的信息(元数据信息)。从下面的变量中就可以知道，NameServer 中存储了那些信息。
 
 ![rocketmq-nameserver-info.png](./images/rocketmq-nameserver-info.png)
 
@@ -115,17 +129,17 @@ class BrokerLiveInfo {
 
 | 信息              | 描述                                                        |
 | ----------------- | ----------------------------------------------------------- |
-| topicQueueTable   | topic下面的queue的信息                                      |
+| topicQueueTable   | topic 下面的 queue 的信息                                   |
 | brokerAddrTable   | brokerName + cluster + brokerId + broker address 的集群信息 |
 | clusterAddrTable  | clusterName + brokerName 的映射关系                         |
 | brokerLiveTable   | brokerAddr + Channel TCP 连接信息                           |
 | filterServerTable | brokerAddr + Filter Server 的映射信息                       |
 
-这里说下 brokerAddrTable 列表这个变量。这里面存储的是 BrokerData ，而BrokerData 里面维护了 `brokerId` + `broker address` 的映射关系
+这里说下 brokerAddrTable 列表这个变量。这里面存储的是 BrokerData ，而 BrokerData 里面维护了 `brokerId` + `broker address` 的映射关系
 brokerAddrs 是一个 map,里面存储了名称相同的 brokerName 的 `brokerId` + `broker address`。
-因此在执行`unregisterBroker`操作的时候，会根据 brokerName 拿到BrokerData的map，在根据brokerId去移除具体的Broker信息。
+因此在执行`unregisterBroker`操作的时候，会根据 brokerName 拿到 BrokerData 的 map，在根据 brokerId 去移除具体的 Broker 信息。
 
-看下RocketMQ集群模式下的相关配置[2m-2s-sync的配置](https://github.com/apache/rocketmq/tree/master/distribution/conf/2m-2s-sync)(二个Master,二个Slave)
+看下 RocketMQ 集群模式下的相关配置[2m-2s-sync 的配置](https://github.com/apache/rocketmq/tree/master/distribution/conf/2m-2s-sync)(二个 Master,二个 Slave)
 
 ```properties
 # cat broker-a.properties
@@ -171,7 +185,7 @@ flushDiskType=ASYNC_FLUSH
 
 ## registerBroker
 
-Broker 的注册
+> Broker 的注册
 
 ```java
 // IDEA: DefaultRequestProcessor#registerBroker:300
@@ -196,23 +210,23 @@ public RegisterBrokerResult registerBroker(
     final TopicConfigSerializeWrapper topicConfigWrapper,
     final List<String> filterServerList,
     final Channel channel) {
-        
+
     }
 ```
 
-Broker注册的流程:
+Broker 注册的流程:
 
-1. 依据 clusterName和 brokerName 更新 clusterAddrTable
+1. 依据 clusterName 和 brokerName 更新 clusterAddrTable
 2. 更新 brokerAddrTable，`this.brokerAddrTable.put(brokerName, brokerData);`
-3. 更新 BrokerData 中的  `HashMap<Long/* brokerId */, String/* broker address */>` Map(因为存在Master,Slave切换的场景，是需要更新地址的)
-4. 如果是MASTER,并且是第一次注册，那么就更新 topicQueueTable 信息
+3. 更新 BrokerData 中的 `HashMap<Long/* brokerId */, String/* broker address */>` Map(因为存在 Master,Slave 切换的场景，是需要更新地址的)
+4. 如果是 MASTER,并且是第一次注册，那么就更新 topicQueueTable 信息
 5. 注册 BrokerLiveInfo 信息
 6. 更新 filterServerList 信息
-7. 填充 masterAddr 信息，（Master的IP信息）
+7. 填充 masterAddr 信息，（Master 的 IP 信息）
 
 ## unregisterBroker
 
-Broker 的取消注册
+> Broker 的下线
 
 ```java
 // 取消注册的参数
@@ -221,16 +235,16 @@ public void unregisterBroker(
     final String brokerAddr,
     final String brokerName,
     final long brokerId) {
-        
+
     }
 ```
 
-Broker 取消注册的流程：
+Broker 的下线的流程：
 
 1. 移除 filterServer `this.filterServerTable.remove(brokerAddr);`
-2. 更新 brokerAddrTable 中的 BrokerData 信息，如果为空则移除BrokerData
+2. 更新 brokerAddrTable 中的 BrokerData 信息，如果为空则移除 BrokerData
 3. 更新 clusterAddrTable ，如果为空，则移除
-4. 如果 Broker 信息有更新，则更新 Topic 信息（循环QueueData如果BrokerName相等，就移除）
+4. 如果 Broker 信息有更新，则更新 Topic 信息（循环 QueueData 如果 BrokerName 相等，就移除）
 
 ## getRouteInfoByTopic
 
@@ -243,7 +257,7 @@ Broker 取消注册的流程：
 TopicRouteData topicRouteData = new TopicRouteData();
 topicRouteData.setBrokerDatas(brokerDataList);
 topicRouteData.setFilterServerTable(filterServerMap);
-// ... 
+// ...
 // 根据 topic 查询QueueData
 List<QueueData> queueDataList = this.topicQueueTable.get(topic);
 // 获取所有的Broker 存入 brokerNameSet
@@ -258,6 +272,8 @@ return topicRouteData;
 ```
 
 ## scanNotActiveBroker
+
+> Broker 的存活检查
 
 ```java
 // 扫描不活动的Broker,从brokerLiveTable中移除
