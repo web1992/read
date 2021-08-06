@@ -82,7 +82,7 @@ public boolean initialize() {
 
 ## RouteInfoManager
 
-> Broker 的路由信息维护
+> Broker 的路由信息维护(路由信息是Consumer进行重平衡的关键信息)
 
 RouteInfoManager 的主要作用就是存储 Broker 集群相关的信息(元数据信息)。从下面的变量中就可以知道，NameServer 中存储了那些信息。
 
