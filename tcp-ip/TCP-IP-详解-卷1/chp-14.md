@@ -111,3 +111,4 @@ web1992.github.io.	3261	IN	A	185.199.110.153
 ## Links
 
 - [阮一峰 DNS 原理入门](http://ruanyifeng.com/blog/2016/06/dns.html)
+- [https://mp.weixin.qq.com/s/Dj3jQSnV_kLx6-9yT7yOwg](https://mp.weixin.qq.com/s/Dj3jQSnV_kLx6-9yT7yOwg)

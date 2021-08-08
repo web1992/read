@@ -82,7 +82,7 @@ public boolean initialize() {
 
 ## RouteInfoManager
 
-> Broker 的路由信息维护(路由信息是Consumer进行重平衡的关键信息)
+> Broker 的路由信息维护(路由信息是 Consumer 进行重平衡的关键信息)
 
 RouteInfoManager 的主要作用就是存储 Broker 集群相关的信息(元数据信息)。从下面的变量中就可以知道，NameServer 中存储了那些信息。
 
@@ -229,6 +229,14 @@ Broker 注册的流程:
 > Broker 的下线
 
 ```java
+// DefaultRequestProcessor#unregisterBroker
+this.namesrvController.getRouteInfoManager().unregisterBroker(
+    requestHeader.getClusterName(),
+    requestHeader.getBrokerAddr(),
+    requestHeader.getBrokerName(),
+    requestHeader.getBrokerId());
+
+// RouteInfoManager#unregisterBroker
 // 取消注册的参数
 public void unregisterBroker(
     final String clusterName,
