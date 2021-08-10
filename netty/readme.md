@@ -1,6 +1,13 @@
 # Netty
 
-Netty 的工程结构：
+## 写在前面
+
+Netty 是最流程的 Java I/O 框架,主要是`性能强悍`+`良好的 API`，高性能支持高并发，良好的 API 减少开发负担。
+为了`性能`，Netty 做了很多的优化。如：为了更好的内存管理（复用），提供了 PooledByteBuf 相关的类，操作`非堆内存`，减少 GC 等等。
+
+了解 Netty 必须对 TCP/IP 协议有所了解。建议阅读书籍 《TCP/IP 详解 卷 1》，这里是本人的笔记 [《TCP/IP 详解 卷 1》 读书笔记](https://github.com/web1992/read/blob/main/tcp-ip/TCP-IP-%E8%AF%A6%E8%A7%A3-%E5%8D%B71/readme.md)
+
+## Netty 的工程结构
 
 ![netty-4.1-modules.png](./images/netty-4.1-modules.png)
 
@@ -12,7 +19,7 @@ Netty 的工程结构：
 | netty-transport        | 传输模块，常见的类：Channel，Bootstrap，EventLoop                                                          |
 | netty-transport-native | 传输模块+native (和平台相关的实现)，如：epoll,kqueue                                                       |
 | netty-testsuite        | 测试模块                                                                                                   |
-| netty-common           | 通过的工具类 如：HashedWheelTimer 定时器                                                                   |
+| netty-common           | 通用的工具类 如：HashedWheelTimer 定时器                                                                   |
 | netty-buffer           | 内存分配（包含非堆内存或者说非托管内存），常见的类：Unpooled,PooledByteBuf                                 |
 | netty-handler          | 常见的 Handler 实现类                                                                                      |
 | netty-resolver         | DNS 域名解析                                                                                               |

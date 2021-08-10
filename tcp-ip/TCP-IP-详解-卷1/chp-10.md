@@ -1,12 +1,12 @@
 # 动态选路协议
 
 - 动态选路
-- 选路信息协议RIP（Routing Information Protocol）
+- 选路信息协议 RIP（Routing Information Protocol）
 - CIDR RFC 1518, RFC 1519
 
-动态选路协议，它用于路由器间的通信。我们主要讨论RIP，即选路信息协议
-(Routing Infromation Protocol)，大多数TCP/IP实现都提供这个应用广泛的协议。然后讨论两
-种新的选路协议，OSPF和BGP。最后研究一种名叫无分类域间选路的新的选路技术，现在Internet上正在开始采用该协议以保持B类网络的数量。
+动态选路协议，它用于路由器间的通信。我们主要讨论 RIP，即选路信息协议
+(Routing Infromation Protocol)，大多数 TCP/IP 实现都提供这个应用广泛的协议。然后讨论两
+种新的选路协议，OSPF 和 BGP。最后研究一种名叫无分类域间选路的新的选路技术，现在 Internet 上正在开始采用该协议以保持 B 类网络的数量。
 
 > 动态选路(概念)
 
@@ -15,10 +15,10 @@
 一个进程称为路由守护程序（routing daemon），它运行选路协议，并与其相邻的一些路由器
 进行通信。路由守护程序根据它从相邻路由器接收到的信息，更新内核中的路由表。
 
-动态选路并不改变内核在IP层的选路方式。这种选路方式称为选路机制（routing mechanism）。
+动态选路并不改变内核在 IP 层的选路方式。这种选路方式称为选路机制（routing mechanism）。
 内核搜索路由表，查找主机路由、网络路由以及默认路由的方式并没有改变。
 仅仅是放置到路由表中的信息改变了—当路由随时间变化时，路由是由路
-由守护程序动态地增加或删除，而不是来自于自引导程序文件中的route命令。
+由守护程序动态地增加或删除，而不是来自于自引导程序文件中的 route 命令。
 
 正如前面所描述的那样，路由守护程序将选路策略（ routing policy）加入到系统中，选
 择路由并加入到内核的路由表中。如果守护程序发现前往同一信宿存在多条路由，那么它
@@ -30,18 +30,18 @@
 
 - RIP 选路信息协议 (Routing Infromation Protocol)
 - CIDR 无类型域间选路 (Classless Inter-Domain Routing)
-- 内部网关协议IGP（Interior Gateway Protocol）
+- 内部网关协议 IGP（Interior Gateway Protocol）
 - 域内选路协议（intradomain routing protocol）
 
-> 图10-1routed和gated所支持的选路协议
+> 图 10-1routed 和 gated 所支持的选路协议
 
 ![TCP-IP-10-1.png](./images/TCP-IP-10-1.png)
 
-> 图10-2 封装在UDP数据报中的RIP报文
+> 图 10-2 封装在 UDP 数据报中的 RIP 报文
 
 ![TCP-IP-10-2.png](./images/TCP-IP-10-2.png)
 
-# Links 
+# Links
 
 - [https://datatracker.ietf.org/doc/html/rfc1518](https://datatracker.ietf.org/doc/html/rfc1518)
-- [CIDR路由聚合](https://cloud.tencent.com/developer/article/1193143)
+- [CIDR 路由聚合](https://cloud.tencent.com/developer/article/1193143)

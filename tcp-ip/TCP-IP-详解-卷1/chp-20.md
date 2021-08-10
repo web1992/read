@@ -5,7 +5,7 @@
 - 滑动窗口协议 另一种形式的流量控制方法
 - MSS
 - 慢启动 (slow start)
-- 拥塞窗口(congestion window)，记为cwnd。
+- 拥塞窗口(congestion window)，记为 cwnd。
 - 拥塞
 - the slow start threshold (ssthresh)
 
