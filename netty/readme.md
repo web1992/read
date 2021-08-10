@@ -10,14 +10,6 @@
 
 ![components](./images/components.png)
 
-## Chapter List
-
-- [Chapter List](netty-inaction.md)
-
-## Summary
-
-- [Summary](netty-in-action-summary.md)
-
 ## 源码分析
 
 源码版本：[4.1.31.Final](https://github.com/netty/netty/releases/tag/netty-4.1.31.Final)
