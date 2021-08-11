@@ -7,6 +7,8 @@ Netty 是最流程的 Java I/O 框架,主要是`性能强悍`+`良好的 API`，
 
 了解 Netty 必须对 TCP/IP 协议有所了解。建议阅读书籍 《TCP/IP 详解 卷 1》，这里是本人的笔记 [《TCP/IP 详解 卷 1》 读书笔记](https://github.com/web1992/read/blob/main/tcp-ip/TCP-IP-%E8%AF%A6%E8%A7%A3-%E5%8D%B71/readme.md)
 
+同时建议阅读 《UNIX网络编程卷1》 这本书
+
 ## Netty 的工程结构
 
 ![netty-4.1-modules.png](./images/netty-4.1-modules.png)
