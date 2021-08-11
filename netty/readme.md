@@ -19,10 +19,10 @@ Netty 是最流程的 Java I/O 框架,主要是`性能强悍`+`良好的 API`，
 | ---------------------- | ---------------------------------------------------------------------------------------------------------- |
 | netty-codec            | 编码解码模块，常见的类:ByteToMessageCodec，ByteToMessageDecoder,MessageToByteEncoder,MessageToMessageCodec |
 | netty-transport        | 传输模块，常见的类：Channel，Bootstrap，EventLoop                                                          |
-| netty-transport-native | 传输模块+native (和平台相关的实现)，如：epoll,kqueue                                                       |
+| netty-transport-native | 传输模块+native (和平台相关的实现)，如：`epoll`,`kqueue`                                                      |
 | netty-testsuite        | 测试模块                                                                                                   |
 | netty-common           | 通用的工具类 如：HashedWheelTimer 定时器                                                                   |
-| netty-buffer           | 内存分配（包含非堆内存或者说非托管内存），常见的类：Unpooled,PooledByteBuf                                 |
+| netty-buffer           | 内存分配（包含非堆内存或者说非托管内存），常见的类：`Unpooled`,`PooledByteBuf`                                 |
 | netty-handler          | 常见的 Handler 实现类                                                                                      |
 | netty-resolver         | DNS 域名解析                                                                                               |
 | netty-example          | 常见的 Demo                                                                                                |
@@ -33,7 +33,7 @@ Netty 是最流程的 Java I/O 框架,主要是`性能强悍`+`良好的 API`，
 
 源码版本 4.1.67.Final-SNAPSHOT
 
-git banrch `4.1`
+git branch `4.1`
 
 - [source-code-bootstrap.md](source-code-bootstrap.md)
 - [source-code-byte-buf.md](source-code-byte-buf.md)
