@@ -1,5 +1,37 @@
 # Bootstrap and ServerBootstrap
 
+关键字：
+
+- Bootstrap
+- ServerBootstrap
+- NioSocketChannel
+- NioServerSocketChannel
+- ChannelInitializer
+- ChannelOption
+- ChannelHandler
+- ChannelFuture
+- EventLoop
+- EventLoopGroup
+- EventLoopGroup bossGroup
+- EventLoopGroup workerGroup
+
+关键字说明
+
+| 类                         | 描述                         |
+| -------------------------- | ---------------------------- |
+| Bootstrap                  | 客户端启动类                 |
+| ServerBootstrap            | 服务端启动类                 |
+| NioSocketChannel           | 客户端 Channel               |
+| NioServerSocketChannel     | 服务端的 Channel             |
+| ChannelInitializer         | 添加 ChannelHandler 的辅助类 |
+| ChannelOption              | TCP 选项                     |
+| ChannelHandler             | 处理自己业务的 Handler       |
+| ChannelFuture              | 操作 Channel 的工具类        |
+| EventLoop                  |
+| EventLoopGroup             |
+| EventLoopGroup bossGroup   |
+| EventLoopGroup workerGroup |
+
 - [Bootstrap and ServerBootstrap](#bootstrap-and-serverbootstrap)
   - [ServerBootstrap](#serverbootstrap)
     - [EventLoopGroup init](#eventloopgroup-init)
