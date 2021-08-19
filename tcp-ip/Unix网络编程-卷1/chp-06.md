@@ -11,6 +11,7 @@
 - 同步 I/O 操作
 - 异步 I/O 操作
 - select 函数
+- pselect 函数
 - poll 函数
 
 ## 概述
@@ -171,6 +172,11 @@ struct timeval {
 };
 ```
 
+## pselect 函数
+
+## poll 函数
+
 ## Links
 
 - [高级 I/O 之 I/O 多路转接——pool、select](https://www.cnblogs.com/nufangrensheng/p/3557584.html)
+- [select、poll、epoll 之间的区别总结[整理]](https://www.cnblogs.com/Anker/p/3265058.html)

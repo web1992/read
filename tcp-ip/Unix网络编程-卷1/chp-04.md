@@ -1,4 +1,4 @@
-# 基本TCP套接字编程
+# 基本 TCP 套接字编程
 
 - socket 函数
 - connect 函数
