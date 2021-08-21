@@ -9,3 +9,7 @@
 - close 函数
 - getsocketname 函数
 - getpeername 函数
+
+> 图 4-1 基本 TCP 客户/服务器程序的套接字函数
+
+![unix-network-1-4-1.png](./images/unix-network-1-4-1.png)
