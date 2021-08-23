@@ -167,16 +167,37 @@ POSIX 把这两个术语定义如下:
 int select(int maxfdpl, fd_set *readset, fd_set *writeset,fd_set *exceptset, const struct timeval *timeout);
 
 struct timeval {
-               time_t      tv_sec;         /* seconds */
-               suseconds_t tv_usec;        /* microseconds */
+    time_t      tv_sec;         /* seconds */
+    suseconds_t tv_usec;        /* microseconds */
 };
 ```
 
 ## pselect 函数
 
+```c
+#include <sys/select.h>
+#include <signal.h>
+#include <time.h>
+
+// 返回：就绪描述字的个数，0－超时，-1－出错
+int pselect(int maxfdp1, fd_set *readset, fd_set *writeset, fd_set *exceptset, const struct timespec *timeout, const sigset_t *sigmask);
+
+struct timespec{
+    time_t tv_sec;     //seconds
+    long    tv_nsec;    //nanoseconds
+};
+```
+
 ## poll 函数
+
+```c
+# include <poll.h>
+int poll ( struct pollfd * fds, unsigned int nfds, int timeout);
+```
 
 ## Links
 
 - [高级 I/O 之 I/O 多路转接——pool、select](https://www.cnblogs.com/nufangrensheng/p/3557584.html)
 - [select、poll、epoll 之间的区别总结[整理]](https://www.cnblogs.com/Anker/p/3265058.html)
+- [pselect 和 select](https://www.cnblogs.com/diegodu/p/3988103.html)
+- [深入理解 Linux 的 epoll 机制](https://mp.weixin.qq.com/s/LGMNEsWuXjDM7V9HlnxSuQ)
