@@ -6,7 +6,11 @@
 
 下面的图是从 《Uninx 网络编程卷 1》 这本书来的。
 
+> 图 4-1 基本 TCP 客户/服务器程序的套接字函数
+
 ![unix-network-1-4-1.png](images/unix-network-1-4-1.png)
+
+上图 说明使用 TCP 进行数据传输的时候，需要执行的 C 函数。
 
 从图中我们可以看到 TCP 客户端/服务器的交互流程（交互过程中的函数调用），在 C 语言中是函数，而到了
 JAVA 语言中，NIO 网络编程对这些函数进行了封装（抽象）。抽象出来了二个类：`ServerSocketChannel` 和 `SocketChannel`
