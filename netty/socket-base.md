@@ -4,7 +4,7 @@
 
 ## Socket 编程
 
-下面的图是从 《Uninx 网络编程卷 1》 这本书来的。
+下面的图是从 **《Uninx 网络编程卷 1》** 这本书来的。
 
 > 图 4-1 基本 TCP 客户/服务器程序的套接字函数
 
@@ -32,9 +32,13 @@ public abstract class SocketChannel extends ...{
 }
 ````
 
-注意： TCP 是全双工的，在服务器和客户端都会维护连接。
+`A selectable channel` 的含义是使用 select 来管理 Socket 连接。是一种实现 `I/O 复用`的方式。
+关键 `I/O 复用` 可以参考 **《Uninx 网络编程卷 1》** 第 6 章的内容，有很详细的介绍。
 
-## 服务器
+## 服务器 ServerSocketChannelImpl 类
+
+ServerSocketChannelImpl 也提供了 `bind`,`accept`,`listen` 对 Unix 函数进行了封装，
+并且在适当的时候进行调用。
 
 这里通过 `运行代码`+`断点`+`lsof`命令 。来运行 Netty 例子，查询 TCP 的状态
 
@@ -42,19 +46,27 @@ public abstract class SocketChannel extends ...{
 
 ```java
 // sun.nio.ch.ServerSocketChannelImpl
+// ServerSocketChannelImpl 的初始化
 ServerSocketChannelImpl(SelectorProvider var1) throws IOException {
     super(var1);
+    // C 语言中 socket 函数返回的 fd 指针，
+    // Java 中使用 FileDescriptor 进行了封装
     this.fd = Net.serverSocket(true);
     this.fdVal = IOUtil.fdVal(this.fd);
     this.state = 0;
 }
 
-// bind
+// ServerSocketChannelImpl bind 函数
 public ServerSocketChannel bind(SocketAddress var1, int var2) throws IOException {
     Net.bind(this.fd, var4.getAddress(), var4.getPort());// 在此处加断点
     Net.listen(this.fd, var2 < 1 ? 50 : var2);// 在此处加断点
 }
 
+// ServerSocketChannelImpl accept
+// 返回 SocketChannel
+public SocketChannel accept() throws IOException {
+    // ...
+}
 ```
 
 ```sh
@@ -70,6 +82,8 @@ java    4691   zl   95u  IPv6 0xe3ebd2dd6f674cc5      0t0  TCP *:8007 (LISTEN)
 ```
 
 上面的 TCP 状态从 `CLOSED` -> `LISTEN`
+
+注意： TCP 是全双工的，在服务器和客户端都会维护连接。
 
 ## 客户端
 
