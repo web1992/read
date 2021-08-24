@@ -23,3 +23,18 @@ ID”,因为存放该 ID 的变量是 socket 结构的 so_pgid 成员(TCPV2 第 
 使用 socket 函数新创建的套接字并没有属主。然而如果一个新的套接字是从一个监听套接
 字创建来的,那么套接字属主将由已连接套接字从监听套接字继承而来(许多套接字选项也是
 这样继承,见 TCPV2 第 462~463 页)。
+
+> 图 7-20 fcntl、ioctl 和路由套接字操作小结
+
+| 操作                           | fcntl               | ioctl                  | 路由套接字 | POSIX      |
+| ------------------------------ | ------------------- | ---------------------- | ---------- | ---------- |
+| 设置套接字为非阻寒式 IO 型     | F_SETFL, O_NONBLOCK | FIONBIO                |            | fcntl      |
+| 设置套接字为信号驱动式 O 型    | F_SETFL, O_ASYNC    | FTOASYNC               |            | fcntl      |
+| 设置套接字属主                 | F_SETON             | SIOCSPGRP 或 FTOSETOWI |            | fcntl      |
+| 获取套接字属主                 | F_GETOWN            | SIOCGPGRP 或 FIOGETOWN |            | fcntl      |
+| 获取套接字接收缓冲区中的字节数 |                     | FIONREAD               |            |            |
+| 测试套接字是否处于带外标志     |                     | TSIOCATMARK            |            | sockatmark |
+| 获取接口列表                   |                     | SIOCGIFCONF            | sysctl     |            |
+| 接口操作                       |                     | SIOC[GS]IFxxx          |            |            |
+| ARP 高速缓存操作               |                     | SIOCxxxARP             | RMT_xxx    |            |
+| 路由表操作                     |                     | SIOCxxxRT              | RMT_xxx    |            |
