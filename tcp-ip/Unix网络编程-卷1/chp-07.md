@@ -1,7 +1,15 @@
 # 套接字选项
 
+关键字：
+
 - fcntl
 - ioctl
+
+有很多方法来获取和设置影响套接字的选项
+
+- getsockopt 和 setsockopt 函数;
+- fcntl 函数;
+- ioctl 函数;
 
 fcntl 函数提供了与网络编程相关的如下特性。
 
@@ -38,3 +46,16 @@ ID”,因为存放该 ID 的变量是 socket 结构的 so_pgid 成员(TCPV2 第 
 | 接口操作                       |                     | SIOC[GS]IFxxx          |            |            |
 | ARP 高速缓存操作               |                     | SIOCxxxARP             | RMT_xxx    |            |
 | 路由表操作                     |                     | SIOCxxxRT              | RMT_xxx    |            |
+
+## 套接字状态
+
+对于某些套接字选项,针对套接字的状态,什么时候设置或获取选项有时序上的考虑。我们对受影响的选项论及这一点。
+
+下面的套接字选项是由 TCP 已连接套接字从监听套接字`继承`来的(TCP2 第 462~463 页)
+SO_DEBUG、 SO_DONTROUTE、 SO_KEEPALIVE、 SO_LINGER、 SO_OOBINLINE、 SO_RCVBUE、
+SO_RCVLOWAT、 SO_SNDBUF、SO_SNDLOWAT、 TCP_MAXSEG 和 CP_NODELAY。
+
+这对 TCP 是很重要的,因为 accept 一直要到 TCP 层完成三路握手后才会给服务器返回已连接套接字。
+如果想在三路握手完成时确保这些套接字选项中的某一个是给`已连接套接字`设置的,那么我们必须先给`监听套接字`设置该选项。
+
+> 注意：监听套接字的选项设置可以继承
