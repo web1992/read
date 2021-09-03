@@ -3,7 +3,7 @@
 ## 写在前面
 
 Netty 是最流程的 Java I/O 框架,主要是`性能强悍`+`良好的 API`，高性能支持高并发，良好的 API 减少开发负担。
-为了`性能`，Netty 做了很多的优化。如：为了更好的内存管理（复用），提供了 PooledByteBuf 相关的类，操作`非堆内存`，减少 GC 等等。
+为了`性能`，Netty 做了很多的优化。如：为了更好的内存管理（复用），提供了 `PooledByteBuf` 相关的类，操作`非堆内存`，减少 GC 等等。
 
 了解 Netty 必须对 TCP/IP 协议有所了解。建议阅读书籍 《TCP/IP 详解 卷 1》，这里是本人的笔记 [《TCP/IP 详解 卷 1》 读书笔记](https://github.com/web1992/read/blob/main/tcp-ip/TCP-IP-%E8%AF%A6%E8%A7%A3-%E5%8D%B71/readme.md)
 
@@ -32,7 +32,7 @@ Netty 是最流程的 Java I/O 框架,主要是`性能强悍`+`良好的 API`，
 
 ## 源码分析
 
-源码版本 4.1.67.Final-SNAPSHOT
+源码版本 `4.1.67.Final-SNAPSHOT`
 
 git branch `4.1`
 
