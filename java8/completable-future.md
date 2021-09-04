@@ -2,7 +2,6 @@
 
 - [CompletableFuture](#completablefuture)
   - [New Further](#new-further)
-  - [UML](#uml)
   - [Summary](#summary)
   - [AsynchronousCompletionTask](#asynchronouscompletiontask)
   - [CompletionStage](#completionstage)
@@ -23,10 +22,6 @@
 - Waiting for the completion of only the quickest task in a set of Futures (possibly because they’re trying to calculate the same value in different ways) and retrieving its result
 - Programmatically completing a Future (that is, by manually providing the result of the asynchronous operation)
 - Reacting to a Future completion (that is, being notified when the completion happens and then having the ability to perform a further action using the result of the Future, instead of being blocked waiting for its result)
-
-## UML
-
-![CompletableFuture](./images/CompletableFuture.png)
 
 ## Summary
 
