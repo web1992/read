@@ -1,18 +1,16 @@
 # mysql
 
-- [group-by.md](group-by.md)
-- [high-performance-MySQL-blog.md](high-performance-MySQL-blog.md)
-- [high-performance-MySQL.md](high-performance-MySQL.md)
-- [join.md](join.md)
-- [limit.md](limit.md)
-- [mysql-when-create-temporary-table.md](mysql-when-create-temporary-table.md)
-- [table.md](table.md)
-- [tokudb.md](tokudb.md)
+- [group-by.md](mysql-group-by.md)
+- [join.md](mysql-join.md)
+- [limit.md](mysql-limit.md)
+- [mysql-when-create-temporary-table.md](mysql-temporary-table.md)
+- [tokudb.md](mysql-tokudb.md)
 - [mysql-transaction.md](mysql-transaction.md)
 - [🔥mysql-index.md](mysql-index.md)
 - [🔥mysql-page.md](mysql-page.md)
 - [🔥mysql-redo-undo.md](mysql-redo-undo.md)
 - [🔥mysql-innodb.md](mysql-innodb.md)
+- [mysql-blog.md](mysql-blog.md)
 
 ## 查询优化
 
