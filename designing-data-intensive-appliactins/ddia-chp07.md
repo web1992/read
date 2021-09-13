@@ -11,6 +11,7 @@
 - 原子写操作
 - 更新丢失
 - 写倾斜
+- SSI Serializable Isolation for Snapshot Databases
 
 ## ACDI
 
