@@ -44,3 +44,8 @@ update conunters set value = value +1 where id =1;
 原子写操作 通常是使用对对象加独占锁的方式来实现。
 
 `for update` 指令指示数据库对返回的所有结果行要加锁。
+
+
+## Links
+
+- [隔离级别、SI 和 SSI](https://www.jianshu.com/p/c348f68fecde)
