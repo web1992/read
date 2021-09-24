@@ -1,6 +1,7 @@
 # 第 12 章　 Java 内存模型与线程
 
-- 每秒事务处理数（TransactionsPerSecond，TPS）
+- 每秒事务处理数（Transactions Per Second,TPS）
+- QPS,Queries Per Second，意思是“每秒查询率”
 - Java 内存模型
 - 先行发生原则，用来确定一个操作在并发环境下是否安全的
 - Java 内存模型 的内存操作 lock、unlock、read、load、assign、use、store、write
