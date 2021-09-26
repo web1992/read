@@ -8,10 +8,7 @@
 - synchronized 关键字
 - monitorenter
 - monitorexit
-- ReentrantLock 可重入
-- ReentrantLock 等待可中断
-- ReentrantLock 公平锁
-- ReentrantLock 绑定多个锁条件
+- ReentrantLock 可重入 等待可中断 公平锁 绑定多个锁条件
 - 基于冲突检测的乐观并发策略 CAS
 - 锁优化 自旋锁与自适应锁
 - 锁优化 锁消除
