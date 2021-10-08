@@ -48,32 +48,32 @@
 `AbstractChannel#AbstractUnsafe#register`
 
 ```java
-        @Override
-        public final void register(EventLoop eventLoop, final ChannelPromise promise) {
-            // 省略其它代码
-            // Channel 与 eventLoop 进行关联
-            AbstractChannel.this.eventLoop = eventLoop;
-            // 其他注册事件处理
-            if (eventLoop.inEventLoop()) {
-                register0(promise);
-            } else {
-                try {
-                    eventLoop.execute(new Runnable() {
-                        @Override
-                        public void run() {
-                            register0(promise);
-                        }
-                    });
-                } catch (Throwable t) {
-                    logger.warn(
-                            "Force-closing a channel whose registration task was not accepted by an event loop: {}",
-                            AbstractChannel.this, t);
-                    closeForcibly();
-                    closeFuture.setClosed();
-                    safeSetFailure(promise, t);
+@Override
+public final void register(EventLoop eventLoop, final ChannelPromise promise) {
+    // 省略其它代码
+    // Channel 与 eventLoop 进行关联
+    AbstractChannel.this.eventLoop = eventLoop;
+    // 其他注册事件处理
+    if (eventLoop.inEventLoop()) {
+        register0(promise);
+    } else {
+        try {
+            eventLoop.execute(new Runnable() {
+                @Override
+                public void run() {
+                    register0(promise);
                 }
-            }
+            });
+        } catch (Throwable t) {
+            logger.warn(
+                    "Force-closing a channel whose registration task was not accepted by an event loop: {}",
+                    AbstractChannel.this, t);
+            closeForcibly();
+            closeFuture.setClosed();
+            safeSetFailure(promise, t);
         }
+    }
+}
 ```
 
 ### EventLoop 的定时任务
@@ -171,21 +171,19 @@ if (ioRatio == 100) {
 不同版本的源代码，存在细微的差别
 
 ```java
-
-    private final IntSupplier selectNowSupplier = new IntSupplier() {
-        @Override
-        public int get() throws Exception {
-            return selectNow();
-        }
-    };
-
-    // DefaultSelectStrategy
+private final IntSupplier selectNowSupplier = new IntSupplier() {
     @Override
-    public int calculateStrategy(IntSupplier selectSupplier, boolean hasTasks) throws Exception {
-        // 如果有任务，就返回selectNow,否则去执行SELECT操作，SELECT阻塞操作，同时可以用wakenUp结束阻塞，（即唤醒）
-        // SELECT 里面是一个无限循环，根据wakenUp等条件，可以决定是进行事件处理还是继续循环
-        return hasTasks ? selectSupplier.get() : SelectStrategy.SELECT;
+    public int get() throws Exception {
+        return selectNow();
     }
+};
+// DefaultSelectStrategy
+@Override
+public int calculateStrategy(IntSupplier selectSupplier, boolean hasTasks) throws Exception {
+    // 如果有任务，就返回selectNow,否则去执行SELECT操作，SELECT阻塞操作，同时可以用wakenUp结束阻塞，（即唤醒）
+    // SELECT 里面是一个无限循环，根据wakenUp等条件，可以决定是进行事件处理还是继续循环
+    return hasTasks ? selectSupplier.get() : SelectStrategy.SELECT;
+}
 
  protected void run() {
         for (;;) {//无限循环
@@ -257,35 +255,33 @@ if (ioRatio == 100) {
 ### EventLoop 核心方法 processSelectedKeys
 
 ```java
-    // processSelectedKeys方法实现
-    private void processSelectedKeys() {
-        if (selectedKeys != null) {
-            // 如果selectedKeys不是null，执行优化的Select操作
-
-            // 这里来说下Netty是怎么优化进行Selectkey的优化的
-            // java的NIO中Selector的实现类中，使用HashSet来存储已经就绪的IO事件的
-            // Netty中在 NioEventLoop#openSelector 这个方式中，利用反射，自己实现了一个set->SelectedSelectionKeySet
-            // 而netty这个set是基于数组实现的，
-            // netty实现类SelectedSelectionKeySet继承了AbstractSet并重写了add和iterator方法
-            // 而我们知道HashSet在add的时候会对key做hashcode操作,而netty实现的SelectedSelectionKeySet的add操作
-            // 直接通过数组下标，进行add操作，效率比HashSet更快(少了hashcode这个步骤)
-
-            // 首先我们知道 一个Selector可以管理多个Channel
-            // 优化的同时也引入了另一个问题，HashSet 有remove方法来删除已经处理的IO事件
-            // (可以理解为Selector中hashset与Channel引用关系)
-            // 而SelectedSelectionKeySet 没有实现remove方法，因此需要我们自己手动断开IO事件与数组引用，保证GC正常回收
-            // Selector与Channel是绑定的，因此Selector中的HashSet是常驻内存的。如果不进行回收，重复的垃圾对象会一直增加
-            // 比如: Channel发生了一次IO事件，就会向这个selectedKeys中插入一个key
-            // 可以在 SelectedSelectionKeySet的reset方法中找到相关的操作
-            // 此外 selectedKeys.keys[i]=null这个操作断开了Selector与Channel之间的引用关系，在之后某一个Channel关闭的时候
-            // 保证GC可以回收这个Channel
-            processSelectedKeysOptimized();
-        } else {
-            // 执行普通的Select操作
-            // 经典的java Nio操作
-            processSelectedKeysPlain(selector.selectedKeys());
-        }
+// processSelectedKeys方法实现
+private void processSelectedKeys() {
+    if (selectedKeys != null) {
+        // 如果selectedKeys不是null，执行优化的Select操作
+        // 这里来说下Netty是怎么优化进行Selectkey的优化的
+        // java的NIO中Selector的实现类中，使用HashSet来存储已经就绪的IO事件的
+        // Netty中在 NioEventLoop#openSelector 这个方式中，利用反射，自己实现了一个set->SelectedSelectionKeySet
+        // 而netty这个set是基于数组实现的，
+        // netty实现类SelectedSelectionKeySet继承了AbstractSet并重写了add和iterator方法
+        // 而我们知道HashSet在add的时候会对key做hashcode操作,而netty实现的SelectedSelectionKeySet的add操作
+        // 直接通过数组下标，进行add操作，效率比HashSet更快(少了hashcode这个步骤)
+        // 首先我们知道 一个Selector可以管理多个Channel
+        // 优化的同时也引入了另一个问题，HashSet 有remove方法来删除已经处理的IO事件
+        // (可以理解为Selector中hashset与Channel引用关系)
+        // 而SelectedSelectionKeySet 没有实现remove方法，因此需要我们自己手动断开IO事件与数组引用，保证GC正常回收
+        // Selector与Channel是绑定的，因此Selector中的HashSet是常驻内存的。如果不进行回收，重复的垃圾对象会一直增加
+        // 比如: Channel发生了一次IO事件，就会向这个selectedKeys中插入一个key
+        // 可以在 SelectedSelectionKeySet的reset方法中找到相关的操作
+        // 此外 selectedKeys.keys[i]=null这个操作断开了Selector与Channel之间的引用关系，在之后某一个Channel关闭的时候
+        // 保证GC可以回收这个Channel
+        processSelectedKeysOptimized();
+    } else {
+        // 执行普通的Select操作
+        // 经典的java Nio操作
+        processSelectedKeysPlain(selector.selectedKeys());
     }
+}
 ```
 
 ### EventLoop 核心方法 processSelectedKey
@@ -293,66 +289,62 @@ if (ioRatio == 100) {
 这个方法是遍历所有 IO 实践的后续处理,处理读写等事件
 
 ```java
-    private void processSelectedKey(SelectionKey k, AbstractNioChannel ch) {
-        final AbstractNioChannel.NioUnsafe unsafe = ch.unsafe();
-        // 检查channel和selector是否有效
-        if (!k.isValid()) {
-            final EventLoop eventLoop;
-            try {
-                eventLoop = ch.eventLoop();
-            } catch (Throwable ignored) {
-                // 这里eventLoop之间的绑定是异步的，如果发生了异常，就忽略
-                // If the channel implementation throws an exception because there is no event loop, we ignore this
-                // because we are only trying to determine if ch is registered to this event loop and thus has authority
-                // to close ch.
-                return;
-            }
-            // Only close ch if ch is still registered to this EventLoop. ch could have deregistered from the event loop
-            // and thus the SelectionKey could be cancelled as part of the deregistration process, but the channel is
-            // still healthy and should not be closed.
-            // See https://github.com/netty/netty/issues/5125
-            // 检查eventLoop的合法性
-            if (eventLoop != this || eventLoop == null) {
-                return;
-            }
-            // close the channel if the key is not valid anymore
-            unsafe.close(unsafe.voidPromise());
+private void processSelectedKey(SelectionKey k, AbstractNioChannel ch) {
+    final AbstractNioChannel.NioUnsafe unsafe = ch.unsafe();
+    // 检查channel和selector是否有效
+    if (!k.isValid()) {
+        final EventLoop eventLoop;
+        try {
+            eventLoop = ch.eventLoop();
+        } catch (Throwable ignored) {
+            // 这里eventLoop之间的绑定是异步的，如果发生了异常，就忽略
+            // If the channel implementation throws an exception because there is no event loop, we ignore this
+            // because we are only trying to determine if ch is registered to this event loop and thus has authority
+            // to close ch.
             return;
         }
-
-        try {
-            int readyOps = k.readyOps();
-            // We first need to call finishConnect() before try to trigger a read(...) or write(...) as otherwise
-            // the NIO JDK channel implementation may throw a NotYetConnectedException.
-            // 连接事件
-            // & 操作的实现可以参考这个文章 https://github.com/web1992/read/blob/master/java/nio-selection-key.md
-            if ((readyOps & SelectionKey.OP_CONNECT) != 0) {
-                // remove OP_CONNECT as otherwise Selector.select(..) will always return without blocking
-                // See https://github.com/netty/netty/issues/924
-                int ops = k.interestOps();
-                ops &= ~SelectionKey.OP_CONNECT;
-                k.interestOps(ops);
-
-                unsafe.finishConnect();
-            }
-
-            // Process OP_WRITE first as we may be able to write some queued buffers and so free memory.
-            // 写事件
-            if ((readyOps & SelectionKey.OP_WRITE) != 0) {
-                // Call forceFlush which will also take care of clear the OP_WRITE once there is nothing left to write
-                ch.unsafe().forceFlush();
-            }
-
-            // Also check for readOps of 0 to workaround possible JDK bug which may otherwise lead
-            // to a spin loop
-            // 读事件和连接事件
-            if ((readyOps & (SelectionKey.OP_READ | SelectionKey.OP_ACCEPT)) != 0 || readyOps == 0) {
-                unsafe.read();
-            }
-        } catch (CancelledKeyException ignored) {
-            unsafe.close(unsafe.voidPromise());
+        // Only close ch if ch is still registered to this EventLoop. ch could have deregistered from the event loop
+        // and thus the SelectionKey could be cancelled as part of the deregistration process, but the channel is
+        // still healthy and should not be closed.
+        // See https://github.com/netty/netty/issues/5125
+        // 检查eventLoop的合法性
+        if (eventLoop != this || eventLoop == null) {
+            return;
         }
+        // close the channel if the key is not valid anymore
+        unsafe.close(unsafe.voidPromise());
+        return;
     }
+    try {
+        int readyOps = k.readyOps();
+        // We first need to call finishConnect() before try to trigger a read(...) or write(...) as otherwise
+        // the NIO JDK channel implementation may throw a NotYetConnectedException.
+        // 连接事件
+        // & 操作的实现可以参考这个文章 https://github.com/web1992/read/blob/master/java/nio-selection-key.md
+        if ((readyOps & SelectionKey.OP_CONNECT) != 0) {
+            // remove OP_CONNECT as otherwise Selector.select(..) will always return without blocking
+            // See https://github.com/netty/netty/issues/924
+            int ops = k.interestOps();
+            ops &= ~SelectionKey.OP_CONNECT;
+            k.interestOps(ops);
+            unsafe.finishConnect();
+        }
+        // Process OP_WRITE first as we may be able to write some queued buffers and so free memory.
+        // 写事件
+        if ((readyOps & SelectionKey.OP_WRITE) != 0) {
+            // Call forceFlush which will also take care of clear the OP_WRITE once there is nothing left to write
+            ch.unsafe().forceFlush();
+        }
+        // Also check for readOps of 0 to workaround possible JDK bug which may otherwise lead
+        // to a spin loop
+        // 读事件和连接事件
+        if ((readyOps & (SelectionKey.OP_READ | SelectionKey.OP_ACCEPT)) != 0 || readyOps == 0) {
+            unsafe.read();
+        }
+    } catch (CancelledKeyException ignored) {
+        unsafe.close(unsafe.voidPromise());
+    }
+}
 ```
 
 ### EventLoop 核心方法 select
@@ -461,47 +453,42 @@ private void select(boolean oldWakenUp) throws IOException {
 `runAllTasks`有两个重载的方法,有 timeoutNanos 参数的方法表示执行一段时间结束执行，进行其他事件的处理
 
 ```java
-    protected boolean runAllTasks(long timeoutNanos) {
-        // NioEventLoop中有三种类别的任务队列
-        // scheduledTaskQueue 从 AbstractScheduledEventExecutor 继承而来,表示定时任务
-        // taskQueue 从 SingleThreadEventExecutor 继承而来，表示异步任务(一次性任务)
-        // tailTasks 从 SingleThreadEventLoop 继承而来,表示阻塞的任务
-        fetchFromScheduledTaskQueue();// 把 scheduledTaskQueue的任务放到 taskQueue中
-        Runnable task = pollTask();
-        if (task == null) {
-            afterRunningAllTasks();// 执行 tailTasks 中的任务
-            return false;
-        }
-
-        final long deadline = ScheduledFutureTask.nanoTime() + timeoutNanos;
-        long runTasks = 0;
-        long lastExecutionTime;
-        for (;;) {// 循环执行
-            safeExecute(task);
-
-            runTasks ++;
-
-            // Check timeout every 64 tasks because nanoTime() is relatively expensive.
-            // XXX: Hard-coded value - will make it configurable if it is really a problem.
-            // 每执行64此，进行一次时间检查，确定是否继续循环
-            if ((runTasks & 0x3F) == 0) {
-                lastExecutionTime = ScheduledFutureTask.nanoTime();
-                if (lastExecutionTime >= deadline) {
-                    break;
-                }
-            }
-
-            task = pollTask();
-            if (task == null) {
-                lastExecutionTime = ScheduledFutureTask.nanoTime();
+protected boolean runAllTasks(long timeoutNanos) {
+    // NioEventLoop中有三种类别的任务队列
+    // scheduledTaskQueue 从 AbstractScheduledEventExecutor 继承而来,表示定时任务
+    // taskQueue 从 SingleThreadEventExecutor 继承而来，表示异步任务(一次性任务)
+    // tailTasks 从 SingleThreadEventLoop 继承而来,表示阻塞的任务
+    fetchFromScheduledTaskQueue();// 把 scheduledTaskQueue的任务放到 taskQueue中
+    Runnable task = pollTask();
+    if (task == null) {
+        afterRunningAllTasks();// 执行 tailTasks 中的任务
+        return false;
+    }
+    final long deadline = ScheduledFutureTask.nanoTime() + timeoutNanos;
+    long runTasks = 0;
+    long lastExecutionTime;
+    for (;;) {// 循环执行
+        safeExecute(task);
+        runTasks ++;
+        // Check timeout every 64 tasks because nanoTime() is relatively expensive.
+        // XXX: Hard-coded value - will make it configurable if it is really a problem.
+        // 每执行64此，进行一次时间检查，确定是否继续循环
+        if ((runTasks & 0x3F) == 0) {
+            lastExecutionTime = ScheduledFutureTask.nanoTime();
+            if (lastExecutionTime >= deadline) {
                 break;
             }
         }
-
-        afterRunningAllTasks();// 执行 tailTasks 中的任务
-        this.lastExecutionTime = lastExecutionTime;
-        return true;
+        task = pollTask();
+        if (task == null) {
+            lastExecutionTime = ScheduledFutureTask.nanoTime();
+            break;
+        }
     }
+    afterRunningAllTasks();// 执行 tailTasks 中的任务
+    this.lastExecutionTime = lastExecutionTime;
+    return true;
+}
 ```
 
 ## NioEventLoopGroup
@@ -523,32 +510,32 @@ NioEventLoopGroup 的类图
 我们在构造一个`ServerBootstrap`对象的时候，需要一个`EventLoopGroup`，代码如下：
 
 ```java
-    public void bootstrap() {
-        NioEventLoopGroup group = new NioEventLoopGroup();
-        ServerBootstrap bootstrap = new ServerBootstrap();
-        bootstrap.group(group)
-                .channel(NioServerSocketChannel.class)
-                .childHandler(new SimpleChannelInboundHandler<ByteBuf>() {
-                    @Override
-                    protected void channelRead0(ChannelHandlerContext channelHandlerContext,
-                                                ByteBuf byteBuf) throws Exception {
-                        System.out.println("Received data");
-                    }
-                });
-        ChannelFuture future = bootstrap.bind(new InetSocketAddress(8081));
-        future.addListener(new ChannelFutureListener() {
-            @Override
-            public void operationComplete(ChannelFuture channelFuture)
-                    throws Exception {
-                if (channelFuture.isSuccess()) {
-                    System.out.println("Server bound");
-                } else {
-                    System.err.println("Bind attempt failed");
-                    channelFuture.cause().printStackTrace();
+public void bootstrap() {
+    NioEventLoopGroup group = new NioEventLoopGroup();
+    ServerBootstrap bootstrap = new ServerBootstrap();
+    bootstrap.group(group)
+            .channel(NioServerSocketChannel.class)
+            .childHandler(new SimpleChannelInboundHandler<ByteBuf>() {
+                @Override
+                protected void channelRead0(ChannelHandlerContext channelHandlerContext,
+                                            ByteBuf byteBuf) throws Exception {
+                    System.out.println("Received data");
                 }
+            });
+    ChannelFuture future = bootstrap.bind(new InetSocketAddress(8081));
+    future.addListener(new ChannelFutureListener() {
+        @Override
+        public void operationComplete(ChannelFuture channelFuture)
+                throws Exception {
+            if (channelFuture.isSuccess()) {
+                System.out.println("Server bound");
+            } else {
+                System.err.println("Bind attempt failed");
+                channelFuture.cause().printStackTrace();
             }
-        });
-    }
+        }
+    });
+}
 ```
 
 最终的方法在`MultithreadEventExecutorGroup#MultithreadEventExecutorGroup`的构造方法中实现的，
