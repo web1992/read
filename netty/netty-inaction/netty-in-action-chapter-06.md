@@ -2,7 +2,7 @@
 
 This chapter covers
 
-- The ChannelHandler and ChannelPipeline APIs
+- The `ChannelHandler` and `ChannelPipeline` APIs
 - Detecting resource leaks
 - Exception handling
 
