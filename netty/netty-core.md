@@ -6,3 +6,4 @@
 - ChannelPipeline
 - ByteBuf
 - ByteToMessageDecoder
+- ChannelHandlerContext
