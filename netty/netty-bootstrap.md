@@ -11,9 +11,7 @@
 - ChannelHandler
 - ChannelFuture
 - EventLoop
-- EventLoopGroup
-- EventLoopGroup bossGroup
-- EventLoopGroup workerGroup
+- EventLoopGroup (bossGroup & workerGroup)
 
 关键字说明
 
