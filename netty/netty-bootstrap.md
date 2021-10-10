@@ -73,16 +73,16 @@
 // parentGroup for server
 // childGroup for client
 public ServerBootstrap group(EventLoopGroup parentGroup, EventLoopGroup childGroup) {
-        super.group(parentGroup);
-        if (childGroup == null) {
-            throw new NullPointerException("childGroup");
-        }
-        if (this.childGroup != null) {
-            throw new IllegalStateException("childGroup set already");
-        }
-        this.childGroup = childGroup;
-        return this;
+    super.group(parentGroup);
+    if (childGroup == null) {
+        throw new NullPointerException("childGroup");
     }
+    if (this.childGroup != null) {
+        throw new IllegalStateException("childGroup set already");
+    }
+    this.childGroup = childGroup;
+    return this;
+}
 ```
 
 `ServerBootstrap`的构造方法有两个参数`parentGroup`,`childGroup`
@@ -95,7 +95,7 @@ EventLoopGroup 本质是维护了一组 EventLoop，并提供了 `next` 方法�
 
 childGroup 当做参数给了 ServerBootstrapAcceptor，ServerBootstrapAcceptor 重写了`channelRead`
 方法，用 childGroup.register 方法来绑定客户端的 channel 与 childGroup 中的 EventLoop
-具体细节可以参照[这里](source-code-channel.md#ServerBootstrapAcceptor)
+具体细节可以参照[这里](netty-channel.md#ServerBootstrapAcceptor)
 
 ### channelFactory
 
