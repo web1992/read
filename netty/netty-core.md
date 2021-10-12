@@ -28,3 +28,7 @@
 - [Reactor VS Proactor](https://jishuin.proginn.com/p/763bfbd58a63)
 - [小白教程](https://www.jianshu.com/p/eb28811421e3)
 - [Netty 写数据缓冲 ChannelOutboundBuffer](https://www.cnblogs.com/stateis0/p/9062155.html)
+- [SizeClasses](https://www.codetd.com/article/12644429)
+- [Netty 中的内存分配浅析](https://www.cnblogs.com/rickiyang/p/13100413.html)
+- [Netty 内存池化管理](https://miaowenting.site/2020/02/09/Netty%E5%86%85%E5%AD%98%E6%B1%A0%E5%8C%96%E7%AE%A1%E7%90%86/)
+- [Netty PoolArena](https://gorden5566.com/post/1079.html)
