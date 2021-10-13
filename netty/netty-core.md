@@ -21,6 +21,10 @@
 
 - Reactor 线程模型（设计模式）
 
+## Netty 的算法
+
+- 伙伴算法，避免内存分配的碎片
+
 ## Links
 
 - [Reactor pattern 设计模式](https://en.wikipedia.org/wiki/Reactor_pattern)
