@@ -37,3 +37,5 @@
 - [Netty 内存池化管理](https://miaowenting.site/2020/02/09/Netty%E5%86%85%E5%AD%98%E6%B1%A0%E5%8C%96%E7%AE%A1%E7%90%86/)
 - [Netty PoolArena](https://gorden5566.com/post/1079.html)
 - [Chunk](https://www.jianshu.com/p/70181af2972a)
+- [字节序 大端序和小端序](https://mp.weixin.qq.com/s/JcduhM8rKzVStfAWQcQX5g)
+- [伙伴算法](https://www.cnblogs.com/alantu2018/p/8527821.html)
