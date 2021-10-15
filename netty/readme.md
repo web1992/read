@@ -2,12 +2,12 @@
 
 ## 写在前面
 
-Netty 是最流程的 Java I/O 框架,主要是`性能强悍`+`良好的 API`，高性能支持高并发，良好的 API 减少开发负担。
+Netty 是最流程的 Java I/O 框架,主要是`性能强悍`+`良好的 API`，支持高并发，良好的 API 减少开发负担。
 为了`性能`，Netty 做了很多的优化。如：为了更好的内存管理（复用），提供了 `PooledByteBuf` 相关的类，操作`非堆内存`，减少 GC 等等。
 
 了解 Netty 必须对 TCP/IP 协议有所了解。建议阅读书籍 《TCP/IP 详解 卷 1》，这里是本人的笔记 [《TCP/IP 详解 卷 1》 读书笔记](https://github.com/web1992/read/blob/main/tcp-ip/TCP-IP-%E8%AF%A6%E8%A7%A3-%E5%8D%B71/readme.md)
 
-同时建议阅读 《UNIX网络编程卷1》 这本书。
+同时建议阅读 [《UNIX 网络编程卷 1》](https://github.com/web1992/read/tree/main/tcp-ip/Unix%E7%BD%91%E7%BB%9C%E7%BC%96%E7%A8%8B-%E5%8D%B71/readme.md) 这本书。
 理解 Java 的 BIO(Blocking I/O)，NIO(on-blocking I/O)，(AIO 了解即可)。
 
 ## Netty 的工程结构
@@ -55,4 +55,4 @@ git branch `4.1`
 
 ## Links
 
-- [网络编程 NIO：BIO 和 NIO](https://www.cnblogs.com/gaofei200/p/13933952.html)
+- [netty-core.md](netty-core.md)
