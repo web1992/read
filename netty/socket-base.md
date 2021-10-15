@@ -37,7 +37,7 @@ public abstract class SocketChannel extends ...{
 
 ## 服务器 ServerSocketChannelImpl 类
 
-ServerSocketChannelImpl 也提供了 `bind`,`accept`,`listen` 对 Unix 函数进行了封装，
+ServerSocketChannelImpl 也提供了 `bind`,`accept`,`listen` 对 Unix(Linux) 函数进行了封装，
 并且在适当的时候进行调用。
 
 这里通过 `运行代码`+`断点`+`lsof`命令 。来运行 Netty 例子，查询 TCP 的状态
@@ -91,10 +91,10 @@ java    4691   zl   95u  IPv6 0xe3ebd2dd6f674cc5      0t0  TCP *:8007 (LISTEN)
 
 ```java
 // SocketChannelImpl
-    public boolean connect(SocketAddress var1) throws IOException {
-        // ...
-        var8 = Net.connect(this.fd, var9, var5.getPort());// 在次数断点
-    }
+public boolean connect(SocketAddress var1) throws IOException {
+    // ...
+    var8 = Net.connect(this.fd, var9, var5.getPort());// 在次数断点
+}
 ```
 
 在执行 `Net.connect` 之后：
