@@ -219,7 +219,7 @@ bootstrap.group(group).channel(NioServerSocketChannel.class).childHandler(new Ch
 child.pipeline().addLast(childHandler);
 ```
 
-一个经典的 ChannelInitializerImpl 实现如下：
+一个经典的 `ChannelInitializerImpl` 实现如下：
 
 ```java
 /**

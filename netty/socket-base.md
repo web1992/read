@@ -78,7 +78,6 @@ java    4691   zl   95u  IPv6 0xe3ebd2dd6f674cc5      0t0  TCP *:8007 (CLOSED)
 ➜  ~ lsof -i:8007
 COMMAND  PID USER   FD   TYPE             DEVICE SIZE/OFF NODE NAME
 java    4691   zl   95u  IPv6 0xe3ebd2dd6f674cc5      0t0  TCP *:8007 (LISTEN)
-➜  ~
 ```
 
 上面的 TCP 状态从 `CLOSED` -> `LISTEN`
