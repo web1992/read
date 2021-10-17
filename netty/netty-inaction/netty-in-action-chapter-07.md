@@ -73,4 +73,4 @@ In the current implementation, using a round-robin approach achieves
 a balanced distribution, and the same EventLoop may be assigned to multiple Channel s.
 (This may change in future versions.)
 
-![EventLoop](../images/EventLoop-Channel.png)
+![EventLoop](../images/eventLoop-and-hannel.png)

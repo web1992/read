@@ -272,4 +272,4 @@ public void channelRead(ChannelHandlerContext ctx, Object msg) {
 
 一个 `EventLoop` 会关联多个 `Channel`
 
-![EventLoop](./images/EventLoop-Channel.png)
+![EventLoop](./images/eventLoop-and-hannel.png)

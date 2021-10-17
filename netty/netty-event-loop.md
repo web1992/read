@@ -573,7 +573,7 @@ this(nThreads, executor, DefaultEventExecutorChooserFactory.INSTANCE, args);
 
 来自`Netty in action`
 
-![EventExecutorGroup](./images/EventLoop-Channel.png)
+![EventExecutorGroup](./images/eventLoop-and-hannel.png)
 
 客户端的 Channel 与 EventLoop 的绑定是在`ServerBootstrapAccepto`r 中进行的
 
