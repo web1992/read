@@ -202,5 +202,6 @@ ThreadLocalMap 的 value 是要存在的信息如，用户信息，数据库连�
 - [ThreadLocal 源码分析](https://www.jianshu.com/p/80866ca6c424)
 - [threadLocal (简书)](https://www.jianshu.com/p/dde92ec37bd1)
 - [threadLocal 内存泄漏的原因](https://stackoverflow.com/questions/17968803/threadlocal-memory-leak)
+- [threadLocal 内存泄漏](https://www.cnblogs.com/cy0628/p/15086201.html)
 - [threadLocal 优化](https://www.cnblogs.com/zhjh256/p/6367928.html)
 - [threadLocal (github)](https://github.com/CL0610/Java-concurrency/blob/master/17.%E5%B9%B6%E5%8F%91%E5%AE%B9%E5%99%A8%E4%B9%8BThreadLocal/%E5%B9%B6%E5%8F%91%E5%AE%B9%E5%99%A8%E4%B9%8BThreadLocal.md)
