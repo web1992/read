@@ -26,7 +26,7 @@ public Timeout newTimeout(TimerTask task, long delay, TimeUnit unit) {
 
 `Worker` 线程中 `run` 方法是核心，读懂了此方法，就读懂了 `HashWheelTimer` 的实现。
 
-1. 计算 deadline
+1. 计算 deadline (线程此时可能休眠)
 2. 把 TimeTask 从 queue 中移动到 bucket（bucke t 就是时间轮数组）
 3. 根据 deadline ，执行到期的任务
 
