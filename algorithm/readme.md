@@ -20,9 +20,9 @@
 
 随着问题规模 n 的不断增大，上述时间复杂度不断增大，算法的执行效率越低。
 
-## 大O(n)表示
+## 大 O(n)表示
 
-大O(n)表示法 让你能够比较操作数，它指出了算法运行时间的增速。
+大 O(n)表示法 让你能够比较操作数，它指出了算法运行时间的增速。
 
 ## log
 
@@ -34,3 +34,4 @@
 - [https://github.com/youngyangyang04/leetcode-master](https://github.com/youngyangyang04/leetcode-master)
 - [限流算法(from 博客园)](https://www.cnblogs.com/LBSer/p/4083131.html)
 - [一致性哈希（Consistent hashing)](https://coderxing.gitbooks.io/architecture-evolution/di-san-pian-ff1a-bu-luo/631-yi-zhi-xing-ha-xi.html)
+- [程序员必备的基本算法：递归详解](https://mp.weixin.qq.com/s/A4xG9IbQUjFwQoy9YcneCw)
