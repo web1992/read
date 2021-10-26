@@ -10,6 +10,7 @@ PoolArena 是 Netty 内存管理的入口。学习源码可以从此类开始。
 - PoolChunkList
 - PoolChunk
 - PoolSubpage
+- PoolThreadCache
 
 上面关键类的`组织`图:
 
