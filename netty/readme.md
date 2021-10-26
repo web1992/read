@@ -12,7 +12,7 @@ Netty 是最流程的 Java I/O 框架,主要是`性能强悍`+`良好的 API`，
 
 ## Netty 的工程结构
 
-![netty-4.1-modules.png](./images/netty-4.1-modules.png)
+![netty-4.1-modules.png](./images/netty-4.1-module.svg)
 
 下面对核心（常见）的模块组成简单总结：
 
