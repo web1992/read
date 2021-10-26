@@ -8,7 +8,7 @@
 
 > 图 4-1 基本 TCP 客户/服务器程序的套接字函数
 
-![unix-network-1-4-1.png](images/unix-network-1-4-1.png)
+![unix-network-1-4-1.png](images/unix-network-1-4-1.svg)
 
 上图 说明使用 TCP 进行数据传输的时候，需要执行的 C 函数。
 
