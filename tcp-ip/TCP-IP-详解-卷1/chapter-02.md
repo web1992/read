@@ -32,7 +32,7 @@ TCP/IP 支持多种不同的链路层协议，这取决于网络所使用的硬�
 
 > 图 2-1 IEEE 802.2/802.3（RFC 1042）和以太网的封装格式（RFC 894）
 
-![TCP-IP-2-1.png](./images/TCP-IP-2-1.png)
+![TCP-IP-2-1.png](./images/TCP-IP-2-1.svg)
 
 两种帧格式都采用 48bit（6 字节）的`目的地址`和`源地址`（802.3 允许使用 16bit 的地址，但一般是 48bit 地址）。
 这就是我所称的`硬件地址`。ARP 和 RARP 协议对 32bit 的 IP 地址和 48bit 的硬件地址进行映射。
@@ -59,7 +59,7 @@ RFC 1191 描述了路径 MTU 的发现机制
 
 > 图 2-4 环回接口处理 IP 数据报的过程
 
-![TCP-IP-2-4.png](./images/TCP-IP-2-4.png)
+![TCP-IP-2-4.png](./images/TCP-IP-2-4.svg)
 
 图中需要指出的关键点是：
 
