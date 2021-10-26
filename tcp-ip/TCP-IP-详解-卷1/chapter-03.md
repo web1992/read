@@ -37,7 +37,7 @@ IP 是 TCP/IP 协议族中最为核心的协议。所有的 TCP、UDP、ICMP 及
 
 > 图 3-1 IP 数据报格式及首部中的各字段
 
-![TCP-IP-3-1.png](./images/TCP-IP-3-1.png)
+![TCP-IP-3-1.png](./images/TCP-IP-3-1.svg)
 
 ### 4 位版本
 
@@ -185,7 +185,7 @@ Destination     Gateway         Genmask         Flags Metric Ref    Use Iface
 
 > 图 3-7 两种不同的 B 类地址子网掩码的例子
 
-![TCP-IP-3-7.png](./images/TCP-IP-3-7.png)
+![TCP-IP-3-7.png](./images/TCP-IP-3-7.svg)
 
 尽管 IP 地址一般以点分十进制方法表示，但是子网掩码却经常用十六进制来表示，特别
 是当界限不是一个字节时，因为子网掩码是一个比特掩码。
