@@ -16,7 +16,7 @@
 
 > 图1-1 TCP/IP协议族的四个层次
 
-![TCP-IP-1-1.png](./images/TCP-IP-1-1.png)
+![TCP-IP-1-1.png](./images/TCP-IP-1-1.svg)
 
 > 图1-2 局域网上运行FTP的两台主机
 
