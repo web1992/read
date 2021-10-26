@@ -20,24 +20,24 @@
 
 > 图1-2 局域网上运行FTP的两台主机
 
-![TCP-IP-1-2.png](./images/TCP-IP-1-2.png)
+![TCP-IP-1-2.png](./images/TCP-IP-1-2.svg)
 
 > 图1-3 通过路由器连接的两个网络
 
-![TCP-IP-1-3.png](./images/TCP-IP-1-3.png)
+![TCP-IP-1-3.png](./images/TCP-IP-1-3.svg)
 
 > 图1-4 TCP/IP协议族中不同层次的协议
 
-![TCP-IP-1-4.png](./images/TCP-IP-1-4.png)
+![TCP-IP-1-4.png](./images/TCP-IP-1-4.svg)
 
 > 图1-5 五类互联网地址
 
-![TCP-IP-1-5.png](./images/TCP-IP-1-5.png)
+![TCP-IP-1-5.png](./images/TCP-IP-1-5.svg)
 
 > 图1-6 各类IP地址的范围
 
-![TCP-IP-1-6.png](./images/TCP-IP-1-6.png)
+![TCP-IP-1-6.png](./images/TCP-IP-1-6.svg)
 
 > 图1-7 数据进入协议栈时的封装过程
 
-![TCP-IP-1-7.png](./images/TCP-IP-1-7.png)
+![TCP-IP-1-7.png](./images/TCP-IP-1-7.svg)
