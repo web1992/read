@@ -17,21 +17,21 @@ ICMP 可以知道如何解释后面的 8 个字节（在本例中是 UDP 首部�
 
 > 图 6-1 ICMP 封装在 IP 数据报内部
 
-![TCP-IP-6-1.png](./images/TCP-IP-6-1.png)
+![TCP-IP-6-1.png](./images/TCP-IP-6-1.svg)
 
 > 图 6-2 ICMP 报文
 
-![TCP-IP-6-2.png](./images/TCP-IP-6-2.png)
+![TCP-IP-6-2.png](./images/TCP-IP-6-2.svg)
 
 检验和字段覆盖整个 ICMP 报
 
 > 6-9
 
-![TCP-IP-6-9.png](./images/TCP-IP-6-9.png)
+![TCP-IP-6-9.png](./images/TCP-IP-6-9.svg)
 
 > 6-10
 
-![TCP-IP-6-10.png](./images/TCP-IP-6-10.png)
+![TCP-IP-6-10.png](./images/TCP-IP-6-10.svg)
 
 ## Links
 
