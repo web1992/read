@@ -27,7 +27,7 @@
 
 > 图 18-3 连接建立与终止的时间系列
 
-![TCP-IP-18-3.png](./images/TCP-IP-18-3.png)
+![TCP-IP-18-3.svg](./images/TCP-IP-18-3.svg)
 
 ## 连接终止协议
 
@@ -44,7 +44,7 @@
 
 > 图 18-4 连接终止期间报文段的正常交换
 
-![TCP-IP-18-4.png](./images/TCP-IP-18-4.png)
+![TCP-IP-18-4.svg](./images/TCP-IP-18-4.svg)
 
 ## TCP 的半关闭
 
@@ -61,17 +61,17 @@ TCP 提供了连接的一端在结束它的发送后还能接收来自另一端�
 
 > 图 18-10 TCP 半关闭的例子
 
-![TCP-IP-18-10.png](./images/TCP-IP-18-10.png)
+![TCP-IP-18-10.svg](./images/TCP-IP-18-10.svg)
 
 ## TCP 的状态变迁图
 
 > 图 18-12 TCP 的状态变迁图
 
-![TCP-IP-18-12.png](./images/TCP-IP-18-12.png)
+![TCP-IP-18-12.svg](./images/TCP-IP-18-12.svg)
 
 > 图 18-13 TCP 正常连接建立和终止所对应的状态
 
-![TCP-IP-18-13.png](./images/TCP-IP-18-13.png)
+![TCP-IP-18-13.svg](./images/TCP-IP-18-13.svg)
 
 - 2MSL 等待状态
 
@@ -111,7 +111,7 @@ FINWAIT2 状态进入 TIMEWAIT 状态。
 
 ## TCP 选项
 
-![TCP-IP-18-20.png](./images/TCP-IP-18-20.png)
+![TCP-IP-18-20.svg](./images/TCP-IP-18-20.svg)
 
 TCP 选项：
 

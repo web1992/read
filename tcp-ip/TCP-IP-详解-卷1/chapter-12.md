@@ -39,7 +39,7 @@ UDP 广播数据报才会被丢弃。这 30 个主机丢弃 UDP 广播数据报�
 
 > 图 12-1 协议栈各层对收到帧的过滤过程
 
-[TCP-IP-12-1.png](./images/TCP-IP-12-1.png)
+[TCP-IP-12-1.svg](./images/TCP-IP-12-1.svg)
 
 > 广播的流程
 

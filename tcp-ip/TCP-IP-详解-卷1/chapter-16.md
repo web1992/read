@@ -13,4 +13,4 @@
 
 > 图 16-1 BOOTP 请求和应答封装在一个 UDP 数据报内
 
-![TCP-IP-16-1.png](./images/TCP-IP-16-1.png)
+![TCP-IP-16-1.svg](./images/TCP-IP-16-1.svg)

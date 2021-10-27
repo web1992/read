@@ -104,7 +104,7 @@ web1992.github.io.	3261	IN	A	185.199.110.153
 
 > 图 14-3 DNS 查询和响应的一般格式
 
-![TCP-IP-14-3.png](./images/TCP-IP-14-3.png)
+![TCP-IP-14-3.svg](./images/TCP-IP-14-3.svg)
 
 ## Links
 
