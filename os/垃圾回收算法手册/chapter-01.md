@@ -12,6 +12,9 @@
 - MMU minimum mutator utilization
 - BMU bounded mutator utilization
 - 空间开销
+- 记忆集 remembered set
+- 跨区域指针
+
 
 所指出的“存活性是-个全局( global) 特征”，但是调用 free 函数将对象释放却是局部行为，所以如何将对象正确地释放是--个十分复杂的问题。
 
