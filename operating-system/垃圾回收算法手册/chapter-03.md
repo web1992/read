@@ -2,6 +2,7 @@
 
 关键字：
 
+- 外部碎片 external fragmentation
 - 双指针回收算法 towfinger
 - 滑动回收算法 Lisp 2 算法
 - forwarding address
