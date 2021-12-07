@@ -17,19 +17,11 @@ cat main.s
 ```
 
 ```s
-	.file	"main.c"
-	.text
-	.globl	main
-	.type	main, @function
 main:
 .LFB0:
-	.cfi_startproc
 	pushq	%rbp
-	.cfi_def_cfa_offset 16
-	.cfi_offset 6, -16
 	movq	%rsp, %rbp
-	.cfi_def_cfa_register 6
-	movl	$0, -4(%rbp)
+	movl	$0, -4(%rbp) # 给变量i赋值为0(变量i放在栈的-4的位置)
 	jmp	.L2
 .L3:
 	addl	$1, -4(%rbp)
@@ -37,13 +29,7 @@ main:
 	cmpl	$9, -4(%rbp)
 	jle	.L3
 	popq	%rbp
-	.cfi_def_cfa 7, 8
 	ret
-	.cfi_endproc
-.LFE0:
-	.size	main, .-main
-	.ident	"GCC: (GNU) 4.8.5 20150623 (Red Hat 4.8.5-44)"
-	.section	.note.GNU-stack,"",@progbits
 ```
 
 ```sh
