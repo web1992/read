@@ -192,7 +192,7 @@ public void pullMessage(final PullRequest pullRequest) {
 
 消息消费的简化图：
 
-![rocketmq-consumer-consumer-simple.png](images/rocketmq-consumer-consumer-simple.svg)
+![rocketmq-consumer-consumer-simple.svg](images/rocketmq-consumer-consumer-simple.svg)
 
 ### PullMessageService
 
@@ -664,7 +664,7 @@ public List<MessageQueue> allocate(String consumerGroup,
 
 分配结果图：
 
-![rocketmq-consumer-AllocateMessageQueueAveragely.png](./images/rocketmq-consumer-AllocateMessageQueueAveragely.png)
+![rocketmq-consumer-AllocateMessageQueueAveragely.svg](./images/rocketmq-consumer-AllocateMessageQueueAveragely.svg)
 
 Demo(做了简单的修改)测试如下：
 
