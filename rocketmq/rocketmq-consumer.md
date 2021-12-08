@@ -722,3 +722,4 @@ public class main {
 - [消息订阅](https://cloud.tencent.com/developer/article/1474885)
 - [消息队列模型](https://cloud.tencent.com/developer/article/1747568?)
 - [RocketMQ 重平衡](rocketmq-rebalance.md)
+- [平均分配算法](https://www.cnblogs.com/sinpo828/p/14264518.html)
