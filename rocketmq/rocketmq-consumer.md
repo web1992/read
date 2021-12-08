@@ -50,8 +50,11 @@ RocketMQ 消费消息的实现解析。
 - DefaultMQPushConsumer
 
 RockerMQ 中的（Client）Consumer 实现也是比较复杂的，主要是涉及的类很多，而且各个类之间都相互关联。
-虽然 Consumer 的主要作用是消费消息，但是很多功能都是在 Consumer 端实现的。
-比如：1.(Pull 模式)拉取消息进行消费。2.消息消费失败，重新发回到MQ。3.多个 Consumer 消费者之间的`负载均衡`。4.持久化消费者的 offset 等等。
+虽然 Consumer 的主要作用是消费消息，但是很多功能都是在 Consumer 端实现的。比如：
+- 1.(Pull 模式)拉取消息进行消费。
+- 2.消息消费失败，重新发回到MQ。
+- 3.多个 Consumer 消费者之间的`负载均衡`。
+- 4.持久化消费者的 offset 等等。
 
 而下图中的类，就是负责上述的这些功能（类真的多！）。
 
@@ -64,7 +67,7 @@ RockerMQ 中的（Client）Consumer 实现也是比较复杂的，主要是涉�
 - `DefaultMQPushConsumerImpl` 负责发送 `PullRequest` 拉消息,包含 `ConsumeMessageService` 和 `MQClientInstance`
 - `ConsumeMessageService` 负责处理消息服务(有 `ConsumeMessageConcurrentlyService` 和 `ConsumeMessageOrderlyService` )两种实现
 - `MQClientInstance`(mQClientFactory) 负责底层的通信(单实例的，多个Consumer会共享一个)
-- `RebalanceImpl` 执行 rebalance
+- `RebalanceImpl` 执行 rebalance (重平衡)
 
 ## Consumer 的启动
 
