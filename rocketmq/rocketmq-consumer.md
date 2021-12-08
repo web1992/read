@@ -39,7 +39,7 @@ RocketMQ 消费消息的实现解析。
 
 此文主要是解释Consumer：消息消费的整体流程，拉取消息，消费消息，消费结果处理，Consumer 的重平衡。可以了解 Consumer 实现类的各个角色。从而为深入了解各个角色的源码做准备。
 
-![messgae flow](images/rocketmq-consumer-create-consumer.png)
+![messgae flow](images/rocketmq-consumer-create-consumer.svg)
 
 ## 消息消费的核心类
 
@@ -55,7 +55,7 @@ RockerMQ 中的（Client）Consumer 实现也是比较复杂的，主要是涉�
 
 而下图中的类，就是负责上述的这些功能（类真的多！）。
 
-![rocketmq-consumer-class](images/rocketmq-consumer.png)
+![rocketmq-consumer-class](images/rocketmq-consumer.svg)
 
 如果我们不关心消费端的实现，只使用消费消息的功能。我们使用 `DefaultMQPushConsumer` 和 `MessageListenerConcurrently`(`MessageListener`) 就可以完成消息的消费了。
 但是如果我们要关心实现，那么上图中的类，都需要了解，下面对主要的类进行简单的说明：
@@ -82,7 +82,7 @@ DefaultMQPushConsumer#start
             -> this.defaultMQProducer.getDefaultMQProducerImpl().start(false);
 ```
 
-![启动图](./images/rocketmq-consumer-start.png)
+![启动图](./images/rocketmq-consumer-start.svg)
 
 下面是各个启动类的代码片段：
 
@@ -189,7 +189,7 @@ public void pullMessage(final PullRequest pullRequest) {
 
 消息消费的简化图：
 
-![rocketmq-consumer-consumer-simple.png](images/rocketmq-consumer-consumer-simple.png)
+![rocketmq-consumer-consumer-simple.png](images/rocketmq-consumer-consumer-simple.svg)
 
 ### PullMessageService
 
