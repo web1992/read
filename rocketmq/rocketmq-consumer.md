@@ -635,12 +635,14 @@ public List<MessageQueue> allocate(String consumerGroup,
     // cidAll 和 mqAll 都是排序过的，因此可以保证，所有的Consumer Client 拿到的Client和MessageQueue列表顺序是一样的。
     List<MessageQueue> result = new ArrayList<MessageQueue>();
     int index = cidAll.indexOf(currentCID);// 
-    int mod = mqAll.size() % cidAll.size();// MessageQueue数量 % Client数量
+    int mod = mqAll.size() % cidAll.size();// MessageQueue数量 % Client数量，
+    // mod>0 说明 queue的数量大于client的数量,比如：（可能是16个queue，3个client消费）
+    // mod=0 ,此时：可能是16个queue，18个client消费
     // 1. 计算 averageSize
     //    如果 MessageQueue数量小于Client数量，说明Client数量多于queue数量，每个Client最多只能分配一个Queue
     //    mod>0 说明不是整除，如果 index小于mod，averageSize 需要整除+1
     //    举例：如果有0-15个Queue,有3个client,此时mod=1,每个client平均分配5个queue,还剩下一个queue,就按照顺序分配给以第一个Client(averageSize=5+1)6个Queue，
-    //    而第一个Client的index=0 小于 (mode=1)
+    //    而第一个Client的index=0 小于 (mod=1)
     // 2. 计算 startIndex,计算当前 currentCID 从哪里开始分配queue(0~15)
     //    (mod > 0 && index < mod)  mod > 0 有余数，不够平均分配,index < mod,说明是第一个Client,开始位置不需要加上余数mod
     // 3. 计算 range 分配的次数,index=0时，startIndex=0，使用  Math.min 计算正确的 range
@@ -648,8 +650,9 @@ public List<MessageQueue> allocate(String consumerGroup,
     int averageSize =
         mqAll.size() <= cidAll.size() ? 1 : (mod > 0 && index < mod ? mqAll.size() / cidAll.size()
             + 1 : mqAll.size() / cidAll.size());
-    // index < mod,说明是第一个Client,开始位置不需要加上 mod
+    // index < mod,需要多分配一个queue,开始位置不需要加上 mod
     int startIndex = (mod > 0 && index < mod) ? index * averageSize : index * averageSize + mod;
+    // min 方法的作用，如果queue=16,client=30，此时第18 （index * averageSize+mod =17*1+0=17） 之后的Client 分配的queue 就是0
     int range = Math.min(averageSize, mqAll.size() - startIndex);
     for (int i = 0; i < range; i++) {
         result.add(mqAll.get((startIndex + i) % mqAll.size()));
@@ -689,7 +692,7 @@ public class main {
                                          List<String> cidAll) {
 
         List<Integer> result = new ArrayList<Integer>();
-        int index = cidAll.indexOf(currentCID);//
+        int index = cidAll.indexOf(currentCID);
         int mod = mqAll.size() % cidAll.size();
 
         int averageSize =
