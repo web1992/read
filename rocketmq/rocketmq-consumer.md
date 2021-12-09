@@ -652,7 +652,7 @@ public List<MessageQueue> allocate(String consumerGroup,
             + 1 : mqAll.size() / cidAll.size());
     // index < mod,需要多分配一个queue,开始位置不需要加上 mod
     int startIndex = (mod > 0 && index < mod) ? index * averageSize : index * averageSize + mod;
-    // min 方法的作用，如果queue=16,client=30，此时第18 （index * averageSize+mod =17*1+0=17） 之后的Client 分配的queue 就是0
+    // min 方法的作用：如果queue=16,client=30，此时第18个Client（index * averageSize+mod =17*1+0=17）分配的queue 就是0
     int range = Math.min(averageSize, mqAll.size() - startIndex);
     for (int i = 0; i < range; i++) {
         result.add(mqAll.get((startIndex + i) % mqAll.size()));
