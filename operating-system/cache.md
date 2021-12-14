@@ -47,3 +47,14 @@ int main(int argc, char *argv[]) {
     return 0;
 }
 ```
+
+## 缓存一致性
+
+- VI 协议
+- MESI 协议
+
+## 缓存写策略
+
+- 写回（Write Back）和写直达（Write Through）
+- 写更新（Write Update）和写无效（Write Invalidate）。
+- 写分配（Write Allocate）和写不分配（Not Write Allocate）。
