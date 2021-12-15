@@ -1,5 +1,19 @@
 # 缓存
 
+关键字：
+
+- store buffer
+- 伪共享
+- L1 L2 L3
+- 缓存一致性
+- VI 协议
+- MESI 协议
+- 内存屏障
+- 读屏障
+- 写屏障
+- 失效队列 invalid queue
+
+
 在多核芯片上，缓存集成的方式主要有以下三种：
 
 - 集中式缓存：一个缓存和所有处理器直接相连，多个核共享这一个缓存；
@@ -72,6 +86,32 @@ int main(int argc, char *argv[]) {
 - Shared（S）：缓存块是有效且干净的，有多个处理器持有相同的缓存副本；
 - Invalid（I）：缓存块无效。
 
+## 内存屏障
+
+```c
+// CPU0
+void foo() {
+    a = 1;
+    smp_mb();
+    b = 1;
+}
+
+// CPU1
+void bar() {
+    while (b == 0) continue;
+    assert(a == 1);
+}
+```
+
+屏障的作用是前边的读写操作未完成的情况下，后面的读写操作不能发生
+
+- dmb Data Memory Barrier
+- 读屏障
+- 写屏障
+- 更加精细地控制 store buffer 和 invalid queue 的顺序。
+- StoreStore barrier
+- LoadLoad barrier
+- 单向屏障 (half-way barrier)
 
 ## Links
 
