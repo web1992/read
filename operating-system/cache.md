@@ -58,3 +58,7 @@ int main(int argc, char *argv[]) {
 - 写回（Write Back）和写直达（Write Through）
 - 写更新（Write Update）和写无效（Write Invalidate）。
 - 写分配（Write Allocate）和写不分配（Not Write Allocate）。
+
+从缓存和内存的更新关系看，写策略分为写回和写直达；
+从写缓存时 CPU 之间的更新策略来看，写策略分为写更新和写无效；
+从写缓存时数据是否被加载来看，写策略又分为写分配和写不分配。
