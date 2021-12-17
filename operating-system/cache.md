@@ -12,7 +12,10 @@
 - 读屏障
 - 写屏障
 - 失效队列 invalid queue
-
+- 异质（Heterogeneity）式
+- 非一致性访存（Non-uniform memory access，NUMA）
+- IO 端口主要用于状态读取和设置等控制命令的通讯，而 IO 内存映射主要用于大量的数据传输。
+- 前端总线（Front Side Bus，FSB）
 
 在多核芯片上，缓存集成的方式主要有以下三种：
 
@@ -112,6 +115,12 @@ void bar() {
 - StoreStore barrier
 - LoadLoad barrier
 - 单向屏障 (half-way barrier)
+
+## NUMA
+
+这里的一致性是指，同一个 CPU 对所有内存的访问的速度是一样的，因为物理内存是连续且集中的。
+
+而非一致性是指，内存在物理上被分为了多个节点 node，CPU 可以访问所有节点，但是为了提升访问效率，CPU 可以有选择地优先访问离自己近的内存节点
 
 ## Links
 
