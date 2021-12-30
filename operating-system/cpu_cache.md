@@ -3,6 +3,7 @@
 关键字：
 
 - store buffer
+- 失效队列 invalid queue
 - 伪共享
 - L1 L2 L3
 - 缓存一致性
@@ -11,11 +12,11 @@
 - 内存屏障
 - 读屏障
 - 写屏障
-- 失效队列 invalid queue
 - 异质（Heterogeneity）式
 - 非一致性访存（Non-uniform memory access，NUMA）
 - IO 端口主要用于状态读取和设置等控制命令的通讯，而 IO 内存映射主要用于大量的数据传输。
 - 前端总线（Front Side Bus，FSB）
+- 单向屏障 (half-way barrier)
 
 在多核芯片上，缓存集成的方式主要有以下三种：
 
@@ -115,6 +116,15 @@ void bar() {
 - StoreStore barrier
 - LoadLoad barrier
 - 单向屏障 (half-way barrier)
+
+
+## 读写屏障分离
+
+分离的写屏障和读屏障的出现，是为了更加精细地控制 store buffer 和 invalid queue 的顺序。
+
+再具体一点，写屏障的作用是让屏障前后的写操作都不能翻过屏障。也就是说，写屏障之前的写操作一定会比之后的写操作先写到缓存中。
+
+读屏障的作用也是类似的，就是保证屏障前后的读操作都不能翻过屏障。假如屏障的前后都有缓存失效的信息，那屏障之前的失效信息一定会优先处理，也就意味着变量的新值一定会被优先更新。
 
 ## NUMA
 
