@@ -33,6 +33,11 @@
 - G1 Evacation 的过程
 - nextBitMap
 - prevBitMap
+- ZGC
+- 着色指针
+- 读屏障技术
+- Marked0、Marked1、Remapped、Finalizable 四个地址视图
+- Mark、Relocate 和 Remap
 
 ## Mark-Sweep 算法
 
@@ -75,3 +80,7 @@ CSet 的选取要素有以下两点：
 - 建议的暂停时间。建议的暂停时间由 -XX:MaxGCPauseMillis 指定，G1 会根据这个值来选择合适数量的老年代 Region。
 
 G1 的垃圾清理是通过把活跃的对象，从一个 Region 拷贝到另一个空白 Region，这个空白 Region 隶属于 Survivor 空间。这个过程在 G1 GC 中被命名为转移（Evacation）。它和之前讲到的基于 copy 的 GC 的最大区别是：它可以充分利用 concurrent mark 的结果快速定位到哪些对象需要被拷贝。
+
+## Links
+
+- [https://tech.meituan.com/2020/08/06/new-zgc-practice-in-meituan.html](https://tech.meituan.com/2020/08/06/new-zgc-practice-in-meituan.html)
