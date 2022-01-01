@@ -81,6 +81,10 @@ CSet 的选取要素有以下两点：
 
 G1 的垃圾清理是通过把活跃的对象，从一个 Region 拷贝到另一个空白 Region，这个空白 Region 隶属于 Survivor 空间。这个过程在 G1 GC 中被命名为转移（Evacation）。它和之前讲到的基于 copy 的 GC 的最大区别是：它可以充分利用 concurrent mark 的结果快速定位到哪些对象需要被拷贝。
 
+## ZGC
+
+ZGC通过着色指针和读屏障技术，解决了转移过程中准确访问对象的问题
+
 ## Links
 
-- [https://tech.meituan.com/2020/08/06/new-zgc-practice-in-meituan.html](https://tech.meituan.com/2020/08/06/new-zgc-practice-in-meituan.html)
+- [ZGC](https://tech.meituan.com/2020/08/06/new-zgc-practice-in-meituan.html)
