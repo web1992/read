@@ -88,3 +88,4 @@ ZGC通过着色指针和读屏障技术，解决了转移过程中准确访问�
 ## Links
 
 - [ZGC](https://tech.meituan.com/2020/08/06/new-zgc-practice-in-meituan.html)
+- [什么是ZGC](https://www.cnblogs.com/rumenz/articles/14050110.html)
