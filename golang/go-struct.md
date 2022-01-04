@@ -14,3 +14,8 @@ type People struct{
 - 如果结构的成员都是可比较的，那么这个结构体就是可比较的
 - 可比较的结构体可以作为 map 的键类型
 - 结构体嵌套和匿名成员
+
+
+## Links
+
+- [golang struct 值类型](https://blog.csdn.net/love666666shen/article/details/99882528)
