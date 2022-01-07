@@ -9,7 +9,6 @@
 
 ## 优化
 
-- [MySQL 索引原理及慢查询优化](http://tech.meituan.com/mysql-index.html)
 - [MySQL 随机 IO&顺序 IO](http://blog.csdn.net/dba_waterbin/article/details/8937441)
 - [MySQL `limit`优化](https://stackoverflow.com/questions/4481388/why-does-mysql-higher-limit-offset-slow-the-query-down)
 - [MySQL `limit`优化(late-row-lookups 详解)](https://explainextended.com/2009/10/23/mysql-order-by-limit-performance-late-row-lookups/)
@@ -29,6 +28,4 @@
 
 ## 原理
 
-- [MySQL `线程池`](http://blog.jobbole.com/109695/)
-- [索引](https://www.jianshu.com/p/d7665192aaaf)
 - [doublewrite](https://www.cnblogs.com/JockChou/p/4644732.html)
