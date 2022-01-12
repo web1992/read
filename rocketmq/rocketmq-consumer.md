@@ -714,6 +714,9 @@ public class main {
 ```
 
 > 如果 Client 的数量大于Queue，那么多余的Client其实是无法分配到Queue的，也就没有办法进行消息的消费。
+> 那么是否有方法解决Consumer的数量远远大于Queue的这种场景遇到的问题吗？解决思路也是很简单。就是通过加一层 MQ Proxy(MQ 客户端代理)
+> 让 MQ Proxy 去连接Broker,业务服务的客户端只与MQ Proxy进行交互。这个可以支持更多的Consumer。
+>  MQ Proxy 需要非常高的性能。
 
 最后我们知道了，重平衡(rebalance)的主要作用就是给`Client`重新分配`Queue`,也就是`Consumer`端的负载均衡的实现入口。
 
