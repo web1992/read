@@ -22,7 +22,7 @@ RocketMQ 序列化
 - RocketMQ group,topic,tags,keys 等信息是怎么进行序列化传输的
 - RocketMQ 事务消息和普通消息，在序列化中的区别（怎么区分是事务消息，非事务消息）
 
-一个消息从创建到发送到MQ，都经历了什么？如下图（只是列出了Message的创建到存储，不包含消费流程，大量细节被省略）：
+一个消息从创建到发送到MQ，都经历了什么？如下图（只是列出了Message的创建到存储，不包含消费流程，大量细节被省略）😝
 
 ![rocket-store-msg-seralize.png](./images/rocket-store-msg-seralize.drawio.svg)
 
@@ -50,6 +50,8 @@ ROCKETMQ((byte) 1);
 Message 转成 ByteBuffer,之后存储在文件中。
 
 ![rocketmq-msg-serialize.png](./images/rocketmq-consumer-msg-serialize.drawio.svg)
+
+上图中从`MessageExtBrokerInner`到`ByteBuffer`的转化，相关的类是`MessageExtBrokerInner`和`CommitLog#DefaultAppendMessageCallback`这二个类
 
 ## RemotingCommand 的 Head 和 Body
 
