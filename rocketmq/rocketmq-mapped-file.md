@@ -6,6 +6,8 @@
 
 比如为了避免`IO`的瓶颈,使用了那些技术。如果服务器突然宕机，文件怎么恢复。
 
+关键字：
+
 - MappedFile 的初始化
 - MappedFile 的文件格式
 - MappedFile 的刷盘操作
@@ -35,7 +37,7 @@
 
 topicQueueTable
 
-`MappedFileQueue` 用来维护多个 `MappedFile` 文件。负责 `MappedFile` 文件的加载,维护，`commit`,`flush`
+`MappedFileQueue` 用来维护多个 `MappedFile` 文件。负责 `MappedFile` 文件的`加载`,`维护`，`commit`,`flush`
 
 ## MappedFileQueue#findMappedFileByOffset
 
@@ -44,7 +46,7 @@ topicQueueTable
 在构建 `MappedFile` 的时候，有个 `init` 方法对应 `MappedFile` 的二个构造方法:
 
 - 一个 `init` 没有 `TransientStorePool` 参数
-- 一个 `init` 有 `TransientStorePool` 参数,有次参数的，会初始化 `writeBuffer` 和 `transientStorePool` 这对成员变量
+- 一个 `init` 有 `TransientStorePool` 参数,有此参数的，会初始化 `writeBuffer` 和 `transientStorePool` 这对成员变量
 
 这个两种初始化方式，最终体现是在执行 `commit` 和 `flush` 方法的结果不同。
 

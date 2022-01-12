@@ -24,7 +24,7 @@ RocketMQ 序列化
 
 一个消息从创建到发送到MQ，都经历了什么？如下图（只是列出了Message的创建到存储，不包含消费流程，大量细节被省略）：
 
-![rocket-store-msg-seralize.png](https://cdn.nlark.com/yuque/0/2021/png/12734972/1617334204877-5bbf8a2c-5ec5-4a2a-82e9-3283d66e8583.png)
+![rocket-store-msg-seralize.png](./images/rocket-store-msg-seralize.drawio.svg)
 
 我们发送的 `Message` 对象会被转化成 `RemotingCommand` 序列化，进行网络传输。`RocketMQ` 的序列化的核心对象就是 `RemotingCommand`
 
@@ -34,9 +34,9 @@ RocketMQ 序列化
 
 序列化协议，简单来讲就是`制定`了 **byte[] 字节转化成 Java 对象和 Java 对象转化成 byte[]** 的方式
 
-`RocketMQ` 序列化协议规定了进行网络通信的 `byte[]` 数据格式,协议由`head` + `body` 组成的变长消息(`head`也是变长的)，支持扩展字段。
+`RocketMQ` 序列化协议规定了进行网络通信的 `byte[]` 数据格式,协议由`head` + `body` 两部分组成的变长消息(`head`也是变长的)，支持扩展字段。
 
-`Head` 支持 `JSON` 和 `ROCKETMQ` 两种序列化方式,而 `body` 永远是 `byte[]`
+`Head`部门 支持 `JSON` 和 `ROCKETMQ` 两种序列化方式,而 `body`部分 永远是 `byte[]`
 
 ```java
 // ROCKETMQ 支持的序列化方式
@@ -47,9 +47,9 @@ ROCKETMQ((byte) 1);
 
 ## Message to ByteBuffer
 
-Message 转成成 ByteBuffer,再到存储在文件中。
+Message 转成 ByteBuffer,之后存储在文件中。
 
-![rocketmq-msg-serialize.png](./images/rocketmq-msg-serialize.png)
+![rocketmq-msg-serialize.png](./images/rocketmq-consumer-msg-serialize.drawio.svg)
 
 ## RemotingCommand 的 Head 和 Body
 
@@ -84,9 +84,9 @@ private transient byte[] body;
 | flag                    | RPC 的类型 REQUEST/RESPONSE (RemotingCommandType) 还用来区分是：请求响应模式 或者 RPC_ONEWAY                                                                                                 |
 | remark                  | 备注                                                                                                                                                                                         |
 | extFields               | 扩展字段，基本每一种 RPC 通信都会有的字段，用来传输自定义信息(RocketMQ是用来传输 customHeader 的)                                                                                            |
-| customHeader            | (被transient修饰，会被转成extFields进行网络传输)消息head的格式，种类有很多个(code 不同，对应的customHeader 也不同),包含了消息的 group,topic,tags 等信息，常用的有 SendMessageRequestHeaderV2 |
+| CommandCustomHeader            | (被transient修饰，会被转成extFields进行网络传输)消息head的格式，种类有很多个(code 不同，对应的customHeader 也不同),包含了消息的 group,topic,tags 等信息，常用的有 SendMessageRequestHeaderV2 |
 | serializeTypeCurrentRPC | 序列化的格式，支持 `json` 和`ROCKETMQ`                                                                                                                                                      |
-| body                    | 消息体，例如发送 `Hello` 到某一个 tpoic 里面只包含 `Hello` 信息，不包含topic,tags 信息                                                                                                       |
+| body                    | 消息体，例如发送 `Hello` 到某一个 tpoic,body 里面只包含 `Hello` 信息，不包含topic,tags 信息                                                                                                       |
 
 ## flag 字段
 

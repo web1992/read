@@ -13,11 +13,11 @@
   - [IndexService and IndexFile](#indexservice-and-indexfile)
   - [Store dir](#store-dir)
 
-阅读此文，可以先阅读 [RocketMQ 的序列化](rocketmq-serialize.md)过程和实现，对MQ 的消息流转有一个整体的了解。
+阅读此文，可以先阅读 [RocketMQ 的序列化](rocketmq-serialize.md)过程和实现，对MQ 的消息流转处理有一个整体的了解。
 
 ## 存储的实现层次
 
-![rocket-store.png](./images/rocket-store.png)
+![rocket-store.png](./images/rocket-store-store.drawio.svg)
 
 ## MQ 请求处理流程
 
@@ -64,7 +64,7 @@ if (transFlag != null && Boolean.parseBoolean(transFlag)) {
 | MappedFile          | 日志文件，使用 FileChannel 进行过文件 map 的文件                                   |
 | MappedFileQueue     | 文件队列的管理 MappedFile（所有的消息最终会被写入到 日志文件中）                   |
 
-> 后面内容可忽略
+> 下面内容可忽略了，没必要看。😝
 
 ## DefaultMessageStore
 
