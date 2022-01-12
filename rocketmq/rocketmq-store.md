@@ -68,7 +68,7 @@ if (transFlag != null && Boolean.parseBoolean(transFlag)) {
 >😝   
 > 下面内容可忽略了，没必要看。
 >😝  
-> 😝  
+>😝  
 
 ## DefaultMessageStore
 
