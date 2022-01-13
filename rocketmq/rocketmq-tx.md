@@ -42,7 +42,7 @@
 
 需要使用事物消息，则需要两个步骤：
 
-- Create the transactional producer: 使用事物 Producer 发送消息
+- Create the transactional producer: 使用`事物`Producer发送消息
 - Implement the TransactionListener interface: 实现 TransactionListener 来处理事物回调和查询
 
 ```java
