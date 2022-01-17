@@ -1,5 +1,7 @@
 # mysql transaction
 
+- read view
+
 事务：四个事务特性，四个事务隔离级别，四个事务问题
 
 | 事务             | 描述                                                                       |

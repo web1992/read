@@ -16,6 +16,10 @@ undo log 回滚行记录到指定的版本
 
 undo log 是逻辑日志 根据每行进行记录
 
+## Buffer poll
+
+内存Buffer
+
 ## Links
 
 - [https://dev.mysql.com/doc/refman/5.7/en/innodb-redo-log.html](https://dev.mysql.com/doc/refman/5.7/en/innodb-redo-log.html)
