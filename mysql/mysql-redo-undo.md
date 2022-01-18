@@ -22,5 +22,6 @@ undo log 是逻辑日志 根据每行进行记录
 
 ## Links
 
+- [必须了解的mysql三大日志-binlog、redo log和undo log](https://segmentfault.com/a/1190000023827696)
 - [https://dev.mysql.com/doc/refman/5.7/en/innodb-redo-log.html](https://dev.mysql.com/doc/refman/5.7/en/innodb-redo-log.html)
 - [https://dev.mysql.com/doc/refman/5.7/en/innodb-undo-logs.html](https://dev.mysql.com/doc/refman/5.7/en/innodb-undo-logs.html)
