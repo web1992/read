@@ -1,5 +1,23 @@
 # 第7章 事物
 
+- ACID
+- 原子性(atomicity)
+- 一致性(consistency)
+- 隔离性(isolation)
+- 持久性(durability)
+- 扁平事务(Flat Transactions)
+- 带有保存点的扁平事务( Flat Transactions with Savepoints )
+- 链事务(Chained Transactions )
+- 嵌套事务(Nested Transactions )
+- 分布式事务(Distributed Transactions )
+- 重做日志缓冲(redo log buffer)
+- 重做日志文件(redo log file)
+- fsync 操作
+- log block
+- redo log 格式
+- log group
+- LSN Log Sequence Number (日志序列号)
+- undo log 格式
 - insert undo log
 - update undo log
 - purge 操作
