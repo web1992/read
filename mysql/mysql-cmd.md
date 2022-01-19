@@ -11,3 +11,6 @@ show processlist;
 
 show variables like 'transaction_isolation';
 ```
+
+
+select * from information_schema.innodb_trx where TIME_TO_SEC(timediff(now(),trx_started))>60
