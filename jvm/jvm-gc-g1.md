@@ -8,6 +8,7 @@
 - 在并发标记阶段解决活跃对象漏标问题；
 - 在写屏障里使用 card table 维护跨代引用
 - deletion barrier
+- write barrier
 - 开始时快照（Snapshot At The Beginning，SATB)
 - SATB 队列
 - young GC 和 mixed GC
