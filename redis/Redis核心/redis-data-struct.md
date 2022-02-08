@@ -43,3 +43,15 @@
 
 - Bitmap
 - HyperLogLog
+
+## RedisObject
+
+RedisObject 的内部组成包括了 type、encoding、lru 和 refcount 4 个元数据，以及 1 个*ptr指针。
+
+- type：表示值的类型，涵盖了我们前面学习的五大基本类型；
+- encoding：是值的编码方式，用来表示 Redis 中实现各个基本类型的底层数据结构，例如 SDS、压缩列表、哈希表、跳表等；
+- lru：记录了这个对象最后一次被访问的时间，用于淘汰过期的键值对；
+- refcount：记录了对象的引用计数；
+- *ptr：是指向数据的指针。
+
+![redis-redis-object.drawio.svg](./images/redis-redis-object.drawio.svg)
