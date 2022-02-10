@@ -6,18 +6,36 @@
 - 活跃对象不被漏标，三色标记算法
 - read barrier
 - 染色指针（colored pointer）
-- Marked0
-- Marked1
-- Remapped
-- Finalizable
+- Marked0 地址视图
+- Marked1 地址视图
+- Remapped 地址视图
+- Finalizable 地址视图
 - 地址视图
 - 地址视图的巧妙之处就在于，一个在物理内存上存放的对象，被映射在了三个虚拟地址上。
-- Relocate 阶段
-- Remap 阶段
 - Mark 阶段负责标记活跃对象
 - Relocate 阶段负责活跃对象转移
 - ReMap 阶段负责地址视图统一
 
+## Mark 阶段
+
+Mark 阶段修改对象的标记：
+
+在 GC 开始之前，地址视图是 Remapped。那么在 Mark 阶段需要做的事情是，将遍历到的对象地址视图变成 Marked0，也就是修改地址的第 42 位为 1。前面我们讲过，三个地址视图映射的物理内存是相同的，所以修改地址视图不会影响对象的访问。
+
+视图变化：Remapped -> Marked0
+
+## Relocate 阶段
+
+Relocate 阶段的主要任务是搬移对象，在经过 Mark 阶段之后，活跃对象的视图为 Marked0。搬移工作要做两件事情：选择一块区域，将其中的活跃对象搬移到另一个区域；将搬移的对象放到 forwarding table。
+
+新对象视图：Remapped
+历史对象：Marked0 -> Remapped
+
+在 Relocate 阶段，应用线程新创建的对象地址视图标记为 Remapped。如果应用线程访问到一个地址视图是 Marked0 的对象，说明这个对象还没有被转移，那么就需要将这个对象进行转移，转移之后再加入到 forwarding table，然后再对这个对象的引用直接指向新地址，完成自愈。这些动作都是发生在 read barrier 中的，是由应用线程完成的。当 GC 线程遍历到一个对象，如果对象地址视图是 Marked0，就将其转移，同时将地址视图置为 Remapped，并加入到 forwarding table ；如果访问到一个对象地址视图已经是 Remapped，就说明已经被转移了，也就不做处理了。
+
+## ReMap 阶段
+
+Remap 阶段主要是对地址视图和对象之间的引用关系做修正。因为在 Relocate 阶段，GC 线程会将活跃对象快速搬移到新的区域，但是却不会同时修复对象之间的引用（请注意这一点，这是 ZGC 和以前我们遇到的所有基于 copy 的 GC 算法的最大不同）。这就导致还有大量的指针停留在 Marked0 视图。这样就会导致活跃视图不统一，需要再对对象的引用关系做一次全面的调整，这个过程也是要遍历所有对象的。不过，因为 Mark 阶段也需要遍历所有对象，所以，可以把当前 GC 周期的 Remap 阶段和下一个 GC 周期的 Mark 阶段复用。但是由于 Remap 阶段要处理上一轮的 Marked0 视图指针，又要同时标记下一轮的活跃对象，为了区分，可以再引入一个 Mark 标记，这就是 Marked1 标志。可以想象，Marked0 和 Marked1 视图在每一轮 GC 中是交替使用的。
 
 从功能原理上看，无暂停 GC 与 CMS、Scanvenge 等传统算法不同，它的停顿时间不会随着堆大小的增加而线性增加。以 ZGC 为例，它的最大停顿时间不超过 10ms ，注意不是平均，也不是随机，而是最大不超过 10ms
 
