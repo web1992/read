@@ -1,11 +1,16 @@
 # Redis 数据结构
 
 ## 数据类型
+
 - String（字符串）
 - List（列表）
 - Hash（哈希）
 - Set（集合）
 - Sorted Set（有序集合）
+- Bitmap
+- HyperLogLog
+- GEO
+- 自定义的数据类型
 
 
 ## 数据结构

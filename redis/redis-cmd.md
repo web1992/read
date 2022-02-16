@@ -2,3 +2,4 @@
 
 - INFO replication
 - INFO
+- slowlog  get
