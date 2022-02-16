@@ -33,7 +33,7 @@
 - XA 事物
 - 长事物
 
-## BLGC
+## BLGC Binary Log Group Commit
 
 ![图7-21 MySQL 5.6 BLGC的实现方式](./images/mysql-innodb-chapter-07-21.drawio.svg)
 
@@ -72,18 +72,16 @@ TRUNCATE TABLE.
 
 ## 事物隔离级别
 
-InnoDB存储引擎默认支持的隔离级别是REPEATABLEREAD，但是与标准SQL不同的是，InnoDB 存储引擎在REPEATABLE READ事务隔离级别下，
+InnoDB存储引擎默认支持的隔离级别是REPEATABLE READ，但是与标准SQL不同的是，InnoDB 存储引擎在REPEATABLE READ事务隔离级别下，
 使用Next-Key Lock锁的算法，因此避免幻读的产生。这与其他数据库系统(如Microsoft SQL Server数据库)是不同的。
 所以说，InnoDB 存储引擎在默认的REPEATABLE READ的事务隔离级别下已经能完全保证事务的隔离性要求，即达到SQL标准的SERIALIZABLE隔离级别。
 
 ## XA
 
-最为常见的内部XA事务存在于binlog与InnoDB存储引擎之间。由于复制的需要，因此目前绝大多数的数据库都开启了binlog 功能。在事务提交时，先写二进制日志，再
-写InnoDB存储引擎的重做日志。对上述两个操作的要求也是原子的，即二进制日志和重做日志必须同时写人。若二进制日志先写了，而在写人InnoDB存储引擎时发生了宕
-机，那么slave可能会接收到master传过去的二进制日志并执行，最终导致了主从不一致的情况。
+最为常见的内部XA事务存在于binlog与InnoDB存储引擎之间。由于复制的需要，因此目前绝大多数的数据库都开启了binlog 功能。在事务提交时，先写二进制日志，再写InnoDB存储引擎的重做日志。对上述两个操作的要求也是原子的，即二进制日志和重做日志必须同时写人。若二进制日志先写了，而在写人InnoDB存储引擎时发生了宕机，那么slave可能会接收到master传过去的二进制日志并执行，最终导致了主从不一致的情况。
 
 在图7-23中，如果执行完①、②后在步骤③之前MySQL数据库发生了宕机，则会发生主从不一致的情况。为了解决这个问题，MySQL数据库在binlog与InnoDB存储引擎之间采用XA事务。
-当事务提交时，InnoDB存储引擎会先做一个PREPARE操作，将事务的xid写人，接着进行二进制日志的写人，如图7-24所示。
+当事务提交时，InnoDB存储引擎会先做一个PREPARE操作，将事务的xid写入，接着进行二进制日志的写人，如图7-24所示。
 如果在InnoDB存储引擎提交前，MySQL数据库宕机了，那么MySQL数据库在重启后会先检查准备的UXID事务是否已经提交，若没有，则在存储引擎层再进行一次提交操作。
 
 图7-23宕机导致 replication主从不一致的情况
@@ -94,6 +92,7 @@ InnoDB存储引擎默认支持的隔离级别是REPEATABLEREAD，但是与标准
 
 ![图7-24 MySQL数据库通过内部XA事务保证主从数据一致](./images/mysql-innodb-chapter-07-24.drawio.svg)
 
+> XA 此处主要接口 binlog 与 redo log 的不一致
 
 ## 不好的事物习惯
 

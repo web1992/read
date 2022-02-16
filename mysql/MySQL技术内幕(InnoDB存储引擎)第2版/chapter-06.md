@@ -24,8 +24,8 @@
 - 多版本并发控制(Multi Version Concurrency Control, MVCC)
 - 最新一个快照(fresh snapshot)
 - 两种一致性的锁定读( locking read)操作:
-- SELECT ... FOR UPDATE
-- SELECT ... LOCK IN SHARE MODE
+- SELECT ... FOR UPDATE (X锁)
+- SELECT ... LOCK IN SHARE MODE (S锁)
 - AUTO-INC Locking
 - Phantom Problem
 - 脏页
@@ -38,14 +38,15 @@
 
 ## 意向共享锁 意向排他锁
 
-1)意向共享锁(IS Lock),事务想要获得一张表中某几行的共享锁
-2)意向排他锁(IX Lock)，事务想要获得一张表中某几行的排他锁
-
+- 1)意向共享锁(IS Lock),事务想要获得一张表中某几行的共享锁
+- 2)意向排他锁(IX Lock)，事务想要获得一张表中某几行的排他锁
 
 ## 一致性非锁定读
 
 一致性的非锁定读(consistent nonlocking read)是指 InnoDB 存储引擎通过行多版本控制(multi versioning) 的方式来读取当前执行时间数据库中行的数据。
 如果读取的行正在执行 DELETE 或 UPDATE 操作，这时读取操作不会因此去等待行上锁的释放。相反地，InnoDB 存储引擎会去读取行的一个快照数据。如图6-4所示。
+
+![mysql-innodb-chapter-06-4.drawio.svg](./images/mysql-innodb-chapter-06-4.drawio.svg)
 
 在事务隔离级别READ COMMITTED和REPEATABLE READ (InnoDB 存储引擎的默认事务隔离级别)下，InnoDB存储引擎使用非锁定的一致性读。
 然而，对于快照数据的定义却不相同。在READ COMMITTED事务隔离级别下，对于快照数据，非一致性读总是读取被锁定行的最新一份快照数据。
