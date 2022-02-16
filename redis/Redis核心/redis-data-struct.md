@@ -60,3 +60,8 @@ RedisObject 的内部组成包括了 type、encoding、lru 和 refcount 4 个元
 - *ptr：是指向数据的指针。
 
 ![redis-redis-object.drawio.svg](./images/redis-redis-object.drawio.svg)
+
+
+## Links 
+
+- [Redis sorted Set](https://juejin.cn/post/6844903512413831181)

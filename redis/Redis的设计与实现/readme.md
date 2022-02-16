@@ -180,7 +180,7 @@ typedef struct multiCmd{
 
 > 事务的 ACDI
 
-在 Redis 中，事务总是具有原子性(Atomiccity)，一致性(Consistency)和隔离性(Isolation)，并且当 Redis 运行在某种特定的持久模式下时，事务也具有耐久性(Durablity)。
+在 Redis 中，事务总是具有原子性(需要保证命令的正确))(Atomiccity)，一致性(Consistency)和隔离性(Isolation)，并且当 Redis 运行在某种特定的持久模式下时，事务也具有耐久性(Durablity)。
 
 ## redis 的 Java 客户端
 
