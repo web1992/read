@@ -55,7 +55,7 @@
 SELECT...FOR UPDATE对读取的行记录加一个X锁，其他事务不能对已锁定的行加上任何锁。
 SELECT..LOCK IN SHARE MODE对读取的行记录加一个S锁，其他事务可以向被锁定的行加S锁，但是如果加X锁，则会被阻塞。
 
-## 锁分类
+## 锁分类(3种算法)
 
 - Record Lock: 单个行记录上的锁
 - Gap Lock: 间隙锁，锁定一个范围，但不包含记录本身
@@ -70,6 +70,7 @@ Phantom Problem是指在同一事务下，连续执行两次同样的SQL语句�
 
 ## 锁问题
 
+- 幻读
 - 脏度
 - 不可重复度
 - 阻塞
@@ -83,3 +84,39 @@ Phantom Problem是指在同一事务下，连续执行两次同样的SQL语句�
 在Next-Key Lock算法下，对于索引的扫描，不仅是锁住扫描到的索引，而且还锁住这些索引覆盖的范围(gap)。
 因此在这个范围内的插人都是不允许的。这样就避免了另外的事务在这个范围内插人数据导致的不可重复读的问题。
 因此，InnoDB 存储引擎的默认事务隔离级别是READ REPEATABLE,采用Next-Key Lock算法，避免了不可重复读的现象。
+
+## Phantom Problem 幻读问题
+
+在默认的事务隔离级别下，即REPEATABLE READ下，InnoDB存储引擎采用Next-Key Locking机制来避免Phantom Problem (幻像问题)。
+
+InnoDB存储引擎采用Next-Key Locking的算法避免Phantom Problem。
+
+InnoDB存储引擎采用Next-Key Locking的算法避免Phantom Problem。对于上述的SQL语句SELECT * FROM t WHERE a>2 FOR UPDATE，
+其锁住的不是5这单个值，而是对(2, +∞)这个范围加了X锁。因此任何对于这个范围的插人都是不被允许的，从而避免Phantom Problem。
+
+InnoDB存储引擎默认的事务隔离级别是REPEATABLE READ,在该隔离级别下，其采用Next-KeyLocking的方式来加锁。
+而在事务隔离级别READ COMMITTED下，其仅采用RecordLock，因此在上述的示例中，会话A需要将事务的隔离级别设置为READ COM MITTED。
+
+- REPEATABLE READ - Next-KeyLocking
+- READ COMMITTED - RecordLock
+
+## 不可重复度
+
+不可重复读是指在一个事务内多次读取同一数据集合。在这个事务还没有结束时，另外一个事务也访问该同一数据集合，
+并做了一些DML操作。因此，在第一个事务中的两次读数据之间，由于第二个事务的修改，那么第一个事务两次读到的数据可能是不
+一样的。这样就发生了在一个事务内两次读到的数据是不一样的情况，这种情况称为不可重复读。
+
+不可重复读和脏读的区别是:脏读是读到未提交的数据，而不可重复读读到的却是已经提交的数据，但是其违反了数据库事务一致性的要求。可以通过下面一个例子来观察不可重复读的情况，如表6-16所示。
+
+
+在InnoDB存储引擎中，通过使用Next-Key Lock算法来避免不可重复读的问题。在MySQL官方文档中将不可重复读的问题定义为Phantom Problem,即幻像问题。
+在Next-Key Lock算法下，对于索引的扫描，不仅是锁住扫描到的索引，而且还锁住这些索引覆盖的范围(gap)。 
+因此在这个范围内的插入都是不允许的。这样就避免了另外的事务在这个范围内插人数据导致的不可重复读的问题。
+因此，InnoDB 存储引擎的默认事务隔离级别是READ REPEATABLE,采用Next-Key Lock算法，避免了不可重复读的现象。
+
+## 丢失更新
+
+
+## 死锁
+
+- wait for graph 等待图
