@@ -92,7 +92,7 @@ InnoDB存储引擎默认支持的隔离级别是REPEATABLE READ，但是与标�
 
 ![图7-24 MySQL数据库通过内部XA事务保证主从数据一致](./images/mysql-innodb-chapter-07-24.drawio.svg)
 
-> XA 此处主要接口 binlog 与 redo log 的不一致
+> XA 此处主要解决 binlog 与 redo log 的不一致
 
 ## 不好的事物习惯
 
