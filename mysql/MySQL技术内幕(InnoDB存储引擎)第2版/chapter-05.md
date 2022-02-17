@@ -12,6 +12,9 @@
 - 覆盖索引
 - FORCE INDEX
 - Multi-Range Read 优化
+- 书签访问
+- Multi-Range Read
+- Index Condition Pushdown (ICP) 优化
 
 ## B+树
 
@@ -59,3 +62,12 @@ InnoDB存储引擎去重新计算索引的Cardinality值。若表中的数据量
 InnoDB存储引擎支持覆盖索引(covering index,或称索引覆盖)，即从辅助索引中
 就可以得到查询的记录，而不需要查询聚集索引中的记录。使用覆盖索引的一个好处是
 辅助索引不包含整行记录的所有信息，故其大小要远小于聚集索引，因此可以减少大量的IO操作。
+
+## 不使用索引的情况
+
+- 通过书签访问查询整行的数据，此时的IO操作是无序的，速度可能变慢
+- 顺序读的速度要远远大于离散读
+
+## Index Condition Pushdown
+
+和Multi-Range Read -样，Index Condition Pushdown同样是MySQL 5.6开始支持的一种根据索引进行查询的优化方式。之前的MySQL数据库版本不支持Index Condition Pushdown，当进行索引查询时，首先根据索引来查找记录，然后再根据WHERE条件来过滤记录。在支持IndexConditionPushdown后，MySQL数据库会在取出索引的同时，判断是否可以进行WHERE条件的过滤，也就是将WHERE的部分过滤操作放在了存储引擎层。在某些查询下，可以大大减少.上层SQL层对记录的索取(fetch), 从而提高数据库的整体性能。
