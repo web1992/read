@@ -4,6 +4,7 @@
 - 全文索引
 - 哈希索引
 - AVL 树，平衡二叉树
+- 最优二叉树
 - 聚集索引(clustered inex)和辅助索引(secondary inex)
 - Fast Index Creation
 - Online DDL
@@ -19,6 +20,10 @@
 ## B+树
 
 B+树是为磁盘或其他直接存取辅助设备设计的一种平衡查找树。在B+树中，所有记录节点都是按键值的大小顺序存放在同一层的叶子节点上，由各叶子节点指针进行连接.
+
+B+树中的B不是代表二叉(binary),而是代表平衡(balance),因为B+树是从最早的平衡二叉树演化而来，但是B+树不是一个二叉树。
+
+另-一个常常被DBA忽视的问题是:B+树索引并不能找到一个给定键值的具体行。B+树索引能找到的只是被查找`数据行所在的页`。然后数据库通过把页读人到内存，再在内存中进行查找，最后得到要查找的数据。
 
 ![mysql-innodb-chapter-05-06.drawio.svg](./images/mysql-innodb-chapter-05-06.drawio.svg)
 
