@@ -57,8 +57,10 @@ InnoDB存储引擎的关键特性包括:
 写'aaaa' 记录。如果这个页本身已经发生了损坏，再对其进行重做是没有意义的。这就是说，在应用(apply) 重做日志前，用户需要一个页的副本，当写人失效发生时，先
 通过页的副本来还原该页，再进行重做，这就是doublewrite。在InnoDB存储引擎中double write的体系架构如图2-5所示。
 
-doublewrite由两部分组成，一部分是内存中的doubl ewrite buffer,大小为2MB，另一部分是物理磁盘上共享表空间中连续的128个页，即2个区(extent)，大小同样为2MB。在对缓冲池的脏页进行刷新时，并不直接写磁盘，而是会通过memcpy函数将脏页先复制到内存中的double write buffer,之后通过double write buffer再分两次，每次
+double write由两部分组成，一部分是内存中的doubl ewrite buffer,大小为2MB，另一部分是物理磁盘上共享表空间中连续的128个页，即2个区(extent)，大小同样为2MB。在对缓冲池的脏页进行刷新时，并不直接写磁盘，而是会通过memcpy函数将脏页先复制到内存中的double write buffer,之后通过double write buffer再分两次，每次
 1MB顺序地写人共享表空间的物理磁盘上，然后马上调用fsync函数，同步磁盘，避免缓冲写带来的问题。在这个过程中，因为double write页是连续的，因此这个过程是顺序
 写的，开销并不是很大。在完成double write页的写人后，再将doub lewrite buffer中的页写人各个表空间文件中，此时的写人则是离散的。
 
 ![mysql-innodb-chapter-02-05.drawio.svg](./images/mysql-innodb-chapter-02-05.drawio.svg)
+
+如果操作系统在将页写人磁盘的过程中发生了崩溃，在恢复过程中，InnoDB 存储引擎可以从共享表空间中的double write中找到该页的一个副本，将其复制到表空间文件,再应用重做日志。
