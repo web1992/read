@@ -11,7 +11,7 @@
 - Purge Thread 回收 undo 页
 - Page cleaner Thread
 - innodb_buffer_pool_size 缓冲池配置
-- 
+- double write (两次写)
 
 ## Master Thread
 
@@ -64,3 +64,7 @@ double write由两部分组成，一部分是内存中的doubl ewrite buffer,大
 ![mysql-innodb-chapter-02-05.drawio.svg](./images/mysql-innodb-chapter-02-05.drawio.svg)
 
 如果操作系统在将页写人磁盘的过程中发生了崩溃，在恢复过程中，InnoDB 存储引擎可以从共享表空间中的double write中找到该页的一个副本，将其复制到表空间文件,再应用重做日志。
+
+## Links
+
+- [https://www.cnblogs.com/geaozhang/p/7241744.html](https://www.cnblogs.com/geaozhang/p/7241744.html)
