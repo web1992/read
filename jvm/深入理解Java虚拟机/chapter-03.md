@@ -30,6 +30,9 @@
 - GarbageFirst 收集器 G1
 - 衡量垃圾收集器的三项最重要的指标是：内存占用（Footprint）、吞吐量（Throughput）和延迟（Latency）
 
+## ParallelScavenge
+
+Parallel Scavenge 收集器的特点是它的关注点与其他收集器不同，CMS 等收集器的关注点是尽可能地缩短垃圾收集时用户线程的停顿时间
 
 ## CMS 收集器
 
