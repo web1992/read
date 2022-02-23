@@ -1,6 +1,6 @@
-# GC
+# G1
 
-- G1
+关键字：
 - “停顿时间模型”
 - G1 的老年代和年轻代不再是一块连续的空间，整个堆被划分成若干个大小相同的 Region，也就是区
 - Region 的类型有 Eden、Survivor、Old、Humongous 四种
@@ -22,12 +22,30 @@
 - nextBitMap
 - MaxGCPauseMillis
 - InitiatingHeapOccupancyPercent (IHOP)
-
 - 初始标记（Initial Marking）
 - 并发标记（Concurrent Marking）
 - 最终标记（Final Marking）
 - 筛选回收（Live Data Counting and Evacuation)
 
+## 概述
+
+从下面几个方面去理解G1回收。
+
+- 内存布局
+- 内存分配
+- 内存回收
+- 关键技术
+
+## 内存布局
+
+## 内存分配
+
+## 内存回收
+
+## 关键技术
+
+
+G1它可以面向堆内存任何部分来组成回收集（Collection Set，一般简称CSet）进行回收，衡量标准不再是它属于哪个分代，而是哪块内存中存放的垃圾数量最多，回收收益最大，这就是G1收集器的Mixed GC模式。
 
 ## 低延迟 吞吐量
 
