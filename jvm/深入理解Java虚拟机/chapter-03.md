@@ -55,7 +55,15 @@
 - GarbageFirst 收集器 G1
 - 衡量垃圾收集器的三项最重要的指标是：内存占用（Footprint）、吞吐量（Throughput）和延迟（Latency）
 
+## 分代GC收集器
+
 ![chapter-03-6.drawio.svg](./images/chapter-03-6.drawio.svg)
+
+## 吞吐量
+
+![chapter-03-3.3.5.drawio.svg](./images/chapter-03-3.3.5.drawio.svg)
+
+如果虚拟机完成某个任务，用户代码加上垃圾收集总共耗费了100分钟，其中垃圾收集花掉1分钟，那吞吐量就是99%。停顿时间越短就越适合需要与用户交互或需要保证服务响应质量的程序，良好的响应速度能提升用户体验；而高吞吐量则可以最`高效率地利用处理器资源`，尽快完成程序的运算任务，主要适合在后台运算而不需要太多交互的分析任务。
 
 ## 伪共享问题
 
@@ -107,6 +115,8 @@
 Scavenge收集器是基于标记-整理算法的，而关注延迟的CMS收集器则是基于标记-清除算法的，这也从
 侧面印证这点。
 
+
+
 ## ParallelScavenge
 
 Parallel Scavenge 收集器的特点是它的关注点与其他收集器不同，CMS 等收集器的关注点是尽可能地缩短垃圾收集时用户线程的停顿时间
@@ -137,6 +147,8 @@ CMS（ConcurrentMarkSweep）收集器是一种以获取最短回收停顿时间�
 
 - 基于Region
 
-# Links
+[ZGC](../jvm-gc-g1.md)
+
+# Link
 
 - [内存管理设计精要](https://draveness.me/system-design-memory-management/)
