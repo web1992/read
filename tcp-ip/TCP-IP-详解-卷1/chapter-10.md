@@ -35,11 +35,11 @@
 
 > 图 10-1routed 和 gated 所支持的选路协议
 
-![TCP-IP-10-1.png](./images/TCP-IP-10-1.svg)
+![TCP-IP-10-1.svg](./images/TCP-IP-10-1.svg)
 
 > 图 10-2 封装在 UDP 数据报中的 RIP 报文
 
-![TCP-IP-10-2.png](./images/TCP-IP-10-2.svg)
+![TCP-IP-10-2.svg](./images/TCP-IP-10-2.drawio.svg)
 
 # Links
 
