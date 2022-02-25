@@ -20,3 +20,4 @@ The reliability and flow control mechanisms described above require that TCPs in
 - [字节，位](http://www.cnblogs.com/myseagull/archive/2008/08/09/1264131.html)
 - [TCP 首部](https://www.cnblogs.com/fantastic123/p/8968132.html)
 - [Network_socket](https://en.wikipedia.org/wiki/Network_socket)
+- [图文超级详细文章](https://mp.weixin.qq.com/s/Yq4mVDRyMmcc3bJpXOWEww)
