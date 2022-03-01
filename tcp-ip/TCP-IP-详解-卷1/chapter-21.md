@@ -7,13 +7,14 @@
 - 指数退避(exponential backoff)
 - 接收窗口「rwnd」
 - cwnd 拥塞窗口
-- ssthresh
+- ssthresh （阈值）
 - 拥塞避免算法 (congestion avoidance)
 - 快速重传与快速恢复算法 (fast retransmit,fast recovery)
 - 慢启动 (slow start)
 - 快速重传（Fast Retransmit）机制
 - SACK （Selective Acknowledgment 选择性确认）
 - Duplicate SACK
+- 窗口关闭 发生窗口等于0
 
 TCP 提供可靠的运输层。它使用的方法之一就是确认从另一端收到的数据。但数据和确认都有可能会丢失。TCP 通过在发送时设置一个定时器来解决这种问题。
 如果当定时器溢出时还没有收到确认，它就重传该数据。对任何实现而言，关键之处就在于超时和重传的策略，即怎样决定超时间隔和如何确定重传的频率。
