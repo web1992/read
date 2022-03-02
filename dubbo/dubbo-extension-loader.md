@@ -280,7 +280,8 @@ private static final Protocol refprotocol = ExtensionLoader.getExtensionLoader(P
 
 ### createAdaptiveExtensionClassCode
 
-`createAdaptiveExtensionClassCode` 这个方法负责生成具体的 `***$Adaptive` 实例，如: `Protocol$Adaptive`
+`ExtensionLoader#createAdaptiveExtensionClassCode` 这个方法负责生成具体的 `***$Adaptive` 实例，如: `Protocol$Adaptive`
+此方法中使用了`javassist`等字节码技术，动态的创建`***$Adaptive`类。
 
 这里的代码逻辑就是对 `org.apache.dubbo.rpc.Protocol` 接口中所有方法进行解析，生成一个实现类，包含接口中的所有方法
 
