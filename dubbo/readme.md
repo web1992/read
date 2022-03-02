@@ -1,6 +1,6 @@
 # Dubbo
 
-- [dubbo](https://github.com/apache/dubbo)
+- [https://github.com/apache/dubbo](https://github.com/apache/dubbo)
 
 ## Dubbo version
 

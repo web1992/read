@@ -37,16 +37,16 @@
 如果对TCP，IP 协议的定义有了解。那么上面的图更容易理解。下面是`TCP`控制传输协议的定义。
 
 IP 协议
-![TCP-IP-3-1.png](images/TCP-IP-3-1.png)
+![TCP-IP-3-1.png](images/TCP-IP-3-1.svg)
 
 TCP 协议
-![TCP-IP-17-2.png](images/TCP-IP-17-2.png)
+![TCP-IP-17-2.png](images/TCP-IP-17-2.svg)
 
 这里说下TCP/IP也是通过 Head+Body 组合的协议（大多数的网络字节协议都是这个组合）。head 一般存储特殊信息，如`IP`的Head中存储了IP地址，`TCP`的Head存储了端口号。Body 存储的是存 `纯数据`。
 
 如果把 `IP协议`+`TCP协议`+`dubbo协议` 放在一起看：dubbo协议就是TCP的Body,TCP就是IP协议的body。如下图：
 
-![TCP-IP-dubbo.png](./images/TCP-IP-dubbo.png)
+![TCP-IP-dubbo.png](./images/TCP-IP-dubbo.drawio.svg)
 
 > 上面说了IP协议，TCP协议，duboo协议，目的就是要知道dubbo协议的组成，而下面的Codec2实现就是对dubbo协议Head和Body解析。
 
