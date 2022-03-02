@@ -85,9 +85,12 @@
 @SPI
 public interface Codec2 {
 
+    // ChannelBuffer Dubbo中对byte[]的抽象+封装。可从ChannelBuffer读取数据，或者写入数据到ChannelBuffer中
+    // Java对象 => byte[] 字节
     @Adaptive({Constants.CODEC_KEY})
     void encode(Channel channel, ChannelBuffer buffer, Object message) throws IOException;
 
+    // byte[] 字节=> Java对象
     @Adaptive({Constants.CODEC_KEY})
     Object decode(Channel channel, ChannelBuffer buffer) throws IOException;
 
@@ -162,6 +165,10 @@ java nio 中的巧妙运用，可以参考这个文章: [nio-selection-key.md](.
 dubbo 中编码操作有两种 `encodeRequest` 和 `encodeResponse`,而这个二种操作的细微区别就是 `encodeResponse` 多了设置 `status` 这一步骤
 
 ### ExchangeCodec-encodeRequest
+
+encode 操作把Java对象转化成byte[]字节
+
+下面是`Dubbo`协议`Request Head + Body`的实现。
 
 ```java
 // 这里说下编码（写数据）的整体思路：
@@ -260,6 +267,8 @@ protected void encodeRequestData(Channel channel, ObjectOutput out, Object data,
 
 ### ExchangeCodec-encodeResponse
 
+下面是`Dubbo`协议`Response Head + Body`的实现。
+
 ```java
 // encodeResponse 中的处理和 encodeRequest 差别不大
 // encodeResponse 多了设置 header[3] = status; 状态字段 这个步骤
@@ -352,6 +361,8 @@ protected void encodeResponse(Channel channel, ChannelBuffer buffer, Response re
 
 ### ExchangeCodec-decode
 
+decode 操作把byte[]字节转化成Java对象
+
 ```java
     @Override
     public Object decode(Channel channel, ChannelBuffer buffer) throws IOException {
@@ -440,6 +451,7 @@ protected void encodeResponse(Channel channel, ChannelBuffer buffer, Response re
         }
     }
 ```
+关于`ChannelBufferInputStream`可以参考 [dubbo-channel-buffer.md](dubbo-channel-buffer.md)
 
 ## DubboCodec-decodeBody
 
@@ -592,13 +604,62 @@ public static final String DEFAULT_DUBBO_PROTOCOL_VERSION = "2.0.2";
 
 会返回 `MultiMessage` 可以同时解码出多个 `Object`
 
-## DecodeableRpcResult
+## DecodeableRpcResult DecodeableRpcInvocation
 
-解码 RPC 结果
+- [DecodeableRpcResult](https://github.com/apache/dubbo/blob/2.6.x/dubbo-rpc/dubbo-rpc-dubbo/src/main/java/com/alibaba/dubbo/rpc/protocol/dubbo/DecodeableRpcResult.java) 解码 RPC 结果
+- [DecodeableRpcInvocation](https://github.com/apache/dubbo/blob/2.6.x/dubbo-rpc/dubbo-rpc-dubbo/src/main/java/com/alibaba/dubbo/rpc/protocol/dubbo/DecodeableRpcInvocation.java) 解码 RPC 请求 
 
-## DecodeableRpcInvocation
+下面列出代码片段，上面的逻辑能看懂，下面的逻辑类似，是再对RPC请求(RpcInvocation)和RPC结果(RpcResult)进行处理。
 
-解码 RPC 请求
+```java
+public class DecodeableRpcResult extends RpcResult implements Codec, Decodeable {
+    // ...
+}
+
+// RpcResult
+public class RpcResult implements Result, Serializable {
+
+    private static final long serialVersionUID = -6925924956850004727L;
+
+    private Object result;
+
+    private Throwable exception;
+
+    private Map<String, String> attachments = new HashMap<String, String>();
+
+    public RpcResult() {
+    }
+    // ...
+}
+```
+
+```java
+// DecodeableRpcInvocation
+public class DecodeableRpcInvocation extends RpcInvocation implements Codec, Decodeable {
+    // ...
+}
+// RpcInvocation
+public class RpcInvocation implements Invocation, Serializable {
+
+    private static final long serialVersionUID = -4355285085441097045L;
+
+    private String methodName;
+
+    private Class<?>[] parameterTypes;
+
+    private Object[] arguments;
+
+    private Map<String, String> attachments;
+
+    private transient Invoker<?> invoker;
+
+    public RpcInvocation() {
+    }
+
+    // ...
+}
+```
+
 
 ## TelnetCodec
 
@@ -654,5 +715,4 @@ else if (message instanceof String) {// 如果解码的结果对象是 String
 
 ## 好文链接
 
-- [dubbo-protocol](http://dubbo.incubator.apache.org/zh-cn/blog/dubbo-protocol.html)
 - [Magic number](<https://en.wikipedia.org/wiki/Magic_number_(programming)>)
