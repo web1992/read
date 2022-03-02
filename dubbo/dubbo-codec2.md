@@ -32,9 +32,13 @@
 
 `dubbo` 协议设计图:
 
-![dubbo-codec2-protocol.png](images/dubbo-codec2-protocol.png)
+![dubbo-codec2-protocol.png](images/dubbo-protocol.drawio.svg)
 
 如果对TCP，IP 协议的定义有了解。那么上面的图更容易理解。下面是`TCP`控制传输协议的定义。
+
+> Variable Part 部分
+
+![dubbo-variable-part.drawio.svg](./images/dubbo-variable-part.drawio.svg)
 
 > IP 协议
 
@@ -606,6 +610,9 @@ public static final String DEFAULT_DUBBO_PROTOCOL_VERSION = "2.0.2";
 
 ## DecodeableRpcResult 和 DecodeableRpcInvocation
 
+`DecodeableRpcResult 和 DecodeableRpcInvocation`主要处理协议中的`Variable Part` 部分的byte[]。和具体的序列化实现相关。
+具体可以参考的`DecodeableRpcResult#decode`和`DecodeableRpcInvocation#decode`方法
+
 - [DecodeableRpcResult](https://github.com/apache/dubbo/blob/2.6.x/dubbo-rpc/dubbo-rpc-dubbo/src/main/java/com/alibaba/dubbo/rpc/protocol/dubbo/DecodeableRpcResult.java) 解码 RPC 结果
 - [DecodeableRpcInvocation](https://github.com/apache/dubbo/blob/2.6.x/dubbo-rpc/dubbo-rpc-dubbo/src/main/java/com/alibaba/dubbo/rpc/protocol/dubbo/DecodeableRpcInvocation.java) 解码 RPC 请求 
 
@@ -716,4 +723,5 @@ else if (message instanceof String) {// 如果解码的结果对象是 String
 
 ## 好文链接
 
+- [Dubbo 协议设计](https://dubbo.apache.org/zh/docs/concepts/rpc-protocol/)
 - [Magic number](<https://en.wikipedia.org/wiki/Magic_number_(programming)>)
