@@ -15,12 +15,13 @@
     <scope>import</scope>
 </dependency>
 ```
+> 🔥 标记是值的看的分析解读。
 
 ## `Dubbo` 源码分析
 
 - [x] [dobbo-stream.md](dobbo-stream.md)
 - [x] [dubbo-channel-handler.md](dubbo-channel-handler.md)
-- [x] [dubbo-codec2.md](dubbo-codec2.md)
+- [x] [🔥dubbo-codec2.md](dubbo-codec2.md)
 - [x] [dubbo-dispatcher.md](dubbo-dispatcher.md)
 - [x] [dubbo-exchanger.md](dubbo-exchanger.md)
 - [x] [dubbo-exporter.md](dubbo-exporter.md)

@@ -604,14 +604,15 @@ public static final String DEFAULT_DUBBO_PROTOCOL_VERSION = "2.0.2";
 
 会返回 `MultiMessage` 可以同时解码出多个 `Object`
 
-## DecodeableRpcResult DecodeableRpcInvocation
+## DecodeableRpcResult 和 DecodeableRpcInvocation
 
 - [DecodeableRpcResult](https://github.com/apache/dubbo/blob/2.6.x/dubbo-rpc/dubbo-rpc-dubbo/src/main/java/com/alibaba/dubbo/rpc/protocol/dubbo/DecodeableRpcResult.java) 解码 RPC 结果
 - [DecodeableRpcInvocation](https://github.com/apache/dubbo/blob/2.6.x/dubbo-rpc/dubbo-rpc-dubbo/src/main/java/com/alibaba/dubbo/rpc/protocol/dubbo/DecodeableRpcInvocation.java) 解码 RPC 请求 
 
-下面列出代码片段，上面的逻辑能看懂，下面的逻辑类似，是再对RPC请求(RpcInvocation)和RPC结果(RpcResult)进行处理。
+下面列出代码片段，上面的逻辑能看懂，下面的逻辑类似，是对RPC请求(RpcInvocation)和RPC结果(RpcResult)进行处理。
 
 ```java
+// DecodeableRpcResult
 public class DecodeableRpcResult extends RpcResult implements Codec, Decodeable {
     // ...
 }
