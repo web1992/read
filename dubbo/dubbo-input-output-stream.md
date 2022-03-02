@@ -6,11 +6,7 @@
 
 `dubbo` 中底层的通信框架是 `Netty`,当数据通过网络到达的时候，会被存在在 `io.netty.buffer.ByteBuf` 中
 
-后续这个 `ByteBuf` 中的 `byte` 字节需要被反序列化，转化成 `java` 对象，而序列化框架的序列化操作都是基于 `InputStream` 和 `OutputStream` 的
-
-因此需要自己实现`InputStream` 和 `OutputStream` 把 `io.netty.buffer.ByteBuf` 转化成 `InputStream` 和 `OutputStream` 然后交给序列化框架
-
-转化成 `java` 对象
+后续这个 `ByteBuf` 中的 `byte` 字节需要被反序列化，转化成 `java` 对象，而序列化框架的序列化操作都是基于 `InputStream` 和 `OutputStream` 的。因此需要自己实现`InputStream` 和 `OutputStream` 把 `io.netty.buffer.ByteBuf` 转化成 `InputStream` 和 `OutputStream` 然后交给序列化框架转化成 `java` 对象。
 
 数据转化过程：
 
