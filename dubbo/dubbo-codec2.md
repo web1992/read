@@ -36,10 +36,12 @@
 
 如果对TCP，IP 协议的定义有了解。那么上面的图更容易理解。下面是`TCP`控制传输协议的定义。
 
-IP 协议
+> IP 协议
+
 ![TCP-IP-3-1.png](images/TCP-IP-3-1.svg)
 
-TCP 协议
+> TCP 协议
+
 ![TCP-IP-17-2.png](images/TCP-IP-17-2.svg)
 
 这里说下TCP/IP也是通过 Head+Body 组合的协议（大多数的网络字节协议都是这个组合）。head 一般存储特殊信息，如`IP`的Head中存储了IP地址，`TCP`的Head存储了端口号。Body 存储的是存 `纯数据`。
