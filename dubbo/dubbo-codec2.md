@@ -34,11 +34,11 @@
 
 ![dubbo-codec2-protocol.png](images/dubbo-protocol.drawio.svg)
 
-如果对TCP，IP 协议的定义有了解。那么上面的图更容易理解。下面是`TCP`控制传输协议的定义。
-
 > Variable Part 部分
 
 ![dubbo-variable-part.drawio.svg](./images/dubbo-variable-part.drawio.svg)
+
+如果对TCP，IP 协议的定义有了解。那么上面的图更容易理解。下面是`TCP`控制传输协议的定义。
 
 > IP 协议
 
