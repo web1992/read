@@ -1,5 +1,7 @@
 # AQS
 
+此文是`AbstractQueuedSynchronizer`的概述，详细解析参考[ReentrantLock](reentrant-lock.md)和[CountDownLatch](count-down-latch.md)
+
 - [AQS](#aqs)
   - [AbstractQueuedSynchronizer](#abstractqueuedsynchronizer)
   - [实例分析](#实例分析)
@@ -33,12 +35,9 @@
 
 `Condition queue And Main queue`
 
-Threads waiting on Conditions use the same nodes, but
-use an additional link. Conditions only need to link nodes
-in simple (non-concurrent) linked queues because they are
-only accessed when exclusively held.  Upon await, a node is
-inserted into a `condition queue`.  Upon signal, the node is
-transferred to the `main queue`.  A special value of status
+Threads waiting on Conditions use the same nodes, butuse an additional link. Conditions only need to link nodes
+in simple (non-concurrent) linked queues because they areonly accessed when exclusively held.  Upon await, a node is
+inserted into a `condition queue`.  Upon signal, the node istransferred to the `main queue`.  A special value of status
 field is used to mark which queue a node is on.
 
 为什么需要两个 `Queue` ?
@@ -64,6 +63,7 @@ static final class Node {
  volatile Node prev;
  volatile Node next;
  volatile Thread thread;
+ // condition Queue
  Node nextWaiter;
 }
 ```
@@ -73,7 +73,9 @@ static final class Node {
 ```java
 // Node
 // waitStatus 是 Node 的成员变量
-volatile int waitStatus;
+static final class Node {
+    volatile int waitStatus;
+}
 ```
 
 ```java
@@ -189,3 +191,5 @@ private volatile int state;
 - [aqs (github)](<https://github.com/CL0610/Java-concurrency/blob/master/08.%E5%88%9D%E8%AF%86Lock%E4%B8%8EAbstractQueuedSynchronizer(AQS)/%E5%88%9D%E8%AF%86Lock%E4%B8%8EAbstractQueuedSynchronizer(AQS).md>)
 - [aqs (简书)](https://www.jianshu.com/p/cc308d82cc71)
 - [aqs](https://wyj.shiwuliang.com/JAVA%20-%20AQS%E6%BA%90%E7%A0%81%E8%A7%A3%E8%AF%BB.html)
+- [https://tech.meituan.com/2019/12/05/aqs-theory-and-apply.html](https://tech.meituan.com/2019/12/05/aqs-theory-and-apply.html)
+- [https://tech.meituan.com/2018/11/15/java-lock.html](https://tech.meituan.com/2018/11/15/java-lock.html)

@@ -25,6 +25,7 @@
 - `ReentrantLock` 必须使用 `try`加锁，`finally` 来释放锁
 - `ReentrantLock` 可以使用 `tryLock` 设置锁的超时时间
 - `ReentrantLock` 能响应中断信号,`synchronized` 不会响应中断信号
+- `ReentrantLock` 可以使用`newCondition`方法，等待在多个条件
 
 ## Lock interface
 
@@ -536,3 +537,4 @@ class BlockArray<E> {
 - [count-down-latch.md](count-down-latch.md)
 - [aqs.md](aqs.md)
 - [https://tech.meituan.com/2018/11/15/java-lock.html](https://tech.meituan.com/2018/11/15/java-lock.html)
+- [https://tech.meituan.com/2019/12/05/aqs-theory-and-apply.html](https://tech.meituan.com/2019/12/05/aqs-theory-and-apply.html)
