@@ -1,5 +1,7 @@
 # ReentrantLock
 
+结合`AbstractQueuedSynchronizer`(AQS)理解`ReentrantLock`的实现。
+
 - [ReentrantLock](#reentrantlock)
   - [简介](#简介)
   - [Lock interface](#lock-interface)
@@ -73,9 +75,8 @@ ReentrantLock.lock -> ReentrantLock.Sync.lock
 
 对上面的方法调用链的分支，我这里把他们分为二类，方便理解
 
-一类是修改 `state` 变量的操作
-
-另一类是执行 `入队` 的操作
+- 一类是修改 `state` 变量的操作
+- 另一类是执行 `入队` 的操作
 
 这也是 `AbstractQueuedSynchronizer` 的核心思路：**在线程之间去竞争获取锁的时候，先尝试修改 `state` 字段的值，如果修改成功，获取锁就是成功的，该线程继续执行，失败就把当前线程放入队列，阻塞当前线程，等他其他线程唤醒**
 
@@ -145,7 +146,7 @@ public final void acquire(int arg) {
 ```java
 // AbstractQueuedSynchronizer#acquireQueued
 // 这个方法做了下面几件事：
-// 1.c尝试获取锁
+// 1.[尝试获取锁]
 //   tryAcquire 是在 for(;;) 中执行的
 //   当前线程在调用 tryAcquire 时，获取锁失败，如果获取锁失败，则执行 shouldParkAfterFailedAcquire ，判断是否需要进入阻塞状态
 //   如果需要阻塞，那么就会执行 parkAndCheckInterrupt
@@ -171,7 +172,7 @@ final boolean acquireQueued(final Node node, int arg) {
             // head <- nodeA <- node 情况2: node 不在head 后面，中间有 nodeA 存在
             final Node p = node.predecessor();// 获取当前node 的前一个元素
             if (p == head && tryAcquire(arg)) {// 与 head 对比，如果相等，说明 node 是队列中的第一个元素，尝试获取锁（也就是情况1）
-                setHead(node);// 获取成功,修改head (这里并没有使用cas 去修改)
+                setHead(node);// 获取成功,修改head (这里并没有使用cas去修改)
                 p.next = null; // help GC
                 failed = false;
                 return interrupted;
@@ -247,7 +248,7 @@ private void setHead(Node node) {
     node.prev = null;
 }
 
-// 看下 head 和 tail 的注释
+// 看下 head 和 tail 的注释。结合 enq 方法进行理解。
 
 /**
  * Head of the wait queue, lazily initialized.  Except for
@@ -291,7 +292,7 @@ private Node enq(final Node node) {
 
 ```java
 ReentrantLock.unlock
-  -> ReentrantLock.Sync.release
+  -> ReentrantLock->Sync->AbstractQueuedSynchronizer#release
   -> tryRelease
   -> unparkSuccessor
 ```

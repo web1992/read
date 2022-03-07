@@ -81,15 +81,19 @@ static final class Node {
 ```java
 /** waitStatus value to indicate thread has cancelled */
 static final int CANCELLED =  1;
+
 /** waitStatus value to indicate successor's thread needs unparking */
 static final int SIGNAL    = -1;
+
 /** waitStatus value to indicate thread is waiting on condition */
 static final int CONDITION = -2;
+
 /**
  * waitStatus value to indicate the next acquireShared should
  * unconditionally propagate
  */
 static final int PROPAGATE = -3;
+
 ```
 
 ### CANCELLED
@@ -100,9 +104,8 @@ static final int PROPAGATE = -3;
 
 ### SIGNAL
 
-当执行线程获取锁失败（比如`reentrantLock.lock()`），线程会进入 `SIGNAL` 状态
-
-类似的 `CountDownLatch.await` 其实也是获取锁的过程，获取锁失败，也会进入到 `SIGNAL` 状态
+`AQS`的锁实现是基于`FIFO`队列的，一个线程获取锁资源失败的时候，会把它的前置节点(代码中用prev节点表示)修改成`SIGNAL(-1)`状态
+表示其他没有获取锁的线程需要被唤醒（获取锁的线程可通过执行unparkSuccessor方法，唤醒等待的线程。具体逻辑在AbstractQueuedSynchronizer#release方法中）
 
 ### PROPAGATE
 
