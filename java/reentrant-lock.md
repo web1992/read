@@ -35,13 +35,16 @@
 // 这里看下 Lock接口的定义
 // lock 用来获取锁
 // unlock 用来释放锁
-// Condition 负责线程的阻塞和唤醒
 public interface Lock {
     void lock();
+    // 支持中断
     void lockInterruptibly() throws InterruptedException;
     boolean tryLock();
+    // 支持锁超时
     boolean tryLock(long time, TimeUnit unit) throws InterruptedException;
+    // 解锁
     void unlock();
+    // Condition 负责线程的阻塞和唤醒(可多次执行newCondition，让不同的线程阻塞在不同的条件上)
     Condition newCondition();
 }
 ```
@@ -82,9 +85,10 @@ ReentrantLock.lock -> ReentrantLock.Sync.lock
 
 以公平锁为例，看下 `tryAcquire` 方法的实现（属于修改 `state` 这一类的操作）
 
-## AbstractQueuedSynchronizer.tryAcquire
+## FairSync.tryAcquire
 
 ```java
+// ReentrantLock.FairSync#tryAcquire
 protected final boolean tryAcquire(int acquires) {
     final Thread current = Thread.currentThread();
     int c = getState();// c=0 意味着没有线程获取锁
@@ -127,7 +131,7 @@ protected final boolean tryAcquire(int acquires) {
 `acquire` 方法属于第二类操作(执行 `入队` 的操作)
 
 ```java
-// AbstractQueuedSynchronizer
+// AbstractQueuedSynchronizer#acquire
 // 1.tryAcquire 尝试获取锁
 //   如果获取锁失败，那么把当前线程进入队列（执行addWaiter）
 // 2.addWaiter 把当前线程封装成 Node 放入队列
@@ -190,7 +194,7 @@ final boolean acquireQueued(final Node node, int arg) {
 // 尝试把 pred 节点的 waitStatus 修改成 SIGNAL状态，修改成功之后，就可以进入阻塞状态了
 // 这里说下为什么需要修改pred前置节点waitStatus的原因：
 // 因为在执行 AbstractQueuedSynchronizer#release 的时候，有下面几种case 需处理：
-// case1: 没有线程参与锁的竞争，那么是没有节点在队列里面的head==null（relase方法里面h != null判断）
+// case1: 没有线程参与锁的竞争，那么是没有节点在队列里面的head==null（relase方法里面[h != null]判断）
 //        那么就不需要执行unparkSuccessor操作唤醒其他线程
 // case2: 有节点参与锁的竞争，但是线程还没有进入休眠，锁已经释放了，那么此线程也是不需要进行唤醒的。
 //        因为线程在进入休眠之前会执行shouldParkAfterFailedAcquire修改pred节点的waitStatus，
