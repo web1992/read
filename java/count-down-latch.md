@@ -163,8 +163,8 @@ private void doAcquireSharedInterruptibly(int arg)
                 throw new InterruptedException();// parkAndCheckInterrupt 在线程被 interrupt 之后就会抛出 InterruptedException 异常
         }
     } finally {
-        if (failed)// 如果线程被 interrupt 了，那么需要取消获取锁的请求
-            cancelAcquire(node);// 如果是正常结束，会执行 failed = false，cancelAcquire 不会执行
+        if (failed)
+            cancelAcquire(node);
     }
 }
 ```
@@ -179,16 +179,11 @@ private void doAcquireSharedInterruptibly(int arg)
 // 这里的 pred 其实是当前线程的前一个线程 （源码中有 Requires that pred == node.prev 这样的注释）
 // shouldParkAfterFailedAcquire 方法的作用就是把 pred 的 waitStatus 修改成 SIGNAL
 // 如果修改成功就 返回 true 阻塞当前线程(node 里面的线程)
-// 那么为什么要这样做呢？(pred 的waitStatus=SIGNAL成功后,当前线程就可以阻塞了？)
+// 那么为什么要这样做呢？(pred 的waitStatus=SIGNAL成功后,当前线程就可以阻塞了)
 // 这里需要与 doReleaseShared 方法一起看
-// shouldParkAfterFailedAcquire 与 doReleaseShared 存在竞争修改 head.waitStatus 的情况
-// 原因是存在这种情况：
-// 在执行 shouldParkAfterFailedAcquire 的时候 waitStatus=0
-// 但是存在线程A正在修改 waitStatus 0 -> SIGNAL 准备进入阻塞状态的时候
-// 线程B执行了 doReleaseShared 已经释放了锁，修改 waitStatus=PROPAGATE,此时线程A其实是不需要进入阻塞状态了
-// 但是实际的逻辑有两种:(看下面的图片)
-// 第一种： waitStatus [0 ->PROPAGATE -> SIGNAL -> 0]
-// 第二种： waitStatus [0 -> SIGNAL ->0 ]
+// shouldParkAfterFailedAcquire（获取锁） 与 doReleaseShared(释放锁) 存在竞争修改 head.waitStatus 的情况
+// pred.pred.waitStatus=Node.SIGNA 就阻塞线程（接着会执行parkAndCheckInterrupt方法）
+// 
 private static boolean shouldParkAfterFailedAcquire(Node pred, Node node) {
     int ws = pred.waitStatus;// 第一次 ws = 0
     if (ws == Node.SIGNAL)// 第一次中 ws 被设置了等于 SIGNAL，第二次执行的时候返回 true
@@ -197,7 +192,7 @@ private static boolean shouldParkAfterFailedAcquire(Node pred, Node node) {
          * to signal it, so it can safely park.
          */
         return true;
-    if (ws > 0) {// 第一次 ws = 0,不执行这里
+    if (ws > 0) {// 取消的逻辑
         /*
          * Predecessor was cancelled. Skip over predecessors and
          * indicate retry.
@@ -219,13 +214,6 @@ private static boolean shouldParkAfterFailedAcquire(Node pred, Node node) {
 }
 ```
 
-第一种：
-
-![waitStatus](./images/asq-wait-status.png)
-
-第二种：
-
-![waitStatus](./images/asq-wait-status-2.png)
 
 ## setHeadAndPropagate
 
@@ -274,7 +262,7 @@ private void setHead(Node node) {
 
 ## CountDownLatch countDown
 
-分析 `countDown` 为什么会使线程取消阻塞状态
+分析 `countDown` 实现
 
 ```java
 // CountDownLatch
@@ -324,28 +312,12 @@ private void doReleaseShared() {
             Node h = head;
             if (h != null && h != tail) {// head 不等于 tail 说明至少有一个线程在队列中
                 int ws = h.waitStatus;// 获取 head 的状态
-                if (ws == Node.SIGNAL) {// 如果是需要唤醒的状态，修改 waitStatus
+                if (ws == Node.SIGNAL) {// 如果ws == Node.SIGNAL，是需要唤醒的状态，CAS 修改waitStatus
                     if (!compareAndSetWaitStatus(h, Node.SIGNAL, 0))// 　修改失败，继续修改
                         continue;            // loop to recheck cases
                     unparkSuccessor(h);// 修改 waitStatus 成功，唤醒线程
                 }
-                // 如果 waitStatus =0 说明线程进入队列还没有成功
-                // 与 shouldParkAfterFailedAcquire 方法在竞争修改 head 的 waitStatus
-                // 例子：二个线程，线程A,线程B。线程B 获取锁成功，线程A 获取锁失败，正在准备进入阻塞
-                //      线程A获取锁失败，正在执行 shouldParkAfterFailedAcquire 方法，还没执行完
-                //      这时线程B 说我干完了，并释放锁了，这个时候线程A 正在进入队列进行阻塞，
-                //      但是线程A 其实没有阻塞的必要了，因为B 线程已经释放锁了
-                //      此时线程A继续执行即可，不需要进入阻塞状态
-                // 下面的 waitStatus = 0 也即是线程A 还没有被阻塞
-                // 如果下面的代码执行成功了，waitStatus=PROPAGATE,shouldParkAfterFailedAcquire 就会返回false
-                // 后续的 parkAndCheckInterrupt 方法也就不回执行，线程A也就不会进入阻塞状态
-                // for;; 再次循环就会执行 setHeadAndPropagate 中的代码
-                // 但是如果下面的 ws=Node.PROPAGATE 执行失败，要怎么处理呢？
-                // 执行失败意味着本来不需要进入阻塞状态的，现在却需要进入阻塞状态了
-                // 那么我们怎么去让线程不进入阻塞状态(或者想办法唤醒线程)呢？
-                // 下面的 ws=Node.PROPAGATE 执行失败
-                // 一定是因为ws 在 shouldParkAfterFailedAcquire 中修改成了  ws == Node.SIGNAL
-                // 那么就继续循环 执行上面的CAS 修改 ws=0,然后在唤醒线程
+                // 如果 waitStatus =0 说明线程没有阻塞，不需要执行unparkSuccessor操作，CAS 修改waitStatus
                 else if (ws == 0 &&
                          !compareAndSetWaitStatus(h, 0, Node.PROPAGATE))
                     continue;                // loop on failed CAS
