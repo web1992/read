@@ -277,7 +277,7 @@ private Node enq(final Node node) {
     for (;;) {
         Node t = tail;
         if (t == null) { // Must initialize 进行初始化
-            if (compareAndSetHead(new Node()))// 初始化 head
+            if (compareAndSetHead(new Node()))// 初始化 head,此head不会关联任何线程，是一个虚节点
                 tail = head;// head  和 tail 是一样的，这里没有return 因此下次循环会再次执行 else 中的逻辑
         } else {
             node.prev = t;// 修改node.prev=tail 因为是入队操作，所以node 要在队的尾部
@@ -495,6 +495,39 @@ public final boolean hasQueuedPredecessors() {
     Node s;
     return h != t &&
         ((s = h.next) == null || s.thread != Thread.currentThread());
+}
+```
+
+## isOnSyncQueue
+
+```java
+// AbstractQueuedSynchronizer#isOnSyncQueue
+// 每次必须从尾节点开始遍历的原因：
+final boolean isOnSyncQueue(Node node) {
+    if (node.waitStatus == Node.CONDITION || node.prev == null)
+        return false;
+    if (node.next != null) // If has successor, it must be on queue
+        return true;
+    /*
+     * node.prev can be non-null, but not yet on queue because
+     * the CAS to place it on queue can fail. So we have to
+     * traverse from tail to make sure it actually made it.  It
+     * will always be near the tail in calls to this method, and
+     * unless the CAS failed (which is unlikely), it will be
+     * there, so we hardly ever traverse much.
+     */
+    return findNodeFromTail(node);
+}
+// AbstractQueuedSynchronizer#findNodeFromTail
+private boolean findNodeFromTail(Node node) {
+    Node t = tail;
+    for (;;) {
+        if (t == node)
+            return true;
+        if (t == null)
+            return false;
+        t = t.prev;
+    }
 }
 ```
 
