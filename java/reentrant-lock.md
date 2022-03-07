@@ -130,7 +130,7 @@ protected final boolean tryAcquire(int acquires) {
 // 1.tryAcquire 尝试获取锁
 //   如果获取锁失败，那么把当前线程进入队列（执行addWaiter）
 // 2.addWaiter 把当前线程封装成 Node 放入队列
-// 3.acquireQueued 阻塞当前线程
+// 3.acquireQueued for循环尝试获取锁，如果获取锁失败，则阻塞当前线程
 public final void acquire(int arg) {
     if (!tryAcquire(arg) &&
         acquireQueued(addWaiter(Node.EXCLUSIVE), arg))
@@ -145,12 +145,13 @@ public final void acquire(int arg) {
 ```java
 // AbstractQueuedSynchronizer#acquireQueued
 // 这个方法做了下面几件事：
-// 1.获取锁
+// 1.c尝试获取锁
 //   tryAcquire 是在 for(;;) 中执行的
-//   当前线程在第一次调用 tryAcquire 时，获取锁失败，就会执行 parkAndCheckInterrupt
-//   进入阻塞，当再次被唤醒时，再次调用 tryAcquire 获取锁,获取失败，再次进入阻塞
+//   当前线程在调用 tryAcquire 时，获取锁失败，如果获取锁失败，则执行 shouldParkAfterFailedAcquire ，判断是否需要进入阻塞状态
+//   如果需要阻塞，那么就会执行 parkAndCheckInterrupt
+//   当再次被唤醒时，再次调用 tryAcquire 获取锁,获取失败，再次进入阻塞
 //   成功执行 return 结束循环
-// 2.[获取锁成功] 修改 队列的 head
+// 2.[获取锁成功] 修改队列的 head
 //    在执行 tryAcquire 成功之后，表示当前线程获取锁成功了
 //    修改队列的 head 为当前线程（旧 head 出队列，当前线程变成 head）
 // 3.[获取锁失败] 更新前一个 node 的 waitStatus = Node.SIGNAL
@@ -184,6 +185,57 @@ final boolean acquireQueued(final Node node, int arg) {
             cancelAcquire(node);
     }
 }
+
+// 尝试把 pred 节点的 waitStatus 修改成 SIGNAL状态，修改成功之后，就可以进入阻塞状态了
+// 这里说下为什么需要修改pred前置节点waitStatus的原因：
+// 因为在执行 AbstractQueuedSynchronizer#release 的时候，有下面几种case 需处理：
+// case1: 没有线程参与锁的竞争，那么是没有节点在队列里面的head==null（relase方法里面h != null判断）
+//        那么就不需要执行unparkSuccessor操作唤醒其他线程
+// case2: 有节点参与锁的竞争，但是线程还没有进入休眠，锁已经释放了，那么此线程也是不需要进行唤醒的。
+//        因为线程在进入休眠之前会执行shouldParkAfterFailedAcquire修改pred节点的waitStatus，
+//       （h.waitStatus != 0 认为是修改成功了,线程进入了休眠，因此需要唤醒被线程）
+private static boolean shouldParkAfterFailedAcquire(Node pred, Node node) {
+    int ws = pred.waitStatus;
+    if (ws == Node.SIGNAL)
+        /*
+         * This node has already set status asking a release
+         * to signal it, so it can safely park.
+         */
+        return true;
+    if (ws > 0) {
+        /*
+         * Predecessor was cancelled. Skip over predecessors and
+         * indicate retry.
+         */
+        do {
+            node.prev = pred = pred.prev;
+        } while (pred.waitStatus > 0);
+        pred.next = node;
+    } else {
+        /*
+         * waitStatus must be 0 or PROPAGATE.  Indicate that we
+         * need a signal, but don't park yet.  Caller will need to
+         * retry to make sure it cannot acquire before parking.
+         */
+        compareAndSetWaitStatus(pred, ws, Node.SIGNAL);
+    }
+    return false;
+}
+
+// AbstractQueuedSynchronizer#release
+public final boolean release(int arg) {
+    if (tryRelease(arg)) {
+        Node h = head;
+        // h != null 认为是有节点参数锁的竞争，head被初始化了
+        // h.waitStatus == 0 认为线程没有执行 parkAndCheckInterrupt 不需要唤醒
+        //（0是节点初始化的状态）
+        if (h != null && h.waitStatus != 0)
+            unparkSuccessor(h);
+        return true;
+    }
+    return false;
+}
+
 // 修改 head
 // 这里并没有使用 cas 去修改的原因是：
 // 其他线线程在 tryAcquire 的时候失败了(在 ReentrantLock 的实现中就是修改 state 的值)
@@ -257,6 +309,9 @@ public void unlock() {
 public final boolean release(int arg) {
     if (tryRelease(arg)) {
         Node h = head;
+        // h != null 认为是有节点参数锁的竞争，head被初始化了
+        // h.waitStatus == 0 认为线程没有执行 parkAndCheckInterrupt 不需要唤醒
+        //（0是节点初始化的状态）
         if (h != null && h.waitStatus != 0)
             unparkSuccessor(h);// 把队列的 head 给 unparkSuccessor 方法
         return true;
@@ -345,8 +400,6 @@ static final int PROPAGATE = -3;
 ## 公平锁&非公平锁的实现
 
 `ReentrantLock` 使用两个内部类 `NonfairSync` 和 `FairSync` 来实现非公平锁和公平锁
-
-![Sync.png](./images/Sync.png)
 
 ### NonfairSync
 
