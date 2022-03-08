@@ -10,7 +10,7 @@ NameServer 的主要目的是注册 Broker 信息，方便 Producer 和 Consumer
 - Broker 的路由信息维护
 - Broker 存活检查
 
-![rocketmq-consumer-nameserver.png](./images/rocketmq-consumer-nameserver.png)
+![rocketmq-consumer-nameserver.png](./images/rocketmq-ns.drawio.svg)
 
 - [NameServer](#nameserver)
   - [启动](#启动)
@@ -50,7 +50,7 @@ public boolean initialize() {
 
 `org.apache.rocketmq.namesrv.processor.DefaultRequestProcessor` 的主要作用是处理 `RemotingCommand`，因此通过 `DefaultRequestProcessor` 就可以知道 NameServer 的作用包含哪些。[DefaultRequestProcessor#processRequest 代码片段](https://github.com/apache/rocketmq/blob/master/namesrv/src/main/java/org/apache/rocketmq/namesrv/processor/DefaultRequestProcessor.java#L71)
 
-下面的的代码片段中有`19`个 Case,每个 Case 都处理不同的业务。
+下面的的代码片段中有`19`个 Case,每个 Case 都处理不同的业务(可以从下面的命令中知道NameServer中维护了那些信息)。
 
 核心的 `RequestCode`:
 
@@ -69,11 +69,11 @@ public boolean initialize() {
 | GET_ROUTEINFO_BY_TOPIC             | 根据 Topic 查询路由信息 |
 | GET_BROKER_CLUSTER_INFO            |
 | WIPE_WRITE_PERM_OF_BROKER          |
-| GET_ALL_TOPIC_LIST_FROM_NAMESERVER |
-| DELETE_TOPIC_IN_NAMESRV            |
+| GET_ALL_TOPIC_LIST_FROM_NAMESERVER | 获取所有的TOPIC列表
+| DELETE_TOPIC_IN_NAMESRV            | 删除TOPIC
 | GET_KVLIST_BY_NAMESPACE            |
 | GET_TOPICS_BY_CLUSTER              |
-| GET_SYSTEM_TOPIC_LIST_FROM_NS      |
+| GET_SYSTEM_TOPIC_LIST_FROM_NS      | 获取系统的TOPIC
 | GET_UNIT_TOPIC_LIST                |
 | GET_HAS_UNIT_SUB_TOPIC_LIST        |
 | GET_HAS_UNIT_SUB_UNUNIT_TOPIC_LIST |
@@ -86,7 +86,7 @@ public boolean initialize() {
 
 RouteInfoManager 的主要作用就是存储 Broker 集群相关的信息(元数据信息)。从下面的变量中就可以知道，NameServer 中存储了那些信息。
 
-![rocketmq-nameserver-info.png](./images/rocketmq-nameserver-info.png)
+![rocketmq-nameserver-info.png](./images/rocketmq-nameserver.drawio.svg)
 
 ```java
 // RouteInfoManager 的成员变量
