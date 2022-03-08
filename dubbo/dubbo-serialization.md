@@ -1,6 +1,9 @@
 # serialization
 
-这里简单分析下 `dubbo` 的序列化实现
+这里简单分析下 `dubbo` 的序列化抽象实现,主要是理解为什么需要进行`I/O流`进行抽象。
+
+Java经典I/O操作都是基于流的(是基于OutputStream和InputStream)，而新的网络I/O框架，如Netty则是基于byte[]缓冲的。
+而序列化协议（如hessian2）也是基于OutputStream和InputStream。因此就需要byte[] -> Stream,Stream -> byte[]的转化。
 
 序列化的目的就是把 `Java` 对象按照一定的格式变成 byte 数据，然后写入到网络进行网络的传输。
 
@@ -18,9 +21,7 @@
 - Serialization
 
 > 实现了 `dubbo` 的自适应接口，可以进行不同的序列化协议实现的切换
->
 > 同时定义了 `OutputStream` -> `ObjectOutput` 方法定义
->
 > 和 `InputStream` -> `ObjectInput` 方法定义
 
 - ObjectOutput
@@ -137,7 +138,10 @@ public class Hessian2Serialization implements Serialization {
 当读取数据时会调用 `ObjectOutput` 的 `write*` 方法,类之间的调用链：
 
 ```java
-ObjectOutput(Hessian2ObjectOutput).write -> OutputStream.write -> ChannelBuffer.write -> io.netty.buffer.ByteBuf
+ObjectOutput(Hessian2ObjectOutput).write 
+    -> OutputStream.write 
+        -> ChannelBuffer.write 
+            -> io.netty.buffer.ByteBuf
 ```
 
 ## ObjectInput
@@ -151,7 +155,10 @@ ObjectOutput(Hessian2ObjectOutput).write -> OutputStream.write -> ChannelBuffer.
 而当使用 `ObjectInput` 的 `read*` 方法写入数据的时候,类之间的调用链：
 
 ```java
-ObjectInput(Hessian2ObjectInput).read -> InputStream.read -> ChannelBuffer.read -> io.netty.buffer.ByteBuf
+ObjectInput(Hessian2ObjectInput).read 
+    -> InputStream.read 
+        -> ChannelBuffer.read 
+            -> io.netty.buffer.ByteBuf
 ```
 
 ## ChannelBufferOutputStream
