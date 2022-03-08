@@ -1,24 +1,16 @@
 # rocketmq tx
 
-- [rocketmq tx](#rocketmq-tx)
-  - [概述](#概述)
-  - [TransactionalMessageService](#transactionalmessageservice)
-  - [Send transactional message](#send-transactional-message)
-  - [TransactionalMessageService asyncPrepareMessage](#transactionalmessageservice-asyncpreparemessage)
-  - [DefaultMQProducerImpl#endTransaction](#defaultmqproducerimplendtransaction)
-  - [EndTransactionProcessor](#endtransactionprocessor)
-  - [TransactionalMessageCheckService 事物服务的初始化](#transactionalmessagecheckservice-事物服务的初始化)
-  - [TransactionalMessageCheckService#check](#transactionalmessagecheckservicecheck)
-  - [AbstractTransactionalMessageCheckListener 发事物消息查询 Request](#abstracttransactionalmessagechecklistener-发事物消息查询-request)
-  - [Links](#links)
+了解`RocketMQ`事物的实现细节。
 
 ## 概述
+
+RocketMQ 事物的流程图
 
 ![rocket-mq-tx.png](./images/rocket-mq-tx.png)
 
 ## TransactionalMessageService
 
-`TransactionalMessageService` 的方法列表
+`org.apache.rocketmq.broker.transaction.TransactionalMessageService` 的方法列表,从方法可知道，RockeMQ需要处理的逻辑，可与上图做对比。
 
 | 方法                 | 描述                                   |
 | -------------------- | -------------------------------------- |
@@ -132,8 +124,7 @@ private MessageExtBrokerInner parseHalfMessageInner(MessageExtBrokerInner msgInn
 }
 ```
 
-通过上面的代码可知，事物消息，最终会把消息存储在 `RMQ_SYS_TRANS_HALF_TOPIC` Topic 中。
-事物和非事物消息 最终都会通过 `MessageStore` -> `CommitLog` -> `MappedFile` -> `File` 存储在文件系统中。
+通过上面的代码可知，事物消息，最终会把`事物消息`存储在 `RMQ_SYS_TRANS_HALF_TOPIC` Topic 中。事物和非事物消息 最终都会通过 `MessageStore` -> `CommitLog` -> `MappedFile` -> `File` 存储在文件系统中。
 
 ## DefaultMQProducerImpl#endTransaction
 
