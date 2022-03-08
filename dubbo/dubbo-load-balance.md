@@ -38,16 +38,13 @@ public interface LoadBalance {
 
 一致性哈希负载均衡，使用 `hash` 算法
 
-> 一致性哈希算法，主要是用来解决分布式缓存的问题，具体可参照下面的链接
->
-> 这里简单的说明下使用 hash 在分布式系统中的问题：
->
-> 1. 当分布式系统中的节点变化的时候，需要重新进行hash
-> 2. 当分布式的节点较少时，可能存在 hash 不均匀的情况，导致某一个节点压力巨大
+一致性哈希算法，主要是用来解决分布式缓存的问题，具体可参考链接 [​一致性哈希 (Consistent hashing)](https://coderxing.gitbooks.io/architecture-evolution/di-san-pian-ff1a-bu-luo/631-yi-zhi-xing-ha-xi.html)
+这里简单的说明下使用 hash 在分布式系统中的问题：
+
+- 1. 当分布式系统中的节点变化的时候，需要重新进行hash(rehash)
+- 2. 当分布式的节点较少时，可能存在 hash 不均匀的情况，导致某一个节点压力巨大
 
 而 `ConsistentHashLoadBalance` 针对上线的问题进行了处理,使用 `identityHashCode`和`虚拟节点` 来解决上面的问题
-
-[​一致性哈希 (Consistent hashing)](https://coderxing.gitbooks.io/architecture-evolution/di-san-pian-ff1a-bu-luo/631-yi-zhi-xing-ha-xi.html)
 
 ```java
 // 1. 计算hash值，进行缓存，同时使用虚拟节点，避免 hash 分布不均匀的情况
@@ -193,7 +190,7 @@ protected <T> Invoker<T> doSelect(List<Invoker<T>> invokers, URL url, Invocation
     }
     // 使用 updateLock 控制并发
     // 服务存在上线，下线这个操作，因此 invokers 的size 不等于 size 的时候
-    // 服务可能下线了，那么久需要把 map 中的对象删除
+    // 服务可能下线了，那么就需要把 map 中的对象删除
     // 检查那个超过 60 秒没有使用的，从内存中删除
     // 避免内存泄露
     if (!updateLock.get() && invokers.size() != map.size()) {
