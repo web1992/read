@@ -15,6 +15,8 @@
 - young GC：只回收年轻代的 Region
 - mixed GC：回收全部的年轻代 Region，并回收部分老年代的 Region
 - 回收集合（Collection Set，CSet)
+- 夸代引用 cross-region references
+- region's remembered set
 - dirty card queue（DCQ）
 - G1 Evacuation
 - TAMS（Top at Mark Start）的指针
@@ -46,7 +48,9 @@ G1的目标是在满足`短时间停顿`的同时达到一个`高的吞吐量`�
 
 新生代收集指针对全部新生代分区进行垃圾回收；混合收集指不仅仅回收新生代分区，同时回收一部分老生代分区，这通常发生在并发标记之后；Full GC指内存不足时需要对全部内存进行垃圾回收。
 
-## 内存布局
+## 内存布局 Heap Layout
+
+![jvm-g1-heap-Layout.drawio.svg](./images/jvm-g1-heap-Layout.drawio.svg)
 
 ## 内存分配
 
@@ -92,3 +96,5 @@ RSet 需要维护的引用关系只有两种，非 CSet 老年代 Region 到年�
 常最多可以同时达成其中的两项。
 
 ## Links
+
+- [https://docs.oracle.com/en/java/javase/11/gctuning/garbage-first-garbage-collector.htm](https://docs.oracle.com/en/java/javase/11/gctuning/garbage-first-garbage-collector.htm)
