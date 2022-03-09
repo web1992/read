@@ -6,8 +6,6 @@
 - -XX：GCTimeRatio
 - 垃圾分代收集
 - 夸代引用
-- 记忆集 Remembered Set
-- 写屏障
 
 
 ## 概述
