@@ -84,7 +84,7 @@ CSet 的选取要素有以下两点：该 Region 的垃圾占比。垃圾占比�
 
 ## G1 RSet 
 
-记录集（Remembered Set，RSet
+记录集（Remembered Set）RSet
 
 RSet 需要维护的引用关系只有两种，非 CSet 老年代 Region 到年轻代 Region 的引用，和非 CSet 老年代 Region 到 CSet 老年代 Region 的引用。
 
