@@ -228,8 +228,6 @@ private void swapRequests() {
 > 而是在 `MappedFileQueue` 中使用了 `CopyOnWriteArrayList` 维护 `MappedFile`,因为 `MappedFile` 映射文件大小都是`1G`(写满一个时间需要很久)，因此不会频繁的创建`MappedFile`和更新`MappedFileQueue`
 >
 > 使用最多是 `getMappedFile`,因此是：读多写少的创建适合 `CopyOnWriteArrayList` 。
->
-> `MappedFile` 是直接映射的`堆外内存`,因此copy并不会占用大量内存，复制的只是`指针`而已。
 
 `GroupCommitService` 核心方法是 `doCommit`
 
