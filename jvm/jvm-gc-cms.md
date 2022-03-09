@@ -6,7 +6,7 @@
 - CMS 产生内存碎片，会导致 FULL GC (STW)
 - 首先，CMS收集器对处理器资源非常敏感。会占用CPU资源
 - 产生“浮动垃圾”（Floating Garbage）
-- 并发失败（Concurrent Mode Failure）冻结用户线程的执行，临时启用Serial Old收集器来重新进行老年代的垃圾收集，
+- 并发失败（Concurrent Mode Failure）冻结用户线程的执行，临时启用Serial Old收集器来重新进行老年代的垃圾收集
 - CMS是一款基于“标记-清除”,会产生内存碎片，需要FULL GC 进行垃圾回收
 
 ## 概述
@@ -43,4 +43,4 @@
 
 ## Links
 
-- [https://docs.oracle.com/javase/9/gctuning/concurrent-mark-sweep-cms-collector.htm](https://docs.oracle.com/javase/9/gctuning/concurrent-mark-sweep-cms-collector.htm)
+- [https://docs.oracle.com/javase/9/gctuning/concurrent-mark-sweep-cms-collector.htm#JSGCT-GUID-FF8150AC-73D9-4780-91DD-148E63FA1BFF](https://docs.oracle.com/javase/9/gctuning/concurrent-mark-sweep-cms-collector.htm#JSGCT-GUID-FF8150AC-73D9-4780-91DD-148E63FA1BFF)

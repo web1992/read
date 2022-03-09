@@ -98,4 +98,4 @@ RSet 需要维护的引用关系只有两种，非 CSet 老年代 Region 到年�
 
 ## Links
 
-- [https://docs.oracle.com/en/java/javase/11/gctuning/garbage-first-garbage-collector.htm](https://docs.oracle.com/en/java/javase/11/gctuning/garbage-first-garbage-collector.htm)
+- [https://docs.oracle.com/javase/9/gctuning/garbage-first-garbage-collector.htm#JSGCT-GUID-ED3AB6D3-FD9B-4447-9EDF-983ED2F7A573](https://docs.oracle.com/javase/9/gctuning/garbage-first-garbage-collector.htm#JSGCT-GUID-ED3AB6D3-FD9B-4447-9EDF-983ED2F7A573)
