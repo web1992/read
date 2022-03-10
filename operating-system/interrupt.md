@@ -31,3 +31,4 @@ int main() {
 ## Links
 
 - [系统中断简介](https://www.jianshu.com/p/f09ebc197bac)
+- [中断详解](https://mp.weixin.qq.com/s?__biz=Mzk0MjE3NDE0Ng==&mid=2247498208&idx=1&sn=b784f8b4e627ebd1bfb9810d194fdb80&chksm=c2c5834df5b20a5bdee331002bfc61c90eb468da325bf67abeef780c303a9f51c8543e1a5981&scene=21#wechat_redirect)
