@@ -50,10 +50,10 @@
 
 在事务隔离级别READ COMMITTED和REPEATABLE READ (InnoDB 存储引擎的默认事务隔离级别)下，InnoDB存储引擎使用非锁定的一致性读。
 然而，对于快照数据的定义却不相同。在READ COMMITTED事务隔离级别下，对于快照数据，非一致性读总是读取被锁定行的最新一份快照数据。
-而在REPEATABLEREAD事务隔离级别下，对于快照数据，非一致性读总是读取事务开始时的行数据版本。
+而在REPEATABLE READ事务隔离级别下，对于快照数据，非一致性读总是读取事务开始时的行数据版本。
 
-SELECT...FOR UPDATE对读取的行记录加一个X锁，其他事务不能对已锁定的行加上任何锁。
-SELECT..LOCK IN SHARE MODE对读取的行记录加一个S锁，其他事务可以向被锁定的行加S锁，但是如果加X锁，则会被阻塞。
+`SELECT...FOR UPDATE`对读取的行记录加一个X锁，其他事务不能对已锁定的行加上任何锁。
+`SELECT...LOCK IN SHARE MODE`对读取的行记录加一个S锁，其他事务可以向被锁定的行加S锁，但是如果加X锁，则会被阻塞。
 
 ## 锁分类(3种算法)
 
@@ -65,8 +65,7 @@ Next-Key Lock降级为Record Lock仅在查询的列是唯一索引的情况下�
 
 解决 Phantom Problem 问题：
 
-Phantom Problem是指在同一事务下，连续执行两次同样的SQL语句可能导致不同
-的结果，第二次的SQL语句可能会返回之前不存在的行。
+Phantom Problem是指在同一事务下，连续执行两次同样的SQL语句可能导致不同的结果，第二次的SQL语句可能会返回之前不存在的行。
 
 ## 锁问题
 
@@ -77,8 +76,8 @@ Phantom Problem是指在同一事务下，连续执行两次同样的SQL语句�
 - 死锁
 - 丢失更新的解决办法，select ... for update
 
-不可重复读是指在一个事务内多次读取同一数据集合。在这个事务还没有结束时，另外一个事务也访问该同一数据集合，并做了一些DML操作。因此，在第一个事务中
-的两次读数据之间，由于第二个事务的修改，那么第一个事务两次读到的数据可能是不一样的。这样就发生了在一个事务内两次读到的数据是不一样的情况，这种情况称为不可重复读。
+不可重复读是指在一个事务内多次读取同一数据集合。在这个事务还没有结束时，另外一个事务也访问该同一数据集合，并做了一些DML操作。因此，在第一个事务中的两次读数据之间，
+由于第二个事务的修改，那么第一个事务两次读到的数据可能是不一样的。这样就发生了在一个事务内两次读到的数据是不一样的情况，这种情况称为不可重复读。
 
 在InnoDB存储引擎中，通过使用Next-Key Lock算法来避免不可重复读的问题。在MySQL官方文档中将不可重复读的问题定义为Phantom Problem，即幻像问题。
 在Next-Key Lock算法下，对于索引的扫描，不仅是锁住扫描到的索引，而且还锁住这些索引覆盖的范围(gap)。
@@ -91,11 +90,11 @@ Phantom Problem是指在同一事务下，连续执行两次同样的SQL语句�
 
 InnoDB存储引擎采用Next-Key Locking的算法避免Phantom Problem。
 
-InnoDB存储引擎采用Next-Key Locking的算法避免Phantom Problem。对于上述的SQL语句SELECT * FROM t WHERE a>2 FOR UPDATE，
+InnoDB存储引擎采用Next-Key Locking的算法避免Phantom Problem。对于上述的SQL语句`SELECT * FROM t WHERE a>2 FOR UPDATE`，
 其锁住的不是5这单个值，而是对(2, +∞)这个范围加了X锁。因此任何对于这个范围的插人都是不被允许的，从而避免Phantom Problem。
 
 InnoDB存储引擎默认的事务隔离级别是REPEATABLE READ,在该隔离级别下，其采用Next-KeyLocking的方式来加锁。
-而在事务隔离级别READ COMMITTED下，其仅采用RecordLock，因此在上述的示例中，会话A需要将事务的隔离级别设置为READ COM MITTED。
+而在事务隔离级别READ COMMITTED下，其仅采用RecordLock，因此在上述的示例中，会话A需要将事务的隔离级别设置为READ COMMITTED。
 
 - REPEATABLE READ - Next-KeyLocking
 - READ COMMITTED - RecordLock
