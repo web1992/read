@@ -8,6 +8,8 @@
 - 查询日志文件
 - MySQL 表结构文件
 - 存储引擎文件
+- STATEMENT格式记录的是SQL语句，不占磁盘
+- ROW格式记录表的行更改情况（列新值：列旧值）占较多的磁盘
 
 
 ## 二进制文件
@@ -20,7 +22,7 @@
 
 (1) STATEMENT格式和之前的MySQL版本-样，二进制日志文件记录的是日志的逻辑SQL语句。
 
-(2)在ROW格式下，二进制日志记录的不冉是间早的SQL语句了，而是记录表的行更改情况。基于ROW格式的复制类似于Oracle的物理Standby(当然，还是有些区别)。同时，对上述提及的Statement格式下复制的问题予以解决。从MySQL 5.1版本开始，如果设置了binlog_format为ROW,可以将InnoDB的事务隔离基本设为READ COMMITTED，以获得更好的并发性。
+(2)在ROW格式下，二进制日志记录的不再是简单的SQL语句了，而是记录表的行更改情况。基于ROW格式的复制类似于Oracle的物理Standby(当然，还是有些区别)。同时，对上述提及的Statement格式下复制的问题予以解决。从MySQL 5.1版本开始，如果设置了binlog_format为ROW,可以将InnoDB的事务隔离基本设为READ COMMITTED，以获得更好的并发性。
 
 (3)在MIXED格式下，MySQL默认采用 STATEMENT 格式进行二进制日志文件的记录，但是在一些情况下会使用ROW格式，可能的情况有:
 - 1)表的存储引擎为NDB，这时对表的DML操作都会以ROW格式记录。
