@@ -37,7 +37,7 @@ Concurrent Mark Sweep，CMS
 
 ## 内存分配
 
-基于空闲链的内存分配
+TLAB
 
 ## 内存回收
 
