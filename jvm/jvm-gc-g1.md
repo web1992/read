@@ -1,12 +1,11 @@
 # G1
 
 关键字：
+- 分区回收算法
 - “停顿时间模型”
 - G1 的老年代和年轻代不再是一块连续的空间，整个堆被划分成若干个大小相同的 Region，也就是区
 - Region 的类型有 Eden、Survivor、Old、Humongous 四种
-- 写屏障主要有两个作用：
-- 在并发标记阶段解决活跃对象漏标问题；
-- 在写屏障里使用 card table 维护跨代引用
+- 维护跨分区引用
 - deletion barrier
 - write barrier
 - 开始时快照（Snapshot At The Beginning，SATB)
@@ -15,10 +14,11 @@
 - young GC：只回收年轻代的 Region
 - mixed GC：回收全部的年轻代 Region，并回收部分老年代的 Region
 - 回收集合（Collection Set，CSet)
+- 每个Region都维护自己的记录集（Remembered Set，RSet）
 - 夸代引用 cross-region references
 - region's remembered set
 - dirty card queue（DCQ）
-- G1 Evacuation
+- G1 Evacuation 对象转移
 - TAMS（Top at Mark Start）的指针
 - prevBitMap
 - nextBitMap
