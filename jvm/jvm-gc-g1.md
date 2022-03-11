@@ -1,6 +1,7 @@
 # G1
 
 关键字：
+- Refine线程
 - 分区回收算法
 - “停顿时间模型”
 - G1 的老年代和年轻代不再是一块连续的空间，整个堆被划分成若干个大小相同的 Region，也就是区
@@ -98,6 +99,51 @@ RSet 需要维护的引用关系只有两种，非 CSet 老年代 Region 到年�
 要在这三个方面同时具有卓越表现的“完美”收集器是极其困难甚至是不可能的，一款优秀的收集器通
 常最多可以同时达成其中的两项。
 
+
+## gc log
+
+```config
+# G1
+-Xms8g
+-Xmx8g
+-XX:MetaspaceSize=512m
+-XX:MaxMetaspaceSize=512m
+-XX:+UseG1GC
+# G1
+
+-XX:ReservedCodeCacheSize=240m
+-XX:+UseCompressedOops
+-Dfile.encoding=UTF-8
+
+-XX:SoftRefLRUPolicyMSPerMB=50
+-ea
+-Dsun.io.useCanonCaches=false
+-Djava.net.preferIPv4Stack=true
+-Djdk.http.auth.tunneling.disabledSchemes=""
+-XX:+HeapDumpOnOutOfMemoryError
+-XX:-OmitStackTraceInFastThrow
+
+-XX:ErrorFile=$USER_HOME/java_error_in_idea_%p.log
+-XX:HeapDumpPath=$USER_HOME/java_error_in_idea.hprof
+-Xlog:gc*:file=$USER_HOME/gc-idea-c_%p_%t.log:time,tags:filecount=5,filesize=30M
+```
+
+```log
+[2022-03-10T17:21:57.307+0800][gc,start     ] GC(12) Pause Young (Normal) (G1 Evacuation Pause)
+[2022-03-10T17:21:57.307+0800][gc,task      ] GC(12) Using 8 workers of 8 for evacuation
+[2022-03-10T17:21:57.357+0800][gc,phases    ] GC(12)   Pre Evacuate Collection Set: 0.1ms
+[2022-03-10T17:21:57.357+0800][gc,phases    ] GC(12)   Evacuate Collection Set: 45.7ms
+[2022-03-10T17:21:57.357+0800][gc,phases    ] GC(12)   Post Evacuate Collection Set: 3.2ms
+[2022-03-10T17:21:57.357+0800][gc,phases    ] GC(12)   Other: 0.5ms
+[2022-03-10T17:21:57.357+0800][gc,heap      ] GC(12) Eden regions: 179->0(1215)
+[2022-03-10T17:21:57.357+0800][gc,heap      ] GC(12) Survivor regions: 11->13(24)
+[2022-03-10T17:21:57.357+0800][gc,heap      ] GC(12) Old regions: 83->83
+[2022-03-10T17:21:57.357+0800][gc,heap      ] GC(12) Humongous regions: 55->50
+[2022-03-10T17:21:57.357+0800][gc,metaspace ] GC(12) Metaspace: 343056K->343056K(823296K)
+[2022-03-10T17:21:57.357+0800][gc           ] GC(12) Pause Young (Normal) (G1 Evacuation Pause) 1309M->582M(8192M) 49.606ms
+[2022-03-10T17:21:57.357+0800][gc,cpu       ] GC(12) User=0.21s Sys=0.02s Real=0.05s
+```
 ## Links
 
 - [https://docs.oracle.com/javase/9/gctuning/garbage-first-garbage-collector.htm#JSGCT-GUID-ED3AB6D3-FD9B-4447-9EDF-983ED2F7A573](https://docs.oracle.com/javase/9/gctuning/garbage-first-garbage-collector.htm#JSGCT-GUID-ED3AB6D3-FD9B-4447-9EDF-983ED2F7A573)
+- [https://tech.meituan.com/2016/09/23/g1.html](https://tech.meituan.com/2016/09/23/g1.html)
