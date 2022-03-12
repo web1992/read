@@ -14,7 +14,7 @@
 - 本地内存（直接内存）
 - 内存分配 “指针碰撞”（BumpThePointer）
 - 内存分配 “空闲列表”（FreeList）
-- 本地线程分配缓冲（ThreadLocalAllocationBuffer，TLAB）
+- 本地线程分配缓冲（Thread Local Allocation Buffer，TLAB）
 - 对象的内存布局
 - PermGenspace 永久代（新版本 jdk 已经废弃）
 - -Xmx -Xms -XX：MaxPermSize
