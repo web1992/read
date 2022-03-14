@@ -48,6 +48,44 @@ RocketMQ 的G1参数配置
 - -XX:-UseLargePages 关闭大页
 - -XX:-UseBiasedLocking 关闭偏向锁
 
+## 
+
+```config
+java 
+-Xmx4g
+-Xms4g
+-XX:+UseG1GC
+-XX:ConcGCThreads=2
+-XX:ParallelGCThreads=8
+-XX:+UseStringDeduplication
+-XX:+ParallelRefProcEnabled
+-XX:InitiatingHeap0ccupancyPercent=45
+-XX:MaxGCPauseMillis=200 -XX:G1HeapWastePercent=5 -XX:G1MixedGCCountTarget=8
+-XX:+UnlockExperimentalVM0ptions -XX:G1MixedGCLiveThresholdPercent=85
+-XX:G1ReservePercent=10 -XX:G1HeapRegionSize=2m -XX:G1NewSizePercent=5
+-XX:G1MaxNewSizePercent=60 -XX:G10ldCSetReqionThresholdPercent=10
+-XX:+PrintCommandLineFlags -XX:+PrintAdaptiveSizePolicy
+-XX:+PrintGC -XX:+PrintGCDateStamps -XX:+PrintGCDetails
+-XX:+PrintGCTimeStamps -XX:+PrintHeapAtGC -XX:+PrintGCCause
+-XX:+PrintPromotionFailure -XX:+PrintReferenceGC -XX:+PrintTenuringDistribution
+-XX:+UnlockDiagnosticVM0ptions -XX:+G1PrintHeapRegions
+-XX:+PrintVMOptions -XX:+PrintTLAB -Xloggc:gc.log
+```
+
+```config
+# G1 GC总结-参数说明
+-XX:MaxGCPauseMillis: 期望最大暂停时间，默认值200ms
+-XX:G1HeapRegionSize: Region大小，若未指定则默认最多生成2048块
+-XX:G1NewSizePercent/G1MaxNewSizePercert: 新生代比例有两个数值指定，下限默认值5%，上限默认值60%
+-XX:ConcGCThreads: 指定并发GC线程数: (3 + ParallelGCThreads) / 4 
+-XX:ParallelGCThreads: 指定并行GC线程数，STW阶段GC线程数: CPU核心数*5/8 + 3
+-XX:G1MixedGCLiveThresholdPercent: 指定被纳入CSet的Region 占比，默认值85%
+-XX:lnitiatingHeapOccupancyPercent: 指定触发全局并发标记的老年代占比，默认值45%
+-XX:G1HeapWastePercent: 指定触发Mixed GC的堆垃圾占比，默认值5%
+-XX:G1OIdCSetRegionThresholdPercent: 指定每轮Mixed GC回收的Region最大比例，默认10% 
+-XX:G1MixedGCCountTarget: 指定一个周期内触发Mixed GC最大次数，默认值8
+-XX:G1ReservePercent: 指定G1为分配担保预留的空间比例，默认10%
+```
 
 ## Links
 
