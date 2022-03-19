@@ -126,3 +126,5 @@ Directory字段和Table字段都是10位长，因此页目录和页表都可以�
 - 页上级目录 (Page Upper Directory)
 - 页中间目录 (Page Middle Directory)
 - 页表 (Page Table)
+
+![2-12.drawio.svg](./images/2-12.drawio.svg)
