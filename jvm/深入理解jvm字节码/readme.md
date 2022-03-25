@@ -19,3 +19,4 @@
 - [https://github.com/zxh0/classpy.git](https://github.com/zxh0/classpy.git)
 - [Operand Stacks](https://docs.oracle.com/javase/specs/jvms/se8/html/jvms-2.html#jvms-2.6.2)
 - [Local Variables](https://docs.oracle.com/javase/specs/jvms/se8/html/jvms-2.html#jvms-2.6.1)
+- [字节码技术](https://tech.meituan.com/2019/09/05/java-bytecode-enhancement.html)
