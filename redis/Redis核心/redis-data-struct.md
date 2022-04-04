@@ -62,6 +62,10 @@ RedisObject 的内部组成包括了 type、encoding、lru 和 refcount 4 个元
 ![redis-redis-object.drawio.svg](./images/redis-redis-object.drawio.svg)
 
 
+## 数据结构
+
+![](./images/redis-data-type.png)
+
 ## Links 
 
 - [Redis sorted Set](https://juejin.cn/post/6844903512413831181)
