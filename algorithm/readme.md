@@ -28,6 +28,11 @@
 
 [对数](https://baike.baidu.com/item/%E5%AF%B9%E6%95%B0)
 
+
+## 算法思想
+
+贪心、分治、回溯、动态规划
+
 ## 算法学习网站
 
 - [https://github.com/chefyuan/algorithm-base](https://github.com/chefyuan/algorithm-base)
