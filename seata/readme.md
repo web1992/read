@@ -2,6 +2,7 @@
 
 ## TCC
 
+- [Seata 的事物隔离](https://seata.io/zh-cn/blog/seata-at-lock.html)
 - [TCC 简介 AT & TCC https://seata.io/zh-cn/docs/overview/what-is-seata.html](https://seata.io/zh-cn/docs/overview/what-is-seata.html)
 - [TCC 概念 http://seata.io/zh-cn/docs/dev/mode/tcc-mode.html](http://seata.io/zh-cn/docs/dev/mode/tcc-mode.html)
 - [TCC 源码 http://seata.io/zh-cn/blog/seata-analysis-tcc-modular.html](http://seata.io/zh-cn/blog/seata-analysis-tcc-modular.html)
@@ -71,7 +72,7 @@ CREATE TABLE `trans_log` (
 
 ## 空回滚产生的原因
 
-已下面的代码为例，（具体的源码地址[TccTransactionService#doTransactionRollback](https://github.com/seata/seata-samples/blob/master/tcc/local-tcc-sample/src/main/java/io/seata/samples/tcc/service/TccTransactionService.java#L47)）
+以下面的代码为例，（具体的源码地址[TccTransactionService#doTransactionRollback](https://github.com/seata/seata-samples/blob/master/tcc/local-tcc-sample/src/main/java/io/seata/samples/tcc/service/TccTransactionService.java#L47)）
 
 ```java
 @GlobalTransactional
