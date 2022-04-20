@@ -147,3 +147,4 @@ RSet 需要维护的引用关系只有两种，非 CSet 老年代 Region 到年�
 
 - [https://docs.oracle.com/javase/9/gctuning/garbage-first-garbage-collector.htm#JSGCT-GUID-ED3AB6D3-FD9B-4447-9EDF-983ED2F7A573](https://docs.oracle.com/javase/9/gctuning/garbage-first-garbage-collector.htm#JSGCT-GUID-ED3AB6D3-FD9B-4447-9EDF-983ED2F7A573)
 - [https://tech.meituan.com/2016/09/23/g1.html](https://tech.meituan.com/2016/09/23/g1.html)
+- [G1垃圾收集器之RSet](https://www.jianshu.com/p/870abddaba41)
