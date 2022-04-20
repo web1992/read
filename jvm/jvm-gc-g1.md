@@ -1,12 +1,14 @@
 # G1
 
 关键字：
-- Refine线程
+- Refine线程, 管理Rset
+- RSet 记录引用者的地址
 - 分区回收算法
 - “停顿时间模型”
 - G1 的老年代和年轻代不再是一块连续的空间，整个堆被划分成若干个大小相同的 Region，也就是区
 - Region 的类型有 Eden、Survivor、Old、Humongous 四种
 - 维护跨分区引用
+- 漏标问题（三色抽象）
 - deletion barrier
 - write barrier
 - 开始时快照（Snapshot At The Beginning，SATB)
@@ -59,6 +61,9 @@ TLAB
 
 ## 内存回收
 
+- 当内存分配的时候，剩余的空间不能满足要分配的对象时就会优先触发新生代回收（YoungGC，YGC）
+- mixed GC
+
 ## 关键技术
 
 - SATB 算法 （Snapshot At The Beginning）
@@ -86,6 +91,8 @@ CSet 的选取要素有以下两点：该 Region 的垃圾占比。垃圾占比�
 如果一个应用会频繁触发 G1 GC 的 Full GC，那么说明这个应用的 GC 参数配置是不合理的，理想情况下 G1 是没有 Full GC 的
 
 ## G1 RSet 
+
+RSet记录引用者的地址
 
 记录集（Remembered Set）RSet
 
@@ -148,3 +155,4 @@ RSet 需要维护的引用关系只有两种，非 CSet 老年代 Region 到年�
 - [https://docs.oracle.com/javase/9/gctuning/garbage-first-garbage-collector.htm#JSGCT-GUID-ED3AB6D3-FD9B-4447-9EDF-983ED2F7A573](https://docs.oracle.com/javase/9/gctuning/garbage-first-garbage-collector.htm#JSGCT-GUID-ED3AB6D3-FD9B-4447-9EDF-983ED2F7A573)
 - [https://tech.meituan.com/2016/09/23/g1.html](https://tech.meituan.com/2016/09/23/g1.html)
 - [G1垃圾收集器之RSet](https://www.jianshu.com/p/870abddaba41)
+- [G1](https://segmentfault.com/a/1190000039411521)
