@@ -92,7 +92,7 @@ CSet 的选取要素有以下两点：该 Region 的垃圾占比。垃圾占比�
 
 ## G1 RSet 
 
-RSet记录引用者的地址
+RSet记录引用者的地址(RS引用的是对象所在的CardPage)
 
 记录集（Remembered Set）RSet
 
