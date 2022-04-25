@@ -1,9 +1,5 @@
 # algorithm
 
-## 算法图形化网站
-
-- [https://www.cs.usfca.edu/~galles/visualization/Algorithms.html](https://www.cs.usfca.edu/~galles/visualization/Algorithms.html)
-
 ## 时间复杂度
 
 > 常见的算法时间复杂度由小到大依次为：
@@ -33,6 +29,10 @@
 
 贪心、分治、回溯、动态规划
 
+## 算法图形化网站
+
+- [https://www.cs.usfca.edu/~galles/visualization/Algorithms.html](https://www.cs.usfca.edu/~galles/visualization/Algorithms.html)
+
 ## 算法学习网站
 
 - [https://github.com/chefyuan/algorithm-base](https://github.com/chefyuan/algorithm-base)
@@ -40,3 +40,4 @@
 - [限流算法(from 博客园)](https://www.cnblogs.com/LBSer/p/4083131.html)
 - [一致性哈希（Consistent hashing)](https://coderxing.gitbooks.io/architecture-evolution/di-san-pian-ff1a-bu-luo/631-yi-zhi-xing-ha-xi.html)
 - [程序员必备的基本算法：递归详解](https://mp.weixin.qq.com/s/A4xG9IbQUjFwQoy9YcneCw)
+- [https://leetcode-solution-leetcode-pp.gitbook.io/leetcode-solution/](https://leetcode-solution-leetcode-pp.gitbook.io/leetcode-solution/)
