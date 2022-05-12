@@ -13,19 +13,34 @@
 - lgtr 控制寄存器
 - 用户代码段 用户数据段
 - 内核代码段 内核数据段
-- cpu_ gdt_table
+- cr3 寄存器记录 Page Directory
+- cpu_gdt_table
 - 物理页 页框
+- Directory
+- Table
+- Offset
+- Physical Address Extension (PAE)
+- cr4 控制PAE的打开
 - 局部性原理
-- 硬件高速缓存内存
+- 硬件高速缓存内存 Cache line L1,L2,L3
+- write-through and write-back
+- cr0 寄存器，控制写策略
+- Linux 总使用 write-back策略
+- Translation Lookaside Buffers (TLB)
+- TLB
+- System.map
 - fork
 - 虚拟内存
 - 内核内存分配器
 
 理解重点：
 
-- 段寄存器就是为了解决CPU位数和地址总线不同的问题而诞生的
+- 段寄存器（硬件分段机制）就是为了解决CPU位数和地址总线不同的问题而诞生的
 - Linux 中基本抛弃了用段管理内存，只是针对特殊的CPU保留了段内存管理
-- 
+- 分段技术是x86处理器特殊的技术
+- 分段是硬件实现的，软件（操作系统/内核）要对分段技术做适配（支持）当然也可以想办法绕过分段
+- 分页有两种：一种是硬件实现的分页机制，一种是Linux内核实现的分页机制
+- The paging unit translates linear addresses into physical ones.
 
 ## 内存地址
 
@@ -85,13 +100,12 @@ which are respectively called Kernel Mode and User Mode.
 
 ## 硬件分页
 
-页 = 一组线性地址
 
-## 页+页框
+### 页+页框
 
 分页单元把所有的RAM分成固定长度的页框(page frame) (有时叫做物理页)。每一个页框包含一个页(page)， 也就是说一个页框的长度与一个页的长度一致。`页框是主存的一部分`，因此也是一个存储区域。区分一页和一个页框是很重要的，前者只是一个数据块，可以存放在任何页框或磁盘中。
 
-## 常规的分页
+### 常规的分页
 
 从80386起，Intel处理器的分页单元处理4KB的页。
 
@@ -141,6 +155,16 @@ Directory字段和Table字段都是10位长，因此页目录和页表都可以�
 
 ![2-12.drawio.svg](./images/2-12.drawio.svg)
 
+## 物理内存布局
+
+Linux 内核启动的时候如果进行内存布局
+
+- Linux 内核安装从第二个MB开始（其他内存留给BIOS等程序使用）
+- machine_specific_memory_setup()
+- System.map
+
+![2-13.drawio.svg](./images/2-13.drawio.svg)
+
 ## 虚拟内存
 
 所有新近的Unix系统都提供了一种有用的抽象，叫虚拟内存(virtual memory)。虚拟内存作为一种逻辑层，处于应用程序的内存请求与硬件内存管理单元(Memory Management Unit，MMU) 之间。虚拟内存有很多用途和优点:
@@ -181,3 +205,4 @@ Directory字段和Table字段都是10位长，因此页目录和页表都可以�
 
 - [https://www.cnblogs.com/longintchar/p/5224405.html](https://www.cnblogs.com/longintchar/p/5224405.html)
 - [x86段寄存器和分段机制](https://zhuanlan.zhihu.com/p/324210723)
+- [https://cloud.tencent.com/developer/article/1740848](https://cloud.tencent.com/developer/article/1740848)
