@@ -4,9 +4,9 @@
 - 实模式 real mode
 - 保护模式 protected mode
 - 逻辑地址 logical address
-- 线性地址 linear address (virtual address)
+- 线性地址 linear address (virtual address) 虚拟地址
 - 物理地址 physical address
-- 内存仲裁芯片 memory arbiter
+- 内存仲裁芯片 memory arbiter (a memory arbiter)
 - Global Descriptor Table  GDT
 - Local Descriptor Table LDT
 - dgtr 控制寄存器
@@ -21,8 +21,11 @@
 - 虚拟内存
 - 内核内存分配器
 
+理解重点：
 
-![第二章-内存寻址.svg](./images/第二章-内存寻址.svg)
+- 段寄存器就是为了解决CPU位数和地址总线不同的问题而诞生的
+- Linux 中基本抛弃了用段管理内存，只是针对特殊的CPU保留了段内存管理
+- 
 
 ## 内存地址
 
@@ -58,6 +61,11 @@ RPL  | 请求者特权级: 当相应的段选择符装入到cs寄存器中时指
 - ds 数据段寄存器，指向包含静态数据或者全局数据段。
 
 其他3个段寄存器作一般用途，可以指向任意的数据段。cs寄存器还有一个很重要的功能:它含有一个两位的字段，用以指明CPU的当前特权级(Current Privilege Level, CPL)。值为0代表最高优先级，而值为3代表最低优先级。Linux 只用0级和3级，分别称之为内核态和用户态。
+
+>The cs register has another important function: it includes a 2-bit field that specifies
+the Current Privilege Level (CPL) of the CPU. The value 0 denotes the highest privilege
+level, while the value 3 denotes the lowest one. Linux uses only levels 0 and 3,
+which are respectively called Kernel Mode and User Mode.
 
 ## 段描述符
 
@@ -167,3 +175,9 @@ Directory字段和Table字段都是10位长，因此页目录和页表都可以�
 - Solaris的Slab分配算法
 
 我们将在第八章中看到, Linux的KMA在伙伴系统之上采用了Slab分配算法。
+
+
+## Links
+
+- [https://www.cnblogs.com/longintchar/p/5224405.html](https://www.cnblogs.com/longintchar/p/5224405.html)
+- [x86段寄存器和分段机制](https://zhuanlan.zhihu.com/p/324210723)
