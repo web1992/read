@@ -26,3 +26,16 @@
 ```java
 -server -Xms1024m -Xmx1024m -Xss256k -XX:PermSize=128m -XX:MaxPermSize=128m -XX:+UseParallelOldGC -XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=/opt/dump -XX:+PrintGCDetails -XX:+PrintGCDateStamps -Xloggc:/opt/dump/heap_trace_payment.txt -XX:NewSize=512m -XX:MaxNewSize=512m
 ```
+
+
+## 内存分析
+
+```sh
+ps -mp 41450 -o THREAD,tid,time
+
+printf "%x\n" 41458
+# a1f2
+
+jstack 41450 |grep  -A 10 a1f2
+
+```

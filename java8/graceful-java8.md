@@ -1,0 +1,68 @@
+# Java 8
+
+## 简介
+
+- 如何去理解+使用 Lambda `函数式编程`。
+- Lambda 在Stream 中的使用。
+- 实现原理
+
+## 鸭子类型
+
+鸭子类型（英语：duck typing）在程序设计程序设计程序设计中是动态类型动态类型动态类型的一种风格。在这种风格中，一个对象有效的语义，不是由继承自特定的类或实现特定的接口，而是由"当前方法方法方法和属性的集合"决定。这个概念的名字来源于由詹姆斯·惠特科姆·莱利詹姆斯·惠特科姆·莱利詹姆斯·惠特科姆·莱利（英语：James Whitcomb RileyJames Whitcomb RileyJames Whitcomb Riley）提出的鸭子测试鸭子测试鸭子测试（见下面的“历史历史历史”章节），“鸭子测试”可以这样表述：
+“当看到一只鸟走起来像鸭子、游泳起来像鸭子、叫起来也像鸭子，那么这只鸟就可以被称为鸭子。
+
+## Thread 中的应用
+
+```java
+public static void main(String[] args) {
+
+    System.setProperty("jdk.internal.lambda.dumpProxyClasses", ".");
+
+    new Thread(LambdaTest2::run).start();
+
+}
+
+
+public static void run() {
+    System.out.println(Thread.currentThread().getName() + " run ...");
+}
+
+```
+
+## ThreadLocal 中的应用
+
+```java
+public static final ThreadLocal<Object> TC_OBJ = ThreadLocal.withInitial(Object::new);
+
+public static final ThreadLocal<Map<?, ?>> TC_MAP = ThreadLocal.withInitial(HashMap::new);
+
+```
+
+## 不好的例子
+
+```java
+List<Long> detailIdList = dOList.stream()
+                .filter(it -> it.getId() != null && it.getId() > 0)
+                .map(it -> it.getId()).distinct().collect(Collectors.toList());
+
+```
+
+
+## 底层原理
+
+- invokedynamic
+- BootstrapMethods
+- LambdaMetafactory.metafactory
+- Ljava/lang/invoke/MethodType;Ljava/lang/invoke/MethodHandle
+
+
+## 其他
+
+- idea 优化
+- 使用lambda会有性能损失吗
+- lambda vs 匿名内部类
+
+## Links
+
+- [https://colobu.com/2014/11/06/secrets-of-java-8-lambda/#LambdaMetafactory-metafactory](https://colobu.com/2014/11/06/secrets-of-java-8-lambda/#LambdaMetafactory-metafactory)
+- [https://www.baeldung.com/java-method-handles](https://www.baeldung.com/java-method-handles)
