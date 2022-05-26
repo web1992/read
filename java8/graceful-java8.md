@@ -66,3 +66,5 @@ List<Long> detailIdList = dOList.stream()
 
 - [https://colobu.com/2014/11/06/secrets-of-java-8-lambda/#LambdaMetafactory-metafactory](https://colobu.com/2014/11/06/secrets-of-java-8-lambda/#LambdaMetafactory-metafactory)
 - [https://www.baeldung.com/java-method-handles](https://www.baeldung.com/java-method-handles)
+- [http://cr.openjdk.java.net/~briangoetz/lambda/lambda-translation.html](http://cr.openjdk.java.net/~briangoetz/lambda/lambda-translation.html)
+- [http://cr.openjdk.java.net/~briangoetz/lambda/lambda-state-final.html](http://cr.openjdk.java.net/~briangoetz/lambda/lambda-state-final.html)
