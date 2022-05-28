@@ -10,6 +10,7 @@
 - 存储引擎文件
 - STATEMENT格式记录的是SQL语句，不占磁盘
 - ROW格式记录表的行更改情况（列新值：列旧值）占较多的磁盘
+- show variables like 'binlog_format'
 
 
 ## 二进制文件

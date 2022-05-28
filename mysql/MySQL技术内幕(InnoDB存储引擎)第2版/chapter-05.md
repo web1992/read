@@ -29,15 +29,11 @@ B+树中的B不是代表二叉(binary),而是代表平衡(balance),因为B+树�
 
 ## 聚集索引
 
-InnoDB存储引擎表是索引组织表，即表中数据按照主键顺序存放。而聚集索引(clustered index)就是按照每张表的主键构造一棵B+树，同时叶子节点中存放的即为整张表的行记录数据，也将聚集索引的叶子节点称为数据页。个数据页都通过一个双向链表来进行链接。
+InnoDB存储引擎表是索引组织表，即表中数据按照主键顺序存放。而聚集索引(clustered index)就是按照每张表的主键构造一棵B+树，同时叶子节点中存放的即为整张表的行记录数据，也将聚集索引的叶子节点称为数据页。每个数据页都通过一个双向链表来进行链接。
 
 ## 辅助索引
 
-对于辅助索引(Secondary Index，也称非聚集索引)，叶子节点并不包含行记录的
-全部数据。叶子节点除了包含键值以外，每个叶子节点中的索引行中还包含了一个书签
-(bookmark)。 该书签用来告诉InnoDB存储引擎哪里可以找到与索引相对应的行数据。由
-于InnoDB存储引擎表是索引组织表，因此InnoDB存储引擎的辅助索引的书签就是相应
-行数据的聚集索引键。
+对于辅助索引(Secondary Index，也称非聚集索引)，叶子节点并不包含行记录的全部数据。叶子节点除了包含键值以外，每个叶子节点中的索引行中还包含了一个书签(bookmark)。 该书签用来告诉InnoDB存储引擎哪里可以找到与索引相对应的行数据。由于InnoDB存储引擎表是索引组织表，因此InnoDB存储引擎的辅助索引的书签就是相应行数据的聚集索引键。
 
 
 ## Online DDL
@@ -75,4 +71,4 @@ InnoDB存储引擎支持覆盖索引(covering index,或称索引覆盖)，即从
 
 ## Index Condition Pushdown
 
-和Multi-Range Read -样，Index Condition Pushdown同样是MySQL 5.6开始支持的一种根据索引进行查询的优化方式。之前的MySQL数据库版本不支持Index Condition Pushdown，当进行索引查询时，首先根据索引来查找记录，然后再根据WHERE条件来过滤记录。在支持IndexConditionPushdown后，MySQL数据库会在取出索引的同时，判断是否可以进行WHERE条件的过滤，也就是将WHERE的部分过滤操作放在了存储引擎层。在某些查询下，可以大大减少.上层SQL层对记录的索取(fetch), 从而提高数据库的整体性能。
+和Multi-Range Read -样，Index Condition Pushdown同样是MySQL 5.6开始支持的一种根据索引进行查询的优化方式。之前的MySQL数据库版本不支持Index Condition Pushdown，当进行索引查询时，首先根据索引来查找记录，然后再根据WHERE条件来过滤记录。在支持Index Condition Pushdown后，MySQL数据库会在取出索引的同时，判断是否可以进行WHERE条件的过滤，也就是将WHERE的部分过滤操作放在了存储引擎层。在某些查询下，可以大大减少上层SQL层对记录的索取(fetch), 从而提高数据库的整体性能。

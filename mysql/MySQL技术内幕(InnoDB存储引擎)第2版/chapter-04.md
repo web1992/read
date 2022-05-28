@@ -9,8 +9,8 @@
 - 32 个碎页
 - Compact 
 - Redundant
-- BLOB LOB 类型的数据会进行特殊的处理
-- Infimum ， Supremum Record
+- BLOB,LOB类型的数据会进行特殊的处理
+- Infimum,Supremum Record
 - User Record FA Free Space
 - 约束
 - 索引
@@ -33,14 +33,12 @@
 
 表空间可以看做是InnoDB存储引擎逻辑结构的最高层，所有的数据都存放在表空间中。第3章中已经介绍了在默认情况下InnoDB存储引擎有一个共享表空间ibdata1,
 即所有数据都存放在这个表空间内。如果用户启用了参数innodb_file_per_table, 则每张表内的数据可以单独放到一个表空间内。
-如果启用了innodb_file_per_table 的参数，需要注意的是每张表的表空间内存放的只是数据、索引和插人缓冲Bitmap页，其他类的数据，如回滚(undo) 信息，插入缓冲
-索引页、系统事务信息，二次写缓冲(Double write buffer)等还是存放在原来的共享表空间内。这同时也说明了另一个问题:即使在启用了参数innodb_file_per_table之后，共
-享表空间还是会不断地增加其大小。
+如果启用了innodb_file_per_table 的参数，需要注意的是每张表的表空间内存放的只是数据、索引和插人缓冲Bitmap页，其他类的数据，如回滚(undo) 信息，插入缓冲索引页、系统事务信息，二次写缓冲(Double write buffer)等还是存放在原来的共享表空间内。这同时也说明了另一个问题:即使在启用了参数innodb_file_per_table之后，共享表空间还是会不断地增加其大小。
 
 ## 段
 
-图4-1中显示了表空间是由各个段组成的，常见的段有数据段、索引段、回滚段等。因为前面已经介绍过了`InnoDB`存储引擎表是索引组织的(index organized)，因此数据
-即索引，索引即数据。那么数据段即为B+树的叶子节点(图4-1的Leaf node segment),索引段即为B+树的非索引节点(图4-1的Non-leaf node segment)。回滚段较为特殊，将会在后面的章节进行单独的介绍。
+图4-1中显示了表空间是由各个段组成的，常见的段有数据段、索引段、回滚段等。因为前面已经介绍过了`InnoDB`存储引擎表是索引组织的(index organized)，因此数据即索引，索引即数据。
+那么数据段即为B+树的叶子节点(图4-1的Leaf node segment),索引段即为B+树的非索引节点(图4-1的 Non-leaf node segment)。回滚段较为特殊，将会在后面的章节进行单独的介绍。
 
 ## 区
 
@@ -106,7 +104,7 @@ show  table status  like '%my_table%';
 InnoDB存储引擎可以将一条记录中的某些数据存储在真正的数据页面之外。一般认为BLOB、LOB这类的大对象列类型的存储会把数据存放在数据页面之外。但是，这个
 理解有点偏差, BLOB可以不将数据放在溢出页面，而且即便是VARCHAR列数据类型，依然有可能被存放为行溢出数据。
 
-首先对VARCHAR数据类型进行研究。很多DBA喜欢MySQL数据库提供的VARCHAR类型，因为相对于Oracle VARCHAR2最大存放4000字节，SQL Server最大
+首先对VARCHAR数据类型进行研究。很多DBA喜欢MySQL数据库提供的VARCHAR类型，因为相对于Oracle VARCHAR最大存放4000字节，SQL Server最大
 存放8000字节，MySQL数据库的VARCHAR类型可以存放65535字节。但是，这是真的吗?真的可以存放65535字节吗?如果创建VARCHAR长度为65535的表，用户会得到下面的错误信息:
 
 ```sql
@@ -126,7 +124,7 @@ CREATE TABLE test (
 此外需要注意的是，MySQL官方手册中定义的65535长度是指所有VARCHAR列”的长度总和，如果列的长度总和超出这个长度，依然无法创建，如下所示:
 
 3个列长度总和是66000，因此InnoDB存储引擎再次报了同样的错误。即使能存放65532个字节，但是有没有想过，InnoDB 存储引擎的页为16KB，即16384 字节，怎么
-能存放65532字节呢?因此，在--般情况下，InnoDB存储引擎的数据都是存放在页类型为B-treenode中。但是当发生行溢出时，数据存放在页类型为UncompressBLOB页中。
+能存放65532字节呢?因此，在一般情况下，InnoDB存储引擎的数据都是存放在页类型为B-treenode中。但是当发生行溢出时，数据存放在页类型为UncompressBLOB页中。
 
 ## Compressed和Dynamic行记录格式
 
