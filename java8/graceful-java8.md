@@ -2,10 +2,12 @@
 
 ## 简介
 
-- 如何去理解+使用 Lambda `函数式编程`。
+- 如何去理解+使用 Lambda `函数式编程`
+- 从匿名内部类 到 Lambda 到方法引用
 - Lambda 在Stream 中的使用。
 - 实现原理
 - 方法引用
+- 借助IDEA
 
 ## 鸭子类型
 
@@ -43,8 +45,12 @@ public static final ThreadLocal<Map<?, ?>> TC_MAP = ThreadLocal.withInitial(Hash
 
 ```java
 List<Long> detailIdList = dOList.stream()
-                .filter(it -> it.getId() != null && it.getId() > 0)
-                .map(it -> it.getId()).distinct().collect(Collectors.toList());
+                .filter(this::aa)
+                .map(this::bb)
+                .distinct().collect(Collectors.toList());
+
+            
+
 
 ```
 
