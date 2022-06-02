@@ -41,16 +41,13 @@ public static final ThreadLocal<Map<?, ?>> TC_MAP = ThreadLocal.withInitial(Hash
 
 ```
 
-## 不好的例子
+## 好的例子
 
 ```java
 List<Long> detailIdList = dOList.stream()
                 .filter(this::aa)
                 .map(this::bb)
                 .distinct().collect(Collectors.toList());
-
-            
-
 
 ```
 
