@@ -13,4 +13,15 @@
 - F 1111
 - 字长 word size
 - 虚拟地址是一个字来编码
-- 
+- 32位和64位的典型值
+- int32_t(4字节) int64_t(8字节) 避免不同编译器之间不同的差异 （ISO 99）
+- unsigned long
+- unsigned long int
+- long unsigned
+- long unsigned
+- 寻址和字节顺序
+- 对象的地址是什么，以及在内存中是如何排列这些字节的
+- 前一种规则 最低有效字节在最前面的方式，称为小端法(ittle endian)
+- 后一种规则 最高有效字节在最前面的方式，称为大端法(big endian)
+- 网络传输顺序
+- 阅读顺序，编译器的顺序
