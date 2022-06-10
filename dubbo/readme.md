@@ -19,7 +19,6 @@
 
 ## `Dubbo` 源码分析
 
-- [x] [dobbo-stream.md](dobbo-stream.md)
 - [x] [dubbo-channel-handler.md](dubbo-channel-handler.md)
 - [x] [🔥dubbo-codec2.md](dubbo-codec2.md)
 - [x] [dubbo-dispatcher.md](dubbo-dispatcher.md)
