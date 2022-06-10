@@ -56,6 +56,9 @@
 
 > 上面说了IP协议，TCP协议，duboo协议，目的就是要知道dubbo协议的组成，而下面的Codec2实现就是对dubbo协议Head和Body解析。
 
+- DecodeableRpcInvocation
+- DecodeableRpcResult
+
 ## Codec2 interface
 
 `Codec2` 的作用：
