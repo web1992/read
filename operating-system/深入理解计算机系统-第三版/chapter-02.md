@@ -35,8 +35,8 @@
 - 左移
 - 逻辑右移 算术右移 (P76)
 - 整数的表示
-- 补码编码 two' s-complement
-- 双摄
+- 补码编码 two' s-complement (P45|81)
+- 双摄 
 
 ## sizeof
 
