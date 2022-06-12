@@ -1,4 +1,4 @@
-# I/O 复用 select 和 poll 函数
+# 第6章 I/O 复用 select 和 poll 函数
 
 关键字：
 
