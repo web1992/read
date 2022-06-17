@@ -35,7 +35,8 @@
 - 左移
 - 逻辑右移 算术右移 (P76)
 - 整数的表示
-- 补码编码 two's-complement (P45|81)
+- 数字的权重
+- 补码编码 two's-complement (P45)
 - 双摄 
 - 补码编码的唯一性，函数 B2T $_w$ 是一个双摄
 - limits.h
@@ -45,7 +46,10 @@
 - 反汇编
 - 有符号数和无符号数之间的转换
 - 零扩展 zero extension
-
+- 算术运算的溢出
+- 正常情况下xty的值保持不变，而溢出情况则是该和数减去2 $^w$ 的结果
+- IEEE 格式
+- IEEE 符号(sign)，阶码(exponent)，尾数(significand)
 
 ## sizeof
 
