@@ -35,7 +35,13 @@
 - JNIEnv 
 - InvocationFunctions
 - JavaCalls
-
+- Threads::create_vm()
+- JMX
+- Management 模块
+- RuntimeService
+- ThreadService
+- ClassLoadingService
+- Code Cache
 
 ## Runtime 模块
 
