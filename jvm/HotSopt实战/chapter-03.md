@@ -1,5 +1,6 @@
 # 第三章 类与对象
 
+- OOP-Klass 模型
 - OOP: ordinary object pointer， 或OOPS.即普通对象指针， 用来描述对象实例信息。
 - Klass: Java 类的C++对等体，用来描述Java类.
 - mark word
