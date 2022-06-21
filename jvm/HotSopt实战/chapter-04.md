@@ -22,8 +22,22 @@
 - methodOop methodOopDesc
 - 方法表
 - ConstMethodOop
-
-
+- PerfData
+— PerfMemory (通过共享内存实现)
+- PerfMemory是运行时记录JVM信息的载体 
+- perfMemory.hpp
+- jstat -J-Djstat.showUnsupported=true -snap $pid
+- JVM Crash
+- hs_err_pid<pid>.log
+- 程序计数器(PC) 进程ID (pid) 和线程ID ( tid)
+- 线程信息 P155
+- JVM 状态
+- not at a safepoint:正常执行状态
+- at safepoint:所有的线程阻塞，等待VM完成专门的VM操作(VM operation)
+- synchronizing:VM接到一个专门的VM操作请求，等待VM中所有线程阻塞
+- 应用程序转储
+- 线程转储
+- 堆转储
 
 ## 内存区域划分
 
@@ -112,4 +126,22 @@ P127 介绍了方法的调用过程(如果对class文件结构熟悉，和容易
 JVM规范规定，指令anewarray、checkcast. getfield、 getstatic、 instanceof. invokedynamic、invokeinterface、invokespecial 、invokestatic 、invokevirtual 、ldc、 ldc_w、 multianewarray、new、putfield和putstatic将符号引用指向运行时常量池。当执行到上述指令时，需要对它的符号引用进行解析。
 
 - invokedynamic
-- 链接解析器( LinkResolver)
+- 链接解析器(LinkResolver)
+
+## 转储
+
+虚拟机提供转储技术，能够将运行时刻的程序快照保存下来，为调试、分析或诊断提供数据支持。转储类型包括以下3种:
+
+- 核心转储 (core dump) / (crash dump);
+- 堆转储 (heap dump);
+- 线程转储 (thread dump)
+
+转储文件为我们对故障进行离线分析提供了可能。
+
+核心转储(coredump),也称为崩溃转储(crashdump),是一个正在运行的进程内存快照。它可以在一个致命或未处理的错误(如:信号或系统异常)发生时由操作系统自动创建。另外，也可以通过系统提供的命令行工具强制创建。核心转储文件可供离线分析，往往能揭示进程崩溃的原因。
+
+一般来说，核心转储文件并不包含进程的全部内存空间数据，如.text节(或代码)等内存页就没有包含进去，但是至少包含堆和栈信息。
+
+- HSDB
+- jstack对core dump的支持选项(参见第9章)
+- Visual VM
