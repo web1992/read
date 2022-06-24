@@ -1,5 +1,7 @@
 # MySQL技术内幕(InnoDB存储引擎)第2版（笔记）
 
+此文是《MySQL技术内幕(InnoDB存储引擎)第2版》 的摘要。本人推荐，对理解MySQL如何运行+存储数据有很大帮助，适合入门（工作2年以上）。
+
 - [第1章 MySQL体系结构和存储引擎](chapter-01.md)
 - [第2章 InnoDB存储引擎](chapter-02.md)
 - [第三章 文件](chapter-03.md)
