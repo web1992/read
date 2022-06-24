@@ -1,4 +1,4 @@
-# 第5章 垃圾收集
+# 第五章 垃圾收集
 
 - 垃圾收集 Garbage Collection GC
 - 垃圾收集器(Garbage Collector)
@@ -32,6 +32,14 @@
 - 初始标记
 - 并发标记
 - G1 Region
+- -verbose:gc
+- -XX:PrintGC 等同于"-verbose.gc"
+- -XX:PrintGCDetails GC时输出更多细节信息
+- -XX:PrintGCDateStamps GC操作的日期戳信息，相对于时间戳，这个是GST时间
+- -XX:PrintGCTimeStamps  GC时的时间戳信息
+- -XX:PrintGCTaskTimeStamps 输出每个GC工作线程的时间戳信息
+- -Xloggc: <filename> 输出GC日志至文件
+- -XX:+ShowSafepointMsgs 输出安全点信息
 
 ## 垃圾收集器
 
@@ -58,7 +66,7 @@ JVM通过两类参数判断对象是否可以晋升到老年代。
 
 ## 可达性(reachability)
 
-本身是根对象。根(root)是指由堆以外空间访问的对象。JVM中会将一-组对 象标记为根，包括全局变量、部分系统类，以及栈中引用的对象，如当前栈帧中的局部变量和参数。被一个可达的对象引用。
+本身是根对象。根(root)是指由堆以外空间访问的对象。JVM中会将一组对 象标记为根，包括全局变量、部分系统类，以及栈中引用的对象，如当前栈帧中的局部变量和参数。被一个可达的对象引用。
 
 ## 安全点 safepoint
 
@@ -95,3 +103,27 @@ JVM在暂停的时候，需要选准一一个时机，由于JVM系统运行期�
 ## G1 Region
 
 ![jvm-g1-heap-Layout.drawio.svg](./images/jvm-g1-heap-Layout.drawio.svg)
+
+
+## G1 回收的过程
+
+
+- (1)初始标记(InitialMark):STW。G1将这个过程伴随在一次普通的新生代GC中完成。该阶段标记的是幸存区Regions (Root Regions)。当然，该区域仍有可能引用老年代的对象。
+- (2)根区域扫描( Root Region Scanning):扫描幸存区中引用老年代的Regions。该阶段与应用程序并发进行。这一过程必须能够在新生代GC发生前完成。
+- (3)并发标记(Concurrent Marking):找出全堆中存活对象。该阶段与应用程序并发进行。这一过程允许被新生代GC打断。
+- (4)重新标记(Remark): STW，完成堆中存活对象的标记。重新标记基于SATB算法(snapshot-at-the-beginning)，比CMS收集器算法快很多。
+- (5)清理(Cleanup)。包括3个阶段:首先，计算活跃对象并完全释放自由Regions(STW);然后，处理Remembered Sets (STW);最后，重置空闲regions并将它们放回空闲列表(并发)。
+- (6)复制(Copying): STW。 将存活对象疏散或复制至新的未使用区域内。
+
+
+## GC 日志
+
+- -XX:PrintGC 等同于"-verbose.gc"
+- -XX:PrintGCDetails GC时输出更多细节信息
+- -XX:PrintGCDateStamps GC操作的日期戳信息，相对于时间戳，这个是GST时间
+- -XX:PrintGCTimeStamps  GC时的时间戳信息
+- -XX:PrintGCTaskTimeStamps 输出每个GC工作线程的时间戳信息
+- -Xloggc: <filename> 输出GC日志至文件
+
+- PrintGCTimeStamps 绝对时间，比如2022-06-01 10:59:59
+- PrintGCDateStamps 相对时间，比如 5.20
