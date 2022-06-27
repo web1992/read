@@ -13,6 +13,8 @@
 - [第五章 垃圾收集](chapter-05.md)
 - [第六章 栈](chapter-06.md)
 - [第七章 解释器和即时编译器](chapter-07.md)
+- [第八章 指令集](chapter-08.md)
+- [第九章 虚拟机监控工具](chapter-09.md)
 
 ## Links
 
