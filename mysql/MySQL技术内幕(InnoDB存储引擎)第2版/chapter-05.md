@@ -1,9 +1,15 @@
 # 第5章 索引与算法
 
+- 事前做好添加索引的准备
+- 索引太多也不好，索引的更新有需要CPU时间
 - B+树索引
+- 二分查找(折半查找) binary serach
+- 在介绍B+树前，需要先了解一下二叉查找树。B+树是通过二叉查找树，再由平衡二叉树，B树演化而来。相信在任何一本有关数据结构的书中
 - 全文索引
 - 哈希索引
-- AVL 树，平衡二叉树
+- AVL树（平衡二叉树）
+- B+树的插入
+- B+树的高度较小，可以减少IO次数，提高性能
 - 最优二叉树
 - 聚集索引(clustered inex)和辅助索引(secondary inex)
 - Fast Index Creation
@@ -12,9 +18,8 @@
 - Cardinality 值的采样更新
 - 覆盖索引
 - FORCE INDEX
-- Multi-Range Read 优化
+- Multi-Range Read 优化(MRR) 减少随机IO Using MRR
 - 书签访问
-- Multi-Range Read
 - Index Condition Pushdown (ICP) 优化
 
 ## B+树
@@ -25,7 +30,15 @@ B+树中的B不是代表二叉(binary),而是代表平衡(balance),因为B+树�
 
 另一个常常被DBA忽视的问题是:B+树索引并不能找到一个给定键值的具体行。B+树索引能找到的只是被查找`数据行所在的页`。然后数据库通过把页读人到内存，再在内存中进行查找，最后得到要查找的数据。
 
+我来精简地对B+树做个介绍:B+树是为磁盘或其他直接存取辅助设备设计的一种平衡查找树。在B+树中，所有记录节点都是按键值的大
+小顺序存放在同一层的叶子节点上，由各叶子节点指针进行连接。先来看一个B+树，其高度为2，每页可存放4条记录，扇出(fanout)为5，如图5-6所示。
+
 ![mysql-innodb-chapter-05-06.drawio.svg](./images/mysql-innodb-chapter-05-06.drawio.svg)
+
+
+## 平衡二叉树
+
+平衡二叉树的查询速度的确很快，但是维护一棵平衡二叉树的代价是非常大的。通常来说，需要1次或多次左旋和右旋来得到插人或更新后树的平衡性。
 
 ## 聚集索引
 
@@ -69,6 +82,21 @@ InnoDB存储引擎支持覆盖索引(covering index,或称索引覆盖)，即从
 - 通过书签访问查询整行的数据，此时的IO操作是无序的，速度可能变慢
 - 顺序读的速度要远远大于离散读
 
+## Multi-Range Read 
+
+- MRR使数据访问变得较为顺序。在查询辅助索引时，首先根据得到的查询结果,按照主键进行排序，并按照主键排序的顺序进行书签查找。
+- 减少缓冲池中页被替换的次数。
+- 批量处理对键值的查询操作。
+
+对于InnoDB和MyISAM存储引擎的范围查询和JOIN查询操作，MRR的工作方式
+- 将查询得到的辅助索引键值存放于一个缓存中，这时缓存中的数据是根据辅助索引键值排序的。
+- 将缓存中的键值根据RowID进行排序。
+- 根据RowID的排序顺序来访问实际的数据文件。
+
 ## Index Condition Pushdown
 
 和Multi-Range Read -样，Index Condition Pushdown同样是MySQL 5.6开始支持的一种根据索引进行查询的优化方式。之前的MySQL数据库版本不支持Index Condition Pushdown，当进行索引查询时，首先根据索引来查找记录，然后再根据WHERE条件来过滤记录。在支持Index Condition Pushdown后，MySQL数据库会在取出索引的同时，判断是否可以进行WHERE条件的过滤，也就是将WHERE的部分过滤操作放在了存储引擎层。在某些查询下，可以大大减少上层SQL层对记录的索取(fetch), 从而提高数据库的整体性能。
+
+## Links 
+
+- [B+ 红黑树对比](https://www.cnblogs.com/yufeng218/p/12465694.html)
