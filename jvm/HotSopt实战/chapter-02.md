@@ -1,5 +1,14 @@
 # 第二章 启动
 
+> 概要
+
+- HotSpot内核模块
+- 启动器Launcher和启动过程
+- JVM初始化过程
+- 全局模块初始化
+
+> 关键字 
+
 - OOP-Klass 二分模型
 - ***oopDesc
 - JVM_ENTRY JVM_END=}}
