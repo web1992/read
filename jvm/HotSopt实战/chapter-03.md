@@ -19,7 +19,8 @@
 - oopsHierarchy.hpp
 - Klass数据结构定义了所有Klass 类型共享的结构和行为:描述类型自身的布局，以及刻画出与其他类间的关系(父类、子类、兄弟类等)
 - instanceKlass JVM层表示Java对象
-- Java itables Java vtables
+- Java itables
+- Java vtables
 - OOP-map
 - HSDB
 - 加载，连接，初始化
@@ -29,9 +30,10 @@
 - 运行时常量池
 - 静态常量池
 - 符号引用
-- 符号引用->直接引用 解析（常量池解析）
+- 符号引用->直接引用
+- 解析（常量池解析）
 - 解析是链接的核心环节 (P101)
-- 字节码重写
+- 字节码重写 `rewriter.cpp` (P104)
 - TLABs Thread Local Allocation Buffers
 - 系统字典 systemDictionary.hpp
 - SA 代理库
@@ -162,9 +164,6 @@ JVM规范并没有强制规定解析过程发生的时间点。根据不同的�
 ## clinit
 
 上述代码第1行获取了该类的类初始化方法<clinit>,该方法是由Javac编译器自动生成和命名的，<clinit> 是一个不含参数的静态方法，该方法不能通过程序直接编码方式实现，只能由编译器根据类变量的赋值语句或静态语句块自动插入到Class文件中。此外，<clinit>方法没有任何虚拟机字节码指令可以调用，它只能在类型初始化阶段被虚拟机隐式调用。最终，在代码5行，通过JavaCalls模块2执行该类的<clinit>方法。
-
-(9)如果初始化函数的执行正常地结束，则锁定这个instanceKlass对象，并将其状态位置为
-fully_initialized, 通知所有正在等待的线程，释放锁并正常地结束该过程，如清单3-16(g)所示。
 
 ## Links
 

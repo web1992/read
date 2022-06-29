@@ -1,21 +1,33 @@
 # 第四章 运行时数据区
 
+> 概述
+
+- 内存职能区域划分
+- 自动内存管理和分代
+- 线程私有区域: PC寄存器和栈
+- 方法区和运行时常量池
+- 性能监控数据区域: PerfData
+- 如何分析Dump文件
+- 如何分析JVM Crash
+
+> 关键字
+
 - 堆:用来分配Java对象和数组的空间。
 - 方法区:存储类元数据。
 - 栈:线程栈。
 - PC寄存器:存储执行指令的内存地址。
 - 堆 一块内存区域，满足程序的内存分配请求
 - 自动的内存管理
-- 分代收集( generational collection )
-- 新生代( Young Generation，常称为YoungGen),位于堆空间;
+- 分代收集(generational collection)
+- 新生代(Young Generation，常称为YoungGen),位于堆空间;
 - 老年代(Old Generation，常称为OldGen)，位于堆空间;
-- 永久代( Permanent Generation，常称为PermGen), 位于非堆空间。
+- 永久代(Permanent Generation，常称为PermGen), 位于非堆空间。
 - universe.hpp
 - 私有区域 PC 寄存器和栈
 - 常量池
 - constantPoolOopDesc
 - 常量池缓存: ConstantPoolCache
-- kclassOop
+- klassOop
 - itable
 - ToState
 - CpCacheOop
