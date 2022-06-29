@@ -20,3 +20,4 @@
 
 - [https://adoptopenjdk.net/](https://adoptopenjdk.net/)
 - [https://github.com/openjdk/jdk8u](https://github.com/openjdk/jdk8u)
+- [https://github.com/openjdk/jdk19](https://github.com/openjdk/jdk19)
