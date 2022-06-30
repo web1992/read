@@ -28,7 +28,11 @@ env->CallStaticVoidMethod(cls, mid, 100);
 jvm->DestroyJavaVM();
 ```
 
+
 ## Links
+
+- [JNI Interface Functions and Pointers](https://docs.oracle.com/javase/6/docs/technotes/guides/jni/spec/design.html#wp615)
+- [https://docs.oracle.com/javase/6/docs/technotes/guides/jni/spec/jniTOC.html](https://docs.oracle.com/javase/6/docs/technotes/guides/jni/spec/jniTOC.html)
 
 - [https://docs.oracle.com/javase/8/docs/technotes/guides/jni/spec/jniTOC.html](https://docs.oracle.com/javase/8/docs/technotes/guides/jni/spec/jniTOC.html)
 - [https://docs.oracle.com/javase/8/docs/technotes/guides/jni/spec/invocation.html#wp15899](https://docs.oracle.com/javase/6/docs/technotes/guides/jni/spec/invocation.html#wp15899)
