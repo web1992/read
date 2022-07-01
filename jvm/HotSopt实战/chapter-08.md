@@ -57,10 +57,10 @@ ITABLE表由一组偏移表(offset table) 和方法表(method table) 组成，�
 
 ## 异常机制
 
-Java通过组合两种机制，保证程序通过上述所有路径都必须进入finally 语句块。
-- 编译期植入finally 语句:将finally 中的语句块复制一份插入try语句块字节码后面，保证try执行完毕后立即执行finally语句块代码。
+Java通过组合两种机制，保证程序通过上述所有路径都必须进入finally语句块。
+- 编译期植入finally语句:将finally中的语句块复制一份插入try语句块字节码后面，保证try执行完毕后立即执行finally语句块代码。
 
-- 异常表: Java 编译器会为finally 语句块生成一个handler，用来捕获try语句块范围内的所有类型异常(异常表项type为any)，当try 语句块中抛出异常时，hanler 捕获到该异常，执行handler的处理程序一finally 语句块。
+- 异常表: Java 编译器会为finally 语句块生成一个handler，用来捕获try语句块范围内的所有类型异常(异常表项type为any)，当try 语句块中抛出异常时，hanler 捕获到该异常，执行handler的处理程序一finally语句块。
 
 
 ## Links
