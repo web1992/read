@@ -1,5 +1,7 @@
 # 第二章 信息的表示和处理
 
+> 关键字
+
 - bit 位
 - 无符号 unsigned
 - 补码 tow's complement
