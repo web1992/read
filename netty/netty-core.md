@@ -40,3 +40,4 @@
 - [Chunk](https://www.jianshu.com/p/70181af2972a)
 - [字节序 大端序和小端序](https://mp.weixin.qq.com/s/JcduhM8rKzVStfAWQcQX5g)
 - [伙伴算法](https://www.cnblogs.com/alantu2018/p/8527821.html)
+- [Netty 启动分析](https://mp.weixin.qq.com/s/DS52g3bibU9kNH75UFxGqA)
