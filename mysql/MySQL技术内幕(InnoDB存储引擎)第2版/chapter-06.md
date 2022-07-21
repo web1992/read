@@ -24,7 +24,7 @@
 - 一致性非锁定读（快照读，当前读）
 - 多版本并发控制(Multi Version Concurrency Control, MVCC)
 - 最新一个快照(fresh snapshot)
-- 两种一致性的锁定读( locking read)操作:
+- 两种一致性的锁定读(locking read)操作:
 - SELECT ... FOR UPDATE (X锁)
 - SELECT ... LOCK IN SHARE MODE (S锁)
 - AUTO-INC Locking

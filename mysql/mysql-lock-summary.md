@@ -31,6 +31,11 @@ InnoDB存储引擎实现了如下两种标准的行级锁:
 
 ![MySQL-6-3.drawio.svg](./images/MySQL-6-3.drawio.svg)
 
+## 锁SQL
+
+- SELECT ... FOR UPDATE (X锁)
+- SELECT ... LOCK IN SHARE MODE (S锁)
+
 ## 锁的实现 (3种算法)
 
 - Record Lock: 单个行记录上的锁
