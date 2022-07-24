@@ -31,11 +31,6 @@ InnoDB存储引擎实现了如下两种标准的行级锁:
 
 ![MySQL-6-3.drawio.svg](./images/MySQL-6-3.drawio.svg)
 
-## 锁SQL
-
-- SELECT ... FOR UPDATE (X锁)
-- SELECT ... LOCK IN SHARE MODE (S锁)
-
 ## 锁的实现 (3种算法)
 
 - Record Lock: 单个行记录上的锁
@@ -44,10 +39,15 @@ InnoDB存储引擎实现了如下两种标准的行级锁:
 
 Next-Key Lock降级为Record Lock仅在查询的列是唯一索引的情况下。
 
+## 锁SQL
+
+- SELECT ... FOR UPDATE (X锁)
+- SELECT ... LOCK IN SHARE MODE (S锁)
+
 ## 锁问题
 
 - 幻读 (Phantom Problem) 是指在同一事务下，连续执行两次同样的SQL语句可能导致不同的结果，第二次的SQL语句可能会返回之前不存在的行。
-- 脏度 (Dirty Read) 即一个事务可以读到另外-一个事务中未提交的数据，则显然违反了数据库的隔离性。
+- 脏度 (Dirty Read) 即一个事务可以读到另外一个事务中未提交的数据，则显然违反了数据库的隔离性。
 - 不可重复度
 - 阻塞
 - 死锁
