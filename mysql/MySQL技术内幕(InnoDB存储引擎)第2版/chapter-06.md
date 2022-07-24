@@ -14,7 +14,7 @@
 - SHOW ENGINE INNODB MUTEX
 - 共享锁(S Lock)，允许事务读一行数据。
 - 排他锁(X Lock)，允许事务删除或更新一行数据.
-- 意向锁 ( Intention Lock )
+- 意向锁 (Intention Lock )
 - 意向共享锁
 - 意向排他锁
 - SHOW ENGINE INNODB STATUS
@@ -22,6 +22,8 @@
 - INFORMATION_SCHEMA.INNODB_LOCK__WAITS
 - INFORMATION_SCHEMA.INNODB_LOCKS
 - 一致性非锁定读（快照读，当前读）
+- READ COMMITTED 总是能读到已经提交的最新数据(当前读)
+- REPEATABLE READ  读不到已经提交的最新数据(快照读)
 - 多版本并发控制(Multi Version Concurrency Control, MVCC)
 - 最新一个快照(fresh snapshot)
 - 两种一致性的锁定读(locking read)操作:
@@ -62,7 +64,7 @@ InnoDB存储引擎实现了如下两种标准的行级锁:
 
 ## 一致性锁定读
 
-数据支持加锁语句，即使是对于SELECT的只读操作。InnoDB存储引擎对于SELECT语句支持两种一-致性的锁定读( locking read)操作:
+数据支持加锁语句，即使是对于SELECT的只读操作。InnoDB存储引擎对于SELECT语句支持两种一致性的锁定读(locking read)操作:
 
 `SELECT...FOR UPDATE`对读取的行记录加一个X锁，其他事务不能对已锁定的行加上任何锁。
 `SELECT...LOCK IN SHARE MODE`对读取的行记录加一个S锁，其他事务可以向被锁定的行加S锁，但是如果加X锁，则会被阻塞。
