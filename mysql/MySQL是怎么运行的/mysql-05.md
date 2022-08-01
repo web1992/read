@@ -10,4 +10,6 @@
 - 页子节点 + 非页子节点
 - next_record 下一个主键记录的偏移
 - Page Directory（页目录）
-
+- Page Header（页面头部）
+- File Header（文件头部）
+- File Trailer
