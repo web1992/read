@@ -11,7 +11,15 @@
 - 用段来管理区
 - 碎片（fragment）区
 - Extent Descriptor Entry （XDES Entry）
-- 
+- Change Buffer
+- INODE 类型
+- Insert Buffer
+- Doublewrite buffer 双写缓冲区
+- 元数据
+- 的内部系统表（internalsystem table）
+- SYS_TABLES 、 SYS_COLUMNS 、 SYS_INDEXES 、 SYS_FIELDS
+- Data Dictionary Header
+- information_schema系统数据库
 
 ## 区
 
