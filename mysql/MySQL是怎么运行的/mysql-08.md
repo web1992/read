@@ -1,5 +1,11 @@
 # 第8章 数据的家-MySQL的数据目录
 
+- 存储引擎
+- 文件系统
+- 数据目录
+- `SHOW VARIABLES LIKE 'datadir';`
+- db.opt
+- 系统表空间（system tablespace）
 - 表名.frm 用于描述表结构的文件
 - 系统表空间（system tablespace）
 - 索引即数据，数据即索引
