@@ -2,6 +2,7 @@
 
 - [MySQL 是怎么运行的](https://www.aliyundrive.com/s/rYZ1RTBgNZA)
 
+> 目录
 
 - [第1章 装作自己是个小白-重新认识MySQL](mysql-01.md)
 - [第2章 MySQL的调控按钮-启动选项和系统变量](mysql-02.md)
