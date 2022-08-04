@@ -6,3 +6,7 @@
 - SHOW TABLES FROM mysql LIKE 'innodb%';
 - innodb_stats_persistent_sample_pages
 - STATS_SAMPLE_PAGES
+- innodb_stats_auto_recalc
+- ANALYZE TABLE single_table;
+- 任何和 NULL 值做比较的表达式的值都为 NULL
+- innodb_stats_method 决定着在统计某个索引列不重复值的数量时如何对待 NULL 值
