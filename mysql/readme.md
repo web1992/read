@@ -3,6 +3,7 @@
 ## 书籍
 
 - [MySQL技术内幕(InnoDB存储引擎)第2版](./MySQL技术内幕(InnoDB存储引擎)第2版/readme.md)
+- [MySQL 是怎么运行的](MySQL是怎么运行的/readme.md)
 
 ## 其他
 
