@@ -1,3 +1,31 @@
 # MySQL 是怎么运行的
 
-- https://www.aliyundrive.com/s/rYZ1RTBgNZA
+- [MySQL 是怎么运行的](https://www.aliyundrive.com/s/rYZ1RTBgNZA)
+
+
+[第1章 装作自己是个小白-重新认识MySQL](mysql-01.md)
+[第2章 MySQL的调控按钮-启动选项和系统变量](mysql-02.md)
+[第3章 乱码的前世今生-字符集和比较规则](mysql-03.md)
+[第4章 第4章 从一条记录说起-InnoDB记录结构](mysql-04.md)
+[第5章 盛放记录的大盒子-InnoDB数据页结构](mysql-05.md)
+[第6章 快速查询的秘籍-B+树索引](mysql-06.md)
+[第7章 好东西也得先学会怎么用-B+树索引的使用](mysql-07.md)
+[第8章 数据的家-MySQL的数据目录](mysql-08.md)
+[第9章 存放页面的大池子-InnoDB的表空间](mysql-09.md)
+[第10章 条条大路通罗马-单表访问方法](mysql-10.md)
+[第11章 两个表的亲密接触-连接的原理](mysql-11.md)
+[第12章 谁最便宜就选谁-MySQL基于成本的优化](mysql-12.md)
+[第13章 兵马未动，粮草先行-InnoDB统计数据是如何收集的](mysql-13.md)
+[第14章 不好看就要多整容-MySQL基于规则的优化（内含关于子查询优化二三事儿）](mysql-14.md)
+[第15章 查询优化的百科全书-Explain详解（上）](mysql-15.md)
+[第16章 查询优化的百科全书-Explain详解（下）](mysql-16.md)
+[第17章 神兵利器-optimizer trace表的神器功效](mysql-17.md)
+[第18章 调节磁盘和CPU的矛盾-InnoDB的Buffer](mysql-18.md)
+[第19章 从猫爷被杀说起-事务简介](mysql-19.md)
+[第20章 说过的话就一定要办到-redo日志（上）](mysql-20.md)
+[第21章 说过的话就一定要办到-redo日志（下）](mysql-21.md)
+[第22章 后悔了怎么办-undo日志（上）](mysql-22.md)
+[第23章 后悔了怎么办-undo日志（下）](mysql-23.md)
+[第24章 一条记录的多幅面孔-事务的隔离级别与 MVCC](mysql-24.md)
+[第26章 写作本书时用到的一些重要的参考资料](mysql-25.md)
+[第26章 写作本书时用到的一些重要的参考资料](mysql-26.md)
