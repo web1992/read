@@ -18,6 +18,8 @@
 - 基于块的嵌套循环连接（Block Nested-Loop Join）
 - 尽量减少访问被驱动表的次数
 - join buffer 执行连接查询前申请的一块固定大小的内存
+- join buffer 存储的是驱动表的数据
+- join buffer 减少I/O
 - join buffer + Block Nested-Loop Join  
 
 ## eq_ref
