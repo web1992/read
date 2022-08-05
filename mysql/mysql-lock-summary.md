@@ -135,3 +135,6 @@ MODE 语句来读取这些记录），也不允许获取这些记录的 X锁 （
 
 可通过 `show engine innodb status;` 命令查询死锁信息。
 
+## Links
+
+- [死锁问题分析](https://mp.weixin.qq.com/s/DnCc5NIrMzvJuTF_xN6RYQ)
