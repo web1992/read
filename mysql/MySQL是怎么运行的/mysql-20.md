@@ -2,6 +2,21 @@
 
 - 数据的持久性
 - 重做日志 ，英文名为 redo log 
+- 以组的形式写入redo日志
+- 页分裂
+- 乐观插入
+- 悲观插入
+- LOG_MULTI_REC_END
+- Mini-Transaction的概念 （mtr 日志组）
+- redo日志的写入过程
+- redo log block 512字节
+- log block header 
+- log block body
+- log block trailer
+- redo日志缓冲区
+- Buffer Pool 
+- redo log buffer redo日志缓冲区 默认值是 16MB
+- buf_free
 
 ## 数据的持久性
 
