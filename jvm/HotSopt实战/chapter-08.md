@@ -40,9 +40,9 @@
 
 用于在虚拟机的局部变量和操作数栈之间传送数据的指令主要有3类。
 
-- Load 类指令(数据方向:局部变量→操作数栈),包括iload. iload_<n>、lload、lload_<n> .fload、fload_<n>、dload、 dload_<n>、aload、 aload_<n> 等。
-- Store 类指令(数据方向:操作数栈→局部变量),包括istore. istore_<n>. lstore. lstore_<n>、fstore、 fstore_<n>、 dstore、 dstore_<n>、 astore、 astore_<n>等。.
-- 此外，还有一些指令能够将来自立即数或常量池的数据传送至操作数栈，这类指令包括bipush、sipush、 ldc、ldc_w、 ldc2_w、aconst_null、iconst_ml、 iconst_<i>、 lconst_<1> 、iconst_<i>、fconst_<f>和dconst_<d>等。
+- Load 类指令(数据方向:局部变量→操作数栈),包括iload. iload_[n]、lload、lload_[n] .fload、fload_[n]、dload、 dload_[n]、aload、 aload_[n] 等。
+- Store 类指令(数据方向:操作数栈→局部变量),包括istore. istore_[n]. lstore. lstore_[n]、fstore、 fstore_[n]、 dstore、 dstore_[n]、 astore、 astore_[n]等。.
+- 此外，还有一些指令能够将来自立即数或常量池的数据传送至操作数栈，这类指令包括bipush、sipush、 ldc、ldc_w、 ldc2_w、aconst_null、iconst_ml、 iconst_[i]、 lconst_[1] 、iconst_[i]、fconst_[f]和dconst_[d]等。
 
 ## Vtable Itable
 
