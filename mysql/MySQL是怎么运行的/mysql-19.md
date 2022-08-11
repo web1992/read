@@ -1,1 +1,24 @@
 # 第19章 从猫爷被杀说起-事务简介
+
+- 事务 transaction
+- 原子性（Atomicity）
+- 隔离性（Isolation）
+- 一致性（Consistency） 
+- 持久性（Durability）
+- 二个事可能交替执行
+- 数据库某些操作的原子性和隔离性都是保证一致性的一种手段，在操作执行完成后保证符合所有既定的约束则是一种结果
+- 事务的状态
+- 活动的（active）
+- 部分提交的（partially committed）
+- 失败的（failed）
+- 中止的（aborted）
+- 提交的（committed）
+- BEGIN [WORK];
+- START TRANSACTION; + READ ONLY + READ WRITE + WITH CONSISTENT SNAPSHOT
+- SHOW VARIABLES LIKE 'autocommit';
+- 隐式提交 Data definition language，缩写为： DDL
+- savepoint
+- SAVEPOINT 保存点名称
+- ROLLBACK [WORK] TO [SAVEPOINT] 保存点名称
+- RELEASE SAVEPOINT 保存点名称
+- 
