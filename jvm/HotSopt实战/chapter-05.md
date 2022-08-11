@@ -3,7 +3,7 @@
 > 概要
 - 垃圾收集与垃圾收集器
 - 分代
-- 快速分配技术
+- 快速分配技术 （P165）
 - GC模块
 - 两种具体的收集器: CMS垃圾收集器与G1垃圾收集器
 - GC日志分析方法
@@ -24,6 +24,7 @@
 - 复制算法 Copying
 - 标记压缩算法 Mark-Compact
 - 晋升 Promotion
+- 快速分配
 - TLABS (Thread Local Allaction Buffers)
 - UseTLAB
 - 栈上分配
@@ -54,6 +55,18 @@
 - -XX:PrintGCTaskTimeStamps 输出每个GC工作线程的时间戳信息
 - -Xloggc: <filename> 输出GC日志至文件
 - -XX:+ShowSafepointMsgs 输出安全点信息
+
+## TLABS （P167）
+
+对于多线程应用，分配操作需要保证线程安全，如果通过全局锁的方式来保证线程安排的话,内存分配将会成为性能瓶颈.
+所以HotSpot 采用的是线程局部分配缓存技术(即Thread-LocalAllocation Buffers ，简称TLABs)。每个线程都会有它自己的TLAB，位于Eden区中的一小块空间。因为每个TLAB是仅对一个线程是可见的，所以分配操作可以使用bump-the-pointer 技术快速完成，而不必使用任何锁机制;只有当线程将TLAB填满并且需要获取一个新的TLAB时，同步才是必须的。
+在虚拟机开启了UseTLAB选项的前提下，在分配一个新的对象空间时，将首先尝试在TLAB空间中分配对象空间，若分配空间请求失败，则再尝试使用加锁机制在Eden区分配对象。
+
+
+## 栈上分配和逸出分析
+
+在栈中分配的基本思路是这样的:分析局部变量的作用域仅限于方法内部，则JVM直接在栈帧内分配对象空间，避免在堆中分配。
+
 
 ## 垃圾收集器
 
