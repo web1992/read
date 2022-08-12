@@ -1,12 +1,4 @@
----
-id: hashmap-get-put
-title: HashMap 的 Get Put 操作
-author: web1992
-author_title: Code of Java
-author_url: https://github.com/web1992
-author_image_url: https://avatars3.githubusercontent.com/u/6828647?s=60&v=4
-tags: [java]
----
+
 
 HashMap 的 Get Put 操作
 

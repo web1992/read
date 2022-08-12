@@ -1,12 +1,3 @@
----
-id: hashmap-treebine
-title: hashmap 的数据结构之 tree
-author: web1992
-author_title: Code of Java
-author_url: https://github.com/web1992
-author_image_url: https://avatars3.githubusercontent.com/u/6828647?s=60&v=4
-tags: [java]
----
 
 `HashMap` 的数据结构之 `Red-Black Tree`
 

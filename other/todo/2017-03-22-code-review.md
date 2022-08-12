@@ -1,11 +1,3 @@
----
-layout: post
-title:  "工程checkList"
-date:  2017-03-22 09:20:00 +0800
-categories: project
-tags: project
-keywords: project,web1992
----
 
 工程设计
 
