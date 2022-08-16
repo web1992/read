@@ -33,7 +33,7 @@
 
 表空间可以看做是InnoDB存储引擎逻辑结构的最高层，所有的数据都存放在表空间中。第3章中已经介绍了在默认情况下InnoDB存储引擎有一个共享表空间ibdata1,
 即所有数据都存放在这个表空间内。如果用户启用了参数innodb_file_per_table, 则每张表内的数据可以单独放到一个表空间内。
-如果启用了innodb_file_per_table 的参数，需要注意的是每张表的表空间内存放的只是数据、索引和插人缓冲Bitmap页，其他类的数据，如回滚(undo) 信息，插入缓冲索引页、系统事务信息，二次写缓冲(Double write buffer)等还是存放在原来的共享表空间内。这同时也说明了另一个问题:即使在启用了参数innodb_file_per_table之后，共享表空间还是会不断地增加其大小。
+如果启用了innodb_file_per_table 的参数，需要注意的是每张表的表空间内存放的只是数据、索引和插入缓冲Bitmap页，其他类的数据，如回滚(undo) 信息，插入缓冲索引页、系统事务信息，二次写缓冲(Double write buffer)等还是存放在原来的共享表空间内。这同时也说明了另一个问题:即使在启用了参数innodb_file_per_table之后，共享表空间还是会不断地增加其大小。
 
 ## 段
 
@@ -46,7 +46,7 @@
 
 ## 页
 
-同大多数数据库一样，InnoDB 有页(Page) 的概念(也可以称为块)，页是InnoDB磁盘管理的最小单位。在InnoDB存储引擎中，默认每个页的大小为16KB。而从InnoDB1.2.x版本开始，可以通过参数innodb_page_size将页的大小设置为4K、8K、16K。若设置完成，则所有表中页的大小都为innodb_page_size， 不可以对其再次进行修改。除非通过`mysqldump`导人和导出操作来产生新的库。
+同大多数数据库一样，InnoDB 有页(Page) 的概念(也可以称为块)，页是InnoDB磁盘管理的最小单位。在InnoDB存储引擎中，默认每个页的大小为16KB。而从InnoDB1.2.x版本开始，可以通过参数innodb_page_size将页的大小设置为4K、8K、16K。若设置完成，则所有表中页的大小都为innodb_page_size， 不可以对其再次进行修改。除非通过`mysqldump`导入和导出操作来产生新的库。
 
 在InnoDB存储引擎中，常见的页类型有:
 
@@ -54,8 +54,8 @@
 - undo页(undo Log Page)
 - 系统页(System Page)
 - 事务数据页(Transaction system Page)
-- 插人缓冲位图页(Insert Buffer Bitmap)
-- 插人缓冲空闲列表页(Insert Buffer Free List)
+- 插入缓冲位图页(Insert Buffer Bitmap)
+- 插入缓冲空闲列表页(Insert Buffer Free List)
 - 未压缩的二进制大对象页(Uncompressed BLOB Page)
 - 压缩的二进制大对象页(compressed BLOB Page)
 

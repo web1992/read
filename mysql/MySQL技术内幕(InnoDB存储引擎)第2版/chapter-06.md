@@ -81,7 +81,7 @@ Next-Key Lock降级为Record Lock仅在查询的列是唯一索引的情况下�
 
 Phantom Problem 是指在同一事务下，连续执行两次同样的SQL语句可能导致不同的结果，第二次的SQL语句可能会返回之前不存在的行。
 
-Gap Lock的作用是为了阻止多个事务将记录插人到同一范围内，而这会导致Phantom Problem问题的产生。
+Gap Lock的作用是为了阻止多个事务将记录插入到同一范围内，而这会导致Phantom Problem问题的产生。
 
 
 ## 锁问题
@@ -105,7 +105,7 @@ Gap Lock的作用是为了阻止多个事务将记录插人到同一范围内，
 
 在InnoDB存储引擎中，通过使用Next-Key Lock算法来避免不可重复读的问题。在MySQL官方文档中将不可重复读的问题定义为Phantom Problem，即幻像问题。
 在Next-Key Lock算法下，对于索引的扫描，不仅是锁住扫描到的索引，而且还锁住这些索引覆盖的范围(gap)。
-因此在这个范围内的插人都是不允许的。这样就避免了另外的事务在这个范围内插人数据导致的不可重复读的问题。
+因此在这个范围内的插入都是不允许的。这样就避免了另外的事务在这个范围内插入数据导致的不可重复读的问题。
 因此，InnoDB 存储引擎的默认事务隔离级别是READ REPEATABLE,采用Next-Key Lock算法，避免了不可重复读的现象。
 
 ## Phantom Problem 幻读问题
@@ -117,7 +117,7 @@ Phantom Problem是指在同一事务下，连续执行两次同样的SQL语句�
 InnoDB存储引擎采用Next-Key Locking的算法避免Phantom Problem。
 
 InnoDB存储引擎采用Next-Key Locking的算法避免Phantom Problem。对于上述的SQL语句`SELECT * FROM t WHERE a>2 FOR UPDATE`，
-其锁住的不是5这单个值，而是对(2, +∞)这个范围加了X锁。因此任何对于这个范围的插人都是不被允许的，从而避免Phantom Problem。
+其锁住的不是5这单个值，而是对(2, +∞)这个范围加了X锁。因此任何对于这个范围的插入都是不被允许的，从而避免Phantom Problem。
 
 InnoDB存储引擎默认的事务隔离级别是REPEATABLE READ,在该隔离级别下，其采用Next-KeyLocking的方式来加锁。
 而在事务隔离级别READ COMMITTED下，其仅采用RecordLock，因此在上述的示例中，会话A需要将事务的隔离级别设置为READ COMMITTED。
@@ -136,7 +136,7 @@ InnoDB存储引擎默认的事务隔离级别是REPEATABLE READ,在该隔离级�
 
 在InnoDB存储引擎中，通过使用Next-Key Lock算法来避免不可重复读的问题。在MySQL官方文档中将不可重复读的问题定义为Phantom Problem,即幻像问题。
 在Next-Key Lock算法下，对于索引的扫描，不仅是锁住扫描到的索引，而且还锁住这些索引覆盖的范围(gap)。 
-因此在这个范围内的插入都是不允许的。这样就避免了另外的事务在这个范围内插人数据导致的不可重复读的问题。
+因此在这个范围内的插入都是不允许的。这样就避免了另外的事务在这个范围内插入数据导致的不可重复读的问题。
 因此，InnoDB 存储引擎的默认事务隔离级别是READ REPEATABLE,采用Next-Key Lock算法，避免了不可重复读的现象。
 
 ## 丢失更新
