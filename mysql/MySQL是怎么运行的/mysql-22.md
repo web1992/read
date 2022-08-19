@@ -2,6 +2,7 @@
 
 - 事务回滚的需求
 - undo log
+- show variables like '%undo%';
 - 事务id    
 - START TRANSACTION READ ONLY 语句开启一个只读事务
 - START TRANSACTION READ WRITE 语句开启一个读写事务

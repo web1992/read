@@ -5,8 +5,8 @@
 - innodb_log_buffer_size
 - redo日志文件组
 - SHOW VARIABLES LIKE 'datadir'
-- ib_logfile0 和 ib_logfile1
-- 循环 使用redo日志文件
+- ib_logfile0 和 ib_logfile1 redo日志文件
+- 循环使用redo日志文件
 - checkpoint
 - Log Sequeue Number 的全局变量（日志序列号）
 - flushed_to_disk_lsn
