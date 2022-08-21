@@ -48,4 +48,5 @@ Buffer Pool 中淘汰掉。
 
 ## Links
 
-- [MySQL 存储](https://blog.csdn.net/php12345679/article/details/109577650)
+- [MySQL 存储结构](https://blog.csdn.net/php12345679/article/details/109577650)
+- [MySQL 存储原理](https://zhuanlan.zhihu.com/p/163838108)
