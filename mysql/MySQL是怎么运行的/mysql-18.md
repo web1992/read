@@ -45,3 +45,7 @@ Buffer Pool 中淘汰掉。
 9. 我们可以通过指定 innodb_buffer_pool_instances 来控制 Buffer Pool 实例的个数，每个 Buffer Pool 实例中都有各自独立的链表，互不干扰。
 10. 自 MySQL 5.7.5 版本之后，可以在服务器运行过程中调整 Buffer Pool 大小。每个 Buffer Pool 实例由若干个 chunk 组成，每个 chunk 的大小可以在服务器启动时通过启动参数调整。
 11. 可以用下边的命令查看 Buffer Pool 的状态信息：SHOW ENGINE INNODB STATUS\G
+
+## Links
+
+- [MySQL 存储](https://blog.csdn.net/php12345679/article/details/109577650)
