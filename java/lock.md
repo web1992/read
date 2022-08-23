@@ -1,7 +1,7 @@
 # Lock
 
 - [Lock](#lock)
-  - [好文连接](#%e5%a5%bd%e6%96%87%e8%bf%9e%e6%8e%a5)
+  - [synchronized](synchronized.md)
   - [ReentrantLock](#reentrantlock)
   - [ReadWriteLock](#readwritelock)
   - [ReentrantReadWriteLock](#reentrantreadwritelock)
