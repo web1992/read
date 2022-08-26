@@ -1,6 +1,6 @@
 # 虚拟机类加载机制
 
-类的生命周期：
+> 类的生命周期：
 
 - 加载
 - 验证
@@ -14,7 +14,7 @@
 
 ## 双亲委派模型
 
-- 启动类加载器（Bootstrap Class Loader）
+- 启动类加载器（Bootstrap Class Loader）C++ 实现
 - 扩展类加载器（Extension Class Loader） 这个类加载器是在类sun.misc.Launcher$ExtClassLoader 中以Java代码的形式实现的
 - 应用程序类加载器（Application Class Loader）这个类加载器由 sun.misc.Launcher$AppClassLoader来实现
 
