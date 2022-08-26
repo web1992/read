@@ -12,6 +12,21 @@
 - 双亲委派模型
 - 破坏双亲委派模型
 
+## 双亲委派模型
+
+- 启动类加载器（Bootstrap Class Loader）
+- 扩展类加载器（Extension Class Loader） 这个类加载器是在类sun.misc.Launcher$ExtClassLoader 中以Java代码的形式实现的
+- 应用程序类加载器（Application Class Loader）这个类加载器由 sun.misc.Launcher$AppClassLoader来实现
+
+![jvm-class-loader.drawio.svg](./images/jvm-class-loader.drawio.svg)
+
+- 启动类加载器（Bootstrap Class Loader）：前面已经介绍过，这个类加载器负责加载存放在 <JAVA_HOME>\lib目录，或者被-Xbootclasspath参数所指定的路径中存放的，而且是Java虚拟机能够 识别的（按照文件名识别，如rt.jar、tools.jar，名字不符合的类库即使放在lib目录中也不会被加载）类 库加载到虚拟机的内存中。启动类加载器无法被Java程序直接引用，用户在编写自定义类加载器时， 如果需要把加载请求委派给引导类加载器去处理，那直接使用null代替即可，代码清单7-9展示的就是 java.lang.ClassLoader.getClassLoader()方法的代码片段，其中的注释和代码实现都明确地说明了以null值 来代表引导类加载器的约定规则。
+
+- 扩展类加载器（Extension Class Loader）：这个类加载器是在类sun.misc.Launcher$ExtClassLoader 中以Java代码的形式实现的。它负责加载<JAVA_HOME>\lib\ext目录中，或者被java.ext.dirs系统变量所 指定的路径中所有的类库。根据“扩展类加载器”这个名称，就可以推断出这是一种Java系统类库的扩 展机 ，JDK的开发团队允许用户将具有通用性的类库放置在ext目录里以扩展Java SE的功能，在JDK 9之后，这种扩展机制被模块化带来的天然的扩展能力所取代。由于扩展类加载器是由Java代码实现 的，开发者可以直接在程序中使用扩展类加载器来加载Class文件
+
+- 应用程序类加载器（Application Class Loader）：这个类加载器由 sun.misc.Launcher$AppClassLoader来实现。由于应用程序类加载器是ClassLoader类中的getSystem- ClassLoader()方法的返回值，所以有些场合中也称它为“系统类加载器”。它负责加载用户类路径 （ClassPath）上所有的类库，开发者同样可以直接在代码中使用这个类加载器。如果应用程序中没有 自定义过自己的类加载器，一般情况下这个就是程序中默认的类加载器。
+
+
 ## 加载
 
 “加载”（Loading）阶段是整个“类加载”（ClassLoading）过程中的一个阶段，希望读者没有混淆这两个看起来很相似的名词。
