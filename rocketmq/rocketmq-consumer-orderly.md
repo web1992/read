@@ -141,6 +141,7 @@ synchronized (objLock) {
 删除那些已经`dropped`和过期的`MessageQueue`，此外，如果是顺序消费。还会是使用`this.lock(mq)`进行加锁。如果加锁成功。才会分配此MessageQueue。具体代码结果如下：
 
 ```java
+// RebalanceImpl#lock
 // mqSet 是在执行 AllocateMessageQueueStrategy#allocate 之后分配到的 MessageQueue List
 Set<MessageQueue> mqSet =...
 // 过滤，删除 在 processQueueTable 无效的 MessageQueue
@@ -200,6 +201,8 @@ if (lockEntry.isLocked(clientId)) {
 // 返回加锁成功的 Set
 return lockedMqs
 ```
+
+`lockedMqs` 如果包含 参数 `mq` 就认为是获取锁成功
 
 此外，上面的代码省略了`续锁`(如果之前已经获取了锁，就延迟锁的过期时间)的操作。
 

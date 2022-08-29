@@ -43,7 +43,7 @@ public enum ConsumeType {
 
 ## RebalanceImpl
 
-这里说下 `RebalanceImpl`， 因为`RocketMQ`消息的消费的前提是分配了`MessageQueue`（基于`MessageQueue`进行消息的平均消息）。而`RebalanceImpl`(重平衡的作用就是平均的分配`MessageQueue`)。因此这里有必要说下`RebalanceImpl`。
+这里说下 `RebalanceImpl`， 因为`RocketMQ`消息的消费的前提是分配了`MessageQueue`（基于`MessageQueue`进行消息的平均消息到queue,支持多个并发消费）。而`RebalanceImpl`(重平衡的作用就是平均的分配`MessageQueue`)。因此这里有必要说下`RebalanceImpl`。
 
 `RebalanceImpl` 有3种实现。
 
