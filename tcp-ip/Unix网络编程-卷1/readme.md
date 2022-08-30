@@ -14,7 +14,7 @@
 - 第十四章 [高级 I/O 函数](chapter-14.md)
 - 第十五章 [Unix 域协议](chapter-15.md)
 - 第十六章 [非阻塞式 I/O](chapter-16.md)
-- 第二十五章 [非阻塞式 I/O](chapter-25.md)
+- 第二十五章 [信号驱动式 I/O](chapter-25.md)
 
 ## 建议
 
