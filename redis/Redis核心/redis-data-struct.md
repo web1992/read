@@ -71,3 +71,4 @@ RedisObject 的内部组成包括了 type、encoding、lru 和 refcount 4 个元
 
 - [Redis sorted Set](https://juejin.cn/post/6844903512413831181)
 - [Redis ziplist](https://www.jianshu.com/p/afaf78aaf615)
+- [Redis ziplist](https://juejin.cn/post/7114663661389479944)
