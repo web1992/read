@@ -4,6 +4,7 @@
 
 - String（字符串）
 - List（列表）
+- ziplist Redis 基于压缩列表实现了 List、Hash 和 Sorted Set 这样的集合类型
 - Hash（哈希）
 - Set（集合）
 - Sorted Set（有序集合）
@@ -69,3 +70,4 @@ RedisObject 的内部组成包括了 type、encoding、lru 和 refcount 4 个元
 ## Links 
 
 - [Redis sorted Set](https://juejin.cn/post/6844903512413831181)
+- [Redis ziplist](https://www.jianshu.com/p/afaf78aaf615)
