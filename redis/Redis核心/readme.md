@@ -11,3 +11,8 @@
 - 高可靠主线，包括主从复制、哨兵机制；
 - 高可扩展主线，包括数据分片、负载均衡。
 - Redis 同时使用了两种策略来删除过期的数据，分别是惰性删除策略和定期删除策略。
+
+
+## Redis cmd
+
+- [https://redis.com.cn/commands.html](https://redis.com.cn/commands.html)
