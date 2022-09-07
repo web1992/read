@@ -4,7 +4,7 @@
 - 存放 Insert Buffer信息的页
 - 存放 INODE 信息的页
 - 存放 undo 日志信息的页
-- 存放记录的页为索引（ INDEX ）页 (数据页)
+- 存放记录的页为索引（INDEX）页 (数据页)
 - 删除标记 delete_mask
 - B+树
 - 页子节点 + 非页子节点

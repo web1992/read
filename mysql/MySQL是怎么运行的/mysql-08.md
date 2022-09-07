@@ -19,6 +19,10 @@
 - 视图  视图名.frm
 - 查询日志、错误日志、二进制日志、redo日志
 
+> Mysql innodb 架构
+
+![innodb-architecture.png](./images/innodb-architecture.png)
+
 ## MySQL 自带的数据库
 
 - mysql

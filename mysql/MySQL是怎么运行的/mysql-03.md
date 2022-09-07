@@ -10,4 +10,3 @@
 - character_set_server 表示服务器级别的字符集， collation_server 表示服务器级别的比较规则
 - character_set_client
 - character_set_connection
--  character_set_connection

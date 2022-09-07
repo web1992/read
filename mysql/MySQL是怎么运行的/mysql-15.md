@@ -15,11 +15,11 @@ SIMPLE               | Simple SELECT (not using UNION or subqueries)
 PRIMARY              | Outermost SELECT
 UNION                | Second or later SELECT statement in a UNION
 UNION RESULT         | Result of a UNION
-SUBQUERY             |First SELECT in subquery
+SUBQUERY             | First SELECT in subquery
 DEPENDENT SUBQUERY   | First SELECT in subquery, dependent on outer query
 DEPENDENT UNION      | Second or later SELECT statement in a UNION, dependent on outer query
-DERIVED              |Derived table
-MATERIALIZED         |Materialized subquery
+DERIVED              | Derived table
+MATERIALIZED         | Materialized subquery
 UNCACHEABLE SUBQUERY | A subquery for which the result cannot be cached and must be re-evaluated for each row of the outer query
 UNCACHEABLE UNION    | The second or later select in a UNION that belongs to an uncacheable subquery (see UNCACHEABLESUBQUERY)
 
@@ -47,7 +47,7 @@ system ， const ，eq_ref ， ref ， fulltext ， ref_or_null ， index_merge 
 
 - system
 当表中只有一条记录并且该表使用的存储引擎的统计数据是精确的，比如MyISAM、Memory，那么对该表的
-访问方法就是 system 。比方说我们新建一个 MyISAM 表，并为其插入一条记录：
+访问方法就是 system 。
 
 - const
 这个我们前边唠叨过，就是当我们根据主键或者唯一二级索引列与常数进行等值匹配时，对单表的访问方法
@@ -58,7 +58,7 @@ system ， const ，eq_ref ， ref ， fulltext ， ref_or_null ， index_merge 
 唯一二级索引是联合索引的话，所有的索引列都必须进行等值比较），则对该被驱动表的访问方法就是eq_ref
 
 - ref
-当通过普通的二级索引列与常量进行等值匹配时来查询某个表，那么对该表的访问方法就可能是 ref ，最开始举过例子了，就不重复举例了。
+当通过普通的二级索引列与常量进行等值匹配时来查询某个表，那么对该表的访问方法就可能是 ref
 
 - fulltext
 全文索引，我们没有细讲过，跳过～
@@ -90,6 +90,7 @@ index_subquery 与 unique_subquery 类似，只不过访问子查询中的表时
 possible_keys 列中的值并不是越多越好，可能使用的索引越多，查询优化器计算查询成本时就得花费更长时间，所以如果可以的话，尽量删除那些用不到的索引。
 
 ## key_len
+
 key_len 列表示当优化器决定使用某个索引执行查询时，该索引记录的最大长度，它是由这三个部分构成的：
 对于使用固定长度类型的索引列来说，它实际占用的存储空间的最大长度就是该固定值，对于指定字符集的
 变长类型的索引列来说，比如某个索引列的类型是 VARCHAR(100) ，使用的字符集是 utf8 ，那么该列实际占
