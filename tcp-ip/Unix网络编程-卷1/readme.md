@@ -37,3 +37,7 @@
 正如书名的描述, 此书更多的关注 `套接字联网API`。
 
 看完此书，可以很容易理解 JAVA 中对 一些网络 API 的包装（native 交互）。
+
+## Links
+
+- [高效的网络IO模型](https://mp.weixin.qq.com/s/naGheZq_z5d8pyB_i9hY7g)
