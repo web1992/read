@@ -189,3 +189,4 @@ int poll ( struct pollfd * fds, unsigned int nfds, int timeout);
 - [select、poll、epoll 之间的区别总结[整理]](https://www.cnblogs.com/Anker/p/3265058.html)
 - [pselect 和 select](https://www.cnblogs.com/diegodu/p/3988103.html)
 - [深入理解 Linux 的 epoll 机制](https://mp.weixin.qq.com/s/LGMNEsWuXjDM7V9HlnxSuQ)
+- [高效的网络IO模型](https://mp.weixin.qq.com/s/naGheZq_z5d8pyB_i9hY7g)
