@@ -9,6 +9,7 @@
 - Bitmap
 - HyperLogLog
 - GeoHash 的编码方法
+- RedisTimeSeries
 
 在 Redis 常用的 4 个集合类型中（List、Hash、Set、Sorted Set），List 和 Sorted Set 就属于有序集合。
 List 是按照元素进入 List 的顺序进行排序的，而 Sorted Set 可以根据元素的权重来排序。
