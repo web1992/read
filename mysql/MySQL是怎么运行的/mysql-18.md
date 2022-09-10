@@ -50,3 +50,4 @@ Buffer Pool 中淘汰掉。
 
 - [MySQL 存储结构](https://blog.csdn.net/php12345679/article/details/109577650)
 - [MySQL 存储原理](https://zhuanlan.zhihu.com/p/163838108)
+- [change buffer](https://www.cnblogs.com/ZhuChangwu/p/14683528.html)
