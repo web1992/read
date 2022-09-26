@@ -27,7 +27,7 @@
 - ⼀致性协议抽象
 - Response getData(ReadRequest request) throws Exception;
 - Response write(WriteRequest request) throws Exception;
-- —数据存储抽象
+- 数据存储抽象
 - KvStorage
 - Nacos 长链接
 - 低成本快速感知
