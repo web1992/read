@@ -4,7 +4,7 @@
 
 ## 概述
 
-![概述](rocketmq-base.md)
+[概述](rocketmq-base.md)
 
 
 ## Index
