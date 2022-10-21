@@ -5,7 +5,7 @@ NameServer 的主要目的是注册 Broker 信息，方便 Producer 和 Consumer
 关键字：
 
 - Broker 作用
-- Broker 的注册
+- Broker 的注册(流程)
 - Broker 的下线
 - Broker 的路由信息维护
 - Broker 存活检查
@@ -33,9 +33,9 @@ NameServer 的主要目的是注册 Broker 信息，方便 Producer 和 Consumer
 ```java
 // initialize 的主要作用
 // 1. 使用 kvConfigManager 加载配置
-// 2. remotingServer Netty TCP 服务
-// 3. remotingExecutor netty 的线程池服务
-// 4. registerProcessor 注册 RemotingCommand 处理器,用来处理CMD命令
+// 2. 启动 remotingServer Netty TCP 服务
+// 3. 启动 remotingExecutor netty 的线程池服务
+// 4. 启动 registerProcessor 注册 RemotingCommand 处理器,用来处理CMD命令
 // 5. 启动扫描 Broker 的线程
 // 6. 启动定期打印 kv config 的线程
 // 7. 启动扫描 Tls 配置的线程
@@ -110,7 +110,7 @@ public class QueueData implements Comparable<QueueData> {
     private int topicSynFlag;
 }
 // Broker 信息，主要存储IP地址等信息
-// 按照 brokerName 维度存储在主从模式下 brokerName 是相同的，因此brokerAddrs是一个Map
+// 按照 brokerName 维度存储,在主从模式下 brokerName 是相同的，因此brokerAddrs是一个Map
 public class BrokerData implements Comparable<BrokerData> {
     private String cluster;
     private String brokerName;
@@ -188,7 +188,7 @@ flushDiskType=ASYNC_FLUSH
 > Broker 的注册
 
 ```java
-// IDEA: DefaultRequestProcessor#registerBroker:300
+// DefaultRequestProcessor#registerBroker:300
 RegisterBrokerResult result = this.namesrvController.getRouteInfoManager().registerBroker(
     requestHeader.getClusterName(),
     requestHeader.getBrokerAddr(),
