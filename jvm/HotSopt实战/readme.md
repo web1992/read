@@ -23,3 +23,5 @@
 - [https://adoptopenjdk.net/](https://adoptopenjdk.net/)
 - [https://github.com/openjdk/jdk8u](https://github.com/openjdk/jdk8u)
 - [https://github.com/openjdk/jdk19](https://github.com/openjdk/jdk19)
+- [HotSpot实战.pdf](https://www.aliyundrive.com/s/BNR5P2b91o8)
+
