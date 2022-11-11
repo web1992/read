@@ -1,6 +1,6 @@
 # MappedFile
 
-`MappedFile` 的主要作用是对 `Message` 进行持久化存储（存储到文件系统）。
+`MappedFile` 的主要作用是对 `Message`(对应到具体的对象就是CommitLog) 进行持久化存储（存储到文件系统）。此外还用于存储conuserQueue信息
 
 了解 `MappedFile` 可以知道 `RocketMQ` 为了提高持久化的性能都做了那些优化。
 
