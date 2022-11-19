@@ -1,0 +1,117 @@
+// 12
+{
+    "query": {
+        "script_score": {
+            "query": {
+                "match_all": {}
+            },
+            "script": {
+                "source": "doc['amount'].value "
+            }
+        }
+    }
+}
+// 12
+{
+    "query": {
+        "script_score": {
+            "query": {
+                "match_all": {}
+            },
+            "script": {
+                "source": "doc['amount'].value + params.subPrice",
+                "params": {
+                    "subPrice": -50
+                }
+            }
+        }
+    },
+    "sort": [
+        { "date":   { "order": "desc" }},
+        { "_score": { "order": "desc" }}
+    ]
+}
+
+GET /_search
+{
+  "query": {
+    "function_score": {
+    //   "filter": {
+    //     "term": { "city": "北京" }
+    //   },
+      "functions": [
+        {
+          "filter": { "term": { "compaynId": "10005" }},
+          "weight": 10
+        },
+        {
+          "filter": { "term": { "compaynId": "10004" }},
+          "weight": 100
+        },
+        {
+          "filter": { "term": { "compaynId": "10003" }},
+         "weight": 200
+        }
+      ],
+      "score_mode": "sum"
+    }
+  }
+}
+
+{
+    "query": {
+      "function_score": {
+        "query": {
+          "match_all": {
+        
+          }
+        },
+        "score_mode": "first",
+        "script_score": {
+          "lang": "groovy",
+          "params": {
+            "subPrice": -100
+          },
+          "script": "doc['amount'].value +subPrice "
+        },
+        "boost_mode": "replace"
+      }
+    }
+}     
+
+
+{
+    "query": {
+        "function_score": {
+            "random_score": {
+                "seed": 1000
+            },
+          
+        }
+    }
+}
+
+
+// _score + compaynId 排序
+{
+    "query": {
+      "function_score": {
+        "query": {
+          "match_all": {  }
+        },
+        "script_score": {
+          "script": {
+            "params": {
+              "subPrice": 5,
+              "ab": 1.2
+            },
+            "source": "doc['amount'].value+params.subPrice"
+          }
+        }
+      }
+    },
+    "sort": [
+        { "compaynId":   { "order": "desc" }},
+        { "_score": { "order": "desc" }}
+    ]
+}

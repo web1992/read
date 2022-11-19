@@ -6,7 +6,7 @@
 
 给了很多高层次的`梳理`+`思路`。(如果openjdk源码较新，比如1.8以上，可能不太适合了)。
 
-> 有Java字节码技术+操作系统基础更容易理解此书。
+> 有Java字节码,操作系统，C++基础更容易理解此书。
 
 - [第一章 初识HotSpot](chapter-01.md)
 - [第二章 启动](chapter-02.md)
@@ -23,3 +23,5 @@
 - [https://adoptopenjdk.net/](https://adoptopenjdk.net/)
 - [https://github.com/openjdk/jdk8u](https://github.com/openjdk/jdk8u)
 - [https://github.com/openjdk/jdk19](https://github.com/openjdk/jdk19)
+- [HotSpot实战.pdf](https://www.aliyundrive.com/s/BNR5P2b91o8)
+

@@ -306,7 +306,7 @@ public void submitConsumeRequest(
 这里说下为什么需要使用新的线程池去消息消息。使用新的线程池，主要是处理 `ConsumeRequest` 任务。这些任务会与业务逻辑的代码在一个线程执行。
 而业务逻辑的耗时是不可控的，如果执行的时间过长，那么就导致线程池的耗尽。而使用新的线程池，可以与 `拉取消息的线程池`(`PullMessageService`) 分开(隔离)。这样避免上述问题的发生。
 
-此外也引出的另一个问题，如果消息消费过慢，那么`拉取消息的线程` 会进入怎么样的状态呢？
+此外也引出的另一个问题，如果消息消费过慢，那么`拉取消息的线程` 会进入怎么样的状态呢？(RocketMQ 根据内存占用，等统计信息对拉取信息进行了限流)
 
 `ConsumeRequest` 消息消费的代码片段。
 
@@ -397,6 +397,7 @@ if (offset >= 0 && !consumeRequest.getProcessQueue().isDropped()) {
     // 而真正的同步 offset 是通过定时任务定期执行的(源码在 MQClientInstance#startScheduledTask 中)
     // 因此offset 的同步是存在时间差的，如果 consumer 被kill -9 了， offset 可能没有被更新，
     // 等 consumer 重启，依然会从旧的 offset 拉取消息进行消费，也就存在重复消费消息的可能。
+    // 此处的offset 是和queue 一对一的
     this.defaultMQPushConsumerImpl.getOffsetStore().updateOffset(consumeRequest.getMessageQueue(), offset, true);
 }
 
@@ -459,6 +460,7 @@ public void sendMessageBack(MessageExt msg, int delayLevel, final String brokerN
 ```java
 // ProcessQueue 创建&与 PullRequest 绑定的代码片段
 // RebalanceImpl#updateProcessQueueTableInRebalance
+// 一个 MessageQueue 对应一个PullRequest （一个queue）
 for (MessageQueue mq : mqSet) {
     if (!this.processQueueTable.containsKey(mq)) {
         // 创建 ProcessQueue
