@@ -12,3 +12,7 @@
 - [KMP](https://www.cnblogs.com/zzuuoo666/p/9028287.html)
 - [KMP](http://data.biancheng.net/view/180.html)
 - [KMP](https://programmercarl.com/0028.%E5%AE%9E%E7%8E%B0strStr.htm)
+
+## 操作系统
+
+- [关于Raid0,Raid1,Raid5,Raid10的总结](https://www.cnblogs.com/ivictor/p/6099807.html)
