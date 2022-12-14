@@ -94,8 +94,7 @@ class oopDesc {
 
 Klass数据结构定义了所有Klass类型共享的结构和行为:描述类型自身的布局，以及刻画出与其他类间的关系(父类、子类、兄弟类等)。图3-6描述了一个运行时Klass对象的内存布局。
 
-在Klass对象的成员变量中，第一个字段叫做_layout_helper, 它是反映该对象整体布局的综合描述符。以32位x86系统为例，_layout_helper 被压缩成32个比特位存储。由于频繁被访
-问，它被安排在紧随Klass_vtbl 的第一个字段。 若Klass既不是instance 也不是array，该字段值为0。
+在Klass对象的成员变量中，第一个字段叫做_layout_helper, 它是反映该对象整体布局的综合描述符。以32位x86系统为例，_layout_helper 被压缩成32个比特位存储。由于频繁被访问，它被安排在紧随Klass_vtbl 的第一个字段。 若Klass既不是instance 也不是array，该字段值为0。
 
 ## 常量池
 
