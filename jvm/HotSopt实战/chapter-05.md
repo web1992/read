@@ -186,7 +186,7 @@ G1会通过一个合理的计算模型，计算出每个Region的收集成本并
 - PrintGCTimeStamps 绝对时间，比如2022-06-01 10:59:59
 - PrintGCDateStamps 相对时间，比如 5.20
 
-> CG 格式
+> CG 日志格式
 
 ```
 1309M->582M(8192M) 49.606ms
