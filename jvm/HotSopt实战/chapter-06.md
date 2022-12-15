@@ -6,7 +6,7 @@
 - 扩展知识:ARM让Java 硬件级加速成为可能
 - Java栈
 - 栈帧、局部变量、操作数栈
-- HotSpot对硬件寄存器咨源的升田
+- HotSpot对硬件寄存器资源的利用
 - 栈顶缓存技术
 - VM中如何实现调用Java方法
 
@@ -24,7 +24,7 @@
 - 基于栈的执行引擎
 - 栈帧
 - 局部变量表
-- bytecodelnterpreter_x86.hpp
+- bytecodeinterpreter_x86.hpp
 - 操作数栈
 - JavaCalls
 - javaCalls.cpp
