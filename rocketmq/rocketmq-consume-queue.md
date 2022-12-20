@@ -2,6 +2,12 @@
 
 `org.apache.rocketmq.store.ConsumeQueue`
 
+CommitLog 文件负责存储 message ,而 ConsumeQueue 文件则是 CommitLog 文件的索引文件，方法快速的从 CommitLog 中查找消息
+
+
+![rocketmq-consumerqueue.drawio.svg](./images/rocketmq-consumerqueue.drawio.svg)
+
+
 ## ConsumeQueue 初始化
 
 ```java
@@ -147,3 +153,4 @@ public ConsumeQueue findConsumeQueue(String topic, int queueId) {
 ```
 
 - [RocketMQ ConsumerQueue](https://rocketmq.apache.org/rocketmq/how-to-support-more-queues-in-rocketmq/)
+- [CommitLog 文件，ConsumerQueue 文件](https://www.cnblogs.com/zxporz/p/12336476.html)
