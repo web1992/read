@@ -37,3 +37,7 @@ public static MessageId decodeMessageId(final String msgId) throws UnknownHostEx
 
 查询消息 `viewMessage`，的实现就是 根据 messageId 中的broker 地址和offset 进行 RPC调用，查询到消息体。
 
+
+## Links
+
+- [https://cloud.tencent.com/developer/article/1581366](https://cloud.tencent.com/developer/article/1581366)
