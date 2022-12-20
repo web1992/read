@@ -32,3 +32,8 @@ public static MessageId decodeMessageId(final String msgId) throws UnknownHostEx
     return new MessageId(address, offset);
 }
 ```
+
+## MQClientAPIImpl viewMessage
+
+查询消息 `viewMessage`，的实现就是 根据 messageId 中的broker 地址和offset 进行 RPC调用，查询到消息体。
+
