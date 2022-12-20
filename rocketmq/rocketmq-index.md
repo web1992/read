@@ -13,4 +13,5 @@ RocketMQ 的索引实现。
 
 ## Links
 
+- [IndexFile](https://juejin.cn/post/6980883151325233160)
 - [IndexFile](https://www.jianshu.com/p/e0befd11aee0)
