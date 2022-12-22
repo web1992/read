@@ -6,7 +6,7 @@ RocketMQ 构架图：
 
 ![rmq-basic-arc.png](./images/rmq-basic-arc.png)
 
-从构架图中可以做，RocketMQ 支持多个 NameServer,多个 Master Broker 和 多个 Slave Broker 的。
+从构架图中可知道，RocketMQ 支持多个 NameServer,多个 Master Broker 和 多个 Slave Broker 的。
 
 ## Links
 
