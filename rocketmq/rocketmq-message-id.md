@@ -2,7 +2,7 @@
 
 ![./images/rocketmq-message-id.drawio.svg](./images/rocketmq-message-id.drawio.svg)
 
-在 RocketMQ 中 消息的MessageId包含了消息存储所在的 broker ip+port 信息，此外还有消息在文件中的偏移信息 offset。
+在 RocketMQ 中 消息的MessageId包含了消息存储所在的 broker ip+port 信息，此外还有消息在文件中的偏移信息 offset。（offset就是消息所在文件中的索引开始的位置）
 
 这样做的好处就是只通过 messageId 就可以快速的查询到消息的内容(方便运维，排查问题)。
 
