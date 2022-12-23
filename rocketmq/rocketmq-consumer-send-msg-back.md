@@ -2,7 +2,7 @@
 
 > 消息消费失败的处理逻辑
 
-- 针对顺序消费的，消息消费失败的处理：会把消息从新放到 `ProcessQueue#msgTreeMap` 中（不更新offset）,一直到消费成功才会真正的从 msgTreeMap 中移除，病更新 offset
+- 针对顺序消费的，消息消费失败的处理：会把消息从新放到 `ProcessQueue#msgTreeMap` 中（不更新offset）,一直到消费成功才会真正的从 msgTreeMap 中移除，并更新 offset
 
 针对`非顺序`消息消费失败的处理逻辑，具体代码逻辑在 [SendMessageProcessor#asyncConsumerSendMsgBack](https://github.com/apache/rocketmq/blob/master/broker/src/main/java/org/apache/rocketmq/broker/processor/SendMessageProcessor.java#L112) 方法中。
 
