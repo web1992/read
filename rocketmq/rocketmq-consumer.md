@@ -93,7 +93,7 @@ DefaultMQPushConsumer#start
 
 ### DefaultMQPushConsumerImpl#start
 
-`DefaultMQPushConsumerImpl` 的主要功能是 拉取消息进行消费，下面 从 `start` 和 `pullMessage` 方法中去了解消息消费的核心。
+`DefaultMQPushConsumerImpl` 的主要功能是拉取消息进行消费，下面 从 `start` 和 `pullMessage` 方法中去了解消息消费的核心。
 
 消息消费的启动过程如下：
 
@@ -191,6 +191,11 @@ public void pullMessage(final PullRequest pullRequest) {
 // ...   
 }
 ```
+
+要理解底层的一些细节，必须了解的二个类：
+
+- [ProcessQueue](rocketmq-process-queue.md)
+- [MessageQueue](rocketmq-message-queue.md)
 
 消息消费的简化图：
 
@@ -723,6 +728,16 @@ public class main {
 >  MQ Proxy 需要非常高的性能。
 
 最后我们知道了，重平衡(rebalance)的主要作用就是给`Client`重新分配`Queue`,也就是`Consumer`端的负载均衡的实现入口。
+
+
+## 总结
+
+消息消费的概述：
+
+- 1. 消费端进行重平衡分配到 MessageQueue ，根据它创建 PullRequest 和ProcessQueue
+- 2. 异步线程进行根据 PullRequest 拉取消息，获取到 List<MessageExt> 列表
+- 3. 交给业务线程进行 业务逻辑处理，此处的核心类：ConsumeMessageConcurrentlyService.ConsumeRequest，ConsumeMessageOrderlyService.ConsumeRequest
+- 4. 更新消息的消费进度offset,以及处理消费失败的逻辑
 
 ## Links
 
