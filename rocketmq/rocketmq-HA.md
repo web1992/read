@@ -11,3 +11,4 @@ RocketMQ 构架图：
 ## Links
 
 - [主从同步注意点](https://cloud.tencent.com/developer/article/1458089)
+- [RocketMQ HA机制](https://developer.aliyun.com/article/839243)
