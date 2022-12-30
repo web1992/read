@@ -8,7 +8,7 @@ RocketMQ 事务的流程图
 
 ![rocket-mq-tx.png](./images/rocket-mq-tx.png)
 
-关键词：
+关键字：
 
 - RMQ_SYS_TRANS_HALF_TOPIC `半`消息 topic
 
@@ -34,7 +34,7 @@ RocketMQ 事务的流程图
 - Clinet 事务结束（提交or回滚）的实现逻辑
 - Broker 事务的回查询（查询事务状态）的实现逻辑
 
-## Send transactional message
+## Client 端发送事物消息
 
 需要使用事务消息，则需要两个步骤：
 
@@ -90,7 +90,7 @@ if (tranMsg != null && Boolean.parseBoolean(tranMsg)) {
 发送事务消息的时候，会在 prop 中添加 `PROPERTY_TRANSACTION_PREPARED` 属性，同时根据此属性来设置 `sysFlag` 标记此消息是事务消息。
 上面的代码执行之后，消息就会通过 `sendKernelImpl` 方法，发送到了 Borker,下面的代码是 Borker 执行事务消息存储的逻辑
 
-## TransactionalMessageService asyncPrepareMessage
+## Broker 端存储事物消息
 
 ```java
 // SendMessageProcessor#asyncSendMessage
@@ -130,7 +130,7 @@ private MessageExtBrokerInner parseHalfMessageInner(MessageExtBrokerInner msgInn
 
 通过上面的代码可知，事务消息，最终会把`事务消息`存储在 `RMQ_SYS_TRANS_HALF_TOPIC` Topic 中。事务和非事务消息 最终都会通过 `MessageStore` -> `CommitLog` -> `MappedFile` -> `File` 存储在文件系统中。
 
-## DefaultMQProducerImpl#endTransaction
+## Client 端继续处理事物消息
 
 当事务消息被发送到 Broker 之后，Client 就开始去校验本地事务的状态，然后来确定是`提交`还是`回滚`事务。
 下面是处理本地事务的逻辑。
@@ -189,7 +189,7 @@ Broker 会处理事务消息的提交 / 事务消息的回滚。 `EndTransaction
 
 ```java
 // EndTransactionProcessor#processRequest
-@Override
+// 下面的代码主要处理事物的提交+事物的回滚操作
 public RemotingCommand processRequest(ChannelHandlerContext ctx, RemotingCommand request) throws
     RemotingCommandException {
     final RemotingCommand response = RemotingCommand.createResponseCommand(null);
@@ -236,6 +236,8 @@ public RemotingCommand processRequest(ChannelHandlerContext ctx, RemotingCommand
 而事务回滚则是`删除消息`。
 
 上面已经梳理了，事务提交+事务回滚的流程，下面的`TransactionalMessageCheckService` 类主要是针对异常的事务，进行补偿的实现（就是由Broker RPC业务client,查询事务的最终状态）
+
+Broker 端补偿事物。
 
 ## TransactionalMessageCheckService 事务服务的初始化
 
