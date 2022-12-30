@@ -289,7 +289,6 @@ PullResult pullResult = fillOpRemoveMap(removeMap, opQueue, opOffset, halfOffset
 事务消息的删除逻辑如下：
 
 ```java
-@Override
 public boolean deletePrepareMessage(MessageExt msgExt) {
     // 添加 tags=d,标记次消息”删除“ 也就是事务成功了
     if (this.transactionalMessageBridge.putOpMessage(msgExt, TransactionalMessageUtil.REMOVETAG)) { // REMOVETAG = "d";
