@@ -50,6 +50,8 @@ topicQueueTable
 
 这个两种初始化方式，最终体现是在执行 `commit` 和 `flush` 方法的结果不同。
 
+这里底层使用`FileChannel`提供的内存映射类，提高IO的性能，具体原理可参考文末链接。
+
 ```java
 // MappedFile#init 没有 TransientStorePool 参数的方法
 private void init(final String fileName, final int fileSize) throws IOException {
@@ -317,3 +319,4 @@ public AppendMessageResult appendMessagesInner(final MessageExt messageExt, fina
 ## Links
 
 - [https://cloud.tencent.com/developer/article/1352677](https://cloud.tencent.com/developer/article/1352677)
+- [FileChannel](https://www.cnblogs.com/lxyit/p/9170741.html)
