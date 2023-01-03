@@ -40,7 +40,7 @@ void* mmap(void* addr, size_t length, int prot, int flags, int fd, off_t offset)
 ## mmap 是如何用于父子进程之间的通信的
 
 ```c
-// 共享匿名映射
+// 使用共享匿名映射，进行父子进程之间的通信
 #include <sys/mman.h>
 #include <stdlib.h>
 #include <stdio.h>
