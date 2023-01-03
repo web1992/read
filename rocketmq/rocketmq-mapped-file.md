@@ -115,6 +115,10 @@ public boolean isTransientStorePoolEnable() {
 }
 ```
 
+从上面可知，如果开启了异步`ASYNC_FLUSH`,那么就会创建 `TransientStorePool` + `writeBuffer` ，而它门是基于内存的，就会导致数据丢失的可能，但是好处是提高了性能（避免了频繁的写文件操作，写文件的操作比内存操作内存，效率低很多）。
+
+下面即将看到的 `commit`+`flush` 方法 通过都会先判断 writeBuffer 是否为空，来进行不同的操作。
+
 ## MappedFile commit
 
 `commit` 与 `flush` 相比，`commit` 只会执行文件的 `write` 操作，此操作并不会立即把内存中的数据下入到磁盘中。
