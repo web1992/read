@@ -94,7 +94,7 @@ Elasticsearch除搜索以外，提供的针对ES数据进行统计分析的功�
 
 集合的分类
 
-- Bucket Aggregation - -些列满足特定条件的文档的集合
-- Metric Aggregation-一些数学运算，可以对文档字段进行统计分析
-- Pipeline Aggregation -对其他的聚合结果进行二次聚合
-- Matrix Aggregration-支持对多个字段的操作并提供一个结果矩阵.
+- Bucket Aggregation - 一些列满足特定条件的文档的集合
+- Metric Aggregation - 一些数学运算，可以对文档字段进行统计分析
+- Pipeline Aggregation - 对其他的聚合结果进行二次聚合
+- Matrix Aggregration - 支持对多个字段的操作并提供一个结果矩阵.
