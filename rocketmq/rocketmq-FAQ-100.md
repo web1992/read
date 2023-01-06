@@ -35,3 +35,4 @@
 
 - [https://www.confluent.io/blog/how-choose-number-topics-partitions-kafka-cluster/](https://www.confluent.io/blog/how-choose-number-topics-partitions-kafka-cluster/)
 - [RocketMQ 常见问题](https://mp.weixin.qq.com/s/mNpXpSVVVBuI59LI6vVvQA)
+- [Exactly once](https://cloud.tencent.com/developer/article/1768876)
