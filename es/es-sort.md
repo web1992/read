@@ -10,3 +10,4 @@ ES 中聚合+排序的实现技术 `Doc Values` + `fielddata`
 
 - https://www.elastic.co/guide/cn/elasticsearch/guide/current/docvalues.html
 - https://www.elastic.co/guide/cn/elasticsearch/guide/current/_deep_dive_on_doc_values.html
+- [es排序](https://www.cnblogs.com/bonelee/p/6401531.html)
