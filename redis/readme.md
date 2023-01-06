@@ -9,3 +9,4 @@
 ## Links
 
 - [Redis 内存使用计算](http://www.redis.cn/redis_memory/)
+- [redis aof](https://www.cnblogs.com/mmgithub123/p/15853680.html)
