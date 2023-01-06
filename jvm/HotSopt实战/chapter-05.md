@@ -193,3 +193,8 @@ G1会通过一个合理的计算模型，计算出每个Region的收集成本并
 ```
 
 ![jvm-gc-log.drawio.svg](./images/jvm-gc-log.drawio.svg)
+
+
+## Links
+
+- [卡表](https://blog.csdn.net/u013039395/article/details/118223490)
