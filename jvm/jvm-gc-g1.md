@@ -156,3 +156,4 @@ RSet 需要维护的引用关系只有两种，非 CSet 老年代 Region 到年�
 - [https://tech.meituan.com/2016/09/23/g1.html](https://tech.meituan.com/2016/09/23/g1.html)
 - [G1垃圾收集器之RSet](https://www.jianshu.com/p/870abddaba41)
 - [G1](https://segmentfault.com/a/1190000039411521)
+- [G1 point in vs point out](https://www.cnblogs.com/ASPNET2008/p/6496481.html)
