@@ -1,6 +1,6 @@
 # Zookeeper Atomic Broadcast
 
-`ZAB` `Zookeeper` 原子消息广播协议
+`ZAB` - `Zookeeper` 原子消息广播协议
 
 关键字：
 
