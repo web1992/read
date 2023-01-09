@@ -26,6 +26,7 @@
 - [MySQL 索引原理及慢查询优化](https://tech.meituan.com/2014/06/30/mysql-index.html)
 - [MySQL 常见问题](https://mp.weixin.qq.com/s/ex-mtzT15rQJ565U-q9l4w)
 - [MySQL 索引下推 Index Condition Pushdown](https://juejin.cn/post/7005794550862053412)
+- [MySQL 查询优化](https://mp.weixin.qq.com/s/gz-wQPsaerf4k7ymG8DiDA)
 
 ## 原理
 
