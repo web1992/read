@@ -36,7 +36,16 @@ TLAB
 
 ## 内存回收
 
+核心过程 Mark、Relocate 和 Remap
+
+![jvm-g1-2023-01-09-mark-relocate-remap.drawio.svg](./images/jvm-g1-2023-01-09-mark-relocate-remap.drawio.svg)
+
 ## 关键技术
+
+- 染色指针(colored pointer)
+- read barrier
+
+![jvm-g1-2023-01-09-colored-pointer.drawio.svg](./images/jvm-g1-2023-01-09-colored-pointer.drawio.svg)
 
 ## Mark 阶段
 
@@ -61,7 +70,7 @@ Relocate 阶段的主要任务是搬移对象，在经过 Mark 阶段之后，�
 
 在 Relocate 阶段，应用线程新创建的对象地址视图标记为 Remapped。如果应用线程访问到一个地址视图是 Marked0 的对象，说明这个对象还没有被转移，那么就需要将这个对象进行转移，转移之后再加入到 forwarding table，然后再对这个对象的引用直接指向新地址，完成自愈。这些动作都是发生在 read barrier 中的，是由应用线程完成的。当 GC 线程遍历到一个对象，如果对象地址视图是 Marked0，就将其转移，同时将地址视图置为 Remapped，并加入到 forwarding table ；如果访问到一个对象地址视图已经是 Remapped，就说明已经被转移了，也就不做处理了。
 
-## ReMap 阶段
+## Remap 阶段
 
 Remap 阶段主要是对地址视图和对象之间的引用关系做修正。因为在 Relocate 阶段，GC 线程会将活跃对象快速搬移到新的区域，但是却不会同时修复对象之间的引用（请注意这一点，这是 ZGC 和以前我们遇到的所有基于 copy 的 GC 算法的最大不同）。这就导致还有大量的指针停留在 Marked0 视图。这样就会导致活跃视图不统一，需要再对对象的引用关系做一次全面的调整，这个过程也是要遍历所有对象的。不过，因为 Mark 阶段也需要遍历所有对象，所以，可以把当前 GC 周期的 Remap 阶段和下一个 GC 周期的 Mark 阶段复用。但是由于 Remap 阶段要处理上一轮的 Marked0 视图指针，又要同时标记下一轮的活跃对象，为了区分，可以再引入一个 Mark 标记，这就是 Marked1 标志。可以想象，Marked0 和 Marked1 视图在每一轮 GC 中是交替使用的。
 
