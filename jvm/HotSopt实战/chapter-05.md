@@ -191,8 +191,7 @@ G1会通过一个合理的计算模型，计算出每个Region的收集成本并
 1309M->582M(8192M) 49.606ms
 ```
 
-![jvm-gc-log.drawio.svg](./images/jvm-gc-log.drawio.svg)
-
+![jvm-gc-log-2023-01-11.drawio.svg](./images/jvm-gc-log-2023-01-11.drawio.svg)
 
 ## Links
 
