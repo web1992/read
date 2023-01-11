@@ -34,5 +34,3 @@ static AttachOperationFunctionInfo funcs[] = {
 };
 ```
 
-jps
-
