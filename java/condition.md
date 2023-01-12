@@ -252,3 +252,4 @@ private void doSignalAll(Node first) {
 ## link
 
 - [Condition](https://suichangkele.iteye.com/blog/2368254)
+- [Condition 实现原理](https://juejin.cn/post/6977746796093112333#heading-4)

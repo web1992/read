@@ -189,6 +189,7 @@ private volatile int state;
 
 ## 参考
 
+- [AQS](https://juejin.cn/post/6977746796093112333)
 - [AQS](https://www.cnblogs.com/waterystone/p/4920797.html)
 - [cas and aqs (csdn)](https://blog.csdn.net/u010862794/article/details/72892300)
 - [aqs (github)](<https://github.com/CL0610/Java-concurrency/blob/master/08.%E5%88%9D%E8%AF%86Lock%E4%B8%8EAbstractQueuedSynchronizer(AQS)/%E5%88%9D%E8%AF%86Lock%E4%B8%8EAbstractQueuedSynchronizer(AQS).md>)
