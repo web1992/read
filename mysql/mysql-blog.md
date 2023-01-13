@@ -9,6 +9,7 @@
 
 ## 优化
 
+- [MySQL 面试](https://juejin.cn/post/7171750523731722276)
 - [MySQL 随机 IO&顺序 IO](http://blog.csdn.net/dba_waterbin/article/details/8937441)
 - [MySQL `limit`优化](https://stackoverflow.com/questions/4481388/why-does-mysql-higher-limit-offset-slow-the-query-down)
 - [MySQL `limit`优化(late-row-lookups 详解)](https://explainextended.com/2009/10/23/mysql-order-by-limit-performance-late-row-lookups/)
