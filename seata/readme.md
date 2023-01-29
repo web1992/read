@@ -2,6 +2,7 @@
 
 ## TCC
 
+- [Seata 解决空回滚等问题](https://seata.io/zh-cn/blog/seata-tcc-fence.html)
 - [Seata 的事物隔离](https://seata.io/zh-cn/blog/seata-at-lock.html)
 - [TCC 简介 AT & TCC https://seata.io/zh-cn/docs/overview/what-is-seata.html](https://seata.io/zh-cn/docs/overview/what-is-seata.html)
 - [TCC 概念 http://seata.io/zh-cn/docs/dev/mode/tcc-mode.html](http://seata.io/zh-cn/docs/dev/mode/tcc-mode.html)
