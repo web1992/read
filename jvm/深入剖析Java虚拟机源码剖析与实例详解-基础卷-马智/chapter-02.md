@@ -11,7 +11,7 @@
 
 Java类通过Klass来表示。简单来说Klass就是Java类在HotSpot中的C++对等体，主要用于描述Java对象的具体类型。一般而言，HotSpot VM在加载Class文件时会在元数据区创建Klass，表示类的元数据，通过Klass可以获取类的常量池、字段和方法等信息。
 
-Metadata是元数据类的基类，除了Klass类会直接继承Metadata基类以外，表示方法的Method类与表示常量池的ConstantPool类也会直接继承Metadata基类。本节只讨论Klass继承体系中涉及的相关类。
+Metadata是元数据类的基类，除了Klass类会直接继承Metadata基类以外，表示方法的Method类与表示常量池的ConstantPool类也会直接继承Metadata基类。
 
 ![kclass.drawio.svg](./images/kclass.drawio.svg)
 
@@ -27,6 +27,41 @@ Klass继承体系中涉及的C++类主要提供了两个功能：
 
 在HotSpot中，Java对象使用oop实例来表示，不提供任何虚函数的功能。oop实例保存了对应Klass的指针，通过Klass完成所有的方法调用并获取类型信息，Klass基于C++的虚函数提供对Java多态的支持。
 
+```c++
+class Klass : public Metadata {
+  friend class VMStructs;
+ protected:
+  enum { _primary_super_limit = 8 };
+  jint        _layout_helper;
+  juint       _super_check_offset;
+  Symbol*     _name;
+  Klass*      _secondary_super_cache;
+  Array<Klass*>* _secondary_supers;
+  Klass*      _primary_supers[_primary_super_limit];
+  oop       _java_mirror;
+  Klass*      _super;
+  Klass*      _subklass;
+  Klass*      _next_sibling;
+  Klass*      _next_link;
+  ClassLoaderData* _class_loader_data;
+  jint        _modifier_flags;  // Processed access flags, for use by Class.getModifiers.
+  AccessFlags _access_flags;    // Access flags. The class/interface distinction is stored here.
+  jlong    _last_biased_lock_bulk_revocation_time;
+  markOop  _prototype_header;   // Used when biased locking is both enabled and disabled for this type
+  jint     _biased_lock_revocation_count;
+  JFR_ONLY(DEFINE_TRACE_ID_FIELD;)
+  // Remembered sets support for the oops in the klasses.
+  jbyte _modified_oops;             // Card Table Equivalent (YC/CMS support)
+  jbyte _accumulated_modified_oops; // Mod Union Equivalent (CMS support)
+
+private:
+  jshort _shared_class_path_index;
+
+  friend class SharedClassUtil;
+protected:
+  // ...
+}
+```
 ## oopDesc
 
 ```c++
@@ -100,3 +135,8 @@ markOopDesc类的实例并不能表示一个具体的Java对象，而是通过�
 每一个Java线程都有一个私有的句柄区_handle_area用来存储其运行过程中的句柄信息，这个句柄区会随着Java线程的栈帧而变化。
 Java线程每调用一个Java方法就会创建一个对应的HandleMark保存创建的对象句柄，然后等调用返回后释放这些对象句柄，此时释放的仅是调用当前方法创建的句柄，
 因此HandleMark只需要恢复到调用方法之前的状态即可。
+
+
+## Link
+
+- [klass.hpp](https://github.com/openjdk/jdk8u/blob/master/hotspot/src/share/vm/oops/klass.hpp)
