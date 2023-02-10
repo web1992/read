@@ -44,13 +44,11 @@ class Klass : public Metadata {
   Klass*      _next_sibling;
   Klass*      _next_link;
   ClassLoaderData* _class_loader_data;
-  jint        _modifier_flags;  // Processed access flags, for use by Class.getModifiers.
-  AccessFlags _access_flags;    // Access flags. The class/interface distinction is stored here.
+  jint        _modifier_flags;  
+  AccessFlags _access_flags;    
   jlong    _last_biased_lock_bulk_revocation_time;
-  markOop  _prototype_header;   // Used when biased locking is both enabled and disabled for this type
+  markOop  _prototype_header;   
   jint     _biased_lock_revocation_count;
-  JFR_ONLY(DEFINE_TRACE_ID_FIELD;)
-  // Remembered sets support for the oops in the klasses.
   jbyte _modified_oops;             // Card Table Equivalent (YC/CMS support)
   jbyte _accumulated_modified_oops; // Mod Union Equivalent (CMS support)
 
