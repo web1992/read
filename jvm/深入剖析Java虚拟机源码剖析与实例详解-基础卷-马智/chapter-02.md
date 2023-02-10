@@ -4,7 +4,28 @@
 - markOop
 - oopDesc oop
 - markOopDesc 类
-- 
+- Handle
+- HandleMark
+
+## kclass
+
+Java类通过Klass来表示。简单来说Klass就是Java类在HotSpot中的C++对等体，主要用于描述Java对象的具体类型。一般而言，HotSpot VM在加载Class文件时会在元数据区创建Klass，表示类的元数据，通过Klass可以获取类的常量池、字段和方法等信息。
+
+Metadata是元数据类的基类，除了Klass类会直接继承Metadata基类以外，表示方法的Method类与表示常量池的ConstantPool类也会直接继承Metadata基类。本节只讨论Klass继承体系中涉及的相关类。
+
+![kclass.drawio.svg](./images/kclass.drawio.svg)
+
+Klass继承体系中涉及的C++类主要提供了两个功能：
+
+- 提供C++层面的Java类型（包括Java类和Java数组）表示方式，也就是用C++类的对象来描述Java类型；
+- 方法分派。
+
+一个C++的Klass类实例表示一个Java类的元数据（相当于java.lang.Class对象），主要提供两个功能：
+
+- 实现Java语言层面的类；
+- 提供对多态方法的支持，即通过vtbl指针实现多态。
+
+在HotSpot中，Java对象使用oop实例来表示，不提供任何虚函数的功能。oop实例保存了对应Klass的指针，通过Klass完成所有的方法调用并获取类型信息，Klass基于C++的虚函数提供对Java多态的支持。
 
 ## oopDesc
 
