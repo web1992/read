@@ -34,3 +34,47 @@ parseClassFile()函数首先解析Class文件中的类、字段和常量池等�
 
 在Launcher类的构造方法中创建ExtClassLoader与AppClassLoader对象，而loader变量被初始化为AppClassLoader对象，最终在initSystemClassLoader()函数中调用getClass-Loader()方法返回的就是这个对象。HotSpot VM可以通过_java_system_loader属性获取AppClassLoader对象，通过AppClassLoader对象中的parent属性获取ExtClassLoader对象。
 
+## ClassLoader
+
+```java
+protected Class<?> loadClass(String name, boolean resolve)
+        throws ClassNotFoundException
+    {
+        synchronized (getClassLoadingLock(name)) {
+            // First, check if the class has already been loaded
+            Class<?> c = findLoadedClass(name);
+            if (c == null) {
+                long t0 = System.nanoTime();
+                try {
+                    if (parent != null) {
+                        c = parent.loadClass(name, false);
+                    } else {// 只有系统类加载器parent才会为空，才会走到这里
+                        c = findBootstrapClassOrNull(name);
+                    }
+                } catch (ClassNotFoundException e) {
+                    // ClassNotFoundException thrown if class not found
+                    // from the non-null parent class loader
+                }
+
+                if (c == null) {
+                    // If still not found, then invoke findClass in order
+                    // to find the class.
+                    long t1 = System.nanoTime();
+                    c = findClass(name);
+                    // ...
+                }
+            }
+            if (resolve) {
+                resolveClass(c);
+            }
+            return c;
+        }
+    }
+```
+
+## 类的双亲委派机制
+
+各个类加载器之间并不是继承关系，而是表示工作过程，具体说就是，对于一个加载类的具体请求，首先要委派给自己的父类加载器去加载，只有父类加载器无法完成加载请求时子类加载器才会尝试加载，这就叫“双亲委派”
+
+当父类无法完成加载请求也就是c为null时，当前类加载器会调用findClass()方法尝试自己完成类加载的请求。
+
