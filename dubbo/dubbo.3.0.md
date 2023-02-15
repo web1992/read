@@ -8,3 +8,7 @@
 - [Dubbo 服务调用](https://cn.dubbo.apache.org/zh/docs3-v2/java-sdk/concepts-and-architecture/service-invocation/)
 - [元数据中心](https://cn.dubbo.apache.org/zh/docs3-v2/java-sdk/reference-manual/metadata-center/overview/)
 - [元数据中心 ZK](https://cn.dubbo.apache.org/zh/docs3-v2/java-sdk/reference-manual/metadata-center/zookeeper/)
+
+## invoke-arch.jpeg
+
+![invoke-arch.jpeg](./images/invoke-arch.jpeg)
