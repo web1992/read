@@ -12,3 +12,4 @@
 
 - [jstat 分析GC+内存占用](https://www.cnblogs.com/StarbucksBoy/p/11342188.html)
 - [jcmd](https://www.cnblogs.com/webor2006/p/10669472.html)
+- [jvm 常用的命令](https://www.cnblogs.com/duanxz/p/6115722.html)
