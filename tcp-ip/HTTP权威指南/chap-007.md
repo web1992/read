@@ -12,4 +12,5 @@
 - Cache-Control（绝对时间） 首部和 Expires 首部（相对时间）
 - 条件 GET
 - If-Modified-Since 和 If-None-Match
-- 实体标签（ETag）的`版本标识符`
+- 实体标签（ETag）的`版本标识符` If-None-Match
+- 
