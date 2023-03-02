@@ -1,6 +1,10 @@
 # 第15章　实体和编码
 
-- 分块编码（chunked encoding
+- 分块编码（chunked encoding）
+- Content-Length 首部
+- 实体摘要 Content-MD5
+- 文本的字符编码 Content-Type: text/html; charset=iso-8859-4
+- Content-Type: multipart/form-data; boundary=[abcdefghijklmnopqrstuvwxyz]
 
 
 > HTTP 还会确保它的报文被正确传送、识别、提取以及适当处理。
@@ -52,4 +56,18 @@ Cache-Control
 指出应该如何缓存该文档。和 ETag 首部类似，Cache-Control 首部也没有正式定义为实体首部。
 
 
-## 
+## 1　常用媒体类型
+
+
+表15-1　常用媒体类型
+
+媒体类型	描　　述
+- text/html	实体主体是 HTML 文档
+- text/plain	实体主体是纯文本文档
+- image/gif	实体主体是 GIF 格式的图像
+- image/jpeg	实体主体是 JPEG 格式的图像
+- audio/x-wav	实体主体包含 WAV 格式声音数据
+- model/vrml	实体主体是三维的 VRML 模型
+- application/vnd.ms-powerpoint	实体主体是 Microsoft PowerPoint 演示文档
+- multipart/byteranges	实体主体有若干部分，每个部分都包含了完整文档中不同的字节范围
+- message/http	实体主体包含完整的 HTTP 报文（参见 TRACE）
