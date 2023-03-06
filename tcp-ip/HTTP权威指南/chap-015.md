@@ -5,7 +5,13 @@
 - 实体摘要 Content-MD5
 - 文本的字符编码 Content-Type: text/html; charset=iso-8859-4
 - Content-Type: multipart/form-data; boundary=[abcdefghijklmnopqrstuvwxyz]
-
+- Transfer-Encoding首部
+- Expires （ 过期）和 Cache-Control （缓存控制）
+- If-Modified-Since 有条件的请求（时间）
+- If-None-Match 测试的是文档的 ETag 值
+- 弱验证码（weak validators）和强验证码（strong validators）
+- 范围请求（断点功能）
+- 差异（delta）
 
 > HTTP 还会确保它的报文被正确传送、识别、提取以及适当处理。
 
@@ -56,7 +62,7 @@ Cache-Control
 指出应该如何缓存该文档。和 ETag 首部类似，Cache-Control 首部也没有正式定义为实体首部。
 
 
-## 1　常用媒体类型
+## 常用媒体类型
 
 
 表15-1　常用媒体类型
