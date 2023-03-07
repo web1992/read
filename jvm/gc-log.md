@@ -9,7 +9,7 @@
 ```java
 -Xloggc:/data/applogs/gc_%p_%t.log
 -XX:+HeapDumpOnOutOfMemoryError
--XX:HeapDumpPath=/data/applogs
+-XX:HeapDumpPath=/data/dumplogs
 -XX:+PrintGCDetails
 -XX:+PrintGCDateStamps 
 ```
