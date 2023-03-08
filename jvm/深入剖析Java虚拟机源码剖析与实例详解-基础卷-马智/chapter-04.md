@@ -2,7 +2,6 @@
 
 - Class文件的结构
 - create_mirror
-- 
 
 Class文件格式采用一种类似于C语言结构体的伪结构来存储数据。常用的数据结构如下：
 
@@ -46,4 +45,4 @@ class ClassFileParser VALUE_OBJ_CLASS_SPEC {
 
 ## 解析结果保存
 
-建表示java.lang.Class对象的oop实例后，将其设置为InstanceKlass实例的_java_mirror属性，同时设置oop实例的偏移位置为_klass_offset处存储的指向InstanceKlass实例的指针
+创建表示java.lang.Class对象的oop实例后，将其设置为InstanceKlass实例的_java_mirror属性，同时设置oop实例的偏移位置为_klass_offset处存储的指向InstanceKlass实例的指针
