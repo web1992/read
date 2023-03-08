@@ -11,7 +11,7 @@
 
 Java类通过Klass来表示。简单来说Klass就是Java类在HotSpot中的C++对等体，主要用于描述Java对象的具体类型。一般而言，HotSpot VM在加载Class文件时会在元数据区创建Klass，表示类的元数据，通过Klass可以获取类的常量池、字段和方法等信息。
 
-Metadata是元数据类的基类，除了Klass类会直接继承Metadata基类以外，表示方法的Method类与表示常量池的ConstantPool类也会直接继承Metadata基类。
+Metadata是元数据类的`基类`，除了Klass类会直接继承Metadata基类以外，表示方法的Method类与表示常量池的ConstantPool类也会直接继承Metadata基类。
 
 ![kclass.drawio.svg](./images/kclass.drawio.svg)
 
@@ -63,6 +63,7 @@ protected:
 ## oopDesc
 
 ```c++
+// oopDesc 中引用 Klass
 class oopDesc {
   ...
 private:
