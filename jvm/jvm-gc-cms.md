@@ -4,7 +4,6 @@ Concurrent Mark Sweep，CMS
 
 关键字:
 
-
 - 分代回收
 - CMS 产生内存碎片，会导致 FULL GC (STW)
 - 首先，CMS收集器对处理器资源非常敏感。会占用CPU资源

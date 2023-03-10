@@ -48,29 +48,6 @@ RocketMQ 的G1参数配置
 - -XX:-UseLargePages 关闭大页
 - -XX:-UseBiasedLocking 关闭偏向锁
 
-## 
-
-```config
-java 
--Xmx4g
--Xms4g
--XX:+UseG1GC
--XX:ConcGCThreads=2
--XX:ParallelGCThreads=8
--XX:+UseStringDeduplication
--XX:+ParallelRefProcEnabled
--XX:InitiatingHeap0ccupancyPercent=45
--XX:MaxGCPauseMillis=200 -XX:G1HeapWastePercent=5 -XX:G1MixedGCCountTarget=8
--XX:+UnlockExperimentalVM0ptions -XX:G1MixedGCLiveThresholdPercent=85
--XX:G1ReservePercent=10 -XX:G1HeapRegionSize=2m -XX:G1NewSizePercent=5
--XX:G1MaxNewSizePercent=60 -XX:G10ldCSetReqionThresholdPercent=10
--XX:+PrintCommandLineFlags -XX:+PrintAdaptiveSizePolicy
--XX:+PrintGC -XX:+PrintGCDateStamps -XX:+PrintGCDetails
--XX:+PrintGCTimeStamps -XX:+PrintHeapAtGC -XX:+PrintGCCause
--XX:+PrintPromotionFailure -XX:+PrintReferenceGC -XX:+PrintTenuringDistribution
--XX:+UnlockDiagnosticVM0ptions -XX:+G1PrintHeapRegions
--XX:+PrintVMOptions -XX:+PrintTLAB -Xloggc:gc.log
-```
 
 ```config
 # G1 GC总结-参数说明
