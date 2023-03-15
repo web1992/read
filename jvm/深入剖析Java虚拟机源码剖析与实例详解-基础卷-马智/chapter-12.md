@@ -52,6 +52,9 @@ Metaspace（元空间）在空间不足时会进行扩容，当扩容到了-XX:M
 
 - mark_sweep_phase1()函数：标记所有活跃对象；
 - mark_sweep_phase2()函数：计算所有活跃对象在压缩后的偏移地址；
-- mark_sweep_phase3()函数：更新对象的引用地址；
+- mark_sweep_phase3()函数：更新对象的引用地址；(主要是这个方法：`MarkSweep::adjust_pointer`)
 - mark_sweep_phase4()函数：移动所有活跃对象到新的位置。
+
+
+`计算所有活跃对象在压缩后的偏移地址` 此过程主要是对扫描对象，计算对象的新地址。（计算压缩后的地址，设置转发指针并更新压缩指针）
 
