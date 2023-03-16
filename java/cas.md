@@ -10,8 +10,8 @@ java 中的`cas`操作的都是基于`Unsafe`实现的，`Unsafe`使用`JNI`调�
 // 获取一个 Unsafe实例
 Field field = Unsafe.class.getDeclaredField("theUnsafe");
 field.setAccessible(true);
- Unsafe unsafe = (Unsafe) field.get(null);
- System.out.println(unsafe);
+Unsafe unsafe = (Unsafe) field.get(null);
+System.out.println(unsafe);
 ```
 
 ## cas 优点缺点
@@ -21,6 +21,11 @@ field.setAccessible(true);
 ## 实现
 
 基于CPU的`cmpxchg`指令
+
+
+## Java原子类
+
+![atomic.png](./images/atomic.png)
 
 ## Link
 
