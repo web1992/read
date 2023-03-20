@@ -45,3 +45,9 @@ PSYoungGen，表示新生代使用的是多线程垃圾收集器Parallel Scaveng
 
 `[Times: user=0.05 sys=0.00, real=0.02 secs]` 提供cpu使用及时间消耗，user是用户态消耗的cpu时间，sys是系统态消耗的cpu时间,real是实际的消耗时间。
 
+
+## 优化配置
+
+```
+-XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=/data/applogs -XX:+PrintGCDetails -XX:+PrintGCDateStamps -Xloggc:/data/applogs/gc_%p_%t.log
+```
