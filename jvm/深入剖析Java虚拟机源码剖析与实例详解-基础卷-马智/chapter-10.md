@@ -12,7 +12,11 @@
 - VMOperationQueue
 - os::create_thread()
 - pthread的ID
-- Mutator线程
+- Mutator线程(用户线程)
+- 线程的状态
+- 模板解释器
+- Polling内存页
+- SafepointSynchronize
 
 OpenJDK 8版本中的垃圾收集器都采用了分代垃圾回收机制，根据对象存活周期的不同将内存划分为几个内存代并采用不用的垃圾收集算法进行回收。
 
@@ -212,6 +216,110 @@ VM_Operation* safepoint_ops = NULL;
 -（4）线程本身处于blocked状态，例如线程在等待锁，那么线程的阻塞状态将不会结束直到安全点标志被清除。
 
 -（5）当线程处于以上（1）至（3）3种状态切换阶段，切换前会先检查安全点的状态，如果此时要求进入安全点，那么切换将不被允许，需要等待，直到安全点状态被清除。
+
+```c++
+//源代码位置：openjdk/hotspot/src/share/vm/runtime/safepoint.hpp
+class SafepointSynchronize : AllStatic {
+ public:
+  enum SynchronizeState {
+     // 相关线程不需要进入安全点
+     _not_synchronized = 0,
+     // 相关线程需要进入安全点
+     _synchronizing    = 1,
+     // 所有的线程都已经进入安全点，只有VMThread线程在运行
+     _synchronized     = 2
+      };
+
+ private:
+  static volatile SynchronizeState _state;
+  static volatile int _waiting_to_block;
+  ...
+}
+```
+
+其中，_state变量的值取自枚举类SynchronizeState中定义的枚举常量，表示线程同步的状态；_waiting_to_block表示VMThread线程要等待阻塞的用户线程数，只有这些线程全部阻塞时，VMThread线程才能在安全点下执行垃圾回收操作。这两个变量都是静态的，因此使整个系统进行安全点同步。
+
+SafepointSynchronize类中定义了VMThread进入安全点和退出安全点的函数。调用SafepointSynchronize::begin()函数进入安全点的代码如下：
+```c++
+//源代码位置：openjdk/hotspot/src/share/vm/runtime/safepoint.cpp
+
+// 只有VMThread才能调用当前的函数
+void SafepointSynchronize::begin() {
+  Thread* myThread = Thread::current();
+  assert(myThread->is_VM_thread(), "Only VM thread may execute a safepoint");
+
+  // 获取Threads_lock锁，这个锁直到调用退出安全点的函数SafepointSynchronize::end()
+  // 时才会释放，因此相关的Mutator线程在获取此锁时阻塞
+  Threads_lock->lock();
+
+  assert( _state == _not_synchronized, "trying to safepoint synchronize with wrong state");
+
+  // 获取所有的Mutator线程总数，这些线程在GC执行过程中必须要STW
+  int nof_threads = Threads::number_of_threads();
+
+  MutexLocker mu(Safepoint_lock);
+
+  // 需要等待暂停的线程数量
+  _waiting_to_block = nof_threads;
+  int still_running = nof_threads;
+
+  // 将状态设置为需要同步，这样除当前VMThread线程以外的其他正在运行的线程检测到这个
+  // 状态时，都会在合适的点调用block()函数暂停
+  _state            = _synchronizing;
+
+  // 通知解析执行的线程进入安全点
+  Interpreter::notice_safepoints();
+
+  // 让编译执行的线程进入安全点
+  // 两个参数 UseCompilerSafepoints 和 DeferPollingPageLoopCount在默认情况
+  // 下的值分别为true和-1
+  if (UseCompilerSafepoints && DeferPollingPageLoopCount < 0) {
+   guarantee(PageArmed == 0, "invariant") ;
+   PageArmed = 1 ;
+   os::make_polling_page_unreadable();
+  }
+
+  // 1. 循环判断still_running
+
+  // 2. 循环判断_waiting_to_block
+
+  // 逻辑执行到这里时，除VMThread线程外的所有线程已经暂停，因此将状态设置为
+  // _synchronized
+  _state = _synchronized;
+  ...
+}
+```
+
+以上代码让除了执行当前函数的VMThread线程之外的所有线程都在到达安全点时暂停。例如，调用Interpreter::notice_safepoints()函数让解析执行Java方法的线程进入安全点，调用os::make_polling_page_unreadable()函数让内存页不可读，让编译执行Java方法的线程进入安全点等。
+
+另外，begin()函数还通过两个重要的锁Threads_lock和Safepoint_lock来保证线程的同步过程，由于在开始时已经获取了Threads_lock锁，因此其他相关的线程如果需要“走到”安全点处暂停，其实就是在获取此锁时进行阻塞暂停；Safepoint_lock主要用来保证多线程操作变量时的线程安全。
+
+## 线程的状态
+
+线程的状态已经在枚举类JavathreadState中进行了定义，代码如下：
+
+```c++
+源代码位置：openjdk/hotspot/src/share/vm/utilities/globalDefinitions.hpp
+enum JavaThreadState {
+  _thread_uninitialized     =  0,         // 不应该有的状态
+  _thread_new             =  2,           // 仅用在线程启动时
+  _thread_new_trans        =  3,
+  _thread_in_native        =  4,          // 线程执行native代码
+  _thread_in_native_trans   =  5,
+  _thread_in_vm            =  6,          // 线程运行在虚拟机中
+  _thread_in_vm_trans       =  7,
+  _thread_in_Java          =  8,          // 正在以解释或编译方式运行Java代码
+  _thread_in_Java_trans     =  9,
+  _thread_blocked          = 10,          // 阻塞在虚拟机中
+  _thread_blocked_trans     = 11,
+
+  _thread_max_state        = 12           // 线程共有的状态总数
+};
+```
+
+## 模板解释器
+
+HotSpot VM使用一种称为“模板解释器”的技术来实现字节码的解释执行。所谓“模板解释器”，是指每一个字节码指令都会被映射到字节码解释模板表中的一个模板上，对应的是一个符合字节码语义的机器代码片段，这个机器代码片段会在HotSpot VM启动时预先生成，以加快解释执行的速度。
 
 ## Links
 
