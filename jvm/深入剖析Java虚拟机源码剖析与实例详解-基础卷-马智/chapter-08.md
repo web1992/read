@@ -11,6 +11,8 @@
 - Metaspace类
 - 类指针压缩空间（Compressed Class Pointer Space）
 - 元空间和类指针压缩空间
+- Metaspace的分配器 根据猜测分配chunk块
+- SpaceManager和ChunkManager管理
 
 ![memory-layout.drawio.svg](./images/memory-layout.drawio.svg)
 
@@ -88,3 +90,36 @@ Metaspace用来存放类的元数据信息，元数据信息用于记录一个Ja
 
 类指针压缩空间只包含类的元数据，如InstanceKlass和ArrayKlass，虚拟机仅在打开了UseCompressedClassPointers选项时才生效。为了提高性能，Java中的虚方法表也存放到这里。
 元空间包含的是类里比较大的元数据，如方法、字节码和常量池等。
+
+## 内存块的管理
+
+Metachunk块通过SpaceManager和ChunkManager管理，SpaceManager用来管理每个类加载器正在使用的Metachunk块，而ChunkManager用来管理所有空闲的Metachunk块。
+
+## ChunkManager
+
+ChunkManager类管理着所有类加载器卸载后释放的内存块Metachunk。该类及重要属性的定义如下：
+
+```c++
+源代码位置：openjdk/hotspot/src/share/vm/memory/metaspace.cpp
+
+typedef class FreeList<Metachunk> ChunkList;
+
+class ChunkManager:public CHeapObj<mtInternal> {
+
+  //   空闲列表中含有以下4种尺寸的块：
+  //   SpecializedChunk
+  //   SmallChunk
+  //   MediumChunk
+  //   HumongousChunk
+  ChunkList _free_chunks[NumberOfFreeLists];
+
+  //   巨大的块通过字典来保存
+  ChunkTreeDictionary _humongous_dictionary;
+  ...
+}
+```
+
+ChunkManager类中的_free_chunks属性类似于SpaceManager类中的_chunks_in_use属性，但是会通过Freelist管理Metachunk，并且不管理超大块，超大块由_humongous_dictionary管理。因为ChunkManager类管理的空闲块有频繁的查询请求，几乎每次内存分配都要先从这些空闲块开始查询、分配，所以组织了高效的查询数据结构。
+
+> 这里体现了分类管理内存的思想（提高效率）。
+
