@@ -57,3 +57,39 @@ Mems_allowed_list:      0
 voluntary_ctxt_switches:        15
 nonvoluntary_ctxt_switches:     6
 ```
+
+
+## Linux 
+
+
+```sh
+HEAPPROFILE=/data/applogs/heap.log 
+HEAP_PROFILE_ALLOCATION_INTERVAL=104857600 
+LD_PRELOAD=/usr/local/lib/libtcmalloc_and_profiler.so
+```
+
+内存分析工具 gperftools
+
+## Links
+
+- [gperftools](https://github.com/gperftools/gperftools/)
+
+
+heap.log.0001.heap 
+heap.log_8497.0001.heap
+
+pprof --svg  /data/java/jdk/bin/java --base=heap.log_2144.1670.heap heap.log_2144.1704.heap > 2144_44.svg
+
+
+pprof --svg  /data/java/jdk/bin/java --base=heap.log_2144.1400.heap heap.log_2144.1738.heap > 2144_55.svg
+
+
+
+pprof --svg  /data/java/jdk/bin/java --base=heap.log_2144.1400.heap heap.log_2144.1833.heap > 2144_66.svg
+
+
+pprof --svg  /data/java/jdk/bin/java --base=heap.log_2144.1400.heap heap.log_2144.2088.heap > 2144_77.svg
+
+
+pprof --svg  /data/java/jdk/bin/java --base=heap.log_2144.1400.heap heap.log_2144.2160.heap > 2144_77.svg
+
