@@ -10,9 +10,11 @@
 - Node MetaChunk
 - Metaspace类
 - 类指针压缩空间（Compressed Class Pointer Space）
+- UseCompressedClassPointers
 - 元空间和类指针压缩空间
 - Metaspace的分配器 根据猜测分配chunk块
 - SpaceManager和ChunkManager管理
+- 寄生栈
 
 ![memory-layout.drawio.svg](./images/memory-layout.drawio.svg)
 
@@ -25,7 +27,7 @@
 
 程序计数器是线程私有的一块内存区域，各线程之间的程序计数器不会相互影响。程序计数器对于HotSpot VM的解释执行非常重要。解释器通过改变这个计数器的值来选取下一条需要执行的字节码指令，分支、循环、跳转、异常处理、线程恢复等功能都需要依赖这个计数器来完成。
 
-在Linux内核的64位系统上，HotSpot VM约定%r13寄存器保存指向当前要执行的字节码指令的地址，如果要执行调用，那么下一条字节码指令的地址可能会保存在解释栈的栈中，也可能会保存在线程的私有变量中。程序计数器的生命周期随着线程的创建而创建，随着线程的结束而死亡。
+在Linux内核的64位系统上，HotSpot VM约定`%r13`寄存器保存指向当前要执行的字节码指令的地址，如果要执行调用，那么下一条字节码指令的地址可能会保存在解释栈的栈中，也可能会保存在线程的私有变量中。程序计数器的生命周期随着线程的创建而创建，随着线程的结束而死亡。
 
 - 2）Java虚拟机栈
 
@@ -70,7 +72,7 @@ Java将堆空间划分为`年轻代堆空间`和`老年代堆空间`，这样就
 
 相关的数据已经被转移到元空间或堆中了，如字符串驻留和类的静态信息被转移到了堆中，而类的元数据信息被转移到了元空间中，因此前面介绍的保存类的元数据信息的Klass、Method、ConstMethod与ConstantPool等实例都是在元空间上分配内存。
 
-Metaspace区域位于堆外，因此它的内存大小取决于系统内存而不是堆大小，我们可以指定MaxMetaspaceSize参数来限定它的最大内存。
+Metaspace区域位于堆外，因此它的内存大小取决于系统内存而不是堆大小，我们可以指定`MaxMetaspaceSize`参数来限定它的最大内存。
 
 Metaspace用来存放类的元数据信息，元数据信息用于记录一个Java类在JVM中的信息，包括以下几类信息：
 
@@ -88,7 +90,7 @@ Metaspace用来存放类的元数据信息，元数据信息用于记录一个Ja
 
 元空间和类指针压缩空间的区别如下：
 
-类指针压缩空间只包含类的元数据，如InstanceKlass和ArrayKlass，虚拟机仅在打开了UseCompressedClassPointers选项时才生效。为了提高性能，Java中的虚方法表也存放到这里。
+类指针压缩空间只包含类的元数据，如InstanceKlass和ArrayKlass，虚拟机仅在打开了`UseCompressedClassPointers`选项时才生效。为了提高性能，Java中的虚方法表也存放到这里。
 元空间包含的是类里比较大的元数据，如方法、字节码和常量池等。
 
 ## 内存块的管理
