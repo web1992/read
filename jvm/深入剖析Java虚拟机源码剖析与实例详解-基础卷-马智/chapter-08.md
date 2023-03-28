@@ -22,6 +22,10 @@
 - 类加载器的卸载
 - 内存回收
 - CollectedHeap、Generation与Space类
+- Serial收集器
+- DefNewGeneration
+- SurvivorRatio
+- Space类
 
 ![memory-layout.drawio.svg](./images/memory-layout.drawio.svg)
 
@@ -171,3 +175,19 @@ CollectedHeap是一个抽象基类，表示一个Java堆，定义了各种垃圾
 GenCollectedHeap是一种基于内存分代管理的内存堆管理器。它不仅负责Java对象的内存分配，而且负责垃圾对象的回收，也是Serial收集器使用的内存堆管理器。
 
 ![CollectedHeap.drawio.svg](./images/CollectedHeap.drawio.svg)
+
+2. Generation类
+
+Generation类在HotSpot VM中采用的是分代回收算法，在Serial收集器下可表示年轻代或老年代，Generation类的继承体系如图8-5所示。
+
+![Generation.drawio.svg](./images/Generation.drawio.svg)
+
+Serial收集器主要针对代表年轻代的DefNewGeneration类进行垃圾回收，Serial Old收集器主要针对代表老年代的TenuredGeneration类进行垃圾回收。下面简单介绍这几个类。
+
+- Generation：公有结构，保存上次GC耗时、该代的内存起始地址和GC性能计数。
+- DefNewGeneration：一种包含Eden、From survivor和To survivor的分代。
+- CardGeneration：包含卡表（CardTable）的分代，由于年轻代在回收时需要标记出年轻代的存活对象，所以还需要以老年代为根进行标记。为了避免全量扫描，通过卡表来加快标记速度。
+- OneContigSpaceCardGeneration：包含卡表的连续内存的分代。
+- TenuredGeneration：可Mark-Compact（标记-压缩）的卡表代。
+
+在JVM参数中有一个比较重要的参数SurvivorRatio，用于定义新生代中Eden空间和Survivor空间（From Survivor空间或To Survivor空间）的比例，默认为8。也就是说，Eden空间占新生代的8/10，From Survivor空间和To Survivor空间各占新生代的1/10。
