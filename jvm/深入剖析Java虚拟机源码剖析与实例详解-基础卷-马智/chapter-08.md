@@ -4,7 +4,7 @@
 - 解释栈和编译栈
 - 堆空间
 - 直接内存
-- 元数据
+- 元数据(元空间)
 - 每个类加载器都会在元空间得到自己的存储区域
 - VirtualSpaceNode 单链表
 - Node MetaChunk
@@ -15,6 +15,13 @@
 - Metaspace的分配器 根据猜测分配chunk块
 - SpaceManager和ChunkManager管理
 - 寄生栈
+- Klass类内存分配
+- Metaspace::allocate
+- 类加载器
+- ClassLoaderData实例
+- 类加载器的卸载
+- 内存回收
+- CollectedHeap、Generation与Space类
 
 ![memory-layout.drawio.svg](./images/memory-layout.drawio.svg)
 
@@ -125,3 +132,42 @@ ChunkManager类中的_free_chunks属性类似于SpaceManager类中的_chunks_in_
 
 > 这里体现了分类管理内存的思想（提高效率）。
 
+## Metaspace实例
+
+在分配元数据区时，首先要调用类加载器的metaspace_non_null()函数获取Metaspace实例，该函数的实现代码如下：
+
+```c++
+//源代码位置：openjdk/hotspot/src/share/vm/classfile/classLoaderData.cpp
+Metaspace* ClassLoaderData::metaspace_non_null() {
+  if (_metaspace == NULL) {
+    MutexLockerEx ml(metaspace_lock(),  Mutex::_no_safepoint_check_flag);
+    if (_metaspace != NULL) {
+      return _metaspace;
+    }
+    if (this == the_null_class_loader_data()) {
+      set_metaspace(new Metaspace(_metaspace_lock, Metaspace::BootMetaspaceType));
+    } else if (is_anonymous()) {
+      set_metaspace(new Metaspace(_metaspace_lock, Metaspace::AnonymousMetaspaceType));
+    } else if (class_loader()->is_a(SystemDictionary::reflect_DelegatingClassLoader_klass())) {
+      set_metaspace(new Metaspace(_metaspace_lock, Metaspace::ReflectionMetaspaceType));
+    } else {
+      set_metaspace(new Metaspace(_metaspace_lock, Metaspace::StandardMetaspaceType));
+    }
+  }
+  return _metaspace;
+}
+```
+
+每个类加载器都会对应一个ClassLoaderData实例，该实例负责初始化并销毁一个ClassLoader实例对应的Metaspace。类加载器共有4类，分别是根类加载器、反射类加载器、匿名类加载器和普通类加载器，其中反射类加载器和匿名类加载器比较少见，根类加载器在第3章中介绍过，其使用C++编写，其他的扩展类加载器、应用类加载器及自定义的加载器等都属于普通类加载器。每个加载器都会对应一个Metaspace实例，创建出的实例由ClassLoaderData类中定义的_metaspace属性保存，以便进行管理。
+
+## CollectedHeap、Generation与Space类
+
+CollectedHeap是内存堆管理器的抽象基类，如果是分代管理堆，那么每个代都是一个Generation实例。在代中还会划分不同的区间，比如对于采用复制算法回收年轻代的Serial收集器来说，年轻代划分为Eden空间、From Survivor空间和To Survivor空间，每个空间都可以用Space实例来表示。
+
+1. 内存堆管理器基类CollectedHeap
+
+CollectedHeap是一个抽象基类，表示一个Java堆，定义了各种垃圾收集器必须实现的公共接口，这些接口就是上层用来创建Java对象、分配TLAB、获取Java堆使用情况的统一API。
+
+GenCollectedHeap是一种基于内存分代管理的内存堆管理器。它不仅负责Java对象的内存分配，而且负责垃圾对象的回收，也是Serial收集器使用的内存堆管理器。
+
+![CollectedHeap.drawio.svg](./images/CollectedHeap.drawio.svg)
