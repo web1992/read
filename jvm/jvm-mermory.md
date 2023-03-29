@@ -1,5 +1,13 @@
 # JVM 内存
 
+查询JVM 内存占用情况
+```sh
+jcmd pid GC.heap_info
+jmap -heap pid
+
+# jcmd pid help
+```
+
 ## 案例
 
 一次`大文件`读取导致的OOM

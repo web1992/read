@@ -73,7 +73,7 @@ LD_PRELOAD=/usr/local/lib/libtcmalloc_and_profiler.so
 ## Links
 
 - [gperftools](https://github.com/gperftools/gperftools/)
-
+- [jmap工具](https://blog.csdn.net/claram/article/details/104635114)
 
 heap.log.0001.heap 
 heap.log_8497.0001.heap
@@ -91,5 +91,20 @@ pprof --svg  /data/java/jdk/bin/java --base=heap.log_2144.1400.heap heap.log_214
 pprof --svg  /data/java/jdk/bin/java --base=heap.log_2144.1400.heap heap.log_2144.2088.heap > 2144_77.svg
 
 
-pprof --svg  /data/java/jdk/bin/java --base=heap.log_2144.1400.heap heap.log_2144.2160.heap > 2144_77.svg
+pprof --svg  /data/java/jdk/bin/java --base=memory-jvm-log_28524.0200.heap memory-jvm-log_28524.0220.heap > 28524_01.svg
 
+
+pprof --svg  /data/java/jdk/bin/java --base=memory-jvm-log_28524.0210.heap memory-jvm-log_28524.0227.heap > 28524_02.svg
+
+pprof --svg  /data/java/jdk/bin/java --base=memory-jvm-log_28524.0001.heap memory-jvm-log_28524.0246.heap > 28524_03.svg
+
+pprof --svg  /data/java/jdk/bin/java --base=memory-jvm-log_28524.0200.heap memory-jvm-log_28524.0250.heap > 28524_04.svg
+
+pprof --svg  /data/java/jdk/bin/java --base=memory-jvm-log_28524.0200.heap memory-jvm-log_28524.0463.heap > 28524_05.svg
+
+
+
+
+
+
+pprof --svg  /data/java/jdk/bin/java --base=memory-jvm-log_28524.0225.heap memory-jvm-log_28524.0311.heap > 28524_06.svg
