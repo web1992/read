@@ -6,6 +6,16 @@ jcmd pid GC.heap_info
 jmap -heap pid
 
 # jcmd pid help
+# GC.heap_info 有些低版本的JVM不支持此参数
+```
+
+JVM native memory 跟踪
+
+```sh
+# jvm 参数配置
+-XX:+UnlockDiagnosticVMOptions -XX:+PrintNMTStatistics -XX:NativeMemoryTracking=[off | summary | detail]
+# 执行命令
+jcmd 23633 VM.native_memory summary scale=MB
 ```
 
 ## 案例

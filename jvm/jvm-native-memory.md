@@ -58,6 +58,62 @@ voluntary_ctxt_switches:        15
 nonvoluntary_ctxt_switches:     6
 ```
 
+## jcmd
+
+```sh
+jcmd 15048 VM.native_memory
+```
+
+```log
+
+15048:
+
+Native Memory Tracking:
+
+Total: reserved=4209123KB, committed=3042659KB
+-                 Java Heap (reserved=2097152KB, committed=2097152KB)
+                            (mmap: reserved=2097152KB, committed=2097152KB)
+
+-                     Class (reserved=1217293KB, committed=184077KB)
+                            (classes #22691)
+                            (malloc=8973KB #62583)
+                            (mmap: reserved=1208320KB, committed=175104KB)
+
+-                    Thread (reserved=320155KB, committed=320155KB)
+                            (thread #311)
+                            (stack: reserved=318640KB, committed=318640KB)
+                            (malloc=1022KB #1556)
+                            (arena=492KB #621)
+
+-                      Code (reserved=282618KB, committed=149370KB)
+                            (malloc=33018KB #27303)
+                            (mmap: reserved=249600KB, committed=116352KB)
+
+-                        GC (reserved=82437KB, committed=82437KB)
+                            (malloc=5813KB #1421)
+                            (mmap: reserved=76624KB, committed=76624KB)
+
+-                  Compiler (reserved=913KB, committed=913KB)
+                            (malloc=783KB #1174)
+                            (arena=131KB #3)
+
+-                  Internal (reserved=171847KB, committed=171847KB)
+                            (malloc=171815KB #81744)
+                            (mmap: reserved=32KB, committed=32KB)
+
+-                    Symbol (reserved=29172KB, committed=29172KB)
+                            (malloc=25297KB #271145)
+                            (arena=3876KB #1)
+
+-    Native Memory Tracking (reserved=7339KB, committed=7339KB)
+                            (malloc=278KB #4248)
+                            (tracking overhead=7061KB)
+
+-               Arena Chunk (reserved=196KB, committed=196KB)
+                            (malloc=196KB)
+
+```
+
 
 ## Linux 
 
