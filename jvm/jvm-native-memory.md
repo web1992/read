@@ -2,9 +2,16 @@
 
 JVM native memory 跟踪
 
-- -XX:+UnlockDiagnosticVMOptions -XX:+PrintNMTStatistics
+- -XX:+UnlockDiagnosticVMOptions -XX:+PrintNMTStatistics JVM退出时打印NMT报告
 - -XX:NativeMemoryTracking=[off | summary | detail]
 - jcmd 23633 VM.native_memory summary scale=MB
+
+- jcmd <pid> VM.native_memory baseline
+- jcmd <pid> VM.native_memory summary.diff
+
+/data/java/jdk/bin/jcmd 19458 VM.native_memory baseline
+
+/data/java/jdk/bin/jcmd 19458 VM.native_memory summary.diff scale=MB
 
 ```sh
 ## cat /proc/2936/status
@@ -130,37 +137,11 @@ LD_PRELOAD=/usr/local/lib/libtcmalloc_and_profiler.so
 
 - [gperftools](https://github.com/gperftools/gperftools/)
 - [jmap工具](https://blog.csdn.net/claram/article/details/104635114)
+- [jcmd工具](https://www.cnblogs.com/duanxz/p/6115722.html)
+- [JVM NMT](https://www.jianshu.com/p/27c06a43797b)
 
-heap.log.0001.heap 
-heap.log_8497.0001.heap
+## pprof
 
+```shell
 pprof --svg  /data/java/jdk/bin/java --base=heap.log_2144.1670.heap heap.log_2144.1704.heap > 2144_44.svg
-
-
-pprof --svg  /data/java/jdk/bin/java --base=heap.log_2144.1400.heap heap.log_2144.1738.heap > 2144_55.svg
-
-
-
-pprof --svg  /data/java/jdk/bin/java --base=heap.log_2144.1400.heap heap.log_2144.1833.heap > 2144_66.svg
-
-
-pprof --svg  /data/java/jdk/bin/java --base=heap.log_2144.1400.heap heap.log_2144.2088.heap > 2144_77.svg
-
-
-pprof --svg  /data/java/jdk/bin/java --base=memory-jvm-log_28524.0200.heap memory-jvm-log_28524.0220.heap > 28524_01.svg
-
-
-pprof --svg  /data/java/jdk/bin/java --base=memory-jvm-log_28524.0210.heap memory-jvm-log_28524.0227.heap > 28524_02.svg
-
-pprof --svg  /data/java/jdk/bin/java --base=memory-jvm-log_28524.0001.heap memory-jvm-log_28524.0246.heap > 28524_03.svg
-
-pprof --svg  /data/java/jdk/bin/java --base=memory-jvm-log_28524.0200.heap memory-jvm-log_28524.0250.heap > 28524_04.svg
-
-pprof --svg  /data/java/jdk/bin/java --base=memory-jvm-log_28524.0200.heap memory-jvm-log_28524.0463.heap > 28524_05.svg
-
-
-
-
-
-
-pprof --svg  /data/java/jdk/bin/java --base=memory-jvm-log_28524.0225.heap memory-jvm-log_28524.0311.heap > 28524_06.svg
+```

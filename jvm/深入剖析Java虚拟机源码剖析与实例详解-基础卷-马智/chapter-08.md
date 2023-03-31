@@ -26,6 +26,7 @@
 - DefNewGeneration
 - SurvivorRatio
 - Space类
+- ConcurrentMarkSweepPolicy
 
 ![memory-layout.drawio.svg](./images/memory-layout.drawio.svg)
 
@@ -191,3 +192,15 @@ Serial收集器主要针对代表年轻代的DefNewGeneration类进行垃圾回�
 - TenuredGeneration：可Mark-Compact（标记-压缩）的卡表代。
 
 在JVM参数中有一个比较重要的参数SurvivorRatio，用于定义新生代中Eden空间和Survivor空间（From Survivor空间或To Survivor空间）的比例，默认为8。也就是说，Eden空间占新生代的8/10，From Survivor空间和To Survivor空间各占新生代的1/10。
+
+## Java堆的回收策略
+
+基于“标记-清除”思想的GC策略MarkSweepPolicy是串行GC（-XX:+UseSerialGC）的标配，目前只能用于基于内存分代管理的内存堆管理器（GenCollectedHeap）的GC策略。当然，GenCollectedHeap还有另外两种GC策略：
+
+并行“标记-清除”GC策略（ConcurrentMarkSweepPolicy），也就是通常所说的CMS；
+可自动调整各内存代大小的并行“标记-清除”GC策略（ASConcurrentMarkSweep-Policy）。
+在使用Serial与Serial Old收集器时使用的策略就是MarkSweepPolicy。除了Mark-SweepPolicy策略以外的其他策略暂不介绍。
+
+GenCollectedHeap是基于内存分代管理的思想来管理整个HotSpot VM的内存堆的，而MarkSweepPolicy作为GenCollectedHeap的默认GC策略配置，它的初始化主要是检查、调整及确定各内存代的最大、最小及初始化容量。
+
+MarkSweepPolicy的继承体系如图8-10所示。
