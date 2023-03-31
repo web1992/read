@@ -27,6 +27,11 @@
 - SurvivorRatio
 - Space类
 - ConcurrentMarkSweepPolicy
+- 分代策略+回收策略 GenCollectedHeap + MarkSweepPolicy
+- os::reserve_memory() 
+- anon_mmap()
+- MemRegion表示一段连续的内存地址空间
+
 
 ![memory-layout.drawio.svg](./images/memory-layout.drawio.svg)
 
@@ -201,6 +206,14 @@ Serial收集器主要针对代表年轻代的DefNewGeneration类进行垃圾回�
 可自动调整各内存代大小的并行“标记-清除”GC策略（ASConcurrentMarkSweep-Policy）。
 在使用Serial与Serial Old收集器时使用的策略就是MarkSweepPolicy。除了Mark-SweepPolicy策略以外的其他策略暂不介绍。
 
-GenCollectedHeap是基于内存分代管理的思想来管理整个HotSpot VM的内存堆的，而MarkSweepPolicy作为GenCollectedHeap的默认GC策略配置，它的初始化主要是检查、调整及确定各内存代的最大、最小及初始化容量。
+`GenCollectedHeap`是基于内存分代管理的思想来管理整个HotSpot VM的内存堆的，而`MarkSweepPolicy`作为GenCollectedHeap的默认GC策略配置，它的初始化主要是检查、调整及确定各内存代的最大、最小及初始化容量。
 
 MarkSweepPolicy的继承体系如图8-10所示。
+
+![CollectorPolicy.drawio.svg](./images/CollectorPolicy.drawio.svg)
+
+OpenJDK 8默认使用Parallel Scavenger与Parallel Old垃圾收集器，因此要配置-XX:+UseSerialGC选项来使用Serial收集器。配置了-XX:+UseSerialGC选项后，会使用Serial收集器与Serial Old收集器收集年轻代与老年代，此时堆及代的布局如图8-13所示。
+
+![java-heap.drawio.svg](./images/java-heap.drawio.svg)
+
+在使用Serial和Serial Old收集器时，年轻代用DefNewGeneration实例表示，老年代用TenuredGeneration实例表示
