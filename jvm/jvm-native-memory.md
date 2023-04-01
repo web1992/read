@@ -9,9 +9,10 @@ JVM native memory 跟踪
 - jcmd <pid> VM.native_memory baseline
 - jcmd <pid> VM.native_memory summary.diff
 
-/data/java/jdk/bin/jcmd 19458 VM.native_memory baseline
+/data/java/jdk/bin/jcmd 14875 VM.native_memory baseline
 
-/data/java/jdk/bin/jcmd 19458 VM.native_memory summary.diff scale=MB
+/data/java/jdk/bin/jcmd 14875 VM.native_memory summary.diff scale=MB
+/data/java/jdk/bin/jcmd 14875 VM.native_memory summary scale=MB
 
 ```sh
 ## cat /proc/2936/status
@@ -145,3 +146,5 @@ LD_PRELOAD=/usr/local/lib/libtcmalloc_and_profiler.so
 ```shell
 pprof --svg  /data/java/jdk/bin/java --base=heap.log_2144.1670.heap heap.log_2144.1704.heap > 2144_44.svg
 ```
+
+pprof --svg  /data/java/jdk/bin/java --base=mem-all.log_13823.0001.heap mem-all.log_13823.0330.heap > /data/applogs//0001.svg
