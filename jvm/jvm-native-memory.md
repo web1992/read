@@ -9,10 +9,10 @@ JVM native memory 跟踪
 - jcmd <pid> VM.native_memory baseline
 - jcmd <pid> VM.native_memory summary.diff
 
-/data/java/jdk/bin/jcmd 14875 VM.native_memory baseline
+jcmd 14875 VM.native_memory summary scale=MB
+jcmd 14875 VM.native_memory baseline
+jcmd 14875 VM.native_memory summary.diff scale=MB > 14875-mem-diff-1.txt
 
-/data/java/jdk/bin/jcmd 14875 VM.native_memory summary.diff scale=MB
-/data/java/jdk/bin/jcmd 14875 VM.native_memory summary scale=MB
 
 ```sh
 ## cat /proc/2936/status
