@@ -11,8 +11,10 @@ JVM native memory 跟踪
 
 jcmd 14875 VM.native_memory summary scale=MB
 jcmd 14875 VM.native_memory baseline
-jcmd 14875 VM.native_memory summary.diff scale=MB > 14875-mem-diff-1.txt
+/data/java/jdk/bin/jcmd 14875 VM.native_memory summary.diff scale=MB > 14875-mem-diff-3.txt
 
+
+/usr/local/jdk1.8.0_152/bin/java -Xms512m -Xmx512m -Xmn256m -XX:+UnlockDiagnosticVMOptions -XX:+PrintNMTStatistics -XX:NativeMemoryTracking=detail -jar spring-native-mem-leak-0.0.1-SNAPSHOT.jar
 
 ```sh
 ## cat /proc/2936/status
@@ -148,3 +150,8 @@ pprof --svg  /data/java/jdk/bin/java --base=heap.log_2144.1670.heap heap.log_214
 ```
 
 pprof --svg  /data/java/jdk/bin/java --base=mem-all.log_13823.0001.heap mem-all.log_13823.0330.heap > /data/applogs//0001.svg
+
+pprof --svg  /data/java/jdk/bin/java --base=mem-all.log_14875.1300.heap mem-all.log_14875.1375.heap > /data/applogs/10002.svg
+
+
+pprof --svg  /data/java/jdk/bin/java   mem-all.log_14875* > /data/applogs/10005.svg
