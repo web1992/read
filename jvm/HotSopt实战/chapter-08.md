@@ -2,7 +2,6 @@
 
 ## 概要
 
-
 - 取码 (Instruction Fetch)
 - 指令译码 (Instruction Decode)
 - 取操作数 (Operatand Fetch)
