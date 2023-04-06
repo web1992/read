@@ -9,6 +9,15 @@
 - classFileParser.cpp
 - verifier.cpp
 - Finalizer对象
+- 常量池项与常量池缓存项
+- _cp_map 
+- cp_cache_map
+- 重写字节码指令
+- Rewriter::rewrite_invokespecial
+- ConstantPoolCache
+- ConstantPoolCacheEntry
+- 表示字段的ConstantPoolCacheEntry的字段信息
+- 表示方法的ConstantPoolCacheEntry的字段信息
 
 
 类的生命周期可以分为5个阶段，分别为加载、连接、初始化、使用和卸载。
@@ -58,4 +67,64 @@ enum ClassState {
 ## 类的重写
 
 InstanceKlass::link_class_impl()函数在调用verify_code()函数完成字节码验证之后会调用rewrite_class()函数重写部分字节码。重写字节码大多是为了在解释执行字节码过程中提高程序运行的效率。
+
+## 常量池项与常量池缓存项
+
+对于某些使用常量池索引作为操作数的字节码指令来说，当重写字节码指令后，原常量池索引会更改为指向常量池缓存项的索引。本节介绍如何生成常量池缓存项索引并建立常量池项索引和常量池缓存项索引之间的映射关系。
+
+// _cp_map是整数类型数组，长度和常量池项的总数相同，因此可以直接将常量池项的索引
+// 作为数组下标来获取常量池缓存项的索引
+
+```c++
+//源代码位置：openjdk/hotspot/src/share/vm/interpreter/rewriter.cpp
+
+int add_cp_cache_entry(int cp_index) {
+   int cache_index = add_map_entry(cp_index, &_cp_map, &_cp_cache_map);
+   return cache_index;
+}
+
+int add_map_entry(int cp_index, intArray* cp_map, intStack* cp_cache_map) {
+   // cp_cache_map是整数类型的栈
+   int cache_index = cp_cache_map->append(cp_index);
+   cp_map->at_put(cp_index, cache_index);        // cp_map是整数类型的数组
+   return cache_index;
+}
+```
+
+在以上代码中通过cp_cache_map和cp_map建立了cp_index与cache_index的对应关系，
+
+
+## 重写字节码指令
+
+有些字节码指令的操作数在Class文件里与运行时不同，因为HotSpot VM在连接类的时候会对部分字节码进行重写，把某些指令的操作数从常量池下标改写为常量池缓存下标。之所以创建常量池缓存，部分原因是这些指令所需要引用的信息无法使用一个常量池项来表示，而需要使用一个更大的数据结构表示常量池项的内容，另外也是为了不破坏原有的常量池信息
+
+HotSpot VM将Class文件中对常量池项的索引更新为对常量池缓存项的索引，在常量池缓存中能存储更多关于解释运行时的相关信息。
+
+创建常量池缓存
+常量池缓存可以辅助HotSpot VM进行字节码的解释执行，常量池缓存可以缓存字段获取和方法调用的相关信息，以便提高解释执行的速度。
+
+## 表示方法的ConstantPoolCacheEntry的字段信息
+
+图7-7中的_f1与_f2字段根据字节码指令调用的不同，其存储的信息也不同。字节码调用方法的指令主要有以下几个：
+
+（1）invokevirtual：通过vtable进行方法的分发。
+
+_f1：没有使用。
+_f2：如果调用的是非final的virtual方法，则_f2字段保存的是目标方法在vtable中的索引编号；如果调用的是virtual final方法，则_f2字段直接指向目标方法的Method实例。
+（2）invokeinterface：通过itable进行方法的分发。
+
+_f1：该字段指向对应接口的Klass实例。
+_f2：该字段保存的是方法位于itable的itableMethod方法表中的索引编号。
+（3）invokespecial：调用private和构造方法，不需要分发机制。
+
+_f1：该字段指向目标方法的Method实例（用_f1字段可以直接定位Java方法在内存中的具体位置，从而实现方法的调用）。
+_f2：没有使用。
+（4）invokestatic：调用静态方法，不需要分发机制。
+
+_f1：该字段指向目标方法的Method实例（用_f1字段可以直接定位Java方法在内存中的具体位置，从而实现方法的调用）。
+_f2：没有使用。
+
+在invokevirtual和invokespecial等字节码指令对应的汇编片段中，如果_indices中的invoke code for _f1或invoke code for_f2不是字节码指令的操作码，说明方法还没有连接，需要调用InterpreterRuntime::resolve_invoke()函数连接方法，同时为ConstantPoolCacheEntry中的各属性生成相关的信息。
+
+## 方法的连接
 
