@@ -28,6 +28,7 @@ Klass继承体系中涉及的C++类主要提供了两个功能：
 在HotSpot中，Java对象使用oop实例来表示，不提供任何虚函数的功能。oop实例保存了对应Klass的指针，通过Klass完成所有的方法调用并获取类型信息，Klass基于C++的虚函数提供对Java多态的支持。
 
 ```c++
+// kclass.hpp
 class Klass : public Metadata {
   friend class VMStructs;
  protected:
@@ -63,6 +64,7 @@ protected:
 ## oopDesc
 
 ```c++
+// oop.hpp
 // oopDesc 中引用 Klass
 class oopDesc {
   ...

@@ -170,7 +170,7 @@ MethodKind是枚举类型，定义了表示不同方法类型的常量，如普�
 ## 解释执行的入口地址
 
 ```c++
-源代码位置：openjdk/hotspot/src/share/vm/oops/method.cpp
+//源代码位置：openjdk/hotspot/src/share/vm/oops/method.cpp
 
 void set_interpreter_entry(address entry){
      _i2i_entry = entry;
@@ -321,3 +321,7 @@ THREAD);
   }
 }
 ```
+
+## Links
+
+- /jdk17u/src/hotspot/share/oops/klassVtable.cpp
