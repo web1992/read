@@ -1,11 +1,13 @@
 # 第6章 方法的解析
 
-- Method与ConstMethod类
+- Method ConstMethod
 - klassVtable
 - klassItable
 - vtable
 - itable
-
+- _vtable_index
+- Code_attribute
+- parse_method
 
 ## Method
 
@@ -45,4 +47,102 @@ Method类中定义的最后5个属性对于方法的解释执行和编译执行�
 - _from_interpreted_entry：_from_interpreted_entry的初始值与_i2i_entry一样，都是指向字节码解释执行的入口。但当该Java方法被JIT编译并“安装”之后，_from_interpreted_entry就会被设置为指向i2c adapter stub。如果因为某些原因需要抛弃之前已经编译并安装好的机器码，则_from_interpreted_entry会恢复为指向_i2i_entry。如果有_code，则通过_from_interpreted_entry转向编译方法，否则通过_i2i_entry转向解释方法。
 
 
+## parse_method
+
+调用parse_method()函数解析每个Java方法，该函数会返回表示方法的Method实例，但Method实例需要通过methodHandle句柄来操作，因此最终会封装为methodHandle句柄，然后存储到_methods数组中。
+
+```c++
+//源代码位置：openjdk/hotspot/src/share/vm/classfile/classFileParser.cpp
+
+Array<Method*>* ClassFileParser::parse_methods(
+   bool is_interface,
+   AccessFlags* promoted_flags,
+   bool* has_final_method,
+   bool* has_default_methods,
+   TRAPS
+) {
+  ClassFileStream* cfs = stream();
+  u2 length = cfs->get_u2_fast();
+  if (length == 0) {
+   _methods = Universe::the_empty_method_array();
+  } else {
+   _methods = MetadataFactory::new_array<Method*>(_loader_data, length,NULL, CHECK_NULL);
+
+   HandleMark hm(THREAD);
+   for (int index = 0; index < length; index++) {
+     // 调用parse_method()函数解析每个Java方法
+     methodHandle method = parse_method(is_interface,promoted_flags,CHECK_NULL);
+
+     if (method->is_final()) {
+       // 如果定义了final方法，那么has_final_method变量的值为true
+       *has_final_method = true;
+     }
+     if (is_interface
+       && !(*has_default_methods)
+       && !method->is_abstract()
+       && !method->is_static()
+       && !method->is_private()) {
+        // 如果定义了默认的方法，则has_default_methods变量的值为true
+        *has_default_methods = true;
+     }
+     // 将方法存入_methods数组中
+     _methods->at_put(index, method());
+   }
+  }
+  return _methods;
+}
+```
+## ConstantMethod
+
+![ConstantMethod.drawio.svg](./images/ConstantMethod.drawio.svg)
+
+![Method.drawio.svg](./images/Method.drawio.svg)
+
+## klass-vtable
+
+
+klassVtable与klassItable类用来实现Java方法的多态，也可以称为动态绑定，是指在应用执行期间通过判断接收对象的实际类型，然后调用对应的方法。C++为了实现多态，在对象中嵌入了虚函数表vtable，通过虚函数表来实现运行期的方法分派，Java也通过类似的虚函数表实现Java方法的动态分发。
+
+```c++
+//源代码位置：openjdk/hotspot/src/share/vm/oops/klassVtable.hpp
+
+class klassVtable : public ResourceObj {
+  KlassHandle  _klass;
+  int         _tableOffset;
+  int         _length;
+  ...
+}
+```
+
+属性介绍如下：
+
+- _klass：该vtable所属的Klass，klassVtable操作的是_klass的vtable；
+- _tableOffset：vtable在Klass实例内存中的偏移量；
+- _length：vtable的长度，即vtableEntry的数量。因为一个vtableEntry实例只包含一个Method*，其大小等于字宽（一个指针的宽度），所以vtable的长度跟vtable以字宽为单位的内存大小相同。
+
+vtable表示由一组变长（前面会有一个字段描述该表的长度）连续的vtableEntry元素构成的数组。其中，每个vtableEntry封装了一个Method实例。
+
+vtable中的一条记录用vtableEntry表示，定义如下：
+
+```c++
+//源代码位置：openjdk/hotspot/src/share/vm/oops/klassVtable.hpp
+
+class vtableEntry VALUE_OBJ_CLASS_SPEC {
+  ...
+ private:
+  Method* _method;
+  ...
+};
+```
+
 ![klass-vtable.drawio.svg](./images/klass-vtable.drawio.svg)
+
+可以看到，在Klass本身占用的内存大小之后紧接着存储的就是vtable（灰色区域）。通过klassVtable的_tableOffset能够快速定位到存储vtable的首地址，而_length属性也指明了存储vtableEntry的数量。
+
+在类初始化时，HotSpot VM将复制父类的vtable，然后根据自己定义的方法更新vtableEntry实例，或向vtable中添加新的vtableEntry实例。当Java方法重写父类方法时，HotSpot VM将更新vtable中的vtableEntry实例，使其指向覆盖后的实现方法；如果是方法重载或者自身新增的方法，HotSpot VM将创建新的vtableEntry实例并按顺序添加到vtable中。尚未提供实现的Java方法也会放在vtable中，由于没有实现，所以HotSpot VM没有为这个vtableEntry项分发具体的方法。
+
+在7.3.3节中介绍常量池缓存时会介绍ConstantPoolCacheEntry。在调用类中的方法时，HotSpot VM通过ConstantPoolCacheEntry的_f2成员获取vtable中方法的索引，从而取得Method实例以便执行。常量池缓存中会存储许多方法运行时的相关信息，包括对vtable信息的使用。
+
+## 计算vtable的大小
+
+parseClassFile()函数解析完Class文件后会创建InstanceKlass实例保存Class文件解析出的类元信息，因为vtable和itable是内嵌在Klass实例中的，在创建InstanceKlass时需要知道创建的实例的大小，因此必须要在ClassFileParser::parseClassFile()函数中计算vtable和itable所需要的大小
