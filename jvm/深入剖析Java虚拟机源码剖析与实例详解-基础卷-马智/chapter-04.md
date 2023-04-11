@@ -2,6 +2,18 @@
 
 - Class文件的结构
 - create_mirror
+- ClassFileParser类
+- ClassFileStream类
+- ClassLoaderData
+- _transitive_interfaces 实现的所有接口（包括直接和间接实现的接口）
+- instanceKlassHandle
+- 常量池的解析
+- ConstantPool类
+- ConstantPool实例
+- 而在HotSpot VM中，所有的字符串都用Symbol实例来表示
+- CPSlot
+- constantTag
+- OopMapBlock
 
 Class文件格式采用一种类似于C语言结构体的伪结构来存储数据。常用的数据结构如下：
 
@@ -43,6 +55,43 @@ class ClassFileParser VALUE_OBJ_CLASS_SPEC {
 }
 ```
 
+## ClassFileParser ClassFileStream
+
+每解析一个类，就需要一个 ClassFileParser + ClassFileStream 对象，内部维护了流的读取位置
+
+```c++
+//源代码位置：openjdk/hotspot/src/share/vm/classfile/classFileStream.hpp
+
+class ClassFileStream: public ResourceObj {
+ private:
+  u1*   _buffer_start;          // 指向流的第一个字符位置
+  u1*   _buffer_end;            // 指向流的最后一个字符的下一个位置
+  u1*   _current;               // 当前读取的字符位置
+  ...
+}
+```
+
 ## 解析结果保存
 
 创建表示java.lang.Class对象的oop实例后，将其设置为InstanceKlass实例的_java_mirror属性，同时设置oop实例的偏移位置为_klass_offset处存储的指向InstanceKlass实例的指针
+
+
+## 解析常量池项
+```c++
+#3 = Class         #17        // TestClass
+...
+#17 = Utf8          TestClass
+```
+
+在以上代码中，类索引为3，在常量池里找索引为3的类描述符，类描述符中的索引为17，再去找索引为17的字符串，即TestClass。调用obj_at_addr_raw()函数找到的是一个指针，这个指针指向表示TestClass字符串的Symbol实例，也就是在解析常量池项时会将本来存储的索引值为17的位置替换为存储指向Symbol实例的指针。
+
+```c++
+//源代码位置：openjdk/hotspot/src/share/vm/oops/constantPool.hpp
+
+intptr_t*   obj_at_addr_raw(int which) const {
+   return (intptr_t*) &base()[which];
+}
+intptr_t*   base() const {
+  return (intptr_t*) ( ( (char*) this ) + sizeof(ConstantPool) );
+}
+```
