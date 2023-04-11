@@ -8,6 +8,14 @@
 - _vtable_index
 - Code_attribute
 - parse_method
+- itable :先找到方法表的位置，再找到 Method
+- ConstantPoolCacheEntry _f2
+- vtableEntry
+- itableMethodEntry
+- vtableEntry,itableMethodEntry 是对Method的一个封装
+- 函数编号 方法分派
+- visit_all_interfaces
+
 
 ## Method
 
@@ -156,3 +164,38 @@ itable表由偏移表itableOffset和方法表itableMethod两个表组成，这�
 
 调用接口方法时，HotSpot VM通过ConstantPoolCacheEntry的_f1成员拿到接口的Klass，在itable的偏移表中逐一匹配。如果匹配上则获取Klass的方法表的位置，然后在方法表中通过ConstantPoolCacheEntry的_f2成员找到实现的方法Method。
 
+
+```c++
+//源代码位置：openjdk/hotspot/src/share/vm/oops/klassVtable.hpp
+
+class klassItable : public ResourceObj {
+ private:
+  instanceKlassHandle  _klass;
+  int              _table_offset;
+  int              _size_offset_table;
+  int              _size_method_table;
+  ...
+}
+```
+
+klassItable类包含4个属性：
+
+- _klass：itable所属的Klass；
+- _table_offset：itable在所属Klass中的内存偏移量；
+- _size_offset_table：itable中itableOffsetEntry的大小；
+- _size_method_table：itable中itableMethodEntry的大小。
+
+在接口表itableOffset中含有的项为itableOffsetEntry，类及属性的定义如下：
+
+```c++
+//源代码位置：openjdk/hotspot/src/share/vm/oops/klassVtable.hpp
+
+class itableOffsetEntry VALUE_OBJ_CLASS_SPEC {
+ private:
+  Klass*   _interface;
+  int      _offset;
+  ...
+}
+```
+
+增加itable而不用vtable解决所有方法分派问题，是因为一个类可以实现多个接口，而每个接口的函数编号是和其自身相关的，vtable无法解决多个对应接口的函数编号问题。而一个子类只能继承一个父亲，子类只要包含父类vtable，并且和父类的函数包含部分的编号是一致的，因此可以直接使用父类的函数编号找到对应的子类实现函数。
