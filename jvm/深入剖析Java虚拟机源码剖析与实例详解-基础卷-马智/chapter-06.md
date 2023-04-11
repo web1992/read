@@ -146,3 +146,13 @@ class vtableEntry VALUE_OBJ_CLASS_SPEC {
 ## 计算vtable的大小
 
 parseClassFile()函数解析完Class文件后会创建InstanceKlass实例保存Class文件解析出的类元信息，因为vtable和itable是内嵌在Klass实例中的，在创建InstanceKlass时需要知道创建的实例的大小，因此必须要在ClassFileParser::parseClassFile()函数中计算vtable和itable所需要的大小
+
+## klassItable虚函数表
+
+![klcass-itable.drawio.svg](./images/klcass-itable.drawio.svg)
+
+
+itable表由偏移表itableOffset和方法表itableMethod两个表组成，这两个表的长度是不固定的，即长度不一样。每个偏移表itableOffset保存的是类实现的一个接口Klass和该接口方法表所在的偏移位置；方法表itableMethod保存的是实现的接口方法。在初始化itable时，HotSpot VM将类实现的接口及实现的方法填写在上述两张表中。接口中的非public方法和abstract方法（在vtable中占一个槽位）不放入itable中。
+
+调用接口方法时，HotSpot VM通过ConstantPoolCacheEntry的_f1成员拿到接口的Klass，在itable的偏移表中逐一匹配。如果匹配上则获取Klass的方法表的位置，然后在方法表中通过ConstantPoolCacheEntry的_f2成员找到实现的方法Method。
+
