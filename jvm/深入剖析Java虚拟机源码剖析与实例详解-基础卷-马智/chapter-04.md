@@ -14,6 +14,10 @@
 - CPSlot
 - constantTag
 - OopMapBlock
+- InstanceKlass
+- create_mirror
+- Java类的静态变量存储在java.lang.Class对象中
+- Metaspace::allocate
 
 Class文件格式采用一种类似于C语言结构体的伪结构来存储数据。常用的数据结构如下：
 
@@ -94,5 +98,87 @@ intptr_t*   obj_at_addr_raw(int which) const {
 }
 intptr_t*   base() const {
   return (intptr_t*) ( ( (char*) this ) + sizeof(ConstantPool) );
+}
+```
+
+## ConstantPool
+
+```c++
+class ConstantPool : public Metadata {
+  friend class VMStructs;
+  friend class JVMCIVMStructs;
+  friend class BytecodeInterpreter;  // Directly extracts a klass in the pool for fast instanceof/checkcast
+  friend class Universe;             // For null constructor
+ private:
+  // If you add a new field that points to any metaspace object, you
+  // must add this field to ConstantPool::metaspace_pointers_do().
+  Array<u1>*           _tags;        // the tag array describing the constant pool's contents
+  ConstantPoolCache*   _cache;       // the cache holding interpreter runtime information
+  InstanceKlass*       _pool_holder; // the corresponding class
+  Array<u2>*           _operands;    // for variable-sized (InvokeDynamic) nodes, usually empty
+
+  // Consider using an array of compressed klass pointers to
+  // save space on 64-bit platforms.
+  Array<Klass*>*       _resolved_klasses;
+
+  u2              _major_version;        // major version number of class file
+  u2              _minor_version;        // minor version number of class file
+
+  // Constant pool index to the utf8 entry of the Generic signature,
+  // or 0 if none.
+  u2              _generic_signature_index;
+  // Constant pool index to the utf8 entry for the name of source file
+  // containing this klass, 0 if not specified.
+  u2              _source_file_name_index;
+  // ...
+}
+```
+
+## allocate
+
+```c++
+//源代码位置：openjdk/hotspot/src/share/vm/oops/constantPool.cpp
+
+ConstantPool* ConstantPool::allocate(ClassLoaderData* loader_data, int length, TRAPS) {
+  Array<u1>* tags = MetadataFactory::new_writeable_array<u1>(loader_data,length, 0, CHECK_NULL);
+
+  int size = ConstantPool::size(length);
+
+  return new (loader_data, size, false, MetaspaceObj::ConstantPoolType,THREAD) ConstantPool(tags);
+}
+
+// 通过重载new运算符进行内存分配，new运算符的重载定义在MetaspaceObj（ConstantPool间接继承此类）类中
+// 源代码位置：openjdk/hotspot/src/share/vm/memory/allocation.cpp
+
+void* MetaspaceObj::operator new(size_t size, 
+                                 ClassLoaderData* loader_data,
+                                 size_t word_size,
+                                 bool read_only,
+                                 MetaspaceObj::Type type, TRAPS) throw() {
+  // 在元数据区为ConstantPool实例分配内存空间
+  return Metaspace::allocate(loader_data, word_size, read_only,type,CHECK_NULL);
+}
+```
+
+ConstantPool 构造函数
+
+```c++
+// 源代码位置：openjdk/hotspot/src/share/vm/oops/constantPool.cpp
+
+ConstantPool::ConstantPool(Array<u1>* tags) {
+  set_length(tags->length());
+  set_tags(NULL);
+  set_reference_map(NULL);
+  set_resolved_references(NULL);
+  set_pool_holder(NULL);
+  set_flags(0);
+
+  set_lock(new Monitor(Monitor::nonleaf + 2, "A constant pool lock"));
+
+  int length = tags->length();
+  for (int index = 0; index < length; index++) {
+   tags->at_put(index, JVM_CONSTANT_Invalid);
+  }
+  set_tags(tags);
 }
 ```
