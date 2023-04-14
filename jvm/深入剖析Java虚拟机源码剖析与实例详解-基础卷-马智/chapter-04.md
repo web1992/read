@@ -18,6 +18,7 @@
 - create_mirror
 - Java类的静态变量存储在java.lang.Class对象中
 - Metaspace::allocate
+- SymbolTable::lookup_only
 
 Class文件格式采用一种类似于C语言结构体的伪结构来存储数据。常用的数据结构如下：
 
@@ -100,6 +101,16 @@ intptr_t*   base() const {
   return (intptr_t*) ( ( (char*) this ) + sizeof(ConstantPool) );
 }
 ```
+
+对于上面的代码的理解(ChatGTP)：
+
+这段代码是一个 C++ 的函数，用于在内存中进行原始数据的访问和操作。以下是对这两个函数的解释：
+
+obj_at_addr_raw(int which) const: 这个函数接受一个整数参数 which，并返回一个 intptr_t* 类型的指针。它使用 base() 函数获取一个内存位置的指针，然后通过将其偏移 which 字节来获取最终的内存地址。函数将这个内存地址强制转换为 intptr_t* 类型并返回。
+
+base() const: 这个函数返回一个 intptr_t* 类型的指针。它使用 this 指针，this 指针是指向当前对象实例的指针，并将其转换为 char* 类型。然后，它使用指针算术将 sizeof(ConstantPool) 字节添加到 this 指针上，从而在内存中向前跳过 sizeof(ConstantPool) 字节，并将结果的内存地址强制转换为 intptr_t* 类型并返回。
+
+需要注意的是，原始内存操作，如指针类型转换和指针算术，可能不安全且容易出错，因为它们绕过了类型检查，如果不小心使用可能会导致未定义的行为。建议只在绝对必要且充分了解底层内存布局和类型大小的情况下使用这类技术。此外，不同平台或编译器之间的不同对指针类型转换可能存在对齐问题，并且可能不具备可移植性。
 
 ## ConstantPool
 
