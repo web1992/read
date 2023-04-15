@@ -1,11 +1,19 @@
 # 第2章 二分模型
 
+- oop（ordinary object pointer）指普通的对象指针，Klass表示对象的具体类型
+- vtable（虚函数表）
 - kclass
 - markOop
 - oopDesc oop
 - markOopDesc 类
 - Handle
 - HandleMark
+
+## 二分模型
+
+HotSpot采用oop-Klass模型表示Java的对象和类。oop（ordinary object pointer）指普通的对象指针，Klass表示对象的具体类型。
+
+为何要设计一个一分为二的对象模型呢？这是因为HotSpot的设计者不想让每个对象中都含有一个vtable（虚函数表），所以就把对象模型拆成Klass和oop。其中，oop中不含有任何虚函数，自然就没有虚函数表，而Klass中含有虚函数表，可以进行方法的分发
 
 ## kclass
 
@@ -101,9 +109,9 @@ markOopDesc类的实例并不能表示一个具体的Java对象，而是通过�
 
  Java对象中的字段数据存储了Java源代码中定义的各种类型的字段内容，具体包括父类继承及子类定义的字段。 
  
- 存储顺序受HotSpot VM布局策略命令-XX:FieldsAllocationStyle和字段在Java源代码中定义的顺序的影响，
+ 存储顺序受HotSpot VM布局策略命令`-XX:FieldsAllocationStyle`和字段在Java源代码中定义的顺序的影响，
  默认布局策略的顺序为long/double、int、short/char、boolean、oop（对象指针，32位系统占用4字节，64位系统占用8字节），相同宽度的字段总被分配到一起。 
- 如果虚拟机的-XX:+CompactFields参数为true，则子类中较窄的变量可能插入空隙中，以节省使用的内存空间。
+ 如果虚拟机的`-XX:+CompactFields`参数为true，则子类中较窄的变量可能插入空隙中，以节省使用的内存空间。
  例如，当布局long/double类型的字段时，由于对齐的原因，可能会在header和long/double字段之的空隙中。
 
 - 对齐填充 

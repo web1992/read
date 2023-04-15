@@ -9,7 +9,7 @@
 - Code_attribute
 - parse_method
 - itable :先找到方法表的位置，再找到 Method
-- ConstantPoolCacheEntry _f2
+- ConstantPoolCacheEntry _f2 常量池缓存
 - vtableEntry
 - itableMethodEntry
 - vtableEntry,itableMethodEntry 是对Method的一个封装
@@ -149,7 +149,9 @@ class vtableEntry VALUE_OBJ_CLASS_SPEC {
 
 在类初始化时，HotSpot VM将复制父类的vtable，然后根据自己定义的方法更新vtableEntry实例，或向vtable中添加新的vtableEntry实例。当Java方法重写父类方法时，HotSpot VM将更新vtable中的vtableEntry实例，使其指向覆盖后的实现方法；如果是方法重载或者自身新增的方法，HotSpot VM将创建新的vtableEntry实例并按顺序添加到vtable中。尚未提供实现的Java方法也会放在vtable中，由于没有实现，所以HotSpot VM没有为这个vtableEntry项分发具体的方法。
 
-在7.3.3节中介绍常量池缓存时会介绍ConstantPoolCacheEntry。在调用类中的方法时，HotSpot VM通过ConstantPoolCacheEntry的_f2成员获取vtable中方法的索引，从而取得Method实例以便执行。常量池缓存中会存储许多方法运行时的相关信息，包括对vtable信息的使用。
+在7.3.3节中介绍常量池缓存时会介绍`ConstantPoolCacheEntry`。在调用类中的方法时，HotSpot VM通过`ConstantPoolCacheEntry`的_f2成员获取vtable中方法的索引，从而取得Method实例以便执行。常量池缓存中会存储许多方法运行时的相关信息，包括对vtable信息的使用。
+
+> 理解此处的 `ConstantPoolCacheEntry` 常量池缓存中的_f2 索引很重要
 
 ## 计算vtable的大小
 
@@ -176,6 +178,16 @@ class klassItable : public ResourceObj {
   int              _size_method_table;
   ...
 }
+
+// ConstantPoolCacheEntry 常量池缓存
+
+class ConstantPoolCacheEntry {
+ private:
+  volatile intx     _indices;  // constant pool index & rewrite bytecodes
+  Metadata* volatile   _f1;       // entry specific metadata field
+  volatile intx        _f2;       // entry specific int/metadata field
+  volatile intx     _flags;    // flags
+}
 ```
 
 klassItable类包含4个属性：
@@ -194,6 +206,21 @@ class itableOffsetEntry VALUE_OBJ_CLASS_SPEC {
  private:
   Klass*   _interface;
   int      _offset;
+  ...
+}
+```
+
+其中包含两个属性：
+
+- _interface：方法所属的接口
+- _offset：接口下的第一个方法itableMethodEntry相对于所属Klass的偏移量
+
+```c++
+// 源代码位置：openjdk/hotspot/src/share/vm/oops/klassVtable.hpp
+
+class itableMethodEntry VALUE_OBJ_CLASS_SPEC {
+ private:
+  Method*  _method;
   ...
 }
 ```

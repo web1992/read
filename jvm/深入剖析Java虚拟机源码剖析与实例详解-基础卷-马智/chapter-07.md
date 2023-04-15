@@ -20,8 +20,9 @@
 - invokeinterface
 - invokespecial
 - invokestatic
-- 表示字段的ConstantPoolCacheEntry的字段信息
-- 表示方法的ConstantPoolCacheEntry的字段信息
+- 表示字段的 ConstantPoolCacheEntry 的字段信息
+- 表示方法的 ConstantPoolCacheEntry 的字段信息
+- 例程
 - InstanceKlass::link_methods
 - 设置`编译`执行的入口地址
 - 设置`解释`执行的入口地址
