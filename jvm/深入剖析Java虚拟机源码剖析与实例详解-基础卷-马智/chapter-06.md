@@ -152,7 +152,7 @@ class vtableEntry VALUE_OBJ_CLASS_SPEC {
 
 ![klass-vtable.drawio.svg](./images/klass-vtable.drawio.svg)
 
-可以看到，在Klass本身占用的内存大小之后紧接着存储的就是vtable（灰色区域）。通过klassVtable的_tableOffset能够快速定位到存储vtable的首地址，而_length属性也指明了存储vtableEntry的数量。
+可以看到，在Klass本身占用的内存大小之后紧接着存储的就是vtable。通过klassVtable的_tableOffset能够快速定位到存储vtable的首地址，而_length属性也指明了存储vtableEntry的数量。
 
 在类初始化时，HotSpot VM将复制父类的vtable，然后根据自己定义的方法更新vtableEntry实例，或向vtable中添加新的vtableEntry实例。当Java方法重写父类方法时，HotSpot VM将更新vtable中的vtableEntry实例，使其指向覆盖后的实现方法；如果是方法重载或者自身新增的方法，HotSpot VM将创建新的vtableEntry实例并按顺序添加到vtable中。尚未提供实现的Java方法也会放在vtable中，由于没有实现，所以HotSpot VM没有为这个vtableEntry项分发具体的方法。
 
@@ -168,10 +168,11 @@ parseClassFile()函数解析完Class文件后会创建InstanceKlass实例保存C
 
 ![klcass-itable.drawio.svg](./images/klcass-itable.drawio.svg)
 
-
 itable表由偏移表itableOffset和方法表itableMethod两个表组成，这两个表的长度是不固定的，即长度不一样。每个偏移表itableOffset保存的是类实现的一个接口Klass和该接口方法表所在的偏移位置；方法表itableMethod保存的是实现的接口方法。在初始化itable时，HotSpot VM将类实现的接口及实现的方法填写在上述两张表中。接口中的非public方法和abstract方法（在vtable中占一个槽位）不放入itable中。
 
 调用接口方法时，HotSpot VM通过ConstantPoolCacheEntry的_f1成员拿到接口的Klass，在itable的偏移表中逐一匹配。如果匹配上则获取Klass的方法表的位置，然后在方法表中通过ConstantPoolCacheEntry的_f2成员找到实现的方法Method。
+
+`itableOffsetEntry` 记录了每一个interface的内存偏移位置，可以加速接口的匹配操作，当接口匹配之和，需要进行方法的匹配，此时可以根据`itableMethodEntry` 记录的kclass第一个方法的偏移信息，快速的进行方法的匹配。
 
 
 ```c++
