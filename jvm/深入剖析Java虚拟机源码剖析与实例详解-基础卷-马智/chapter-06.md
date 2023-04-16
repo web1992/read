@@ -6,6 +6,8 @@
 - vtable
 - itable
 - _vtable_index
+- klassVtable vtableEntry
+- itableOffsetEntry  itableMethodEntry
 - Code_attribute
 - parse_method
 - itable :先找到方法表的位置，再找到 Method
@@ -13,6 +15,7 @@
 - vtableEntry
 - itableMethodEntry
 - vtableEntry,itableMethodEntry 是对Method的一个封装
+- 多态
 - 函数编号 方法分派
 - visit_all_interfaces
 
@@ -102,11 +105,15 @@ Array<Method*>* ClassFileParser::parse_methods(
 ```
 ## ConstantMethod
 
+6-3 ConstantMethod内存布局
+
 ![ConstantMethod.drawio.svg](./images/ConstantMethod.drawio.svg)
+
+6-2 表示本地方法的内存布局
 
 ![Method.drawio.svg](./images/Method.drawio.svg)
 
-## klass-vtable
+## klassvtable
 
 
 klassVtable与klassItable类用来实现Java方法的多态，也可以称为动态绑定，是指在应用执行期间通过判断接收对象的实际类型，然后调用对应的方法。C++为了实现多态，在对象中嵌入了虚函数表vtable，通过虚函数表来实现运行期的方法分派，Java也通过类似的虚函数表实现Java方法的动态分发。
@@ -196,6 +203,8 @@ klassItable类包含4个属性：
 - _table_offset：itable在所属Klass中的内存偏移量；
 - _size_offset_table：itable中itableOffsetEntry的大小；
 - _size_method_table：itable中itableMethodEntry的大小。
+
+## itableOffsetEntry  itableMethodEntry
 
 在接口表itableOffset中含有的项为itableOffsetEntry，类及属性的定义如下：
 
