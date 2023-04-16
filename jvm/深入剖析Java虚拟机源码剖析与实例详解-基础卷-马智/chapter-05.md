@@ -19,6 +19,7 @@
 - allocation_style
 - -XX:+/-CompactFields
 - OopMapBlock
+- 静态字段
 
 
 ## FieldAllocationType
@@ -31,7 +32,7 @@
 
 ## 字段存储
 
-```
+```c
 f1: [access, name index, sig index, initial value index, low_offset,
 high_offset]
 f2: [access, name index, sig index, initial value index, low_offset,
@@ -46,7 +47,7 @@ high_offset]
 
 field_info
 
-```
+```c
 field_info {
    u2             access_flags;
    u2             name_index;
@@ -102,7 +103,7 @@ field_info {
 
 在HotSpot VM中，对象布局有以下3种模式：
 
-allocation_style=0：字段排列顺序为oop、long/double、int、short/char、byte，最后是填充字段，以满足对齐要求；
-allocation_style=1：字段排列顺序为long/double、int、short/char、byte、oop，最后是填充字段，以满足对齐要求；
-allocation_style=2：HotSpot VM在布局时会尽量使父类oop和子类oop挨在一起
+- allocation_style=0：字段排列顺序为oop、long/double、int、short/char、byte，最后是填充字段，以满足对齐要求；
+- allocation_style=1：字段排列顺序为long/double、int、short/char、byte、oop，最后是填充字段，以满足对齐要求；
+- allocation_style=2：HotSpot VM在布局时会尽量使父类oop和子类oop挨在一起
 
