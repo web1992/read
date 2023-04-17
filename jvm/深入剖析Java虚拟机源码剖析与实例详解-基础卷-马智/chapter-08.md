@@ -14,6 +14,8 @@
 - 元空间和类指针压缩空间
 - Metaspace的分配器 根据猜测分配chunk块
 - SpaceManager和ChunkManager管理
+- SpaceManager用来管理每个类加载器正在使用的Metachunk块
+- ChunkManager用来管理所有空闲的Metachunk块
 - 寄生栈
 - Klass类内存分配
 - Metaspace::allocate
@@ -31,6 +33,9 @@
 - os::reserve_memory() 
 - anon_mmap()
 - MemRegion表示一段连续的内存地址空间
+- 复制算法
+- 压缩-整理算法
+- 虚方法表
 
 
 ![memory-layout.drawio.svg](./images/memory-layout.drawio.svg)
@@ -64,7 +69,7 @@ Java栈中保存的主要内容是栈帧，每次函数调用都会有一个对�
 
 Java堆是所有线程共享的一块内存区域，该区域会存放几乎所有的对象及数组，由于对象或数组会不断地创建和死亡，所以这是Java垃圾收集器收集的主要区域。
 
-Java将堆空间划分为`年轻代堆空间`和`老年代堆空间`，这样就可以使用分代垃圾收集算法。后面的章节中会介绍最基础的单线程收集器Serial和Serial Old，其中Serial采用复制算法回收年轻代堆空间，而Serial Old采用压缩-整理算法回收老年代堆空间。
+Java将堆空间划分为`年轻代堆空间`和`老年代堆空间`，这样就可以使用分代垃圾收集算法。后面的章节中会介绍最基础的单线程收集器Serial和Serial Old，其中Serial采用`复制算法`回收年轻代堆空间，而Serial Old采用`压缩-整理算法`回收老年代堆空间。
 
 我们可以进一步细分年轻代堆空间，将其划分为Eden区、From Survivor区和To Survivor区。采用复制算法时，通常需要保存To Survivor区为空，这样Serial收集器会将Eden区和From Survivor区的活跃对象复制到To Survivor区，然后回收Eden区和From Survivor区中未被标记的死亡对象。
 
@@ -77,7 +82,6 @@ Java将堆空间划分为`年轻代堆空间`和`老年代堆空间`，这样就
 另外，JDK 1.4中新加入的NIO类引入了一种基于通道（Channel）与缓存区（Buffer）的I/O方式，它可以使用Native函数库直接分配堆外内存，然后通过一个存储在Java堆中的DirectByteBuffer对象作为这块内存的引用进行操作。这样就能在一些场景中显著提高性能，因为这避免了在Java堆和Native堆之间来回复制数据。
 
 本机直接内存的分配不会受到Java堆的限制，但既然是内存，就会受到本机总内存及处理器寻址空间的限制。
-
 
 ## 元空间
 
@@ -107,7 +111,7 @@ Metaspace用来存放类的元数据信息，元数据信息用于记录一个Ja
 
 元空间和类指针压缩空间的区别如下：
 
-类指针压缩空间只包含类的元数据，如InstanceKlass和ArrayKlass，虚拟机仅在打开了`UseCompressedClassPointers`选项时才生效。为了提高性能，Java中的虚方法表也存放到这里。
+类指针压缩空间只包含类的元数据，如`InstanceKlass`和`ArrayKlass`，虚拟机仅在打开了`UseCompressedClassPointers`选项时才生效。为了提高性能，Java中的虚方法表也存放到这里。
 元空间包含的是类里比较大的元数据，如方法、字节码和常量池等。
 
 ## 内存块的管理
@@ -119,7 +123,7 @@ Metachunk块通过SpaceManager和ChunkManager管理，SpaceManager用来管理�
 ChunkManager类管理着所有类加载器卸载后释放的内存块Metachunk。该类及重要属性的定义如下：
 
 ```c++
-源代码位置：openjdk/hotspot/src/share/vm/memory/metaspace.cpp
+//源代码位置：openjdk/hotspot/src/share/vm/memory/metaspace.cpp
 
 typedef class FreeList<Metachunk> ChunkList;
 
@@ -204,7 +208,7 @@ Serial收集器主要针对代表年轻代的DefNewGeneration类进行垃圾回�
 
 并行“标记-清除”GC策略（ConcurrentMarkSweepPolicy），也就是通常所说的CMS；
 可自动调整各内存代大小的并行“标记-清除”GC策略（ASConcurrentMarkSweep-Policy）。
-在使用Serial与Serial Old收集器时使用的策略就是MarkSweepPolicy。除了Mark-SweepPolicy策略以外的其他策略暂不介绍。
+在使用Serial与Serial Old收集器时使用的策略就是MarkSweepPolicy。除了MarkSweepPolicy策略以外的其他策略暂不介绍。
 
 `GenCollectedHeap`是基于内存分代管理的思想来管理整个HotSpot VM的内存堆的，而`MarkSweepPolicy`作为GenCollectedHeap的默认GC策略配置，它的初始化主要是检查、调整及确定各内存代的最大、最小及初始化容量。
 
