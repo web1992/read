@@ -1,6 +1,8 @@
 # 第9章 类对象的创建
 
 - 对象的创建、引用和回收过程
+- TemplateTable::_new
+- bcp（byte code pointer
 - 偏移表
 - 卡表
 
