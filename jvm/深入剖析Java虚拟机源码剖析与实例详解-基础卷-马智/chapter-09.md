@@ -4,6 +4,7 @@
 - TemplateTable::_new
 - bcp（byte code pointer
 - TLAB（Thread Local Allocation Buffer) 线程本地分配缓冲区
+- VMThread
 - 偏移表
 - 卡表
 
