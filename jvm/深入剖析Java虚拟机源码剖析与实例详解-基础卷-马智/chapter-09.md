@@ -1,6 +1,11 @@
 # 第9章 类对象的创建
 
 - 对象的创建、引用和回收过程
+- 在堆中分配内存
+- 在TLAB中分配内存
+- HeapWord
+- 无锁式分配
+- 全局锁式分配
 - TemplateTable::_new
 - bcp（byte code pointer
 - TLAB（Thread Local Allocation Buffer) 线程本地分配缓冲区
