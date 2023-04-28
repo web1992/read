@@ -22,3 +22,23 @@
 ```sh
 bash ./configure --with-debug-level=slowdebug --with-boot-jdk=/Library/Java/JavaVirtualMachines/jdk1.8.0_151.jdk/Contents/Home --enable-debug-symbols --with-xcode-path=/Applications/Xcode-12.5.1.app OBJCOPY=gobjcopy --with-freetype-include=/usr/local/Cellar/freetype/2.13.0_1/include/freetype2  --with-freetype-lib=/usr/local/Cellar/freetype/2.13.0_1/lib
 ```
+
+```sh
+----- Build times -------
+Start 2023-04-28 09:37:26
+End   2023-04-28 09:47:19
+00:00:22 corba
+00:00:17 demos
+00:01:49 docs
+00:03:09 hotspot
+00:00:42 images
+00:00:12 jaxp
+00:00:20 jaxws
+00:02:31 jdk
+00:00:22 langtools
+00:00:09 nashorn
+00:09:53 TOTAL
+-------------------------
+Finished building OpenJDK for target 'all'
+```
+- [https://www.cnblogs.com/dwtfukgv/p/14727290.html](https://www.cnblogs.com/dwtfukgv/p/14727290.html)
