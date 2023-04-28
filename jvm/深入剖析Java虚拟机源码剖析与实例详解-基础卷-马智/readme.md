@@ -15,3 +15,10 @@
 - [第11章 Serial垃圾收集器](chapter-11.md)
 - [第12章 Serial Old垃圾收集器](chapter-12.md)
 - [第13章 Java引用类型](chapter-13.md)
+
+
+## build hotspot
+
+```sh
+bash ./configure --with-debug-level=slowdebug --with-boot-jdk=/Library/Java/JavaVirtualMachines/jdk1.8.0_151.jdk/Contents/Home --enable-debug-symbols --with-xcode-path=/Applications/Xcode-12.5.1.app OBJCOPY=gobjcopy --with-freetype-include=/usr/local/Cellar/freetype/2.13.0_1/include/freetype2  --with-freetype-lib=/usr/local/Cellar/freetype/2.13.0_1/lib
+```
