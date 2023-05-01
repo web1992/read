@@ -7,11 +7,14 @@
 - 无锁式分配
 - 全局锁式分配
 - TemplateTable::_new
-- bcp（byte code pointer
-- TLAB（Thread Local Allocation Buffer) 线程本地分配缓冲区
+- bcp （byte code pointer）
+- TLAB （Thread Local Allocation Buffer） 线程本地分配缓冲区
 - VMThread
 - 偏移表
 - 卡表
+- 偏移表中存储的是卡页中最后一个对象的开始地址
+- set_remainder_to_point_to_start 更新偏移表
+- 对象（可能）跨一个或多个完整的卡页
 
 ## 对象的创建
 
