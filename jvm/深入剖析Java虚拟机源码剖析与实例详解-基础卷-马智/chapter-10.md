@@ -202,6 +202,23 @@ VM_Operation* safepoint_ops = NULL;
 }
 ```
 
+## thread.hpp
+
+```cpp
+// jdk8u/hotspot/src/share/vm/runtime/thread.hpp
+
+// Class hierarchy
+// - Thread
+//   - NamedThread
+//     - VMThread
+//     - ConcurrentGCThread
+//     - WorkerThread
+//       - GangWorker
+//       - GCTaskThread
+//   - JavaThread
+//   - WatcherThread
+```
+
 ## 安全点
 
 在垃圾回收过程中，修改对象的线程（称为Mutator）必须暂停，这会让应用程序产生停顿，没有任何响应，有点像卡死的感觉，这个停顿称为STW（Stop The Word）。这样可以避免在垃圾回收过程中因额外的线程对对象进行删除或移动等操作，从而造成的漏标、错标等错误。HotSpot VM使用安全点来实现STW。
@@ -318,23 +335,6 @@ enum JavaThreadState {
 };
 ```
 
-## JVM Thread
-
-
-```cpp
-// jdk8u/hotspot/src/share/vm/runtime/thread.hpp
-
-// Class hierarchy
-// - Thread
-//   - NamedThread
-//     - VMThread
-//     - ConcurrentGCThread
-//     - WorkerThread
-//       - GangWorker
-//       - GCTaskThread
-//   - JavaThread
-//   - WatcherThread
-```
 
 ## 模板解释器
 
