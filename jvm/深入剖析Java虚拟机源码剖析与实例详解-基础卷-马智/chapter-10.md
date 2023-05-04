@@ -318,6 +318,24 @@ enum JavaThreadState {
 };
 ```
 
+## JVM Thread
+
+
+```cpp
+// jdk8u/hotspot/src/share/vm/runtime/thread.hpp
+
+// Class hierarchy
+// - Thread
+//   - NamedThread
+//     - VMThread
+//     - ConcurrentGCThread
+//     - WorkerThread
+//       - GangWorker
+//       - GCTaskThread
+//   - JavaThread
+//   - WatcherThread
+```
+
 ## 模板解释器
 
 HotSpot VM使用一种称为“模板解释器”的技术来实现字节码的解释执行。所谓“模板解释器”，是指每一个字节码指令都会被映射到字节码解释模板表中的一个模板上，对应的是一个符合字节码语义的机器代码片段，这个机器代码片段会在HotSpot VM启动时预先生成，以加快解释执行的速度。
