@@ -9,6 +9,7 @@
 - 屏障
 - 偏移表
 - 垃圾回收线程 VMThread
+- 安全点
 - VM_operation
 - VMOperationQueue
 - os::create_thread()
@@ -310,7 +311,7 @@ void SafepointSynchronize::begin() {
 
 以上代码让除了执行当前函数的VMThread线程之外的所有线程都在到达安全点时暂停。例如，调用Interpreter::notice_safepoints()函数让解析执行Java方法的线程进入安全点，调用os::make_polling_page_unreadable()函数让内存页不可读，让编译执行Java方法的线程进入安全点等。
 
-另外，begin()函数还通过两个重要的锁Threads_lock和Safepoint_lock来保证线程的同步过程，由于在开始时已经获取了Threads_lock锁，因此其他相关的线程如果需要“走到”安全点处暂停，其实就是在获取此锁时进行阻塞暂停；Safepoint_lock主要用来保证多线程操作变量时的线程安全。
+另外，begin()函数还通过两个重要的锁Threads_lock和Safepoint_lock来保证线程的同步过程，由于在开始时已经获取了Threads_lock锁，因此其他相关的线程如果需要`走到`安全点处暂停，其实就是在获取此锁时进行阻塞暂停；Safepoint_lock主要用来保证多线程操作变量时的线程安全。
 
 ## 线程的状态
 
@@ -338,7 +339,7 @@ enum JavaThreadState {
 
 ## 模板解释器
 
-HotSpot VM使用一种称为“模板解释器”的技术来实现字节码的解释执行。所谓“模板解释器”，是指每一个字节码指令都会被映射到字节码解释模板表中的一个模板上，对应的是一个符合字节码语义的机器代码片段，这个机器代码片段会在HotSpot VM启动时预先生成，以加快解释执行的速度。
+HotSpot VM使用一种称为`模板解释器`的技术来实现字节码的解释执行。所谓`模板解释器`，是指每一个字节码指令都会被映射到字节码解释模板表中的一个模板上，对应的是一个符合字节码语义的机器代码片段，这个机器代码片段会在HotSpot VM启动时预先生成，以加快解释执行的速度。
 
 ## Links
 
