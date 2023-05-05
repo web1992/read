@@ -10,9 +10,12 @@
 - 偏移表
 - 垃圾回收线程 VMThread
 - 安全点
+- JavaThread
+- VMThread
 - VM_operation
 - VMOperationQueue
 - os::create_thread()
+- OSThread
 - pthread的ID
 - Mutator线程(用户线程)
 - 线程的状态
