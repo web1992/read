@@ -22,6 +22,13 @@
 - 模板解释器
 - Polling内存页
 - SafepointSynchronize
+- SafepointSynchronize::begin
+- SafepointSynchronize::end
+- Threads_lock->lock
+- Threads_lock->unlock
+- 栈顶缓存状态
+- 例程
+
 
 OpenJDK 8版本中的垃圾收集器都采用了分代垃圾回收机制，根据对象存活周期的不同将内存划分为几个内存代并采用不用的垃圾收集算法进行回收。
 
