@@ -24,6 +24,12 @@
 
 Serial收集器是一个单线程的收集器，采用“复制”算法。“单线程”并不是说只使用一个CPU或一条收集线程去完成垃圾收集工作，而是指在进行垃圾收集时，必须暂停其他的工作线程，直到收集结束
 
+## 回收过程
+
+- 标记普通的根对象
+- 标记老年代引用的对象
+- 递归标记活跃对象并复制
+
 ## _saved_mark_word
 
 ![saved-mark.drawio.svg](./images/saved-mark.drawio.svg)
@@ -66,6 +72,10 @@ survivor中的to区为空，只有这样才能执行YGC的复制算法进行垃�
 ## -XX:TargetSurvivorRatio
 
 -XX:TargetSurvivorRatio选项表示To Survivor空间占用百分比。调用adjust_desired_tenuring_threshold()函数是在YGC执行成功后，所以此次年轻代垃圾回收后所有的存活对象都被移动到了To Survivor空间内。如果To Survivor空间内的活跃对象的占比较高，会使下一次YGC时To Survivor空间轻易地被活跃对象占满，导致各种年龄代的对象晋升到老年代。为了解决这个问题，每次成功执行YGC后需要动态调整年龄阈值，这个年龄阈值既可以保证To Survivor空间占比不过高，也能保证晋升到老年代的对象都是达到了这个年龄阈值的对象。
+
+## 年轻代的垃圾回收
+
+- 当触发YGC时会产生一个VM_GenCollectForAllocation类型的任务
 
 ## 遍历根集的函数
 
