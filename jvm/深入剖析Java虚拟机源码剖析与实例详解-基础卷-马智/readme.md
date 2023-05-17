@@ -2,6 +2,8 @@
 
 如果需要阅读HotSopt源码，可以看此书，此书讲解了很多核心的概念，并提供了概述。可以快速入门HotSopt源码。（版本是jdk8）
 
+> 文中的源码都是基于jdk8版本的。
+
 - [第1章 认识HotSpot VM](chapter-01.md)
 - [第2章 二分模型](chapter-02.md)
 - [第3章 类的加载](chapter-03.md)

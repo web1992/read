@@ -30,10 +30,6 @@ Serial收集器是一个单线程的收集器，采用“复制”算法。“�
 - 标记老年代引用的对象
 - 递归标记活跃对象并复制
 
-## _saved_mark_word
-
-![saved-mark.drawio.svg](./images/saved-mark.drawio.svg)
-
 ## Serial GC 分代
 
 ![Serial-layout.drawio.svg](./images/Serial-layout.drawio.svg)
@@ -59,6 +55,97 @@ Serial收集器是一个单线程的收集器，采用“复制”算法。“�
 survivor中的to区为空，只有这样才能执行YGC的复制算法进行垃圾回收；
 下一个内存代有足够的内存容纳新生代的所有对象，因为年轻代需要老年代作为内存空间担保，如果老年代没有足够的内存空间作为担保，那么这次的YGC是不安全的
 
+
+## 年轻代的垃圾回收
+
+- 当触发YGC时会产生一个VM_GenCollectForAllocation类型的任务
+
+## DefNewGeneration
+
+年轻代对象的实现类：DefNewGeneration，包含了eden, from and to-space 三部分，下面是源码。
+
+```c++
+// jdk8u/hotspot/src/share/vm/memory/defNewGeneration.hpp
+
+// DefNewGeneration is a young generation containing eden, from- and
+// to-space.
+
+class DefNewGeneration: public Generation {
+  friend class VMStructs;
+
+}
+```
+
+## TenuredGeneration
+
+`TenuredGeneration`是老年代对象的实现类。下面是源码地址
+
+```c++
+// jdk8u/hotspot/src/share/vm/memory/tenuredGeneration.hpp
+
+// TenuredGeneration models the heap containing old (promoted/tenured) objects.
+// ...
+class TenuredGeneration: public OneContigSpaceCardGeneration {
+  friend class VMStructs;
+  // ...
+}
+```
+
+## GC 回收的过程
+
+1. GC开始之前先找到需要回收的内存区域：老年代/年轻代，如果是YGC 只回收年轻代，FGC 会回收年轻代+老年代
+2. 年轻代用 DefNewGeneration 对象表示
+3. 老年代用 TenuredGeneration 对象表示
+4. 在确定需要回收的内存区域之和开始进行回收前的准备工作
+5. 调用 GenCollectedHeap::save_marks()函数执行垃圾回收前的准备工作
+6. 
+
+## save_marks
+
+```c++
+// save_marks 方法是执行GC前的准备工作
+void DefNewGeneration::save_marks() {
+  eden()->set_saved_mark();
+  to()->set_saved_mark();
+  from()->set_saved_mark();
+}
+```
+
+> _saved_mark_word
+
+![saved-mark.drawio.svg](./images/saved-mark.drawio.svg)
+
+_saved_mark_word和_top等变量会辅助复制算法完成年轻代的垃圾回收。
+
+
+## 分配担保
+
+- promotion_attempt_is_safe
+
+```c++
+// jdk8u/hotspot/src/share/vm/memory/tenuredGeneration.cpp
+bool TenuredGeneration::promotion_attempt_is_safe(size_t max_promotion_in_bytes) const {
+  size_t available = max_contiguous_available();
+  size_t av_promo  = (size_t)gc_stats()->avg_promoted()->padded_average();
+  bool   res = (available >= av_promo) || (available >= max_promotion_in_bytes);
+  // ...
+  return res;
+}
+```
+
+根据之前的GC数据获取平均的晋升空间，优先判断可用空间是否大于等于这个平均的晋升空间，其次判断是否大于等于最大的晋升空间max_promotion_in_bytes，只要有一个条件为真，函数就会返回true，表示这是一次安全的GC。对于满足可用空间大于等于平均晋升空间这个条件来说，函数返回true后，YGC在执行过程中可能会遇到分配担保失败的情况，因为实际的晋升空间如果大于平均晋升空间时就会失败，此时就需要执行FGC操作了。
+
+
+## GC准备工作
+
+在开始回收对象之前还要做GC准备工作，具体如下：
+
+- 初始化IsAliveClosure闭包，该闭包封装了判断对象是否存活的逻辑；
+- 初始化ScanWeakRefClosure闭包，该闭包封装了扫描弱引用的逻辑，这里暂时不介绍；
+- 清空ageTable数据和To Survivor空间，ageTable会辅助判断对象晋升的条件，而保证To Survivor空间为空是执行复制算法的必备条件；
+- 初始化FastScanClosure，此闭包封装了存活对象的标识和复制逻辑。
+
+
 ## 年轻代到老年代的晋升过程的判断如下：
 
 1. 长期存活的对象进入老年代
@@ -72,10 +159,6 @@ survivor中的to区为空，只有这样才能执行YGC的复制算法进行垃�
 ## -XX:TargetSurvivorRatio
 
 -XX:TargetSurvivorRatio选项表示To Survivor空间占用百分比。调用adjust_desired_tenuring_threshold()函数是在YGC执行成功后，所以此次年轻代垃圾回收后所有的存活对象都被移动到了To Survivor空间内。如果To Survivor空间内的活跃对象的占比较高，会使下一次YGC时To Survivor空间轻易地被活跃对象占满，导致各种年龄代的对象晋升到老年代。为了解决这个问题，每次成功执行YGC后需要动态调整年龄阈值，这个年龄阈值既可以保证To Survivor空间占比不过高，也能保证晋升到老年代的对象都是达到了这个年龄阈值的对象。
-
-## 年轻代的垃圾回收
-
-- 当触发YGC时会产生一个VM_GenCollectForAllocation类型的任务
 
 ## 遍历根集的函数
 
