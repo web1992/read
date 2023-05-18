@@ -12,6 +12,7 @@
 - 分配担保失败
 - 长期存活的对象进入老年代
 - 动态对象年龄判定
+- 动态调整年龄阈值
 - ageTable
 - -XX:TargetSurvivorRatio
 - 标记普通的根对象
@@ -98,7 +99,10 @@ class TenuredGeneration: public OneContigSpaceCardGeneration {
 3. 老年代用 TenuredGeneration 对象表示
 4. 在确定需要回收的内存区域之和开始进行回收前的准备工作
 5. 调用 GenCollectedHeap::save_marks()函数执行垃圾回收前的准备工作
-6. 
+6. 其他准备参考下面的 [GC准备工作] 
+7. gen_process_strong_roots 复制移动对象
+8. 当YGC执行成功，清空Eden和From Survivor空间并交换From Survivor和To Survivor空间的角色后，下一步是调整年轻代活跃对象的晋升阈值
+9. 
 
 ## save_marks
 
@@ -156,9 +160,31 @@ bool TenuredGeneration::promotion_attempt_is_safe(size_t max_promotion_in_bytes)
 
 为了能更好地适应不同程度的内存状况，虚拟机并不总是要求对象的年龄必须达到MaxTenuringThreshold才能晋升到老年代。如果在Survivor空间中小于等于某个年龄的所有对象空间的总和大于Survivor空间的一半，年龄大于或等于该年龄的对象就可以直接进入老年代，无须等到MaxTenuringThreshold中要求的年龄。因此需要通过sizes数组统计年轻代中各个年龄对象的总空间。
 
-## -XX:TargetSurvivorRatio
+## 动态调整年龄阈值
 
 -XX:TargetSurvivorRatio选项表示To Survivor空间占用百分比。调用adjust_desired_tenuring_threshold()函数是在YGC执行成功后，所以此次年轻代垃圾回收后所有的存活对象都被移动到了To Survivor空间内。如果To Survivor空间内的活跃对象的占比较高，会使下一次YGC时To Survivor空间轻易地被活跃对象占满，导致各种年龄代的对象晋升到老年代。为了解决这个问题，每次成功执行YGC后需要动态调整年龄阈值，这个年龄阈值既可以保证To Survivor空间占比不过高，也能保证晋升到老年代的对象都是达到了这个年龄阈值的对象。
+
+## swap_spaces
+```c++
+// openjdk/hotspot/src/share/vm/memory/defNewGeneration.cpp
+void DefNewGeneration::swap_spaces() {
+  // 简单交换From Survivor和To Survivor空间的首地址即可
+  ContiguousSpace* s = from();
+  _from_space       = to();
+  _to_space         = s;
+
+  // Eden空间的下一个压缩空间为From Survivor，FGC在压缩年轻代时通常会压缩这两个
+  // 空间。如果YGC晋升失败，则From Survivor的下一个压缩空间是To Survivor，因此
+  // FGC会压缩整理这三个空间
+  eden()->set_next_compaction_space(from());
+  from()->set_next_compaction_space(NULL);
+}
+```
+
+## 标记普通的根对象
+
+- FastScanClosure
+- FastEvacuateFollowersClosure
 
 ## 遍历根集的函数
 
