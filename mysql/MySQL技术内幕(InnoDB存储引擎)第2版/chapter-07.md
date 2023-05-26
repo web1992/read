@@ -35,7 +35,9 @@
 
 ## redo-log
 
-重做日志用来实现事务的持久性，即事务ACID中的D。其由两部分组成:一是内存中的重做日志缓冲(redo log buffer)，其是易失的;二是重做日志文件(redo log file),其是持久的。
+重做日志用来实现事务的持久性，即事务ACID中的D。其由两部分组成:
+- 一是内存中的重做日志缓冲(redo log buffer)，其是易失的;
+- 二是重做日志文件(redo log file),其是持久的。
 
 InnoDB是事务的存储引擎，其通过Force Log at Commit机制实现事务的持久性，即当事务提交(COMMIT)时，必须先将该事务的所有日志写入到重做日志文件进行持久化，待事务的COMMIT操作完成才算完成。这里的日志是指重做日志，在InnoDB存储引擎中，由两部分组成，即redo log和undo log。redo log 用来保证事务的持久性，undolog用来帮助`事务回滚`及`MVCC`的功能。redo log基本上都是顺序写的，在数据库运行时不需要对redo log的文件进行读取操作。而undo log是需要进行随机读写的。
 
@@ -45,7 +47,8 @@ InnoDB是事务的存储引擎，其通过Force Log at Commit机制实现事务�
 
 ## undo-log
 
-1.基本概念
+基本概念
+
 重做日志记录了事务的行为，可以很好地通过其对`页`进行“重做”操作。但是事务有时还需要进行回滚操作，这时就需要undo。因此在对数据库进行修改时，InnoDB存储引擎不但会产生redo,还会产生一定量的undo。这样如果用户执行的事务或语句由于某种原因失败了，又或者用户用一条ROLLBACK语句请求回滚，就可以利用这些undo信息将数据回滚到修改之前的样子。
 redo存放在重做日志文件中，与redo不同，undo存放在数据库内部的一个特殊段(segment)中，这个段称为undo段(undo segment)。undo 段位于共享表空间内。
 
@@ -83,9 +86,7 @@ purge用于最终完成delete和update操作。这样设计是因为InnoDB存储
 
 ![图7-21 MySQL 5.6 BLGC的实现方式](./images/mysql-innodb-chapter-07-21.drawio.svg)
 
-在MySQL数据库上层进行提交时首先按顺序将其放入一个队列中，队列中的第一个事务称为leader,其他事务称为follower, leader 控制着follower 的行为。BLGC的步
-
-骤分为以下三个阶段:
+在MySQL数据库上层进行提交时首先按顺序将其放入一个队列中，队列中的第一个事务称为leader,其他事务称为follower, leader 控制着follower 的行为。BLGC的步骤分为以下三个阶段:
 - Flush阶段，将每个事务的二进制日志写入内存中。
 - Sync阶段，将内存中的二进制日志刷新到磁盘，若队列中有多个事务，那么仅一次fsync操作就完成了二进制日志的写入，这就是BLGC。
 - Commit阶段，leader 根据顺序调用存储引擎层事务的提交，InnoDB存储引擎本就支持group commit， 因此修复了原先由于锁prepare_commit_mutex 导致 group commit失效的问题。
@@ -93,7 +94,7 @@ purge用于最终完成delete和update操作。这样设计是因为InnoDB存储
 当有一组事务在进行Commit阶段时，其他新事物可以进行Flush阶段，从而使group commit不断生效。当然group commit的效果由队列中事务的数量决定，若每次队列中仅有一个事务，那么可能效果和之前差不多，甚至会更差。但当提交的事务越多时，group commit的效果越明显，数据库性能的提升也就越大。
 
 > 🐶备注🐶
-> 本质解决的问题： 二进制日志与InnoDB存储引擎重置日志的顺序问题。
+> 本质解决的问题： 二进制日志与InnoDB存储引擎重做日志的顺序问题。
 
 
 ## 隐式提交的SQL语句
