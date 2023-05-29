@@ -10,3 +10,13 @@
 
 ## 卡表
 
+![card-table.drawio.svg](./images/card-table.drawio.svg)
+
+
+## 卡表和记忆集
+
+
+![mset-card-table.drawio.svg](./images/mset-card-table.drawio.svg)
+
+
+每个区域都有一个转移专用记忆集合，它是通过散列表实现的。图中对象 b 引用了对象 a，因此对象 b 所对应的卡片索引就被记录在了区域 A 的转移专用记忆集合中。
