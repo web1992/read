@@ -2,4 +2,5 @@
 
 - oopDesc 类
 - KlassOop
-- 
+- markOopDesc
+- 前向指针 forwardPtrMark
