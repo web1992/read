@@ -1,9 +1,13 @@
 # 第 16 章　并发标记
 
+- next 位图
 - ConcurrentMark 类
 - CMBitMap类
 - ConcurrentMarkThread 类
 - concurrentMarkThread.cpp
+- CMConcurrentMarkingTask
+- 工作窃取
+- 工作窃取（work stealing）算法
 
 ## 并发标记过
 
