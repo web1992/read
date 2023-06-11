@@ -16,7 +16,7 @@
 - [第 14 章　GC 线程（并行篇）](chapter-14.md)
 - [第 15 章　GC 线程（并发篇）](chapter-15.md)
 - [第 16 章　并发标记](chapter-16.md)
-- [17 章　转移](chapter-17.md)
+- [第 17 章　转移](chapter-17.md)
 - [第 18 章　预测与调度](chapter-18.md)
 - [第 19 章　准确式 GC 的实现](chapter-19.md)
 - [第 20 章　写屏障的性能开销](chapter-20.md)
