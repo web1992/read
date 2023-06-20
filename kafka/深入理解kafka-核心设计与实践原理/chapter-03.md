@@ -22,7 +22,9 @@
 - auto.offset.reset
 - seek
 - assignment
-
+- 再均衡
+- ConsumerInterceptor
+- 
 
 ##  消费者与消费组
 
@@ -92,3 +94,8 @@ public class ConsumerRecord<K, V> {
 org.apache.kafka.clients.consumer.KafkaConsumer#position(org.apache.kafka.common.TopicPartition)
 org.apache.kafka.clients.consumer.KafkaConsumer#committed(org.apache.kafka.common.TopicPartition)
 ```
+
+## 再均衡
+
+再均衡是指分区的所属权从一个消费者转移到另一消费者的行为，它为消费组具备高可用性和伸缩性提供保障，使我们可以既方便又安全地删除消费组内的消费者或往消费组内添加消费者。不过在再均衡发生期间，消费组内的消费者是无法读取消息的。也就是说，在再均衡发生期间的这一小段时间内，消费组会变得不可用。另外，当一个分区被重新分配给另一个消费者时，消费者当前的状态也会丢失。比如消费者消费完某个分区中的一部分消息时还没有来得及提交消费位移就发生了再均衡操作，之后这个分区又被分配给了消费组内的另一个消费者，原来被消费完的那部分消息又被重新消费一遍，也就是发生了重复消费。一般情况下，应尽量避免不必要的再均衡的发生。
+
