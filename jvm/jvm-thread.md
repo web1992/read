@@ -3,14 +3,16 @@
 ## 线程分析
 
 ```sh
-top -H -p 97598
+top -H -p 13718
 
 ps -mp 41450 -o THREAD,tid,time
 
 printf "%x\n" 41458
 # a1f2
 
-jstack 41450 |grep  -A 10 a1f2
+jstack -F -l 13718 |grep  -A 10 359f
+
+jstack -F -l 13718 > 13718.thread.txt
 
 ```
 
