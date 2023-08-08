@@ -56,6 +56,14 @@ jcmd 23633 VM.native_memory summary scale=MB
 
 ![thread-stack.png](./images/memory-analyze/thread-stack.png)
 
+## 本地内存
+hook 内存分配
+```
+export HEAPPROFILE=/data/applogs/mem_allocation/mem-all.log
+export HEAP_PROFILE_ALLOCATION_INTERVAL=104857600
+export LD_PRELOAD=/usr/local/lib/libtcmalloc_and_profiler.so
+```
+
 ## 资料
 
 - [java-memory-layout(字节对齐)](https://www.baeldung.com/java-memory-layout)
