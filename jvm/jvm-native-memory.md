@@ -145,7 +145,7 @@ LD_PRELOAD=/usr/local/lib/libtcmalloc_and_profiler.so
 - [jmap工具](https://blog.csdn.net/claram/article/details/104635114)
 - [jcmd工具](https://www.cnblogs.com/duanxz/p/6115722.html)
 - [JVM NMT](https://www.jianshu.com/p/27c06a43797b)
-- [案例参考spring boot 内存泄露](https://cloud.tencent.com/developer/article/1406119)
+- [案例参考spring boot 内存泄露](https://tech.meituan.com/2019/01/03/spring-boot-native-memory-leak.html)
 ## pprof
 
 ```shell
