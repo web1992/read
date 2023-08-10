@@ -9,7 +9,7 @@
 - 建新的activeSegment
 - Message Set
 - 消息压缩 compression.type
-- 
+- Varints编码极大地节省了空间
 
 ## LogSegment
 
