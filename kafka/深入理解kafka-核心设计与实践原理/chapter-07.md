@@ -9,6 +9,7 @@
 - ConsumerCoordinator与GroupCoordinator
 - 消费组的leader
 - 消费者所支持的分配策略
+- 消费组元数据信息
 
 
 ## 消费分区
@@ -42,3 +43,6 @@ ConsumerCoordinator与GroupCoordinator之间最重要的职责就是负责执行
 - 消费组所对应的GroupCoorinator节点发生了变更。
 - 消费组内所订阅的任一主题或者主题的分区数量发生变化。
 
+## consumer_offsets
+
+消费者客户端提交的消费位移会保存在Kafka的__consumer_offsets主题中
