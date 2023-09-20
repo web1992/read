@@ -9,6 +9,9 @@
 - replica.lag.time.max.ms
 - ISR集合
 - under-replicated 分区
+- LEO（LogEndOffset）
+- lastCaughtUpTimeMs
+- 启动一个副本过期检测的定时任务
 
 ## 副本
 
@@ -29,4 +32,12 @@
 
 ## 失效副本
 
+- 允许的最大时间差 replica.lag.time.max.ms
+- 消息数超过 replica.lag.max.messages 已经废弃的参数，受到TPS大小的影响，没有实际意义
+
+正常情况下，分区的所有副本都处于ISR集合中，但是难免会有异常情况发生，从而某些副本被剥离出ISR集合中。在ISR集合之外，也就是处于同步失效或功能失效（比如副本处于非存活状态）的副本统称为失效副本，失效副本对应的分区也就称为同步失效分区，即under-replicated分区。
+
+Kafka源码注释中说明了一般有两种情况会导致副本失效：
+- follower副本进程卡住，在一段时间内根本没有向leader副本发起同步请求，比如频繁的Full GC。
+- follower副本进程同步过慢，在一段时间内都无法追赶上leader副本，比如I/O开销过大。
 
