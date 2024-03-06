@@ -37,6 +37,19 @@ h2,p {
 
  ## 类选择符和 ID 选择符
 
+
+ ```css
+p.warning {font-weight: bold;}
+span.warning {font-style: italic;}
+ ```
+
+ ## 选择符ID
+
+ ```css
+*#first-para {font-weight: bold;}
+ ```
+
+
  ## 多个类
 
 ```css
