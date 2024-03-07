@@ -11,6 +11,13 @@
 - @import 指令
 - link
 - style
+- 媒体描述符
+- 行内样式
+- 厂商前缀
+- 媒体查询
+- 媒体类型
+- 媒体描述符
+- 特性查询 @supports
 - 
 
 ## 块级元素
@@ -35,4 +42,40 @@ em {display: block;}
 
 ```html
 <link rel="stylesheet" type="text/css" href="sheet1.css" media="all">
+```
+
+
+## import
+
+```html
+<style type="text/css">
+@import url(styles.css);/* @import 放在开头*/
+h1 {color: gray;}
+</style>
+```
+
+## 媒体查询
+
+媒体查询可以在下述几个地方使用，
+- link 元素的 media 属性。
+- style 元素的 media 属性。
+- @import 声明的媒体描述符部分
+- @media 声明的媒体描述符部分。
+
+媒体查询可以是简单的媒体类型，也可以是复杂的媒体类型和特性的组合。
+
+## 媒体类型
+
+- al1
+用于所有展示媒体。
+- print
+为有视力的用户打印文档时使用，也在预览打印效果时使用。
+- screen
+在屏幕媒体(如桌面电脑的显示器)上展示文档时使用。在桌面计算机上运行的所有Web浏览器都是屏幕媒体用户代理。
+
+## 媒体描述符
+
+```
+<link href="print-color.css"type="text/cssmedia="print and(color)" rel="stylesheet">
+@import url(print-color.css)print and(color);
 ```
