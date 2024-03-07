@@ -18,7 +18,6 @@
 - 媒体类型
 - 媒体描述符
 - 特性查询 @supports
-- 
 
 ## 块级元素
 
@@ -75,7 +74,10 @@ h1 {color: gray;}
 
 ## 媒体描述符
 
+```html
+<link href="print-color.css" type="text/css" media="print and(color)" rel="stylesheet">
 ```
-<link href="print-color.css"type="text/cssmedia="print and(color)" rel="stylesheet">
+
+```css
 @import url(print-color.css)print and(color);
 ```
