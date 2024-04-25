@@ -3,8 +3,20 @@
 - 衬线字体
 - 字体族使用 font-family 属性声明
 - @font-face 
-
-
+- font-weight
+- font-size em-盒子
+- line-height
+- 绝对大小 xx-small、x-small、small、medium、large、x-large，xx-large
+- 相对大小 larger和smaller 它们根据父元素的字号增大或减小一定比例
+- 百分数和 em
+- 百分数始终根据继承自父元素的字号计算
+- CSS 还把长度单位 em 定义为等效于百分数,对字号而言,1em与100%的效果相同。
+- font-size-adjust
+- font-style 属性的作用十分简单:在 normal(常规)、italic(斜体)和 oblique(倾斜体)之间做出选择。
+- font-stretch
+- font-kerning
+- 字体变形
+- font-variant
 
 ## 通用字体族
 
