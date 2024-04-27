@@ -7,4 +7,9 @@
 - 两端对齐 justify
 - letter-spacing
 - text-align-last
-- 
+- line-height
+- line-height 纯数字
+- 纵向对齐文本
+- sup 和 sub (上标和下标)元素
+- vertical-align
+- 低端对齐
