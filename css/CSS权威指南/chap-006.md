@@ -21,8 +21,20 @@
 - vertical-align:-100%; 百分数
 - 单词间距和字符间距
 - word-spacing
+- text-decoration
+- text-shadow
+- white-space: pre,nowarp
+- 使用 white-space 属性禁止换行
+- tab-size
+- 默认情况下，一个制表符相当于八个连续的空格
+- 换行和断字 hyphens
+
+
 
 ## line-height
 
 有一些元素的计算逻辑是基于（比如：vertical-align: super） `line-height` 的而不是 `font-size`。
 
+## white-space
+
+![white-space](images/white-space.png)
