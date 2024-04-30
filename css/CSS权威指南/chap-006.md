@@ -21,6 +21,8 @@
 - vertical-align:-100%; 百分数
 - 单词间距和字符间距
 - word-spacing
+- text-transform属性转变文本的大小写
+- text-decoration
 
 ## line-height
 
