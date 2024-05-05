@@ -2,8 +2,15 @@
 
 - 本章全面阐述 CSS 视觉渲染的理论
 - 元素框基础 element-box
+- 块级框
+- 行内框
+- display
+- box-sizing
+- content-box padding-box border-box
+-  box-sizing 决定的是width 从何处算起，而不是它与外边距的关系。
+- 负外边距
 - 
-
+- 
 
 ## element-box
 
