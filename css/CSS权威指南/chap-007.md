@@ -17,6 +17,7 @@
 - 列表项目
 - list-style-position
 - 七个横向属性之和始终等于父元素的 width.
+- text-algin
 - 
 
 ## element-box
