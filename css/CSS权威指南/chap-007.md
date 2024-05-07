@@ -9,6 +9,13 @@
 - content-box padding-box border-box
 -  box-sizing 决定的是width 从何处算起，而不是它与外边距的关系。
 - 负外边距
+- 右外边距 因为规则就是这样制定的:倘若元素的尺寸出现过约束，右外边距要被重置为满足算式所需的任何值(如果是从右至左书写的语言，重置的将是左外边距)
+- 注意，内边距、边框和内容宽度(及高度)不能为负值。只有外边距的值可以小于零
+- height 属性要么设为auto，要么设为某种类型的非负值，决不能小于零
+- 折叠纵向外边距
+- 负外边距和折叠
+- 列表项目
+- list-style-position
 - 七个横向属性之和始终等于父元素的 width.
 - 
 
@@ -48,3 +55,22 @@ strong 或 span 等元素生成的框体。行内框前后不“换行”。disp
 - 行内块级框
 
 内部特征像块级框，外部特征像行内框。行内块级框的行为与置换元素相似，但不完全相同。比如说把一个 div 元素像行内图像那样插人一行文本，这样一想你就明白了。
+
+
+## 负外边距
+
+```css
+div {
+    width: 500px;
+    border: 3px solid black;
+}
+
+p.wide {
+    margin-left: 50px;
+    width: auto;
+    margin-right: 10px;
+    border: 3px solid gray;
+}
+```
+
+
