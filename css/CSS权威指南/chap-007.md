@@ -14,6 +14,8 @@
 - height 属性要么设为auto，要么设为某种类型的非负值，决不能小于零
 - 折叠纵向外边距
 - 负外边距和折叠
+- 列表项目
+- list-style-position
 - 
 
 ## element-box
