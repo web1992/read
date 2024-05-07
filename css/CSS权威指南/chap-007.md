@@ -9,7 +9,7 @@
 - content-box padding-box border-box
 -  box-sizing 决定的是width 从何处算起，而不是它与外边距的关系。
 - 负外边距
-- 
+- 七个横向属性之和始终等于父元素的 width.
 - 
 
 ## element-box
