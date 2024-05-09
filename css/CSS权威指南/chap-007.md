@@ -20,6 +20,7 @@
 - text-algin
 - 设定line-height值的最佳方式是使用纯数字
 - 按比例设定行高
+- box-decoration-break
 
 ## element-box
 
