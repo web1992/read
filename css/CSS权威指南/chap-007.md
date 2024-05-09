@@ -18,7 +18,8 @@
 - list-style-position
 - 七个横向属性之和始终等于父元素的 width.
 - text-algin
-- 
+- 设定line-height值的最佳方式是使用纯数字
+- 按比例设定行高
 
 ## element-box
 
@@ -75,3 +76,47 @@ p.wide {
 ```
 
 
+## 按比例设定行高
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <title>Lightly-HTML-Project</title>
+  <link href="./css/style.css" rel="stylesheet" />
+</head>
+
+<body>
+<p>
+    This paragraph has a line-height of 1.5 times its font-size. In additionany elements within it
+     <small>such as this small element</small> also haveline-heights 1.5 times their font-size...and that includes
+     <big>this bigelement right here</big>.By using a scaling factor, line-heights scaleto match the font-size of any element.
+</p>
+</body>
+
+</html>
+```
+
+
+```css
+
+body{
+    line-height: 1.5;
+}
+
+p {
+    font-size:15px; 
+    line-height: 1.5;
+}
+
+small {font-size:66%;}
+
+big {
+    font-size:200%; 
+    line-height: 1em;
+}
+
+
+```
