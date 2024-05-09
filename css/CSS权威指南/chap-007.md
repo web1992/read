@@ -21,6 +21,11 @@
 - 设定line-height值的最佳方式是使用纯数字
 - 按比例设定行高
 - box-decoration-break
+- display: flow
+- block和inline等关键字表示外部显示类型
+- display: inline table
+- display: flow-root
+- display: contents
 
 ## element-box
 
@@ -121,3 +126,12 @@ big {
 
 
 ```
+
+## flow 布局
+
+利用这种形式可以声明 display:inline table 这样的规则，指明元素内部按照表格布局，而处理与周围内容的关系时则作为行内元素(以前的inline-table 值具有同等效果)。
+
+![display](images/display.png)
+
+![display](images/display-2.png)
+
