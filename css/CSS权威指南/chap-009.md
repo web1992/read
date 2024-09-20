@@ -4,7 +4,7 @@
 - 这是因为前景色默认应用到边框上
 - color 继承颜色
 - background-color
-
+- background-clip 裁剪背景
 
 ## 复选框
 
