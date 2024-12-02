@@ -145,3 +145,52 @@ public class DaemonExample {
 守护线程的生命周期依赖 JVM，它主要服务于普通线程。
 JVM 在只有守护线程运行时会直接退出，不会等待守护线程完成任务。
 使用守护线程时要谨慎，避免它负责重要任务的清理或保存逻辑。
+
+
+
+## jvm  中 默认情况下创建的java 线程是守护进程吗
+
+
+在 JVM 中，默认情况下创建的 Java 线程 **不是** 守护进程（Daemon Thread）。它们是 **用户线程**（User Thread）。
+
+### 线程类型：
+
+1. **用户线程（User Thread）**：
+   - 是普通的线程，在应用程序中执行任务。
+   - JVM 会等待所有用户线程执行完毕后才会退出，即使其他守护线程还在运行。
+
+2. **守护线程（Daemon Thread）**：
+   - 守护线程是为服务型任务提供支持的线程，比如垃圾回收线程。
+   - 守护线程会在没有用户线程时自动终止。也就是说，只要有一个用户线程在运行，JVM 就会保持程序的运行；当所有用户线程都结束时，守护线程会被强制终止，JVM 会退出。
+
+### 默认行为：
+- **默认情况下，创建的线程是用户线程**，除非显式设置为守护线程。
+- 守护线程需要通过 `Thread.setDaemon(true)` 显式设置。
+
+### 示例代码：
+
+```java
+public class DaemonExample {
+    public static void main(String[] args) {
+        Thread userThread = new Thread(() -> {
+            System.out.println("这是一个用户线程。");
+        });
+
+        Thread daemonThread = new Thread(() -> {
+            System.out.println("这是一个守护线程。");
+        });
+
+        daemonThread.setDaemon(true);  // 将守护线程设置为守护线程
+
+        userThread.start();
+        daemonThread.start();
+    }
+}
+```
+
+在这个例子中：
+- `userThread` 是用户线程，默认情况下它是用户线程。
+- `daemonThread` 在启动前通过 `setDaemon(true)` 被设置为守护线程。
+
+### 总结：
+- 默认情况下，Java 创建的线程是 **用户线程**，需要手动设置 `setDaemon(true)` 才能成为守护线程。
