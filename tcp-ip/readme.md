@@ -8,3 +8,4 @@
 ## Links
 
 - [高效的网络IO模型](https://mp.weixin.qq.com/s/naGheZq_z5d8pyB_i9hY7g)
+- TCP为什么需要三次握手 https://www.pixelstech.net/article/1727412048-Why-TCP-needs-3-handshakes
