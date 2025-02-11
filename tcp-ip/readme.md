@@ -9,6 +9,7 @@
 
 - [高效的网络IO模型](https://mp.weixin.qq.com/s/naGheZq_z5d8pyB_i9hY7g)
 - TCP为什么需要三次握手 https://www.pixelstech.net/article/1727412048-Why-TCP-needs-3-handshakes
+- TCP为什么需要三次握手中文版 https://dbwu.tech/posts/network/why-tcp-does-needs-three-way-handshake/
 
 ## TCP链接创建的图
 
