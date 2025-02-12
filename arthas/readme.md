@@ -3,12 +3,13 @@
 ## start
 
 ```shell
-D:\Software\Java\bin\java  -jar math-game.jar
+java  -jar math-game.jar
 
-D:\Software\Java\bin\java  -jar arthas-boot.jar
+# 不建议使用 arthas-boot.jar 会有各种问题
 
-D:\Software\Java\bin\jps
+java  -jar arthas-boot.jar
 
+as.bat <pid>
 
 watch io.netty.example.http.helloworld.HttpHelloWorldServerHandler channelRead0
 
