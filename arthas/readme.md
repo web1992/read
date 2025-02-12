@@ -17,6 +17,7 @@ trace io.netty.example.http.helloworld.HttpHelloWorldServerHandler channelRead0 
 
 stack io.netty.example.http.helloworld.HttpHelloWorldServerHandler channelRead0 -n 2
 stack io.netty.example.http.helloworld.HttpHelloWorldServerHandler channelRead0 -n 2
+stack io.netty.buffer.PoolChunk allocate -n 2
 ```
 
 ## web console
