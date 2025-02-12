@@ -13,8 +13,14 @@ D:\Software\Java\bin\jps
 watch io.netty.example.http.helloworld.HttpHelloWorldServerHandler channelRead0
 
 trace io.netty.example.http.helloworld.HttpHelloWorldServerHandler channelRead0 -n 2
+
+stack io.netty.example.http.helloworld.HttpHelloWorldServerHandler channelRead0 -n 2
+stack io.netty.example.http.helloworld.HttpHelloWorldServerHandler channelRead0 -n 2
 ```
 
+## web console
+
+- http://127.0.0.1:8563/
 
 ## Kill
 
