@@ -32,6 +32,13 @@
 - __func__
 - __attribute__
 - GUN C支持noreturn、format、section、aligned、packed等十多个属性。
+- 内建函数 memcpy
+- __builtin_return_address（LEVEL）
+- __builtin_expect（EXP，C）
+- 　do{}while（0）语句
+- goto 一般只限于错误处理中
+- crosstool-ng
+- http://www.crosstool-ng.org
 
 ## Kconfig和Makefile
 
