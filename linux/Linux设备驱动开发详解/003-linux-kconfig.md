@@ -1,5 +1,6 @@
-# Kconfig
+# 第3章 Linux内核及内核编程
 
+- P191
 - Linux设备驱动开发详解：基于最新的Linux4.0内核 (电子与嵌入式系统设计丛书) (宋宝华 著) (Z-Library)
 
 内核一般要做到drivers与arch的软件架构分离，

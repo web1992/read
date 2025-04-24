@@ -1,5 +1,6 @@
-# linux Module
+# 第4章 Linux内核模块
 
+- P314
 - Linux设备驱动开发详解：基于最新的Linux4.0内核 (电子与嵌入式系统设计丛书) (宋宝华 著) (Z-Library)
 
 Linux提供了这样的机制，这种机制被称为模块
@@ -34,6 +35,10 @@ Linux提供了这样的机制，这种机制被称为模块
 - /proc/kallsyms
 - EXPORT_SYMBOL
 - EXPORT_SYMBOL_GPL
+- MODULE_DEVICE_TABLE
+- MOD_INC_USE_COUNT、MOD_DEC_USE_COUNT
+- try_module_get（&module）和 module_put（&module）
+- Linux设备驱动以内核模块的形式存在
 
 ##  __exit
 
