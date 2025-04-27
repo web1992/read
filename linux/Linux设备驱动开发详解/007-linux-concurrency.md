@@ -28,6 +28,8 @@
 - spin_trylock(lock)
 - spin_unlock(lock
 - 自旋锁机制+开关中断
+- RCU（Read-Copy-Update，读-复制-更新）
+- 信号量（Semaphore）
 
 ## 单CPU内进程与抢占它的进程
 
