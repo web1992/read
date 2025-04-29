@@ -10,10 +10,10 @@
 - wait_queue_head_t my_queue;
 - select（）和poll（）
 - epoll
-- 
--
--
--
+- timeval
+- 边缘触发（Edge Triggered）模式
+- 水平触发（Level Triggered）
+-https://www.kernel.org/doc/ols/2004/ols2004v1-pages-215-226.pdf
 -
 -
 -
@@ -93,3 +93,52 @@ select（）返回；同理，writefds文件集中的任何一
 
 
 ![select-pool](images/select-pool.png)
+
+
+## poll
+
+poll（）的功能和实现原理与select（）相似，
+其函数原型为：
+
+```c
+int poll(struct pollfd *fds, nfds_t nfds, int timeout);
+```
+
+当多路复用的文件数量庞大、I/O流量频繁的时
+候，一般不太适合使用select（）和poll（），此种
+情况下，select（）和poll（）的性能表现较差，我
+们宜使用epoll。epoll的最大好处是不会随着fd的数
+目增长而降低效率，select（）则会随着fd的数量增
+大性能下降明显。
+
+## epoll
+
+
+```c
+int epoll_create(int size);
+
+int epoll_ctl(int epfd, int op, int fd, struct epoll_event *event);
+
+```
+
+https://www.kernel.org/doc/ols/2004/ols2004v1-
+pages-215-226.pdf 的文档《Comparing and
+Evaluating epoll，select，and poll Event
+Mechanisms》对比了select、epoll、poll之间的一些
+性能。一般来说，当涉及的fd数量较少的时候，使用
+select是合适的；如果涉及的fd很多，如在大规模并
+发的服务器中侦听许多socket的时候，则不太适合选
+用select，而适合选用epoll。
+
+阻塞与非阻塞访问是I/O操作的两种不同模式，前
+者在暂时不可进行I/O操作时会让进程睡眠，后者则不
+然。
+在设备驱动中阻塞I/O一般基于等待队列或者基于
+等待队列的其他Linux内核API来实现，等待队列可用
+于同步驱动中事件发生的先后顺序。使用非阻塞I/O的
+应用程序也可借助轮询函数来查询设备是否能立即被
+访问，用户空间调用select（）、poll（）或者epoll
+接口，设备驱动提供poll（）函数。设备驱动的
+poll（）本身不会阻塞，但是与poll（）、
+select（）和epoll相关的系统调用则会阻塞地等待至
+少一个文件描述符集合可访问或超时。
