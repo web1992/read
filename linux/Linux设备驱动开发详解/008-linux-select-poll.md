@@ -8,8 +8,8 @@
 - fcntl（fd，F_SETFL，O_NONBLOCK）
 - Wait Queue
 - wait_queue_head_t my_queue;
-- - select（）和poll（）
--
+- select（）和poll（）
+- epoll
 - 
 -
 -
@@ -64,3 +64,32 @@ xxx_write（）等操作中将进程阻塞直到资源可以获
 xxx_read（）、xxx_write（）等操作应立即返回，
 read（）、write（）等系统调用也随即被返回，应用
 程序收到-EAGAIN返回值。
+
+
+## select
+
+```c
+int select(int numfds, fd_set *readfds, fd_set *writefds,
+fd_set *exceptfds,
+struct timeval *timeout);
+```
+
+其中readfds、writefds、exceptfds分别是被
+select（）监视的读、写和异常处理的文件描述符集
+合，numfds的值是需要检查的号码最高的fd加1。
+readfds文件集中的任何一个文件变得可读，
+select（）返回；同理，writefds文件集中的任何一
+个文件变得可写，select也返回。
+
+
+，第一次对n个文件进行select（）
+的时候，若任何一个文件满足要求，select（）就直
+接返回；第2次再进行select（）的时候，没有文件满
+足读写要求，select（）的进程阻塞且睡眠。由于调
+用select（）的时候，每个驱动的poll（）接口都会
+被调用到，实际上执行select（）的进程被挂到了每
+个驱动的等待队列上，可以被任何一个驱动唤醒。如
+果FDn变得可读写，select（）返回。
+
+
+![select-pool](images/select-pool.png)
