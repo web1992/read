@@ -1,6 +1,7 @@
 # 第9章 Linux设备驱动中的异步通知与异步I/O
 
 
+- P640
 - O_NONBLOCK 标记
 - fcntl（fd，F_SETFL，O_NONBLOCK）
 - 等待队列 Wait Queue
@@ -10,16 +11,19 @@
 - init_waitqueue_head(&my_queue);
 - add_wait_queue
 - remove_wait_queue
--
--
--
--
--
--
--
--
--
--
+- fasync_struct
+- fasync_helper
+- kill_fasync
+- 支持异步通知的globalfifo驱动
+- Linux异步I/O
+- int aio_read( struct aiocb *aiocbp )
+- int aio_write( struct aiocb *aiocbp )
+- int aio_error( struct aiocb *aiocbp )
+- aio_return
+- aio_suspend
+- aio_cancel
+- lio_listio
+- Linux内核AIO与libaio
 
 ## 异步通知的概念与作用
 
@@ -58,3 +62,15 @@ Queue）来实现阻塞进程的唤醒。等待队列很早就作为
 来同步对系统资源的访问，第7章中所讲述的信号量在
 内核中也依赖等待队列来实现。
 
+## fasync
+
+![async-sig](images/async-sig.png)
+
+## Linux的AIO
+
+Linux的AIO有多种实现，其中一种实现是在用户
+空间的glibc库中实现的，它本质上是借用了多线程模
+型，用开启新的线程以同步的方法来做I/O，新的AIO
+辅助线程与发起AIO的线程以
+pthread_cond_signal（）的形式进行线程间的同步。
+glibc的AIO主要包括如下函数。

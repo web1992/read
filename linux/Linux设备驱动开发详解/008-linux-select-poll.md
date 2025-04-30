@@ -142,3 +142,20 @@ select是合适的；如果涉及的fd很多，如在大规模并
 poll（）本身不会阻塞，但是与poll（）、
 select（）和epoll相关的系统调用则会阻塞地等待至
 少一个文件描述符集合可访问或超时。
+
+## wait_queue_head_t
+
+![wait_queue_head_t](images/wait-queue-wait-queue-head-t.png)
+
+
+## 支持阻塞操作的globalfifo设备驱动
+
+
+现在我们给globalmem增加这样的约束：把
+globalmem中的全局内存变成一个FIFO，只有当FIFO中
+有数据的时候（即有进程把数据写到这个FIFO而且没
+有被读进程读空），读进程才能把数据读出，而且读
+取后的数据会从globalmem的全局内存中被拿掉；只有
+当FIFO不是满的时（即还有一些空间未被写，或写满
+后被读进程从这个FIFO中读出了数据），写进程才能
+往这个FIFO中写入数据。
