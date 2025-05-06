@@ -1,18 +1,34 @@
 # 第10章 中断与时钟
 
-- P707
+- P691
 - 中断控制器（PIC）
 - GIC（Generic Interrupt Controller）
 - SGI（Software Generated Interrupt）
 - Linux中断处理程序架构
+- 中断MASK寄存器
+- 中断PEND寄存器
+- 可编程间隔定时器（PIT）的工作原理
+-  GIC Generic Interrupt Controller
+- SGI（Software Generated Interrupt）：软件产生的中断 可以用于多核的核间通信
 - /proc/interrupts
 - request_irq（）和free_irq（）函数
-- 
+- Linux中断编程
+- request_irq
+- devm_request_irq
+- 此函数与request_irq（）的区别是devm_开头的 API申请的是内核“managed”的资源，一般不需要在出错处理和remove（）接口里再显式的释放。
+- irq_handler_t
+- free_irq
+- disable_irq_nosync 与 disable_irq
+- Linux实现底半部的机制主要有tasklet、工作队列、软中断和线程化irq。
+- work_struct 工作队列
+- schedule_work
+- 软中断（Softirq）
+- threaded_irq
+- 数thread_fn
+- GPIO按键的中断
 -
 -
 -
--
-- 
 -
 -
 -
@@ -119,4 +135,91 @@ tNetTask任务去执行。
 在Linux中，查看/proc/interrupts文件可以获得
 系统中中断的统计信息，并能统计出每一个中断号上
 的中断在每个CPU上发生的次数
+
+## Linux中断编程
+
+```c
+int request_irq(unsigned int irq,
+                irq_handler_t handler,
+                unsigned long flags,
+                const char *name, void *dev);
+
+typedef irqreturn_t (*irq_handler_t)(int, void *);
+typedef int irqreturn_t;
+```
+
+## disable_irq_nosync
+
+disable_irq_nosync（）与disable_irq（）的区
+别在于前者立即返回，而后者等待目前的中断处理完
+成。由于disable_irq（）会等待指定的中断被处理
+完，因此如果在n号中断的顶半部调用
+disable_irq（n），会引起系统的死锁，这种情况
+下，只能调用disable_irq_nosync（n）
+
+## 工作队列
+
+工作队列早期的实现是在每个CPU核上创建一个
+worker内核线程，所有在这个核上调度的工作都在该
+worker线程中执行，其并发性显然差强人意。在Linux
+2.6.36以后，转而实现了“Concurrency-managed
+workqueues”
+，简称cmwq，cmwq会自动维护工作队列
+的线程池以提高并发性，同时保持了API的向后兼容。
+
+
+## 软中断（Softirq）
+
+软中断（Softirq）也是一种传统的底半部处理机
+制，它的执行时机通常是顶半部返回的时候，tasklet
+是基于软中断实现的，因此也运行于软中断上下文。
+
+在Linux内核中，用softirq_action结构体表征一
+个软中断，这个结构体包含软中断处理函数指针和传
+递给该函数的参数。使用open_softirq（）函数可以
+注册软中断对应的处理函数，而raise_softirq（）函
+数可以触发一个软中断。
+
+软中断和tasklet运行于软中断上下文，仍然属于
+原子上下文的一种，而工作队列则运行于进程上下
+文。因此，在软中断和tasklet处理函数中不允许睡
+眠，而在工作队列处理函数中允许睡眠。
+local_bh_disable（）和local_bh_enable（）是
+内核中用于禁止和使能软中断及tasklet底半部机制的
+函数。
+
+内核中采用softirq的地方包括HI_SOFTIRQ、
+TIMER_SOFTIRQ、NET_TX_SOFTIRQ、NET_RX_SOFTIRQ、
+SCSI_SOFTIRQ、TASKLET_SOFTIRQ等，一般来说，驱动
+的编写者不会也不宜直接使用softirq。
+
+第9章异步通知所基于的信号也类似于中断，现
+在，总结一下硬中断、软中断和信号的区别：硬中断
+是外部设备对CPU的中断，软中断是中断底半部的一种
+处理机制，而信号则是由内核（或其他进程）对某个
+进程的中断。在涉及系统调用的场合，人们也常说通
+过软中断（例如ARM为swi）陷入内核，此时软中断的
+概念是指由软件指令引发的中断，和我们这个地方说
+的softirq是两个完全不同的概念，一个是software，
+一个是soft。
+
+需要特别说明的是，软中断以及基于软中断的
+tasklet如果在某段时间内大量出现的话，内核会把后
+续软中断放入ksoftirqd内核线程中执行。总的来说，
+中断优先级高于软中断，软中断又高于任何一个线
+程。软中断适度线程化，可以缓解高负载情况下系统
+的响应。
+
+## GPIO按键的中断
+
+drivers/input/keyboard/gpio_keys.c是一个放
+之四海皆准的GPIO按键驱动，为了让该驱动在特定的
+电路板上工作，通常只需要修改arch/arm/mach-xxx下
+的板文件或者修改device tree对应的dts。该驱动会
+为每个GPIO申请中断，在gpio_keys_setup_key（）函
+数中进行。注意最后一个参数bdata，会被传入中断服
+务程序。
+
+drivers 驱动的目录： /lib/modules/5.15.0-72-generic 
+5.15.0-72-generic 通过 `uaname -r` 获取
 
