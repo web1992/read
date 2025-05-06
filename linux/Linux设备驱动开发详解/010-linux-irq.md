@@ -26,17 +26,17 @@
 - threaded_irq
 - 数thread_fn
 - GPIO按键的中断
--
--
--
--
--
--
--
-- 
--
--
--
+- container_of
+- 中断共享
+- IRQF_SHARED标志
+- 内核定时器
+- timer_list
+- 对hrtimer
+- 内核中延迟的工作delayed_work
+- ndelay（）、udelay（）和mdelay（）
+- schedule_timeout
+- schedule_timeout_uninterruptible
+- schedule_timeout_interruptible
 -
 
 ## 中断与定时器
@@ -223,3 +223,13 @@ drivers/input/keyboard/gpio_keys.c是一个放
 drivers 驱动的目录： /lib/modules/5.15.0-72-generic 
 5.15.0-72-generic 通过 `uaname -r` 获取
 
+```sh
+/lib/modules/5.15.0-72-generic/kernel/drivers/input/keyboard
+```
+
+## time_before和time_after
+
+为了防止在time_before（）和time_after（）的
+比较过程中编译器对jiffies的优化，内核将其定义为
+volatile变量，这将保证每次都会重新读取这个变
+量。因此volatile更多的作用还是避免这种读合并。
