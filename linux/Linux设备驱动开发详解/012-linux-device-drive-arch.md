@@ -9,9 +9,9 @@
 - platform总线
 - device_driver结构体
 - i2c_driver、spi_driver、usb_driver、pci_driver
--
--
--
+- 板文件
+- platform_add_devices
+- platform设备
 -
 -
 -
