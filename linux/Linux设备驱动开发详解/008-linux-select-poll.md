@@ -13,31 +13,7 @@
 - timeval
 - 边缘触发（Edge Triggered）模式
 - 水平触发（Level Triggered）
--https://www.kernel.org/doc/ols/2004/ols2004v1-pages-215-226.pdf
--
--
--
-- 
--
--
--
--
--
--
-- 
--
--
--
--
--
--
-- 
--
--
--
--
--
--
+- https://www.kernel.org/doc/ols/2004/ols2004v1-pages-215-226.pdf
 
 
 

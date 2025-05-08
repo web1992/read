@@ -12,9 +12,9 @@
 - 板文件
 - platform_add_devices
 - platform设备
--
--
--
+- platform_device和platform_driver 匹配
+- 设备树
+- 挂接到了platform总线上
 -
 -
 -
@@ -99,4 +99,37 @@ file_operations、几种I/O模型，那是Linux的事情，
 关心外设，而外设驱动也不关心主机，外设只是访问
 核心层的通用API进行数据传输，主机和外设之间可以
 进行任意组合
+
+## platform_device
+
+在Linux 2.6以后的设备驱动模型中，需关心总
+线、设备和驱动这3个实体，总线将设备和驱动绑定。
+在系统每注册一个设备的时候，会寻找与之匹配的驱
+动；相反的，在系统每注册一个驱动的时候，会寻找
+与之匹配的设备，而匹配由总线完成。
+
+一个现实的Linux设备和驱动通常都需要挂接在一
+种总线上，对于本身依附于PCI、USB、I2C、SPI等的
+设备而言，这自然不是问题，但是在嵌入式系统里
+面，在SoC系统中集成的独立外设控制器、挂接在SoC
+内存空间的外设等却不依附于此类总线。基于这一背
+景，Linux发明了一种虚拟的总线，称为platform总
+线，相应的设备称为platform_device，而驱动成为
+platform_driver。
+
+所谓的platform_device并不是与字符设
+备、块设备和网络设备并列的概念，而是Linux系统提
+供的一种附加手段，例如，我们通常把在SoC内部集成
+的I2C、RTC、LCD、看门狗等控制器都归纳为
+platform_device，而它们本身就是字符设备。
+
+platform_driver 这个结构体中包含probe（）、
+remove（）、一个device_driver实例、电源管理函数
+suspend（）、resume（）
+
+与platform_driver地位对等的i2c_driver、
+spi_driver、usb_driver、pci_driver中都包含了
+device_driver结构体实例成员。它其实描述了各种
+xxx_driver（xxx是总线名）在驱动意义上的一些共性。
+
 
