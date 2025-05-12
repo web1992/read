@@ -16,14 +16,36 @@
 - void dev_kfree_skb_irq(struct sk_buff *skb);
 - void dev_kfree_skb_any(struct sk_buff *skb);
 - *skb_put
--
+- skb_reserve
+- net_device结构体
+- base_addr为网络设备I/O基地址。
+- irq为设备使用的中断号。
+- if_port指定多端口设备使用哪一个端口，该字段仅针对多端口设备
+- ETH_HLEN
+- IFF _Interface Flags
+- netdevice.h
+- netdev_ops ethtool_ops、header_ops
+- poll_controller
+- NAPI（New API）
+- register_netdev（）和 unregister_netdev（）
+- net_device
+- alloc_netdev_mqs  
+- free_netdev alloc_enetdev
 - 
 - 
 - 
 - 
 - 
--
-
+- 
+- 
+- 
+- 
+- 
+- 
+- 
+- 
+- 
+- 
 
 ## 网络设备
 
@@ -97,8 +119,15 @@ sk_buff递交给下层，各层在sk_buff中添加不同的协
 头，或者在tail和end之间添加新的协议数据。
 
 
-- https://www.cnblogs.com/ink-white/p/16814624.html 
+- [sk_buff结构体 资料来自cnblogs](https://www.cnblogs.com/ink-white/p/16814624.html)
 
 ![sk buff](images/014-linux-net-sk-buff.png)
 
 
+```c
+skb=alloc_skb(len+headspace, GFP_KERNEL);
+skb_reserve(skb, headspace);
+skb_put(skb,len);
+memcpy_fromfs(skb->data,data,len);
+pass_to_m_protocol(skb);
+```
