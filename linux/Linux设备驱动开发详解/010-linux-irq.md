@@ -101,7 +101,7 @@ SPI（Shared Peripheral Interrupt）：共享外
 
 ## top half
 
-![linux-top-half](images/linux-top-half.png)
+![linux-top-half](images/010-linux-top-half.png)
 
 顶半部用于完成尽量少的比较紧急的功能，它往
 往只是简单地读取寄存器中的中断状态，并在清除中

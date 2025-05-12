@@ -66,7 +66,7 @@ buf是用户空间内存的地址，该地址在内核空间不宜直
 - 字符设备驱动基本模板（含 read/write/ioctl）  https://github.com/web1992/Favorites/issues/65
 
 
-![file_operations](images/file_operations.png)
+![file_operations](images/006-linux-file_operations.png)
 
 
 ## 总结

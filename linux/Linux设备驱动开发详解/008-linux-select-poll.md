@@ -68,7 +68,7 @@ select（）返回；同理，writefds文件集中的任何一
 果FDn变得可读写，select（）返回。
 
 
-![select-pool](images/select-pool.png)
+![select-pool](images/008-linux-select-pool.png)
 
 
 ## poll
@@ -121,7 +121,7 @@ select（）和epoll相关的系统调用则会阻塞地等待至
 
 ## wait_queue_head_t
 
-![wait_queue_head_t](images/wait-queue-wait-queue-head-t.png)
+![wait_queue_head_t](images/008-linux-wait-queue-wait-queue-head-t.png)
 
 
 ## 支持阻塞操作的globalfifo设备驱动

@@ -49,7 +49,7 @@
 相互补充。
 
 
-![eagain-sync-io](images/eagain-sync-io.png)
+![eagain-sync-io](images/009-linux-eagain-sync-io.png)
 
 
 
@@ -64,7 +64,7 @@ Queue）来实现阻塞进程的唤醒。等待队列很早就作为
 
 ## fasync
 
-![async-sig](images/async-sig.png)
+![async-sig](images/009-linux-async-sig.png)
 
 ## Linux的AIO
 
