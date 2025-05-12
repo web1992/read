@@ -31,19 +31,19 @@
 - net_device
 - alloc_netdev_mqs  
 - free_netdev alloc_enetdev
-- 
-- 
-- 
-- 
-- 
-- 
-- 
-- 
-- 
-- 
-- 
-- 
-- 
+- request_region
+- 网络设备的打开与释放
+- netif_start_queue（）和 netif_stop_queue（）
+- netif_receive_skb
+- 网络连接状态
+- netif_carrier_on（）和 netif_carrier_off（）
+- netif_carrier_ok
+- 载波信号
+- 参数设置和统计数据
+- netif_running
+- SIOCSIFMAP ioctl
+- DM9000网卡设备驱动实例
+- DM9000一般直接挂在外面的内存总线上 可以和CPU直连
 - 
 - 
 
@@ -131,3 +131,83 @@ skb_put(skb,len);
 memcpy_fromfs(skb->data,data,len);
 pass_to_m_protocol(skb);
 ```
+
+## net_device
+
+
+net_device结构体的分配和网络设备驱动的注册
+需在网络设备驱动程序初始化时进行，而net_device
+结构体的释放和网络设备驱动的注销在设备或驱动被
+移除的时候执行，
+
+## 网络设备的打开与释放
+
+网络设备的打开函数需要完成如下工作。
+·使能设备使用的硬件资源，申请I/O区域、中断
+和DMA通道等。
+·调用Linux内核提供的netif_start_queue（）
+函数，激活设备发送队列。
+网络设备的关闭函数需要完成如下工作。
+·调用Linux内核提供的netif_stop_queue（）函
+数，停止设备传输包。
+·释放设备所使用的I/O区域、中断和DMA资源。
+
+## 数据发送流程
+
+1）网络设备驱动程序从上层协议传递过来的
+sk_buff参数获得数据包的有效数据和长度，将有效数
+据放入临时缓冲区。
+
+2）对于以太网，如果有效数据的长度小于以太网
+冲突检测所要求数据帧的最小长度ETH_ZLEN，则给临
+时缓冲区的末尾填充0。
+
+3）设置硬件的寄存器，驱使网络设备进行数据发
+送操作。
+
+netif_wake_queue（）和
+netif_stop_queue（）是数据发送流程中要调用的两
+个非常重要的函数，分别用于唤醒和阻止上层向下传
+送数据包，它们的原型定义于
+include/linux/netdevice.h中
+
+```c
+static inline void netif_wake_queue(struct net_device *dev);
+static inline void netif_stop_queue(struct net_device *dev);
+```
+
+## 数据接收流程
+
+网络设备接收数据的主要方法是由中断引发设备
+的中断处理函数，中断处理函数判断中断类型，如果
+为接收中断，则读取接收到的数据，分配sk_buffer数
+据结构和数据缓冲区，将接收到的数据复制到数据缓
+冲区，并调用netif_rx（）函数将sk_buffer传递给上
+层协议。代码清单14.9所示为完成这个过程的函数模板。
+
+如果是NAPI兼容的设备驱动，则可以通过poll方
+式接收数据包。在这种情况下，我们需要为该设备驱
+动提供作为netif_napi_add（）参数的xxx_poll（）
+
+## 总结
+
+对Linux网络设备驱动体系结构的层次化设计实现
+了对上层协议接口的统一和硬件驱动对下层多样化硬
+件设备的可适应。程序员需要完成的工作集中在设备
+驱动功能层，网络设备接口层net_device结构体的存
+在将千变万化的网络设备进行抽象，使得设备功能层
+中除数据包接收以外的主体工作都由填充net_device
+的属性和函数指针完成。
+
+在分析net_device数据结构的基础上，本章给出
+了设备驱动功能层设备初始化、数据包收发、打开和
+释放等函数的设计模板，这些模板对实际设备驱动的
+开发具有直接指导意义。有了这些模板，我们在设计
+具体设备的驱动时，不再需要关心程序的体系，而可
+以将精力集中于硬件操作本身。
+
+
+在Linux网络子系统和设备驱动中，套接字缓冲区
+sk_buff发挥着巨大的作用，它是所有数据流动的载
+体。网络设备驱动和上层协议之间也基于此结构进行
+数据包交互，因此，我们要特别牢记它的操作方法。
