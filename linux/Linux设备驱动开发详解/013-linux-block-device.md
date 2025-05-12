@@ -16,8 +16,22 @@
 - del_gendisk
 - bio、request和request_queue
 - bio_vec结构
+- 片段个 page，offset，len]
+- *blk_init_queue
+- blk_cleanup_queue
+- *blk_alloc_queue
+- blk_queue_make_request
+- blk_start_request
+- blk_fetch_request
+- rq_for_each_segment
+- __blk_end_request_all
+- Noop I/O调度器、Anticipatory I/O调度器、Deadline I/O调度器与CFQ I/O调度器。
+- kernel elevator=deadline
+- register_blkdev
+- unregister_blkdev
+- Linux MMC子系统
 -
-
+-
 
 
 ## 导读
@@ -68,3 +82,21 @@ I/O调度层的基本目的是将请求按照它们对应在块
 
 图13.2 Linux块设备子系统
 
+
+## request_queue、request、bio和bio_vec
+
+![bio vec](images/013-linux-bio-vec.png)
+
+## Linux MMC子系统
+
+Linux MMC/SD存储卡是一种典型的块设备，它的
+实现位于drivers/mmc。drivers/mmc下又分为card、
+core和host这3个子目录。card实际上跟Linux的块设
+备子系统对接，实现块设备驱动以及完成请求，但是
+具体的协议经过core层的接口，最终通过host完成传
+输，因此整个MMC子系统的框架结构如图13.5所示。另
+外，card目录除了实现标准的MMC/SD存储卡以外，该
+目录还包含一些SDIO外设的卡驱动，如
+drivers/mmc/card/sdio_uart.c。core目录除了给
+card提供接口外，实际上也定义好了host驱动的框
+架。
