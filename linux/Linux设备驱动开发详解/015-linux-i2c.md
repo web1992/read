@@ -18,11 +18,11 @@
 - 内核中的i2c.h头文件对i2c_adapter、i2c_algorithm、i2c_driver和i2c_client
 - I2C驱动的各种数据结构的关系
 - platform_driver和platform_device
-- 
-- 
-- 
-- 
-- 
+- i2cdev_read（） i2cdev_write（）
+- I2C_RDWR IOCTL
+- i2cdev_ioctl
+- I2C_SLAVE 、I2C_RETRIES I2C_TIMEOU I2C_RDWR
+- Tegra I2C总线驱动实例
 - 
 - 
 - 
