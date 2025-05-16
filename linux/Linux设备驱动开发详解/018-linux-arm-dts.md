@@ -16,9 +16,9 @@
 - Uboot设备
 - fdt的其他命令就变得可以使用，如fdt resize、fdt print等。
 - 根节点兼容性
-- 
-- 
-- 
+- <manufacturer>，<model>。
+- compatible = "acme，coyotes-revenge"
+- compatible = "arm,vexpress,v2p-ca9", "arm,vexpress";
 - 
 - 
 - 
@@ -210,4 +210,41 @@ DS1338实时钟（I2C地址为0x58）。
 节点的子节点，而I2C又是external-bus的子节点，
 RTC又进一步是I2C的子节点。每一级节点都有一些属
 性信息
+
+## compatible
+
+这个顶层设备的
+兼容属性一般包括两个或者两个以上的兼容性字符
+串，首个兼容性字符串是板子级别的名字，后面一个
+兼容性是芯片级别（或者芯片系列级别）的名字
+
+
+ARM Linux 3.x在引入设备树之后，
+MACHINE_START变更为DT_MACHINE_START，其中含有一
+个.dt_compat成员，用于表明相关的设备与.dts中根
+节点的兼容属性兼容关系。如果Bootloader传递给内
+核的设备树中根节点的兼容属性出现在某设备
+的.dt_compat表中，相关的设备就与对应的兼容匹
+配，从而引发这一设备的一系列初始化函数被执行
+
+
+Linux倡导针对多个SoC、多个电路板的通用DT设
+备，即一个DT设备的.dt_compat包含多个电路板.dts
+文件的根节点兼容属性字符串。之后，如果这多个电
+路板的初始化序列不一样，可以通过int
+of_machine_is_compatible（const char*compat）
+API判断具体的电路板是什么。在Linux内核中，常常
+使用如下API来判断根节点的兼容性：
+
+```c
+int of_machine_is_compatible(const char *compat);
+```
+
+
+此API判断目前运行的板子或者SoC的兼容性，它
+匹配的是设备树根节点下的兼容属性。例如
+drivers/cpufreq/exynos-cpufreq.c中就有判断运行
+的CPU类型是exynos4210、exynos4212、exynos4412还
+是exynos5250的代码，进而分别处理，如代码清单
+18.5所示。
 
