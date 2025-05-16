@@ -7,23 +7,23 @@
 - 端点描述符
 - 字符串描述符
 - USB主机控制器驱动
-- 
-- 
-- 
-- 
-- 
-- 
-- 
-- 
-- 
-- 
-- 
-- 
-- 
-- 
-- 
-- 
-- 
+- usb_hcd 结构体
+- hc_driver成员
+- urb_enqueue
+- EHCI主机控制器驱动
+- container_of
+- 实例：Chipidea USB主机驱动
+- urb结构体
+- driver/usb/usbskeleton.c
+- USB UDC与Gadget驱动
+- Ethernet over USB
+- File-Backed Storage Gadget
+- Serial Gadget 
+- USB Video Class Gadget驱动：让Linux系统成为另外一个系统的USB视频采集源。
+- Gadget MIDI：暴露ALSA MIDI接口
+- 实例：Chipidea USB UDC驱动
+- 实例：Loopback Function驱动
+- USB OTG驱动
 - 
 - 
 - 
@@ -159,3 +159,40 @@ usb_endpoint_descriptor结构体，
 可以以多种语言形式提供。字符串描述符是可选的，
 有的设备有，有的设备没有，字符串描述符对应于
 usb_string_descriptor结构体，
+
+## USB主机控制器驱动
+
+USB主机控制器有这些规格：OHCI（Open Host
+Controller Interface）、UHCI（Universal Host
+Controller Interface）、EHCI（Enhanced Host
+Controller Interface）和xHCI（eXtensible Host
+Controller Interface）。
+
+## USB设备驱动
+
+这里所说的USB设备驱动指的是从主机角度来看，
+怎样访问被插入的USB设备，而不是指USB设备内部本
+身运行的固件程序。Linux系统实现了几类通用的USB
+设备驱动（也称客户驱动），划分为如下几个设备
+类。
+
+- 音频设备类。
+- 通信设备类。
+- HID（人机接口）设备类。
+- 显示设备类。
+- 海量存储设备类。
+- 电源设备类。
+- 打印设备类。
+- 集线器设备类。
+
+一般的通用Linux设备（如U盘、USB鼠标、USB键
+盘等）都不需要工程师再编写驱动，而工程师需要编
+写的是特定厂商、特定芯片的驱动，而且往往也可以
+参考已经在内核中提供的驱动模板。
+Linux内核为各类USB设备分配了相应的设备号，
+如ACM USB调制解调器的主设备号为166（默认设备
+名/dev/ttyACMn）、USB打印机的主设备号为180，次
+设备号为0~15（默认设备名/dev/lpn）、USB串口的主
+设备号为188（默认设备名/dev/ttyUSBn）等，详见
+http://www.lanana.org/ 网站的设备列表。
+
