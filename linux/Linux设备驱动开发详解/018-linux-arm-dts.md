@@ -19,7 +19,7 @@
 - <manufacturer>，<model>。
 - compatible = "acme，coyotes-revenge"
 - compatible = "arm,vexpress,v2p-ca9", "arm,vexpress";
-- 
+- 在of_match_table
 - 
 - 
 - 
