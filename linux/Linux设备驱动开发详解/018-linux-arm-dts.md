@@ -20,19 +20,19 @@
 - compatible = "acme，coyotes-revenge"
 - compatible = "arm,vexpress,v2p-ca9", "arm,vexpress";
 - 在of_match_table
-- 
-- 
-- 
-- 
-- 
-- 
-- 
-- 
-- 
-- 
-- 
-- 
-- 
+- of_device_is_compatible
+- of_device_id
+- of_match_node
+- 设备节点及label的命名
+- unit-address
+- 地址编码
+- address-cells
+- size-cells
+- reg=<address1length1[address2length2][address3length3]...>，
+- length表明了设备使用的一个地址范围。address为1个或多个32位的整型（即cell）
+- 若#size-cells=0，则length字段为空。
+- interrupt-controller
+- GPIO、时钟、pinmux连接
 - 
 - 
 - 
@@ -248,3 +248,44 @@ drivers/cpufreq/exynos-cpufreq.c中就有判断运行
 是exynos5250的代码，进而分别处理，如代码清单
 18.5所示。
 
+## address-cells size-cells
+
+其中，reg的组织形式为reg=
+<address1length1[address2length2]
+[address3length3]...>，其中的每一组address
+length表明了设备使用的一个地址范围。address为1
+个或多个32位的整型（即cell），而length的意义则
+意味着从address到address+length–1的地址范围都
+属于该节点。若#size-cells=0，则length字段为空。
+
+address和length字段是可变长的，父节点的
+#address-cells和#size-cells分别决定了子节点reg
+属性的address和length字段的长度。
+
+
+在代码清单18.2中，根节点的#address-cells=
+<1>；和#size-cells=<1>；决定了serial、gpio、spi
+等节点的address和length字段的长度分别为1。
+cpus节点的#address-cells=<1>；和#size￾cells=<0>；决定了两个cpu子节点的address为1，而
+length为空，于是形成了两个cpu的reg=<0>；和reg=
+<1>；。
+external-bus节点的#address-cells=<2>和
+#size-cells=<1>；决定了其下的ethernet、i2c、
+flash的reg字段形如reg=<0 0 0x1000>；、reg=<1 0
+0x1000>；和reg=<2 0 0x4000000>；。其中，address
+字段长度为2，开始的第一个cell（即“<”后的0、
+1、2）是对应的片选，第2个cell（即<0 0 0x1000>、
+<1 0 0x1000>和<2 0 0x1000000>中间的0，0，0）是
+相对该片选的基地址，第3个cell（即“>”前的
+0x1000、0x1000、0x1000000）为length。
+特别要留意的是i2c节点中定义的#addresscells=<1>；和#size-cells=<0>；，其作用到了I
+2 C
+总线上连接的RTC，它的address字段为0x58，是RTC设
+备的I
+2 C地址。
+根节点的直接子书点描述的是CPU的视图，因此根
+子节点的address区域就直接位于CPU的内存区域。但
+是，经过总线桥后的address往往需要经过转换才能对
+应CPU的内存映射。external-bus的ranges属性定义了
+经过external-bus桥后的地址范围如何映射到CPU的内
+存区域。
