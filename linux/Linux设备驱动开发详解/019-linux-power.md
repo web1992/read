@@ -11,26 +11,26 @@
 - loops_per_jiffy
 - target policy、target_freq和 relation
 - regulator_set_voltage（）和clk_set_rate
-- 
-- 
-- 
-- 
-- 
-- 
-- 
-- 
-- 
-- 
-- 
-- 
-- 
-- 
-- 
-- 
-- 
-- 
-- 
-- 
+- cpupower-utils工具
+- cpufreq-bench
+- CPUFREQ_ADJUST
+- CPUFREQ_INCOMPATIBLE
+- CPUFREQ_NOTIFY
+- CPUFREQ_PRECHANGE：准备进行频率变更
+- CPUFREQ_POSTCHANGE：已经完成频率变更
+- Linux notifier机制监控
+- ACPI（Advanced Configuration and PowerInterface，高级配置和电源接口
+- cpu_do_idle
+- cpuidle_driver
+- PowerTop
+- Regulator驱动
+- Low Dropout Regulator，LDO
+- PM QoS
+- pu_dma_latency、network_latency和 network_throughput
+- CPU热插拔
+- 挂起到RAM
+- STR STD   
+- dev_pm_ops结构体指针
 - 
 - 
 - 
@@ -142,4 +142,19 @@ struct cpufreq_driver {
 不具备独立调整频率的能力，往往SoC的CPUFreq驱动
 会提供一个频率表，频率在该表的范围内进行变更，
 因此一般实现target（）成员函数。
+
+总而言之，系统的状态以及CPUFreq的策略共同决
+定了CPU频率跳变的目标，CPUFreq核心层并将目标频
+率传递给底层具体SoC的CPUFreq驱动，该驱动修改硬
+件，完成频率的变换。
+
+## cpufreq-bench
+
+cpufreq-bench工具的工作原理是模拟系统运行时
+候的“空闲→忙→空闲→忙”场景，从而触发系统的
+动态频率变化，然后在使用ondemand、
+conservative、interactive等策略的情况下，计算在
+做与performance高频模式下同样的运算完成任务的时
+间比例。
+
 
